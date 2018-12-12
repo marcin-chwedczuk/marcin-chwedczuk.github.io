@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Grouping using Java 8 streams</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches  nav-current" role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover2.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Grouping using Java 8 streams</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2016-10-02">02 Oct 2016</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/java'>Java</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>In this post we will learn how to perform grouping using new Java 8 Stream API.
+We will be working with the following list of students:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">enum</span> <span class="n">Country</span> <span class="o">{</span> <span class="n">POLAND</span><span class="o">,</span> <span class="n">UK</span><span class="o">,</span> <span class="n">GERMANY</span> <span class="o">}</span>
+        
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Student</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">age</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Country</span> <span class="n">country</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">score</span><span class="o">;</span>
+        
+    <span class="o">...</span>
+<span class="o">}</span>
+        
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Student</span><span class="o">&gt;</span> <span class="n">students</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span>
+    <span class="cm">/*          NAME       AGE COUNTRY          SCORE */</span>
+    <span class="k">new</span> <span class="n">Student</span><span class="o">(</span><span class="s">"Jan"</span><span class="o">,</span>     <span class="mi">13</span><span class="o">,</span> <span class="n">Country</span><span class="o">.</span><span class="na">POLAND</span><span class="o">,</span>  <span class="mi">92</span><span class="o">),</span>
+    <span class="k">new</span> <span class="n">Student</span><span class="o">(</span><span class="s">"Anna"</span><span class="o">,</span>    <span class="mi">15</span><span class="o">,</span> <span class="n">Country</span><span class="o">.</span><span class="na">POLAND</span><span class="o">,</span>  <span class="mi">95</span><span class="o">),</span>
+    <span class="k">new</span> <span class="n">Student</span><span class="o">(</span><span class="s">"Helga"</span><span class="o">,</span>   <span class="mi">14</span><span class="o">,</span> <span class="n">Country</span><span class="o">.</span><span class="na">GERMANY</span><span class="o">,</span> <span class="mi">93</span><span class="o">),</span>
+    <span class="k">new</span> <span class="n">Student</span><span class="o">(</span><span class="s">"Leon"</span><span class="o">,</span>    <span class="mi">14</span><span class="o">,</span> <span class="n">Country</span><span class="o">.</span><span class="na">GERMANY</span><span class="o">,</span> <span class="mi">97</span><span class="o">),</span>
+    <span class="k">new</span> <span class="n">Student</span><span class="o">(</span><span class="s">"Michael"</span><span class="o">,</span> <span class="mi">14</span><span class="o">,</span> <span class="n">Country</span><span class="o">.</span><span class="na">UK</span><span class="o">,</span>      <span class="mi">90</span><span class="o">),</span>
+    <span class="k">new</span> <span class="n">Student</span><span class="o">(</span><span class="s">"Tim"</span><span class="o">,</span>     <span class="mi">15</span><span class="o">,</span> <span class="n">Country</span><span class="o">.</span><span class="na">UK</span><span class="o">,</span>      <span class="mi">91</span><span class="o">),</span>
+    <span class="k">new</span> <span class="n">Student</span><span class="o">(</span><span class="s">"George"</span><span class="o">,</span>  <span class="mi">14</span><span class="o">,</span> <span class="n">Country</span><span class="o">.</span><span class="na">UK</span><span class="o">,</span>      <span class="mi">98</span><span class="o">)</span>
+<span class="o">);</span></code></pre></figure>
+
+<p>Let’s start by grouping students by country, this is fairly simple:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">stream</span><span class="o">.</span><span class="na">Collectors</span><span class="o">.*;</span>
+
+<span class="n">Map</span><span class="o">&lt;</span><span class="n">Country</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Student</span><span class="o">&gt;&gt;</span> <span class="n">studentsByCountry</span> <span class="o">=</span>
+        <span class="n">students</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">groupingBy</span><span class="o">(</span><span class="nl">Student:</span><span class="o">:</span><span class="n">getCountry</span><span class="o">));</span>
+
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">studentsByCountry</span><span class="o">);</span>
+<span class="c1">// Output:</span>
+<span class="c1">// {UK=[Michael/14/UK/90, Tim/15/UK/91, George/14/UK/98],</span>
+<span class="c1">//  POLAND=[Jan/13/POLAND/92, Anna/15/POLAND/95],</span>
+<span class="c1">//  GERMANY=[Helga/14/GERMANY/93, Leon/14/GERMANY/97]}</span></code></pre></figure>
+
+<p>All we needed to do was to use <code class="highlighter-rouge">groupingBy</code> collector from <code class="highlighter-rouge">Collectors</code> class.
+<code class="highlighter-rouge">groupingBy</code> collector takes single parameter called <code class="highlighter-rouge">classifier</code> that assigns grouping key 
+to every stream element.
+In our example we used method reference <code class="highlighter-rouge">Student::getCountry</code>
+(which is equivalent to lambda expression <code class="highlighter-rouge">student -&gt; student.getCountry()</code>) to
+tell <code class="highlighter-rouge">groupingBy</code> that we want to group students by country
+(in other words country was our grouping key).</p>
+
+<p>By default elements with the same key are gathered into <code class="highlighter-rouge">List&lt;T&gt;</code>,
+we may change this behaviour by specifying second parameter to <code class="highlighter-rouge">groupingBy</code>,
+for example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// Use Set's as "buckets"</span>
+<span class="n">Map</span><span class="o">&lt;</span><span class="n">Country</span><span class="o">,</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">Student</span><span class="o">&gt;&gt;</span> <span class="n">studentsByCountry</span> <span class="o">=</span>
+    <span class="n">students</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">groupingBy</span><span class="o">(</span><span class="nl">Student:</span><span class="o">:</span><span class="n">getCountry</span><span class="o">,</span> <span class="n">toSet</span><span class="o">()));</span>
+
+<span class="c1">// Use ArrayList's as "buckets"</span>
+<span class="n">Map</span><span class="o">&lt;</span><span class="n">Country</span><span class="o">,</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Student</span><span class="o">&gt;&gt;</span> <span class="n">studentsByCountry</span> <span class="o">=</span>
+     <span class="n">students</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+             <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">groupingBy</span><span class="o">(</span><span class="nl">Student:</span><span class="o">:</span><span class="n">getCountry</span><span class="o">,</span> 
+                                 <span class="n">toCollection</span><span class="o">(</span><span class="nl">ArrayList:</span><span class="o">:</span><span class="k">new</span><span class="o">)));</span></code></pre></figure>
+
+<p>Here again we used method reference <code class="highlighter-rouge">ArrayList::new</code> which is a shorter way
+to write <code class="highlighter-rouge">() -&gt; new ArrayList()</code>.</p>
+
+<p>Now you may start wondering how it works, actually <code class="highlighter-rouge">groupingBy</code> can
+take any collector as a second argument. Diagram below illustrates how
+the call to <code class="highlighter-rouge">groupingBy(classifier, collector)</code> is executed:
+<img src="assets/images/2016-10-02/groupingBy2.svg" alt="How groupingBy works" style="width:400px;" />
+As you can see on the diagram, <code class="highlighter-rouge">groupingBy</code> first
+divides stream elements into groups according to values returned by <code class="highlighter-rouge">classifier</code>, then
+it uses <code class="highlighter-rouge">collector</code> to get the final value for each group.</p>
+
+<p>With our new <code class="highlighter-rouge">groupingBy</code> knowledge we may start writing more
+interesting groupings.
+For example let’s count number of students per country,
+code below does the job:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Map</span><span class="o">&lt;</span><span class="n">Country</span><span class="o">,</span> <span class="n">Long</span><span class="o">&gt;</span> <span class="n">numberOfStudentsByCountry</span> <span class="o">=</span>
+    <span class="n">students</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">groupingBy</span><span class="o">(</span><span class="nl">Student:</span><span class="o">:</span><span class="n">getCountry</span><span class="o">,</span> <span class="n">counting</span><span class="o">()));</span>
+
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">numberOfStudentsByCountry</span><span class="o">);</span>
+<span class="c1">// Output:</span>
+<span class="c1">// { UK=3, POLAND=2, GERMANY=2 }</span></code></pre></figure>
+
+<p>It works thanks to standard <code class="highlighter-rouge">counting()</code> collector that just counts number of elements
+passed to it.</p>
+
+<p>And what about average student score per country? No problem with that:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Map</span><span class="o">&lt;</span><span class="n">Country</span><span class="o">,</span> <span class="n">Double</span><span class="o">&gt;</span> <span class="n">avgScoreByCountry</span> <span class="o">=</span>
+    <span class="n">students</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">groupingBy</span><span class="o">(</span><span class="nl">Student:</span><span class="o">:</span><span class="n">getCountry</span><span class="o">,</span>
+                                <span class="n">averagingInt</span><span class="o">(</span><span class="nl">Student:</span><span class="o">:</span><span class="n">getScore</span><span class="o">)));</span>
+
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">avgScoreByCountry</span><span class="o">);</span>
+<span class="c1">// Output:</span>
+<span class="c1">// { UK=93.0, POLAND=93.5, GERMANY=95.0 }</span></code></pre></figure>
+
+<p>Thanks to <code class="highlighter-rouge">averagingInt()</code> collector that - you guess it - computes average of
+<code class="highlighter-rouge">int</code>s passed to it (notice that it returns <code class="highlighter-rouge">Double</code>).</p>
+
+<p>One more example before we move forward, let’s compute max student age per country:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Map</span><span class="o">&lt;</span><span class="n">Country</span><span class="o">,</span> <span class="n">Optional</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;&gt;</span> <span class="n">maxAgeByCountry</span> <span class="o">=</span>
+    <span class="n">students</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">groupingBy</span><span class="o">(</span><span class="nl">Student:</span><span class="o">:</span><span class="n">getCountry</span><span class="o">,</span>
+                                <span class="n">mapping</span><span class="o">(</span><span class="nl">Student:</span><span class="o">:</span><span class="n">getAge</span><span class="o">,</span>
+                                        <span class="n">maxBy</span><span class="o">(</span><span class="nl">Integer:</span><span class="o">:</span><span class="n">compare</span><span class="o">))));</span>
+
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">maxAgeByCountry</span><span class="o">);</span>
+<span class="c1">// Output:</span>
+<span class="c1">// { UK=Optional[15], POLAND=Optional[15], GERMANY=Optional[14] }</span></code></pre></figure>
+
+<p>Here we do something more complex, we use <code class="highlighter-rouge">mapping(mapper, downstream)</code>
+collector that transforms every element passed to it using <code class="highlighter-rouge">mapper</code> function
+and then passes that transformed element to <code class="highlighter-rouge">downstream</code> collector.
+So what we do here is that we first group students by country, then in every
+group we map every student to his/her age and we pass that age to <code class="highlighter-rouge">maxBy()</code> collector
+that finally computes max age in every group.</p>
+
+<p>That was something but what about this <code class="highlighter-rouge">Optional&lt;Integer&gt;</code>s in the results?
+<code class="highlighter-rouge">maxBy()</code> collector returns <code class="highlighter-rouge">Optional&lt;T&gt;</code> to signify that sometimes it
+cannot compute maximum e.g. it happens when we use <code class="highlighter-rouge">maxBy()</code> on empty stream.
+We may fix problem with optionals if we map <code class="highlighter-rouge">maxBy()</code> result via <code class="highlighter-rouge">Optional::get</code> 
+<code class="highlighter-rouge">collectingAndThen()</code> collector does exactly that:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Map</span><span class="o">&lt;</span><span class="n">Country</span><span class="o">,</span> <span class="n">Integer</span><span class="o">&gt;</span> <span class="n">maxAgeByCountry</span> <span class="o">=</span>
+<span class="n">students</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+    <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">groupingBy</span><span class="o">(</span><span class="nl">Student:</span><span class="o">:</span><span class="n">getCountry</span><span class="o">,</span>
+                        <span class="n">mapping</span><span class="o">(</span><span class="nl">Student:</span><span class="o">:</span><span class="n">getAge</span><span class="o">,</span>
+                            <span class="n">collectingAndThen</span><span class="o">(</span><span class="n">maxBy</span><span class="o">(</span><span class="nl">Integer:</span><span class="o">:</span><span class="n">compare</span><span class="o">),</span>
+                                              <span class="nl">Optional:</span><span class="o">:</span><span class="n">get</span><span class="o">))));</span>
+
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">maxAgeByCountry</span><span class="o">);</span>
+<span class="c1">// Output:</span>
+<span class="c1">// { UK=15, POLAND=15, GERMANY=14 }</span></code></pre></figure>
+
+<p>Since we may pass any collector as a second argument to <code class="highlighter-rouge">groupingBy</code>,
+we may pass another <code class="highlighter-rouge">groupingBy</code> collector - this way we may group
+stream elements by more than one criteria.
+For example let’s group students by country and age:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Map</span><span class="o">&lt;</span><span class="n">Country</span><span class="o">,</span> <span class="n">Map</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Student</span><span class="o">&gt;&gt;&gt;</span> <span class="n">studentsByCountryByAge</span> <span class="o">=</span>
+    <span class="n">students</span><span class="o">.</span><span class="na">stream</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">groupingBy</span><span class="o">(</span><span class="nl">Student:</span><span class="o">:</span><span class="n">getCountry</span><span class="o">,</span>
+                                <span class="n">groupingBy</span><span class="o">(</span><span class="nl">Student:</span><span class="o">:</span><span class="n">getAge</span><span class="o">)));</span>
+
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">studentsByCountryByAge</span><span class="o">);</span>
+<span class="c1">// Output:</span>
+<span class="c1">// { UK={ 14=[Michael/14/UK/90,George/14/UK/98],  15=[Tim/15/UK/91] }, </span>
+<span class="c1">// POLAND={ 13=[Jan/13/POLAND/92],  15=[Anna/15/POLAND/95] }, </span>
+<span class="c1">// GERMANY={ 14=[Helga/14/GERMANY/93,Leon/14/GERMANY/97] } }</span></code></pre></figure>
+
+<p>That’s all for today, now go and write some code!</p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Grouping using Java 8 streams&amp;url=https://marcin-chwedczuk.github.io/grouping-using-java-8-streams"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/grouping-using-java-8-streams"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/grouping-using-java-8-streams"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//grouping-using-java-8-streams';
+        this.page.identifier = '/grouping-using-java-8-streams';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover6.jpg)" href="/java-8-how-to-write-custom-collector">
+            <section class="post">
+                <h2>Java 8&#58 How to write custom collector</h2>
+                <p>In this post we will create custom collector that can be used with Java 8...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover2.jpg)" href="/use-meld-as-git-merge-diff-tool">
+            <section class="post">
+                <h2>How to use Meld as git merge and diff tool</h2>
+                <p>Meld is a new open source merge tool written in Python, it has a nice...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

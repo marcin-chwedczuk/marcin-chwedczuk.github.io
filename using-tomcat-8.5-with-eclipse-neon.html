@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Using Tomcat 8.5 with Eclipse Neon on Ubuntu</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover8.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Using Tomcat 8.5 with Eclipse Neon on Ubuntu</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2016-10-31">31 Oct 2016</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/java'>Java</a>,
+                       
+                
+                    
+                       <a href='/tag/eclipse'>Eclipse</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>When you start learning Spring MVC development configuring
+Tomcat server in Eclipse Neon IDE can be a difficult task.
+This tutorial will help you setup your development environment.</p>
+
+<h4 id="installing-tomcat-85">Installing Tomcat 8.5</h4>
+
+<ul>
+  <li>Visit <a href="https://tomcat.apache.org/download-80.cgi">Apache Tomcat download page</a> and grab <code class="highlighter-rouge">apache-tomcat-8.5.6.tar.gz</code> file.
+ You can also download file from terminal:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ wget http://ftp.ps.pl/pub/apache/tomcat/tomcat-8/v8.5.6/bin/apache-tomcat-8.5.6.tar.gz</code></pre></figure>
+
+<ul>
+  <li>To make things easier you will install Tomcat inside your home directory.
+ I assume that you already installed Java on your box, 
+ if not now is the time to do this. To instal Java follow tutorial at <a href="http://www.webupd8.org/2012/09/install-oracle-java-8-in-ubuntu-via-ppa.html">webupd8</a>.</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ # We will install Tomcat in $HOME/bin/tomcat
+
+$ mkdir -p ~/bin/tomcat
+$ tar xzvf ~/Downloads/apache-tomcat-8.5.6.tar.gz \
+ -C ~/bin/tomcat/ \
+ --strip-components=1</code></pre></figure>
+
+<ul>
+  <li>Let’s check if everything is OK by starting Tomcat and opening 
+ <code class="highlighter-rouge">http://localhost:8080</code> in your favorite browser:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cd ~/bin/tomcat/bin
+$ ./catalina.sh run
+# To stop server press Ctrl+C</code></pre></figure>
+
+<p>You should see Tomcat welcome page:
+<img src="assets/images/2016-10-31/1_tomcat_welcome.png" alt="Tomcat Welcome screen" /></p>
+
+<ul>
+  <li>Now we will add an administrator account on Tomcat server. This is not needed
+ by Eclipse but it may come in handy when you will later want to play
+ with Tomcat:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cd ~/bin/tomcat/conf
+$ vim tomcat-users.xml</code></pre></figure>
+
+<p>Now you must add the following line to <code class="highlighter-rouge">tomcat-users.xml</code> file:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;tomcat-users</span> <span class="err">...</span><span class="nt">&gt;</span>
+  ...
+  <span class="nt">&lt;user</span> <span class="na">username=</span><span class="s">"admin"</span> <span class="na">password=</span><span class="s">"1234"</span> <span class="na">roles=</span><span class="s">"manager-gui,admin-gui"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;/tomcat-users&gt;</span></code></pre></figure>
+
+<p>Here we are creating <code class="highlighter-rouge">admin</code> user with <code class="highlighter-rouge">1234</code> password and we give him (or her)
+permissions to administration gui.
+Let’s start Tomcat again (using <code class="highlighter-rouge">./catalina.sh run</code>) and check that
+we can visit Tomcat manager page (located at <code class="highlighter-rouge">http://localhost:8080/manager/html</code>):
+<img src="assets/images/2016-10-31/2_tomcat_manager.png" alt="Tomcat Welcome screen" /></p>
+
+<h4 id="configuring-eclipse-neon">Configuring Eclipse Neon</h4>
+
+<p>Before we start check that you have following plugins installed:</p>
+
+<ul>
+  <li>
+    <p><a href="https://marketplace.eclipse.org/content/eclipse-jst-server-adapters-apache-tomcat-jonas-j2ee">JST Server Adapters</a>
+<img src="assets/images/2016-10-31/3_market_1.png" alt="Eclipse marketplace 1" /></p>
+  </li>
+  <li>
+    <p><a href="https://www.eclipse.org/m2e-wtp/">Maven integration for WTP</a>
+<img src="assets/images/2016-10-31/3_market_2.png" alt="Eclipse marketplace 2" /></p>
+  </li>
+</ul>
+
+<p>Now we must create new Server Runtime Environment. Go to Preferences -&gt; Server -&gt; Runtime Environment -&gt; Add…
+<img src="assets/images/2016-10-31/4_env_2.png" alt="Tomcat Welcome screen" /></p>
+
+<p>Then specify path to your Tomcat installation (<code class="highlighter-rouge">/home/user_name/tomcat</code>)
+and optionally JRE (use Oracle Java 8 if available) and click Finish.
+<img src="assets/images/2016-10-31/4_env_3.png" alt="Tomcat Welcome screen" /></p>
+
+<h4 id="there-is-no-tomcat-85-in-my-wizard-if-you-completed-previous-steps-skip-this-secion">There is no Tomcat 8.5 in my wizard (if you completed previous steps skip this secion)</h4>
+
+<p>There is a bug in Eclipse that prevents some users from seeing
+Tomcat 8.5 option in their wizards:
+<img src="assets/images/2016-10-31/4_env_1.png" alt="Tomcat Welcome screen" /></p>
+
+<p>The solution is simple, we manually change Tomcat version number say
+from 8.5.6 to 8.0.8.5.6 and this will allow us to use newer Tomcat version
+with buggy Eclipse.
+More details can be found in <a href="http://stackoverflow.com/questions/37024876/how-to-use-tomcat-8-5-x-and-tomee-7-x-with-eclipse">this SO question</a>.</p>
+
+<p>Following script will will patch Tomcat server:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">#!/bin/bash
+cd ~/bin/tomcat
+
+# Create backup
+cp ../lib/catalina.jar ../lib/catalina.jar.backup
+
+# Create patch directory and extract catalina.jar there
+mkdir patch &amp;&amp; cd patch
+jar xvf ../lib/catalina.jar
+
+# Change version number
+cd org/apache/catalina/util/
+sed -i 's/8.5.6/8.0.8.5.6/' ServerInfo.properties
+cd ../../../../
+
+# Pack patched files into jar
+jar cvf catalina.jar .
+
+# Overwrite old catalina.jar
+cp ./catalina.jar ../lib/
+
+# Cleanup
+cd .. &amp;&amp; rm -rf patch</code></pre></figure>
+
+<p>After running script try to start Tomcat server to check if it is working.
+Then if everything is OK create new Runtime Environment in Eclipse using Tomcat 8 option.</p>
+
+<h4 id="starting-tomcat-from-eclipse">Starting Tomcat from Eclipse</h4>
+
+<p>Open Servers window (press Ctrl+3 and write in search box Servers).
+Use link in Servers window to open New Server wizard and create a new server:
+<img src="assets/images/2016-10-31/5_servers.png" alt="Tomcat Welcome screen" /></p>
+
+<p>You should see new server created:
+<img src="assets/images/2016-10-31/5_servers_2.png" alt="Tomcat Welcome screen" /></p>
+
+<p>Click on server and choose Clean option, then click again and select Start.
+If you have Tomcat running in terminal (<code class="highlighter-rouge">./catalina.sh run</code>) stop it before 
+you start Tomcat via Eclipse. Console window should display various
+log entries from starting Tomcat. Now click on server and select Stop.</p>
+
+<p>Now it’s time to restart Eclipse and check if everything works after
+restart.</p>
+
+<h4 id="creating-simple-spring-mvc-app">Creating simple Spring MVC app</h4>
+
+<p>We will create simple Spring MVC application to check if everything is working.
+Let’s start by creating new Maven project (New Project -&gt; Maven Project and check Create simple project):
+<img src="assets/images/2016-10-31/6_mvn.png" alt="Tomcat Welcome screen" />
+Don’t forget to select WAR as packaging method.</p>
+
+<p>Open your POM file in XML editor and add following lines to it:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">"http://maven.apache.org/POM/4.0.0"</span> <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span> <span class="na">xsi:schemaLocation=</span><span class="s">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span><span class="nt">&gt;</span>
+
+	...
+
+  <span class="c">&lt;!-- Spring MVC and Servlet API --&gt;</span>
+  <span class="nt">&lt;dependencies&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>spring-webmvc<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;version&gt;</span>4.3.3.RELEASE<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>javax.servlet<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>jstl<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;version&gt;</span>1.2<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>javax.servlet<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>javax.servlet-api<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;version&gt;</span>3.1.0<span class="nt">&lt;/version&gt;</span>
+      <span class="nt">&lt;scope&gt;</span>provided<span class="nt">&lt;/scope&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;/dependencies&gt;</span>
+
+  <span class="c">&lt;!-- enable java 8 --&gt;</span>
+  <span class="nt">&lt;properties&gt;</span>
+    <span class="nt">&lt;maven.compiler.source&gt;</span>1.8<span class="nt">&lt;/maven.compiler.source&gt;</span>
+    <span class="nt">&lt;maven.compiler.target&gt;</span>1.8<span class="nt">&lt;/maven.compiler.target&gt;</span>
+  <span class="nt">&lt;/properties&gt;</span>
+<span class="nt">&lt;/project&gt;</span></code></pre></figure>
+
+<p>Then let’s add four more files to our project:
+<img src="assets/images/2016-10-31/6_proj.png" alt="Tomcat Welcome screen" /></p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// HelloController.java</span>
+<span class="kn">package</span> <span class="n">hellotomcat</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Controller</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.ui.Model</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
+
+<span class="nd">@Controller</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HomeController</span> <span class="o">{</span>
+
+    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">welcome</span><span class="o">(</span><span class="n">Model</span> <span class="n">model</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">model</span><span class="o">.</span><span class="na">addAttribute</span><span class="o">(</span><span class="s">"greeting"</span><span class="o">,</span> <span class="s">"gretting!!!"</span><span class="o">);</span>
+        <span class="n">model</span><span class="o">.</span><span class="na">addAttribute</span><span class="o">(</span><span class="s">"tagline"</span><span class="o">,</span> <span class="s">"it works"</span><span class="o">);</span>
+        
+        <span class="k">return</span> <span class="s">"welcome"</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- WEB-INF/web.xml --&gt;</span>
+
+<span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;web-app</span> <span class="na">version=</span><span class="s">"3.0"</span> <span class="na">xmlns=</span><span class="s">"http://java.sun.com/xml/ns/javaee"</span>
+  <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
+  <span class="na">xsi:schemaLocation=</span><span class="s">"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;servlet&gt;</span>
+    <span class="nt">&lt;servlet-name&gt;</span>DefaultServlet<span class="nt">&lt;/servlet-name&gt;</span>
+    <span class="nt">&lt;servlet-class&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="nt">&lt;/servlet-class&gt;</span>
+  <span class="nt">&lt;/servlet&gt;</span>
+  <span class="nt">&lt;servlet-mapping&gt;</span>
+    <span class="nt">&lt;servlet-name&gt;</span>DefaultServlet<span class="nt">&lt;/servlet-name&gt;</span>
+    <span class="nt">&lt;url-pattern&gt;</span>/<span class="nt">&lt;/url-pattern&gt;</span>
+  <span class="nt">&lt;/servlet-mapping&gt;</span>
+<span class="nt">&lt;/web-app&gt;</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- DefaultServlet-servlet.xml --&gt;</span>
+
+<span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;beans</span> <span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>
+  <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span> <span class="na">xmlns:context=</span><span class="s">"http://www.springframework.org/schema/context"</span>
+  <span class="na">xmlns:mvc=</span><span class="s">"http://www.springframework.org/schema/mvc"</span>
+  <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;mvc:annotation-driven</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;context:component-scan</span> <span class="na">base-package=</span><span class="s">"hellotomcat"</span> <span class="nt">/&gt;</span>
+  
+  <span class="nt">&lt;bean</span>
+    <span class="na">class=</span><span class="s">"org.springframework.web.servlet.view.InternalResourceViewResolver "</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"prefix"</span> <span class="na">value=</span><span class="s">"/WEB-INF/jsp/"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"suffix"</span> <span class="na">value=</span><span class="s">".jsp"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/bean&gt;</span>
+<span class="nt">&lt;/beans&gt;</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- WEB-INF/jsp/welcome.jsp --&gt;</span>
+
+<span class="err">&lt;</span>%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%&gt;
+<span class="nt">&lt;html&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+	<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span>
+		<span class="na">href=</span><span class="s">"//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"</span><span class="nt">&gt;</span>
+	<span class="nt">&lt;title&gt;</span>Welcome<span class="nt">&lt;/title&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+	<span class="nt">&lt;section&gt;</span>
+		<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"jumbotron"</span><span class="nt">&gt;</span>
+			<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
+				<span class="nt">&lt;h1&gt;</span>${greeting}<span class="nt">&lt;/h1&gt;</span>
+				<span class="nt">&lt;p&gt;</span>${tagline}<span class="nt">&lt;/p&gt;</span>
+			<span class="nt">&lt;/div&gt;</span>
+		<span class="nt">&lt;/div&gt;</span>
+	<span class="nt">&lt;/section&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span></code></pre></figure>
+
+<p>Now click on <code class="highlighter-rouge">pom.xml</code> select Run As -&gt; Maven install, this should
+create <code class="highlighter-rouge">hellotomcat-0.0.1-SNAPSHOT.war</code> file in target directory.</p>
+
+<p>Click on project select Run As -&gt; Run Configurations, then select Apache Tomcat and press New button.
+<img src="assets/images/2016-10-31/7_rc.png" alt="Tomcat Welcome screen" />
+Click Apply and Close.</p>
+
+<p>Click on project select Run As -&gt; Run on Server:
+<img src="assets/images/2016-10-31/7_ros.png" alt="Tomcat Welcome screen" />
+and Finish.</p>
+
+<p>Go to <code class="highlighter-rouge">http://localhost:8080/hellotomcat/</code> and check if you see greetings.
+Now open <code class="highlighter-rouge">HomeController</code> file change text and save changes, after a few
+seconds refresh browser page - you should see your new text.</p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Using Tomcat 8.5 with Eclipse Neon on Ubuntu&amp;url=https://marcin-chwedczuk.github.io/using-tomcat-8.5-with-eclipse-neon"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/using-tomcat-8.5-with-eclipse-neon"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/using-tomcat-8.5-with-eclipse-neon"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//using-tomcat-8.5-with-eclipse-neon';
+        this.page.identifier = '/using-tomcat-8.5-with-eclipse-neon';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/cover8.jpg)" href="/method-references-in-java-8">
+            <section class="post">
+                <h2>Using method references in Java 8</h2>
+                <p>Method references in Java 8 allows us to convert a call to a method or...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover8.jpg)" href="/hoisting-in-javascript">
+            <section class="post">
+                <h2>Hoisting in JavaScript</h2>
+                <p>In this post I will describe what is variable hoisting in JavaScript. But before we...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

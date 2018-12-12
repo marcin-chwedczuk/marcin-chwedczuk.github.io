@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>You can live without mocking frameworks</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover3.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">You can live without mocking frameworks</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2018-09-08">08 Sep 2018</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/dotnet'>Dotnet</a>,
+                       
+                
+                    
+                       <a href='/tag/unit-testing'>Unit-testing</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>For a long time I have been fan of mocking frameworks like 
+<a href="https://github.com/Moq/moq4/wiki/Quickstart">Moq</a>
+and <a href="http://nsubstitute.github.io">NSubstitute</a>.
+These libraries seems indispensable while unit-testing.
+They allow us to easily generate subs and mocks and assert that
+certain interaction between components took place.</p>
+
+<p>NOTE: If you do not remember difference between stub and mock
+please read <a href="https://martinfowler.com/articles/mocksArentStubs.html">this Martin Fowler article</a>. 
+In short mocks are used to test interactions between components 
+(a method was called, a property was set) 
+while stubs are used as dumb implementations of component dependencies 
+(they usually either do nothing or provide some preset data).</p>
+
+<p>But recently, after reading volume 1 of 
+<a href="https://www.yegor256.com/elegant-objects.html">Elegant Objects</a>
+which by the way I strongly recommend, I changed my mind.
+In one of the chapters author presents the idea that every interface
+should have an associated fake object. A fake object is a simple
+but <em>working</em> implementation of an interface and resides in the same
+source code file as the interface itself.
+Fake objects serve two purposes. First, they are example implementations
+of interfaces that show users how the interfaces should be implemented.
+And second they can be used as stubs and mocks in unit-tests.</p>
+
+<p>Of course this idea seemed a bit extreme to me, so I decided to go with
+a bit more evolutionary approach.
+I <strong>slowly</strong> replaced all mock object that I had in my unit-tests 
+with fakes (I put all fakes in my unit test projects - but I am still thinking that maybe they deserve a project of their own). 
+During this process all interaction testing assertions 
+that are usually performed using mocking frameworks
+were replaced by behaviour testing assertions on fake objects.</p>
+
+<p>It will be the best to illustrate this process using an example.
+Say we have a simple component <code class="highlighter-rouge">EventPublishingComponent</code> that
+publishes two events (order is not important):</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">EventPublishingComponent</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">EventPublisher</span> <span class="n">_eventPublisher</span><span class="p">;</span>
+    <span class="k">public</span> <span class="nf">EventPublishingComponent</span><span class="p">(</span><span class="n">EventPublisher</span> <span class="n">eventPublisher</span><span class="p">)</span>
+        <span class="p">=&gt;</span> <span class="n">_eventPublisher</span> <span class="p">=</span> <span class="n">eventPublisher</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="n">async</span> <span class="n">Task</span> <span class="nf">Publish</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">await</span> <span class="n">_eventPublisher</span><span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="k">new</span> <span class="nf">FirstEvent</span><span class="p">(</span><span class="n">id</span><span class="p">:</span> <span class="m">3</span><span class="p">));</span>
+        <span class="n">await</span> <span class="n">_eventPublisher</span><span class="p">.</span><span class="nf">Publish</span><span class="p">(</span>
+          <span class="k">new</span> <span class="nf">SecondEvent</span><span class="p">(</span><span class="n">id</span><span class="p">:</span> <span class="s">"ZDKA9JOPCKXI7"</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">FirstEvent</span> <span class="p">:</span> <span class="n">Event</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="nf">FirstEvent</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">)</span>
+        <span class="p">=&gt;</span> <span class="n">Id</span> <span class="p">=</span> <span class="n">id</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">SecondEvent</span> <span class="p">:</span> <span class="n">Event</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="nf">SecondEvent</span><span class="p">(</span><span class="kt">string</span> <span class="n">id</span><span class="p">)</span>
+        <span class="p">=&gt;</span> <span class="n">Id</span> <span class="p">=</span> <span class="n">id</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">interface</span> <span class="n">EventPublisher</span> <span class="p">{</span>
+    <span class="n">Task</span> <span class="nf">Publish</span><span class="p">(</span><span class="n">Event</span> <span class="n">@event</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">interface</span> <span class="n">Event</span> <span class="p">{</span> <span class="p">}</span></code></pre></figure>
+
+<p>A “classic” unit test for this component using NSubstitute 
+could look like this:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">EventPublishingComponentTest</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">EventPublisher</span> <span class="n">_eventPublisher</span><span class="p">;</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">EventPublishingComponent</span> <span class="n">_component</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="nf">EventPublishingComponentTest</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">_eventPublisher</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">EventPublisher</span><span class="p">&gt;();</span>
+        <span class="n">_component</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">EventPublishingComponent</span><span class="p">(</span><span class="n">_eventPublisher</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">[</span><span class="n">Fact</span><span class="p">]</span>
+    <span class="k">public</span> <span class="n">async</span> <span class="n">Task</span> <span class="nf">Should_publish_FirstEvent</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// Arrange
+</span>        <span class="n">FirstEvent</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+        <span class="n">await</span> <span class="n">_eventPublisher</span>
+            <span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="n">FirstEvent</span><span class="p">&gt;(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="n">e</span><span class="p">));</span>
+
+        <span class="c1">// Act
+</span>        <span class="n">await</span> <span class="n">_component</span><span class="p">.</span><span class="nf">Publish</span><span class="p">();</span>
+
+        <span class="c1">// Assert
+</span>        <span class="n">await</span> <span class="n">_eventPublisher</span><span class="p">.</span><span class="nf">Received</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">FirstEvent</span><span class="p">&gt;());</span>
+
+        <span class="n">Check</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">firstEvent</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">IsNotNull</span><span class="p">();</span>
+
+        <span class="n">Check</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">firstEvent</span><span class="p">.</span><span class="n">Id</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">IsNotZero</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>I am sure you have seen a lot of tests like this. 
+The key points are: Your create mocks and stubs using your
+favourite mocking library in the test constructor or setup method.
+In the arrange (given) part of the test you define mocks and stubs
+behaviour using library specific syntax. Here e.g. we are capturing
+argument passed to <code class="highlighter-rouge">Publish</code> method for later use:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">FirstEvent</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+<span class="n">await</span> <span class="n">_eventPublisher</span>
+    <span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="n">FirstEvent</span><span class="p">&gt;(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="n">e</span><span class="p">));</span></code></pre></figure>
+
+<p>In the assert (then) part of the test we use again library specific
+syntax to check that a method on a mock 
+was called with given set of arguments.</p>
+
+<p>This approach is fine but it has some disadvantages:</p>
+
+<ol>
+  <li>
+    <p>It makes your tests very brittle. For example if I add a new method
+ on <code class="highlighter-rouge">EventPublisher</code> called 
+ <code class="highlighter-rouge">PublishAll(events)</code> that allows me to publish all events at once and
+ refactor <code class="highlighter-rouge">EventPublishingComponent</code> to use it
+ then <code class="highlighter-rouge">EventPublishingComponent</code> tests would stop working.
+ The main problem here is that my tests check internal interaction
+ between components 
+ (was method <code class="highlighter-rouge">Publish</code> called?) instead of checking external behaviour 
+ of the system (was event published?).</p>
+  </li>
+  <li>
+    <p>Mocking library is another tool that you must learn. 
+ And please remember that most of the developers are not too eager to
+ read documentation. Time presumably saved by using mocking library 
+ will be lost on reading StackOverflow answers and on fighting with
+ the library itself 
+ (ever have a problem that your stub does not return intended value?).</p>
+  </li>
+  <li>
+    <p>It makes your tests less readable. I must admit that 
+ NSubstitute is a huge improvement over Moq in terms
+ of readability but it still introduces a lot of visual noise in the test
+ code. For example do see all 
+ those <code class="highlighter-rouge">&lt;</code>, <code class="highlighter-rouge">&gt;</code>, <code class="highlighter-rouge">(</code> and <code class="highlighter-rouge">)</code> in the code below:</p>
+  </li>
+</ol>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">FirstEvent</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+<span class="n">await</span> <span class="n">_eventPublisher</span>
+    <span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="n">FirstEvent</span><span class="p">&gt;(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="n">e</span><span class="p">));</span></code></pre></figure>
+
+<p>Now let us see how our test can look like if we use fakes instead:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">EventPublishingComponentTest_UsingFakes</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">InMemoryEventPublisher</span> <span class="n">_eventPublisher</span><span class="p">;</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">EventPublishingComponent</span> <span class="n">_component</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="nf">EventPublishingComponentTest_UsingFakes</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">_eventPublisher</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">InMemoryEventPublisher</span><span class="p">();</span>
+        <span class="n">_component</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">EventPublishingComponent</span><span class="p">(</span><span class="n">_eventPublisher</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">[</span><span class="n">Fact</span><span class="p">]</span>
+    <span class="k">public</span> <span class="n">async</span> <span class="n">Task</span> <span class="nf">Should_publish_FirstEvent</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// Act
+</span>        <span class="n">await</span> <span class="n">_component</span><span class="p">.</span><span class="nf">Publish</span><span class="p">();</span>
+
+        <span class="c1">// Assert
+</span>        <span class="n">var</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="n">_eventPublisher</span><span class="p">.</span><span class="n">PublishedEvents</span>
+            <span class="p">.</span><span class="n">OfType</span><span class="p">&lt;</span><span class="n">FirstEvent</span><span class="p">&gt;()</span>
+            <span class="p">.</span><span class="nf">SingleOrDefault</span><span class="p">();</span>
+
+        <span class="n">Check</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">firstEvent</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">IsNotNull</span><span class="p">();</span>
+
+        <span class="n">Check</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">firstEvent</span><span class="p">.</span><span class="n">Id</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">IsNotZero</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>To make this test compile we also need to write a fake for 
+<code class="highlighter-rouge">EventPublisher</code> interface. Please keep in mind that fake is a simple
+but <strong>working</strong> implementation of the interface:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">InMemoryEventPublisher</span> <span class="p">:</span> <span class="n">EventPublisher</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Event</span><span class="p">&gt;</span> <span class="n">_publishedEvents</span> 
+      <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Event</span><span class="p">&gt;();</span>
+
+    <span class="k">public</span> <span class="n">IReadOnlyList</span><span class="p">&lt;</span><span class="n">Event</span><span class="p">&gt;</span> <span class="n">PublishedEvents</span>
+        <span class="p">=&gt;</span> <span class="n">_publishedEvents</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="n">Task</span> <span class="nf">Publish</span><span class="p">(</span><span class="n">Event</span> <span class="n">@event</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">@event</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentNullException</span><span class="p">(</span><span class="nf">nameof</span><span class="p">(</span><span class="n">@event</span><span class="p">));</span>
+
+        <span class="n">_publishedEvents</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">@event</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">Task</span><span class="p">.</span><span class="n">CompletedTask</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>I am sure that after seeing both versions of the test 
+you agree with me that both are quite short and readable,
+yet the second version does not have the earlier mentioned disadvantages.
+Now you may rightly say that with the second approach 
+you are forced to create fakes for
+almost all interfaces in your application. You are right, but
+you actually want to create fakes. Here is why:</p>
+
+<ol>
+  <li>
+    <p>Fakes are like TDD for your interface <strong>design</strong>. By creating a fake
+ you actually check how difficult it is for a client 
+ of your API to provide an implementation. A fake too big or 
+ too difficult to
+ implement is a sign that maybe your interface is doing too much.
+ Also fakes can be treated as “reference implementations” of interfaces
+ and as such they are part of your API documentation.</p>
+  </li>
+  <li>
+    <p>Writing a fake is a one-time effort. After fake is written it can
+ be reused across many tests. Compare this with subs and mocks that you
+ need to setup every time you want to use them.</p>
+  </li>
+</ol>
+
+<p>Now it is time for a more real world example. 
+As you probably heard <em>Performance is a feature</em> but logging can 
+also be a feature. Imagine an application where we must log
+every failed login attempt. Since this is a business requirement
+we want to code it as an acceptance test.
+How difficult it can be to check that one method call was
+performed:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">logger</span><span class="p">.</span><span class="nf">LogDebug</span><span class="p">(</span><span class="s">"User '{userName}' log into application."</span><span class="p">,</span> <span class="s">"root"</span><span class="p">);</span></code></pre></figure>
+
+<p>In practice it can be more difficult than it seems especially if you use
+notoriously hard to test <code class="highlighter-rouge">ILogger</code> from <code class="highlighter-rouge">Microsoft.Extensions.Logging.Abstractions</code> package.</p>
+
+<p>Why is <code class="highlighter-rouge">ILogger</code> hard to test?</p>
+
+<ol>
+  <li>
+    <p><code class="highlighter-rouge">ILogger</code> interface contains only three methods 
+ (<a href="https://github.com/aspnet/Logging/blob/master/src/Microsoft.Extensions.Logging.Abstractions/ILogger.cs">source code here</a>)
+ rest of its functionality is provided via extension methods.</p>
+  </li>
+  <li>
+    <p>Extension methods that operate on <code class="highlighter-rouge">ILogger</code> often 
+ create wrappers around original 
+ arguments using classes like <code class="highlighter-rouge">FormattedLogValues</code>.
+ Most of these wrapper classes does not 
+ overload <code class="highlighter-rouge">Equals</code> and <code class="highlighter-rouge">GetHashCode</code> rendering
+ argument matchers from mocking frameworks useless.</p>
+  </li>
+  <li>
+    <p>No easy access to the logged message.
+ Only method responsible for actual logging on <code class="highlighter-rouge">ILogger</code> interface
+ is <code class="highlighter-rouge">Log</code>:</p>
+  </li>
+</ol>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">void</span> <span class="n">Log</span><span class="p">&lt;</span><span class="n">TState</span><span class="p">&gt;(</span>
+  <span class="n">LogLevel</span> <span class="n">logLevel</span><span class="p">,</span> 
+  <span class="n">EventId</span> <span class="n">eventId</span><span class="p">,</span> 
+  <span class="n">TState</span> <span class="n">state</span><span class="p">,</span> 
+  <span class="n">Exception</span> <span class="n">exception</span><span class="p">,</span> 
+  <span class="n">Func</span><span class="p">&lt;</span><span class="n">TState</span><span class="p">,</span> <span class="n">Exception</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">formatter</span><span class="p">);</span></code></pre></figure>
+
+<p>To gain access to the logged message we must either dig 
+into <code class="highlighter-rouge">state</code> argument
+or call <code class="highlighter-rouge">formatter(state, exception)</code>.</p>
+
+<p>All this causes that naive testing aproachs like this fail:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
+<span class="k">public</span> <span class="n">async</span> <span class="n">Task</span> <span class="nf">Naive_test</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">var</span> <span class="n">logger</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ILogger</span><span class="p">&lt;</span><span class="n">SomeClass</span><span class="p">&gt;&gt;();</span>
+      
+  <span class="n">logger</span>
+    <span class="p">.</span><span class="nf">LogDebug</span><span class="p">(</span><span class="s">"User '{userName}' log into application."</span><span class="p">,</span> <span class="s">"root"</span><span class="p">);</span>
+
+  <span class="n">logger</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
+    <span class="p">.</span><span class="nf">LogDebug</span><span class="p">(</span><span class="s">"User '{userName}' log into application."</span><span class="p">,</span> <span class="s">"root"</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>And how they fail? With confusing error messages like this one:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">Error Message:
+ NSubstitute.Exceptions.ReceivedCallsException : 
+  Expected to receive a call matching:
+  Log&lt;Object&gt;(Debug, 0, User 'root' log into application., &lt;null&gt;, Func&lt;Object, Exception, String&gt;)
+Actually received no matching calls.
+Received 1 non-matching call 
+ (non-matching arguments indicated with '*' characters):
+  Log&lt;Object&gt;(Debug, 0, *User 'root' log into application.*, &lt;null&gt;, Func&lt;Object, Exception, String&gt;)</code></pre></figure>
+
+<p>Not very helpful, isn’t it?</p>
+
+<p>If you really want to test <code class="highlighter-rouge">ILogger</code> using NSubstitute you must
+use the following code:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">logger</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ILogger</span><span class="p">&lt;</span><span class="n">SomeClass</span><span class="p">&gt;&gt;();</span>
+
+<span class="n">dynamic</span> <span class="n">state</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+<span class="n">Exception</span> <span class="n">exception</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span> 
+<span class="n">Func</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">,</span> <span class="n">Exception</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">formatter</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+
+<span class="n">logger</span><span class="p">.</span><span class="nf">Log</span><span class="p">(</span><span class="n">LogLevel</span><span class="p">.</span><span class="n">Debug</span><span class="p">,</span> 
+  <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">EventId</span><span class="p">&gt;(),</span> 
+  <span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">&gt;(</span><span class="n">s</span> <span class="p">=&gt;</span> <span class="n">state</span> <span class="p">=</span> <span class="n">s</span><span class="p">),</span> 
+  <span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="n">Exception</span><span class="p">&gt;(</span><span class="n">ex</span> <span class="p">=&gt;</span> <span class="n">exception</span> <span class="p">=</span> <span class="n">ex</span><span class="p">),</span> 
+  <span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">,</span> <span class="n">Exception</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;&gt;(</span><span class="n">f</span> <span class="p">=&gt;</span> <span class="n">formatter</span> <span class="p">=</span> <span class="n">f</span><span class="p">));</span>
+
+<span class="n">logger</span>
+  <span class="p">.</span><span class="nf">LogDebug</span><span class="p">(</span><span class="s">"User '{userName}' log into application."</span><span class="p">,</span> <span class="s">"root"</span><span class="p">);</span>
+
+<span class="n">logger</span><span class="p">.</span><span class="nf">Received</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+  <span class="p">.</span><span class="nf">Log</span><span class="p">(</span><span class="n">LogLevel</span><span class="p">.</span><span class="n">Debug</span><span class="p">,</span> 
+      <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">EventId</span><span class="p">&gt;(),</span> 
+      <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">&gt;(),</span> 
+      <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">Exception</span><span class="p">&gt;(),</span> 
+      <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">,</span> <span class="n">Exception</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;&gt;());</span>
+
+<span class="n">Check</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="nf">formatter</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">exception</span><span class="p">))</span>
+    <span class="p">.</span><span class="nf">IsEqualIgnoringCase</span><span class="p">(</span><span class="s">"User 'root' log into application."</span><span class="p">);</span></code></pre></figure>
+
+<p>Did I say something earlier about unreadable tests and a lot of 
+visual noise caused by mocking frameworks? Now you can see it with your
+own eyes!</p>
+
+<p>Now it is time for our second approach using fakes. First we create
+a fake logger:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">InMemoryListOfEntriesLogger</span> <span class="p">:</span> <span class="n">ILogger</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">LogEntry</span><span class="p">&gt;</span> <span class="n">_loggedEntries</span> 
+      <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">LogEntry</span><span class="p">&gt;();</span>
+
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="kt">int</span><span class="p">&gt;</span> <span class="n">_bookmarks</span> 
+      <span class="p">=</span> <span class="k">new</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="kt">int</span><span class="p">&gt;();</span>
+
+    <span class="k">public</span> <span class="n">IReadOnlyList</span><span class="p">&lt;</span><span class="n">LogEntry</span><span class="p">&gt;</span> <span class="n">LoggedEntries</span> 
+        <span class="p">=&gt;</span> <span class="n">_loggedEntries</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="n">IDisposable</span> <span class="n">BeginScope</span><span class="p">&lt;</span><span class="n">TState</span><span class="p">&gt;(</span><span class="n">TState</span> <span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Notice that we do not have to implement
+</span>        <span class="c1">// all methods for interfaces that are *not
+</span>        <span class="c1">// part* of our application.
+</span>        <span class="k">throw</span> <span class="k">new</span> <span class="nf">NotImplementedException</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="kt">bool</span> <span class="nf">IsEnabled</span><span class="p">(</span><span class="n">LogLevel</span> <span class="n">logLevel</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">void</span> <span class="n">Log</span><span class="p">&lt;</span><span class="n">TState</span><span class="p">&gt;(</span>
+        <span class="n">LogLevel</span> <span class="n">logLevel</span><span class="p">,</span> 
+        <span class="n">EventId</span> <span class="n">eventId</span><span class="p">,</span> 
+        <span class="n">TState</span> <span class="n">state</span><span class="p">,</span> 
+        <span class="n">Exception</span> <span class="n">exception</span><span class="p">,</span> 
+        <span class="n">Func</span><span class="p">&lt;</span><span class="n">TState</span><span class="p">,</span> <span class="n">Exception</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">formatter</span><span class="p">)</span> 
+    <span class="p">{</span>
+        <span class="n">_loggedEntries</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span>
+          <span class="k">new</span> <span class="nf">LogEntry</span><span class="p">(</span>
+            <span class="n">logLevel</span><span class="p">,</span> 
+            <span class="nf">formatter</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">exception</span><span class="p">),</span> 
+            <span class="n">exception</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">LogEntry</span> <span class="p">{</span>
+  <span class="k">public</span> <span class="n">LogLevel</span> <span class="n">LogLevel</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+  <span class="k">public</span> <span class="kt">string</span> <span class="n">Message</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+  <span class="k">public</span> <span class="n">Exception</span> <span class="n">Exception</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+
+  <span class="k">public</span> <span class="nf">LogEntry</span><span class="p">(</span><span class="n">LogLevel</span> <span class="n">logLevel</span><span class="p">,</span> <span class="kt">string</span> <span class="n">message</span><span class="p">,</span> 
+    <span class="n">Exception</span> <span class="n">ex</span> <span class="p">=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">LogLevel</span> <span class="p">=</span> <span class="n">logLevel</span><span class="p">;</span>
+      <span class="n">Message</span> <span class="p">=</span> <span class="n">message</span><span class="p">;</span>
+      <span class="n">Exception</span> <span class="p">=</span> <span class="n">ex</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="nf">ToString</span><span class="p">()</span>
+      <span class="p">=&gt;</span> <span class="err">$</span><span class="s">"{LogLevel}: {Message}"</span> <span class="p">+</span> 
+         <span class="p">(</span><span class="n">Exception</span> <span class="p">!=</span> <span class="k">null</span> 
+            <span class="p">?</span> <span class="err">$</span><span class="s">" Exception: {Exception.GetType().Name}"</span> 
+            <span class="p">:</span> <span class="s">""</span><span class="p">)</span> <span class="p">+</span>
+         <span class="s">"."</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Notice that we did not implement all methods of <code class="highlighter-rouge">ILogger</code> interface.
+For external interfaces that are not under our control we should
+implement just enough functionality in our fakes to make them usable.</p>
+
+<p>Now it is time for writing actual test:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">logger</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">InMemoryListOfEntriesLogger</span><span class="p">();</span>
+
+<span class="n">logger</span><span class="p">.</span><span class="nf">LogDebug</span><span class="p">(</span><span class="s">"User '{userName}' log into application."</span><span class="p">,</span> <span class="s">"root"</span><span class="p">);</span>
+
+<span class="n">Check</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">logger</span><span class="p">.</span><span class="n">LoggedEntries</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">HasElementThatMatches</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> 
+        <span class="n">x</span><span class="p">.</span><span class="n">Level</span> <span class="p">==</span> <span class="n">LogLevel</span><span class="p">.</span><span class="n">Debug</span> <span class="p">&amp;&amp;</span>
+        <span class="n">x</span><span class="p">.</span><span class="n">Message</span> <span class="p">==</span> <span class="s">"User 'root' log into application."</span><span class="p">);</span></code></pre></figure>
+
+<p>Wow! Test is short, readable and simple. Exactly what I was looking for.</p>
+
+<p>I hope that this blog post persuaded you to start using fakes in your
+unit tests. At least you now know that you have a good alternative to
+mocking frameworks.</p>
+
+<p>Sample source code (with a bit more complicated example): 
+<a href="https://github.com/marcin-chwedczuk/blog-fakes-vs-mocks">GitHub</a>.</p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=You can live without mocking frameworks&amp;url=https://marcin-chwedczuk.github.io/you-can-live-without-your-mocking-framework"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/you-can-live-without-your-mocking-framework"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/you-can-live-without-your-mocking-framework"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//you-can-live-without-your-mocking-framework';
+        this.page.identifier = '/you-can-live-without-your-mocking-framework';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover3.jpg)" href="/fluent-validation-and-complex-dependencies-between-properties">
+            <section class="post">
+                <h2>Fluent Validation and complex dependencies between properties</h2>
+                <p>[FluentValidation](https://fluentvalidation.net/) is one of the best validation libraries for .NET. I use it daily both...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/park_cover_1.jpg)" href="/repository-pattern-my-way">
+            <section class="post">
+                <h2>How NOT to use the repository pattern</h2>
+                <p>Generic repository pattern First, to avoid misunderstandings, let me explain what I understand by generic...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

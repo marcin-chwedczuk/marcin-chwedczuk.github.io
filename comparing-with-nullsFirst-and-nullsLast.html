@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Comparing with nullsFirst and nullsLast</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover9.jpeg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Comparing with nullsFirst and nullsLast</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2017-01-14">14 Jan 2017</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/java'>Java</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>Sorting in Java is easy:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Data</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">value</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="n">Data</span><span class="o">(</span><span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+    <span class="o">}</span>
+ 
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">getValue</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">value</span><span class="o">;</span> <span class="o">}</span>
+ 
+    <span class="nd">@Override</span> <span class="kd">public</span> <span class="n">String</span> <span class="n">toString</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"Data(%s)"</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">value</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+ 
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">List</span><span class="o">&lt;</span><span class="n">Data</span><span class="o">&gt;</span> <span class="n">listOfData</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span>
+          <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"foo"</span><span class="o">),</span>
+          <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"bar"</span><span class="o">),</span>
+          <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"nyu"</span><span class="o">));</span>
+ 
+   <span class="n">listOfData</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">comparing</span><span class="o">(</span><span class="nl">Data:</span><span class="o">:</span><span class="n">getValue</span><span class="o">));</span>
+   <span class="n">listOfData</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
+<span class="o">}</span>
+<span class="c1">//OUTPUT:</span>
+<span class="c1">// Data(bar)</span>
+<span class="c1">// Data(foo)</span>
+<span class="c1">// Data(nyu)</span></code></pre></figure>
+
+<p>…unless we try to sort a collection containing null values:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span><span class="o">&lt;</span><span class="n">Data</span><span class="o">&gt;</span> <span class="n">listOfData</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span>
+       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"foo"</span><span class="o">),</span>
+       <span class="kc">null</span><span class="o">,</span>
+       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"bar"</span><span class="o">),</span>
+       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"nyu"</span><span class="o">));</span>
+ 
+<span class="n">listOfData</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">comparing</span><span class="o">(</span><span class="nl">Data:</span><span class="o">:</span><span class="n">getValue</span><span class="o">));</span>
+<span class="n">listOfData</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
+<span class="c1">//OUTPUT:</span>
+<span class="c1">// Exception in thread "main" java.lang.NullPointerException</span>
+<span class="c1">//    at java.util.Comparator.lambda$comparing$77a9974f$1(Comparator.java:469)</span></code></pre></figure>
+
+<p>Fortunately there is easy solution to this problem. But first we must
+decide whenever we want <code class="highlighter-rouge">null</code>s to be first or last in sorted collection.
+After we made our mind we may use nifty <code class="highlighter-rouge">nullsFirst</code> or <code class="highlighter-rouge">nullsLast</code>
+decorators provided by <code class="highlighter-rouge">Comparator</code> interface:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">Comparator</span><span class="o">.*;</span>
+ 
+<span class="n">List</span><span class="o">&lt;</span><span class="n">Data</span><span class="o">&gt;</span> <span class="n">listOfData</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span>
+       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"foo"</span><span class="o">),</span>
+       <span class="kc">null</span><span class="o">,</span>
+       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"bar"</span><span class="o">),</span>
+       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"nyu"</span><span class="o">));</span>
+ 
+<span class="n">listOfData</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">nullsFirst</span><span class="o">(</span><span class="n">comparing</span><span class="o">(</span><span class="nl">Data:</span><span class="o">:</span><span class="n">getValue</span><span class="o">)));</span>
+<span class="n">listOfData</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
+<span class="c1">//OUTPUT:</span>
+<span class="c1">// null</span>
+<span class="c1">// Data(bar)</span>
+<span class="c1">// Data(foo)</span>
+<span class="c1">// Data(nyu)</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">nullsFirst</code> is great example of decorator design pattern
+(it adds functionality but doesn’t change interface).
+<code class="highlighter-rouge">nullsFirst</code> works by wrapping provided comparator in code similar to:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">Comparator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">nullsFirst</span><span class="o">(</span><span class="n">Comparator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">comparator</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">a</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+        <span class="k">return</span> <span class="o">(</span><span class="n">b</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+ 
+    <span class="k">if</span> <span class="o">(</span><span class="n">b</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+      <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
+ 
+    <span class="c1">// a and b are not null here</span>
+    <span class="k">return</span> <span class="n">comparator</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">);</span>
+  <span class="o">};</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Previous example works great unless we try to sort a collection
+containing <code class="highlighter-rouge">Data(null)</code>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span><span class="o">&lt;</span><span class="n">Data</span><span class="o">&gt;</span> <span class="n">listOfData</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span>
+       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"foo"</span><span class="o">),</span>
+       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="kc">null</span><span class="o">),</span>
+       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"bar"</span><span class="o">),</span>
+       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"nyu"</span><span class="o">));</span>
+
+<span class="n">listOfData</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">nullsFirst</span><span class="o">(</span><span class="n">comparing</span><span class="o">(</span><span class="nl">Data:</span><span class="o">:</span><span class="n">getValue</span><span class="o">)));</span>
+<span class="n">listOfData</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
+<span class="c1">//OUTPUT:</span>
+<span class="c1">// Exception in thread "main" java.lang.NullPointerException</span>
+<span class="c1">//  at java.util.Comparator.lambda$comparing$77a9974f$1(Comparator.java:469)</span>
+<span class="c1">//  at java.util.Comparators$NullComparator.compare(Comparators.java:83)</span></code></pre></figure>
+
+<p>But do not despair <code class="highlighter-rouge">nullsFirst</code> can help us again:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">listOfData</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">nullsFirst</span><span class="o">(</span>
+    <span class="n">comparing</span><span class="o">(</span><span class="nl">Data:</span><span class="o">:</span><span class="n">getValue</span><span class="o">,</span> <span class="n">nullsFirst</span><span class="o">(</span><span class="n">naturalOrder</span><span class="o">()))));</span>
+
+<span class="n">listOfData</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
+<span class="c1">//OUTPUT:</span>
+<span class="c1">// Data(null)</span>
+<span class="c1">// Data(bar)</span>
+<span class="c1">// Data(foo)</span>
+<span class="c1">// Data(nyu)</span></code></pre></figure>
+
+<p>Ta da! It works but readability suffers greatly… You may ask what is
+this thing:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">comparing</span><span class="o">(</span><span class="nl">Data:</span><span class="o">:</span><span class="n">getValue</span><span class="o">,</span> <span class="n">nullsFirst</span><span class="o">(</span><span class="n">naturalOrder</span><span class="o">()))</span></code></pre></figure>
+
+<p>First: we use the following overload of <code class="highlighter-rouge">comparing</code> method:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">,</span> <span class="n">U</span><span class="o">&gt;</span> <span class="n">Comparator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">comparing</span><span class="o">(</span>
+   <span class="n">Function</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">T</span><span class="o">,</span> <span class="o">?</span> <span class="kd">extends</span> <span class="n">U</span><span class="o">&gt;</span> <span class="n">keyExtractor</span><span class="o">,</span>
+   <span class="n">Comparator</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">U</span><span class="o">&gt;</span>            <span class="n">keyComparator</span><span class="o">)</span>
+<span class="o">{</span>
+    <span class="k">return</span> <span class="o">(</span><span class="n">c1</span><span class="o">,</span> <span class="n">c2</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">keyComparator</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span>
+          <span class="n">keyExtractor</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">c1</span><span class="o">),</span>
+          <span class="n">keyExtractor</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">c2</span><span class="o">));</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Second: in our example <code class="highlighter-rouge">nullsFirst(naturalOrder())</code> is a comparator that can
+compare nullable <code class="highlighter-rouge">String</code>s:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Comparator</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">cmp</span> <span class="o">=</span> <span class="n">nullsFirst</span><span class="o">(</span><span class="n">naturalOrder</span><span class="o">());</span>
+<span class="n">cmp</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="s">"foo"</span><span class="o">,</span> <span class="s">"zzz"</span><span class="o">);</span> <span class="c1">// -1</span>
+<span class="n">cmp</span><span class="o">.</span><span class="na">compare</span><span class="o">(</span><span class="s">"foo"</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>  <span class="c1">// 1</span></code></pre></figure>
+
+<p>Now everything should be clear (I hope).</p>
+
+<p>To sum up in this post we get to know two
+little methods <code class="highlighter-rouge">nullsFirst</code> and <code class="highlighter-rouge">nullsLast</code>.
+I admit that they are a bit unintuitive to use, but definitely worth
+to bear in mind.</p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Comparing with nullsFirst and nullsLast&amp;url=https://marcin-chwedczuk.github.io/comparing-with-nullsFirst-and-nullsLast"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/comparing-with-nullsFirst-and-nullsLast"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/comparing-with-nullsFirst-and-nullsLast"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//comparing-with-nullsFirst-and-nullsLast';
+        this.page.identifier = '/comparing-with-nullsFirst-and-nullsLast';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover2.jpg)" href="/hello-hibernate-validator">
+            <section class="post">
+                <h2>Hello, Hibernate Validator</h2>
+                <p>In every enterprise application there is a need for validation. You may want to validate...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover9.jpeg)" href="/spring-transactional-cheat-sheet">
+            <section class="post">
+                <h2>Spring @Transactional cheat sheet</h2>
+                <p>@Transactional(propagation=…) MANDATORY Method must run within transaction. If there is no currently active transaction going...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

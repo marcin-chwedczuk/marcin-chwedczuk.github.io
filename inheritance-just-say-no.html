@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Inheritance? Just say no!</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover2.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Inheritance? Just say no!</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2018-12-12">12 Dec 2018</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/dotnet'>Dotnet</a>,
+                       
+                
+                    
+                       <a href='/tag/architecture'>Architecture</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>Recently during a code review I have found the following piece
+of code:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">TemplateCache</span> 
+    <span class="p">:</span> <span class="n">ConcurrentDictionary</span><span class="p">&lt;</span><span class="n">TemplateName</span><span class="p">,</span> <span class="n">Template</span><span class="p">&gt;</span> <span class="p">{</span> <span class="p">}</span></code></pre></figure>
+
+<p>Here the programmer broke one of the most fundamental principles
+of modern object oriented programming:</p>
+
+<blockquote>
+  <p>Prefer composition over inheritance</p>
+</blockquote>
+
+<p>Why inheritance is bad in most of the cases? Here are the reasons:</p>
+
+<h6 id="watered-down-component-api">Watered down component API</h6>
+
+<p>What methods would you expect on a cache? Something that gets
+values from the cache if they are already there. Let us call 
+this operation <code class="highlighter-rouge">TryGetValue(cacheKey, out value)</code>. 
+And of course a method to
+add a new or overwrite an existing cache entry, let’s call it
+<code class="highlighter-rouge">SetValue(cacheKey, value)</code>. Do we need more methods on a cache
+from the client point of view? Maybe in the future we will want to
+extend <code class="highlighter-rouge">SetValue</code> operation to allow client to specify for how
+long items added to the cache should be stored? Who knows. 
+But still we would end up with only two operations.</p>
+
+<blockquote>
+  <p>NOTE A truly generic and reusable cache 
+is usually slightly more complicated - instead of two
+we have three methods! For example please see
+<a href="https://github.com/aspnet/Caching/blob/master/src/Microsoft.Extensions.Caching.Abstractions/IMemoryCache.cs">IMemoryCache</a> interface.</p>
+</blockquote>
+
+<p>On the other hand if we use inheritance we end up with something 
+like this:
+<img src="assets/images/2018-12-12/cache_api.png" alt="Cache API when we use inheritance" />
+This is much more than we asked for. We actually get operations
+that make no sense for a cache like <code class="highlighter-rouge">IsEmpty</code>. I mean either an item
+that we are looking for is in the cache or it is not - who cares
+if the cache is empty itself?</p>
+
+<p>I hope that I managed to persuade you that a good component
+API should be small, focused and easy to use. We get none of these 
+if we use inheritance.</p>
+
+<h6 id="broken-encapsulation">Broken encapsulation</h6>
+
+<p>By using inheritance we are making it clear to the clients of
+our component that it is implemented using <code class="highlighter-rouge">ConcurrentDictionary</code> class.
+If we wait long enough we will notice that some of them 
+will start relaying on that knowledge in their code. 
+For example they may use <code class="highlighter-rouge">ContainsKey</code> method for checking if
+the cache contains a given entry. 
+What will happen later, when we decide that we want to change 
+the cache implementation and use for example 
+<a href="https://dotnetcoretutorials.com/2017/03/05/using-inmemory-cache-net-core/">IMemoryCache</a> instead?
+Clients of our component will get angry, because
+our new version of the cache<br />
+introduced a breaking change into their code.</p>
+
+<p>Just to sum up: Inheritance both exposes implementation
+details of components and makes evolution of their APIs more difficult.</p>
+
+<h6 id="liskov-substitution-principle-is-broken">Liskov substitution principle is broken</h6>
+
+<p>In short some operations that make sense for a dictionary
+may not make sense for a cache. For example it makes no
+sense to cache a template that does not exists, yet with
+inheritance we may write:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">foo</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">TemplateName</span><span class="p">(</span><span class="s">"foo"</span><span class="p">);</span>
+
+<span class="n">ConcurrentDictionary</span><span class="p">&lt;</span><span class="n">TemplateName</span><span class="p">,</span> <span class="n">Template</span><span class="p">&gt;</span> <span class="n">dict</span> 
+   <span class="p">=</span> <span class="k">new</span> <span class="nf">TemplateCache</span><span class="p">();</span>
+
+<span class="n">dict</span><span class="p">.</span><span class="nf">GetOrAdd</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="p">(</span><span class="n">Template</span><span class="p">)</span><span class="k">null</span><span class="p">);</span>
+
+<span class="c1">// Ops we have a null template here...
+</span><span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"value is: "</span> <span class="p">+</span> 
+   <span class="n">dict</span><span class="p">.</span><span class="nf">GetOrAdd</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="p">(</span><span class="n">Template</span><span class="p">)</span><span class="k">null</span><span class="p">));</span></code></pre></figure>
+
+<p>When we use inheritance we are telling the type system that
+<code class="highlighter-rouge">TemplateCache</code> <em>is a</em> <code class="highlighter-rouge">ConcurrentDictionary</code>. 
+From logical point of view this makes no sense. They are two
+different components that have two different purposes and also
+different usage patterns. 
+They should have nothing in common.</p>
+
+<blockquote>
+  <p>BTW You should avoid putting <code class="highlighter-rouge">null</code>s into collection classes of any sort.</p>
+</blockquote>
+
+<p>Let’s finish this post by seeing how composition can be used
+to improve our <code class="highlighter-rouge">TemplateCache</code> component:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">TemplateCache</span> <span class="p">{</span>
+  <span class="k">private</span> <span class="k">readonly</span> <span class="n">ConcurrentDictionary</span><span class="p">&lt;</span><span class="n">TemplateName</span><span class="p">,</span> <span class="n">Template</span><span class="p">&gt;</span> <span class="n">_cache</span> 
+      <span class="p">=</span> <span class="k">new</span> <span class="n">ConcurrentDictionary</span><span class="p">&lt;</span><span class="n">TemplateName</span><span class="p">,</span> <span class="n">Template</span><span class="p">&gt;();</span>
+
+  <span class="k">public</span> <span class="kt">bool</span> <span class="nf">TryGetTemplate</span><span class="p">(</span><span class="n">TemplateName</span> <span class="n">name</span><span class="p">,</span> <span class="k">out</span> <span class="n">Template</span> <span class="n">template</span><span class="p">)</span>
+      <span class="p">=&gt;</span> <span class="n">_cache</span><span class="p">.</span><span class="nf">TryGetValue</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="k">out</span> <span class="n">template</span><span class="p">);</span>
+
+  <span class="k">public</span> <span class="k">void</span> <span class="nf">AddTemplate</span><span class="p">(</span><span class="n">Template</span> <span class="n">template</span><span class="p">)</span>
+      <span class="p">=&gt;</span> <span class="n">_cache</span><span class="p">.</span><span class="nf">AddOrUpdate</span><span class="p">(</span>
+          <span class="n">template</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">existing</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">template</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Yep, simple, clean and easy to use!</p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Inheritance? Just say no!&amp;url=https://marcin-chwedczuk.github.io/inheritance-just-say-no"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/inheritance-just-say-no"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/inheritance-just-say-no"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//inheritance-just-say-no';
+        this.page.identifier = '/inheritance-just-say-no';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover2.jpg)" href="/abusing-local-functions-to-hide-design-problems">
+            <section class="post">
+                <h2>Abusing local functions to hide design problems</h2>
+                <p>Recently I was browsing through a certain code base and I saw a code similar...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <!-- [[! Page Meta ]] -->
-    <title>Programming is Magic</title>
+    <title>Author</title>
     <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
 
     <meta name="HandheldFriendly" content="True" />
@@ -62,7 +62,7 @@
 
 
 </head>
-<body class="home-template nav-closed">
+<body class="paged archive-template nav-closed">
 
     <div class="nav">
     <h3 class="nav-title">Menu</h3>
@@ -70,7 +70,7 @@
         <span class="hidden">Close</span>
     </a>
     <ul>
-        <li class="nav-home  nav-current" role="presentation">
+        <li class="nav-home " role="presentation">
             <a href="/">Home</a>
         </li>
         
@@ -82,7 +82,7 @@
         <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
 
 
-        <li class="nav-author " role="presentation">
+        <li class="nav-author  nav-current" role="presentation">
             <a href="/author/mc">Author</a>
         </li>
     </ul>
@@ -94,39 +94,57 @@
     <div class="site-wrapper">
 
         <!-- [[! Everything else gets inserted here ]] -->
-        <!-- < default -->
+        <!-- < default}} -->
 <!-- The tag above means - insert everything in this file into the [body] of the default.hbs template -->
 
-<!-- The big featured header  -->
-<header class="main-header "
-        style="background-image: url(/assets/images/start2.jpg) ">
-    <nav class="main-nav overlay clearfix">
-        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+<!-- The big featured header -->
+
+<!-- Everything inside the #author tags pulls data from the author -->
+<!-- #author  -->
+    <header class="main-header author-head " style="background-image: url(/assets/images/cover4.jpg) ">
+        <nav class="main-nav overlay clearfix">
+            <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+            
+                <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+            
+        </nav>
+    </header>
+
+    <section class="author-profile inner">
         
-            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        <figure class="author-image">
+            <div class="img" style="background-image: url(/assets/images/mc.png)"><span class="hidden">marcin-chwedczuk's Picture</span></div>
+        </figure>
         
-    </nav>
-    <div class="vertical">
-        <div class="main-header-content inner">
-            <h1 class="page-title">Programming is Magic</h1>
-            <h2 class="page-description">A place where I can share my thoughts about programming</h2>
+        <h1 class="author-title">marcin-chwedczuk</h1>
+        
+            <h2 class="author-bio">A Programmer, A Geek, A Human</h2>
+        
+        <div class="author-meta">
+            <span class="author-location icon-location">Warsaw, Poland</span>
+            <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/">marcin-chwedczuk.github.io/</a></span>
+            <!-- <span class="author-stats"><i class="icon-stats"></i> [[plural ../pagination.total empty='No posts' singular='% post' plural='% posts']]</span> -->
+            <span class="author-stats"><i class="icon-stats"></i>54 posts</span>
         </div>
-    </div>
-    <a class="scroll-down icon-arrow-left" href="#content" data-offset="-45"><span class="hidden">Scroll Down</span></a>
-</header>
+    </section>
+<!-- /author -->
 
 <!-- The main content area on the homepage -->
 <main id="content" class="content" role="main">
 
-    <!-- The tag below includes the post loop - partials/loop.hbs -->
+    <!-- The tag below includes the post loop - partials/loop.hbs  -->
         <!-- Previous/next page links - only displayed on page 2+ -->
     <div class="extra-pagination inner">
         
             <nav class="pagination" role="pagination">
     
-    <span class="page-number"> Page 1 of 11 </span>
+        
+            <a class="newer-posts" href="/author/mc" title="Previous Page">&laquo; Newer Posts</a>
+        
+    
+    <span class="page-number"> Page 2 of 11 </span>
      
-        <a class="older-posts" href="/page2/" title="Next Page">Older Posts &raquo;</a>
+        <a class="older-posts" href="/author/mc/page3/" title="Next Page">Older Posts &raquo;</a>
      
 </nav>
         
@@ -136,122 +154,10 @@
     
     <article class="post">
         <header class="post-header">
-            <h2 class="post-title"><a href="/inheritance-just-say-no">Inheritance? Just say no!</a></h2>
+            <h2 class="post-title"><a href="/you-can-live-without-your-mocking-framework">You can live without mocking frameworks</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>Recently during a code review I have found the following piece of code: public class TemplateCache : ConcurrentDictionary&lt;TemplateName, Template&gt; { } Here the programmer broke one... <a class="read-more" href="/inheritance-just-say-no">&raquo;</a></p>
-        </section>
-        <footer class="post-meta">
-            <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
-            <!-- author -->
-            <a href='/author/mc'>marcin-chwedczuk</a>
-            <!-- [[tags prefix=" on "]] -->
-             
-                on 
-                
-                    
-                       <a href='/tag/dotnet'>Dotnet</a>,
-                       
-                
-                    
-                       <a href='/tag/architecture'>Architecture</a>
-                       
-                
-            
-            <time class="post-date" datetime="2018-12-12">12 Dec 2018</time>
-        </footer>
-    </article>
-    
-    <article class="post">
-        <header class="post-header">
-            <h2 class="post-title"><a href="/abusing-local-functions-to-hide-design-problems">Abusing local functions to hide design problems</a></h2>
-        </header>
-        <section class="post-excerpt">
-            <p>Recently I was browsing through a certain code base and I saw a code similar to this: public class EnterpriseNotificationSender { private readonly IUserManagementService _userManagementService; //... <a class="read-more" href="/abusing-local-functions-to-hide-design-problems">&raquo;</a></p>
-        </section>
-        <footer class="post-meta">
-            <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
-            <!-- author -->
-            <a href='/author/mc'>marcin-chwedczuk</a>
-            <!-- [[tags prefix=" on "]] -->
-             
-                on 
-                
-                    
-                       <a href='/tag/dotnet'>Dotnet</a>,
-                       
-                
-                    
-                       <a href='/tag/architecture'>Architecture</a>
-                       
-                
-            
-            <time class="post-date" datetime="2018-10-08">08 Oct 2018</time>
-        </footer>
-    </article>
-    
-    <article class="post">
-        <header class="post-header">
-            <h2 class="post-title"><a href="/automatically-generate-new-oauth2-tokens-when-using-postman">Automatically generate new OAuth 2.0 access tokens when using Postman</a></h2>
-        </header>
-        <section class="post-excerpt">
-            <p>Did you ever try to use Postman with OAuth 2.0 protected API? It is pretty annoying. First you must select the correct authorization type, then you... <a class="read-more" href="/automatically-generate-new-oauth2-tokens-when-using-postman">&raquo;</a></p>
-        </section>
-        <footer class="post-meta">
-            <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
-            <!-- author -->
-            <a href='/author/mc'>marcin-chwedczuk</a>
-            <!-- [[tags prefix=" on "]] -->
-             
-                on 
-                
-                    
-                       <a href='/tag/tips'>Tips</a>,
-                       
-                
-                    
-                       <a href='/tag/postman'>Postman</a>
-                       
-                
-            
-            <time class="post-date" datetime="2018-09-29">29 Sep 2018</time>
-        </footer>
-    </article>
-    
-    <article class="post">
-        <header class="post-header">
-            <h2 class="post-title"><a href="/avoid-hidden-coupling-to-interface-implementation">Avoid hidden coupling to interface implementation</a></h2>
-        </header>
-        <section class="post-excerpt">
-            <p>A few days ago I was reviewing a pull request at work and one line of code catch my eye: var @event = new CupOfCoffeeReadyEvent(/* ...... <a class="read-more" href="/avoid-hidden-coupling-to-interface-implementation">&raquo;</a></p>
-        </section>
-        <footer class="post-meta">
-            <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
-            <!-- author -->
-            <a href='/author/mc'>marcin-chwedczuk</a>
-            <!-- [[tags prefix=" on "]] -->
-             
-                on 
-                
-                    
-                       <a href='/tag/dotnet'>Dotnet</a>,
-                       
-                
-                    
-                       <a href='/tag/architecture'>Architecture</a>
-                       
-                
-            
-            <time class="post-date" datetime="2018-09-21">21 Sep 2018</time>
-        </footer>
-    </article>
-    
-    <article class="post">
-        <header class="post-header">
-            <h2 class="post-title"><a href="/fluent-validation-and-complex-dependencies-between-properties">Fluent Validation and complex dependencies between properties</a></h2>
-        </header>
-        <section class="post-excerpt">
-            <p>FluentValidation is one of the best validation libraries for .NET. I use it daily both at work and in my personal pet projects. Still from time... <a class="read-more" href="/fluent-validation-and-complex-dependencies-between-properties">&raquo;</a></p>
+            <p>For a long time I have been fan of mocking frameworks like Moq and NSubstitute. These libraries seems indispensable while unit-testing. They allow us to easily... <a class="read-more" href="/you-can-live-without-your-mocking-framework">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
@@ -270,7 +176,107 @@
                        
                 
             
-            <time class="post-date" datetime="2018-09-18">18 Sep 2018</time>
+            <time class="post-date" datetime="2018-09-08">08 Sep 2018</time>
+        </footer>
+    </article>
+    
+    <article class="post">
+        <header class="post-header">
+            <h2 class="post-title"><a href="/repository-pattern-my-way">How NOT to use the repository pattern</a></h2>
+        </header>
+        <section class="post-excerpt">
+            <p>Generic repository pattern First, to avoid misunderstandings, let me explain what I understand by generic repository. Have your ever seen an interface like this: public interface... <a class="read-more" href="/repository-pattern-my-way">&raquo;</a></p>
+        </section>
+        <footer class="post-meta">
+            <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
+            <!-- author -->
+            <a href='/author/mc'>marcin-chwedczuk</a>
+            <!-- [[tags prefix=" on "]] -->
+             
+                on 
+                
+                    
+                       <a href='/tag/architecture'>Architecture</a>
+                       
+                
+            
+            <time class="post-date" datetime="2018-07-08">08 Jul 2018</time>
+        </footer>
+    </article>
+    
+    <article class="post">
+        <header class="post-header">
+            <h2 class="post-title"><a href="/devoxx-poland-2018">Devoxx Poland 2018</a></h2>
+        </header>
+        <section class="post-excerpt">
+            <p>[Photo above shows Mr. Jakub Nabrdalik during his presentation about TDD in main conference room.] About conference Thanks to my employer CyberVadis I was able to... <a class="read-more" href="/devoxx-poland-2018">&raquo;</a></p>
+        </section>
+        <footer class="post-meta">
+            <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
+            <!-- author -->
+            <a href='/author/mc'>marcin-chwedczuk</a>
+            <!-- [[tags prefix=" on "]] -->
+             
+                on 
+                
+                    
+                       <a href='/tag/devcon'>Devcon</a>,
+                       
+                
+                    
+                       <a href='/tag/jvmbloggers'>Jvmbloggers</a>
+                       
+                
+            
+            <time class="post-date" datetime="2018-06-25">25 Jun 2018</time>
+        </footer>
+    </article>
+    
+    <article class="post">
+        <header class="post-header">
+            <h2 class="post-title"><a href="/ray-tracing-torus">Ray tracing a torus</a></h2>
+        </header>
+        <section class="post-excerpt">
+            <p>In this blog post I will show you how to ray trace a torus. I will assume that you already know how to ray trace simple... <a class="read-more" href="/ray-tracing-torus">&raquo;</a></p>
+        </section>
+        <footer class="post-meta">
+            <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
+            <!-- author -->
+            <a href='/author/mc'>marcin-chwedczuk</a>
+            <!-- [[tags prefix=" on "]] -->
+             
+                on 
+                
+                    
+                       <a href='/tag/algorithms'>Algorithms</a>
+                       
+                
+            
+            <time class="post-date" datetime="2018-05-06">06 May 2018</time>
+        </footer>
+    </article>
+    
+    <article class="post">
+        <header class="post-header">
+            <h2 class="post-title"><a href="/dotnet-core-http-client-proxy-and-localhost">.NET Core, HttpClient, Proxy and localhost</a></h2>
+        </header>
+        <section class="post-excerpt">
+            <p>Recently I wanted to spy network traffic between a HttpClient and a REST service. This task turned out to be more difficult than I though. My... <a class="read-more" href="/dotnet-core-http-client-proxy-and-localhost">&raquo;</a></p>
+        </section>
+        <footer class="post-meta">
+            <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
+            <!-- author -->
+            <a href='/author/mc'>marcin-chwedczuk</a>
+            <!-- [[tags prefix=" on "]] -->
+             
+                on 
+                
+                    
+                       <a href='/tag/dotnet'>Dotnet</a>
+                       
+                
+            
+            <time class="post-date" datetime="2018-05-03">03 May 2018</time>
         </footer>
     </article>
     
@@ -279,9 +285,13 @@
     
         <nav class="pagination" role="pagination">
     
-    <span class="page-number"> Page 1 of 11 </span>
+        
+            <a class="newer-posts" href="/author/mc" title="Previous Page">&laquo; Newer Posts</a>
+        
+    
+    <span class="page-number"> Page 2 of 11 </span>
      
-        <a class="older-posts" href="/page2/" title="Next Page">Older Posts &raquo;</a>
+        <a class="older-posts" href="/author/mc/page3/" title="Next Page">Older Posts &raquo;</a>
      
 </nav>
     

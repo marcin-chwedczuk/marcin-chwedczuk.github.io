@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+   
+      <title>marcin-chwedczuk.github.io/</title>
+   
+   <link>https://marcin-chwedczuk.github.io/</link>
+   <description>A place where I can share my thoughts about programming</description>
+   <language>en-uk</language>
+   <managingEditor> marcin-chwedczuk</managingEditor>
+   <atom:link href="rss" rel="self" type="application/rss+xml" />
+   
+	<item>
+	  <title>How to use Meld as git merge and diff tool</title>
+	  <link>//use-meld-as-git-merge-diff-tool</link>
+	  <author>marcin-chwedczuk</author>
+	  <pubDate>2016-09-27T02:00:00+02:00</pubDate>
+	  <guid>//use-meld-as-git-merge-diff-tool</guid>
+	  <description><![CDATA[
+	     <p><a href="http://meldmerge.org/">Meld</a> is a new open source merge tool written in Python, it has
+a nice and fresh looking GUI so I decided to give it a chance and replace my old good KDiff…</p>
+
+<p><img src="/assets/images/2016-09-27/meld_before.png" alt="Meld before merge" />
+<img src="/assets/images/2016-09-27/meld_after.png" alt="Meld after merge" /></p>
+
+<p>Since git configuration of Meld isn’t as straightforward as it should be,
+here are relevant parts of my <code class="highlighter-rouge">.gitconfig</code>:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight"># ------------------ M E R G E -------------------------
+[merge]
+    tool = meld
+
+[mergetool "meld"]
+    cmd = meld --auto-merge \"$LOCAL\" \"$BASE\" \"$REMOTE\" --output \"$MERGED\" --label \"MERGE (REMOTE BASE MY)\"
+    trustExitCode = false
+
+[mergetool]
+    # don't ask if we want to skip merge
+    prompt = false
+
+    # don't create backup *.orig files
+    keepBackup = false
+
+# ------------------ D I F F -------------------------
+[diff]
+    guitool = meld
+
+[difftool "meld"]
+    cmd = meld \"$LOCAL\" \"$REMOTE\" --label \"DIFF (ORIGINAL MY)\"</code></pre></figure>
+
+<p>You may edit your git config file by issuing <code class="highlighter-rouge">git config --global -e</code> command.
+Before making any changes remember to create a backup.</p>
+
+<p>Above configuration should work on any Linux, for Windows you must replace <code class="highlighter-rouge">meld</code> command
+by absolute path to Meld: <code class="highlighter-rouge">\"C:/Program Files (x86)/Meld/Meld.exe\"</code> (<code class="highlighter-rouge">\"</code> are part of the path).</p>
+
+<p>Happy merging!</p>
+
+	  ]]></description>
+	</item>
+
+
+</channel>
+</rss>

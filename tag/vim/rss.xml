@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+   
+      <title>marcin-chwedczuk.github.io/</title>
+   
+   <link>https://marcin-chwedczuk.github.io/</link>
+   <description>A place where I can share my thoughts about programming</description>
+   <language>en-uk</language>
+   <managingEditor> marcin-chwedczuk</managingEditor>
+   <atom:link href="rss" rel="self" type="application/rss+xml" />
+   
+	<item>
+	  <title>How to fix Vim freezes</title>
+	  <link>//how-to-fix-vim-freezes</link>
+	  <author>marcin-chwedczuk</author>
+	  <pubDate>2016-07-16T02:00:00+02:00</pubDate>
+	  <guid>//how-to-fix-vim-freezes</guid>
+	  <description><![CDATA[
+	     <p>When I switched from Visual Studio to using Vim I often experienced
+Vim freezes. This was really annoying. At the beginning I was thinking
+that maybe I installed too many plugins 
+(using <a href="https://github.com/VundleVim/Vundle.vim">Vundle</a>) or that
+Vim is not as good as they say.</p>
+
+<p>After a few weeks an
+idea come to my mind, I noticed that I have a subconscious habit of
+pressing <code class="highlighter-rouge">Ctrl+S</code> when editing a file. But hey <code class="highlighter-rouge">Ctrl+S</code> has
+special meaning for Linux terminal, it’s a terminal scroll lock - 
+basically it freezes program that wants to write to standard output/error.
+To unfreeze program you must press <code class="highlighter-rouge">Ctrl+Q</code>.</p>
+
+<p>You can use this Bash one-liner to check how it works:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="k">for </span>i <span class="k">in</span> <span class="o">{</span>1..100<span class="o">}</span>; <span class="k">do </span><span class="nb">echo</span> <span class="s2">"</span><span class="nv">$i</span><span class="s2">"</span>; sleep 0.3; <span class="k">done</span></code></pre></figure>
+
+<p>It still happens from time to time that I press <code class="highlighter-rouge">Ctrl+S</code> while using
+Vim (old habits die hard), but now I just press <code class="highlighter-rouge">Ctrl+Q</code> and continue
+my work. So far I have never experienced a real Vim freeze again.</p>
+
+<h5 id="note-for-windows-users">Note for Windows users</h5>
+<p>Terminal scroll lock also works in Windows but there you use
+<code class="highlighter-rouge">Ctrl+S</code> both to freeze and to unfreeze a program.</p>
+
+
+	  ]]></description>
+	</item>
+
+
+</channel>
+</rss>

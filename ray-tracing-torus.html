@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Ray tracing a torus</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+        <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover2.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Ray tracing a torus</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2018-05-06">06 May 2018</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/algorithms'>Algorithms</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>In this blog post I will show you how to ray trace a torus.
+I will assume that you already know how to ray trace simple shapes
+like spheres and cubes. I will also assume some basic familiarity
+with shading and ray tracing in general.</p>
+
+<h3 id="obtaining-torus-equation">Obtaining torus equation</h3>
+
+<p>Before we start I must introduce some terminology.
+I will use <script type="math/tex">R</script> to denote torus major radius 
+(the distance from the center of the tube to the center of the torus),
+and <script type="math/tex">r</script> to denote torus minor radius
+(the radius of the tube). 
+<img src="assets/images/2018-05-06/torusrR.png" alt="Torus geometry" /></p>
+
+<p>Let us consider torus <script type="math/tex">T</script> centered at point 
+<script type="math/tex">(0,0,0)</script> with radiuses <script type="math/tex">R</script> and <script type="math/tex">r</script>.
+Torus <script type="math/tex">T</script> can be defined as a set of points for which
+certain function <script type="math/tex">F</script> returns zero:</p>
+
+<script type="math/tex; mode=display">T = \{ p \in \mathbb{R}^3 \mid F(p) = 0 \}</script>
+
+<p>Our task will be to find a suitable definition of function <script type="math/tex">F</script>
+that properly describes torus <script type="math/tex">T</script>.</p>
+
+<p>We will start by looking at the intersection of torus <script type="math/tex">T</script> with <script type="math/tex">XY</script> plane:
+<img src="assets/images/2018-05-06/torus-def.svg" alt="Torus-XY plane intersection" />
+Every point <script type="math/tex">P=(x,y)</script> on the circumference of the 
+right circle satisfies equation:</p>
+
+<script type="math/tex; mode=display">(x - R)^2 + y^2 = r^2</script>
+
+<p>Now imagine that we are taking some point <script type="math/tex">P</script> on the circumference
+and we are rotating it around
+<script type="math/tex">Y</script> axis. 
+<img src="assets/images/2018-05-06/torus-def2b.svg" alt="Rotating point around Y axis" />
+This way point <script type="math/tex">P</script> becomes a set of points in 3D space:</p>
+
+<script type="math/tex; mode=display">P=(x,y,0) \Rightarrow \{(x',y,z') \in \mathbb{R}^3 | x'^2 + z'^2 = x^2 \}</script>
+
+<p>Torus can be obtained by rotating all points on the circumference
+of the circle. In
+other words points <script type="math/tex">(x',y,z')</script> on the surface of a torus satisfy equations:</p>
+
+<script type="math/tex; mode=display">\begin{cases}
+(x - R)^2 + y^2 = r^2 \\
+x'^2 + z'^2 = x^2 
+\end{cases}</script>
+
+<p>This equations can be simplified by removal of <script type="math/tex">x</script> variable into:</p>
+
+<script type="math/tex; mode=display">(x'^2 + y^2 + z'^2)^2 - 2 (R^2 + r^2) (x'^2 + y^2 + z'^2) + 4 R^2 y^2 + (R^2 - r^2)^2 = 0</script>
+
+<p>And this is exactly what we were looking for, a suitable definition
+for our function <script type="math/tex">F</script>. 
+After a bit of renaming (<script type="math/tex">x' \rightarrow x</script>, <script type="math/tex">z' \rightarrow z</script>) 
+we can write our final equation:</p>
+
+<script type="math/tex; mode=display">F(x,y,z) = (x^2 + y^2 + z^2)^2 - 2 (R^2 + r^2) (x^2 + y^2 + z^2) + 4 R^2 y^2 + (R^2 - r^2)^2</script>
+
+<h3 id="solving-torus-equation">Solving torus equation</h3>
+
+<p>Given ray definition:</p>
+
+<script type="math/tex; mode=display">r(t) = o + \vec{d} * t</script>
+
+<script type="math/tex; mode=display">o = \begin{bmatrix}o_x\\o_y\\o_z\end{bmatrix}, \;
+\vec{d} = \begin{bmatrix}d_x\\d_y\\d_z\end{bmatrix}</script>
+
+<p>where <script type="math/tex">o</script> is the ray origin (starting point) 
+and <script type="math/tex">d</script> is a unit vector (<script type="math/tex">\left\lVert d \right\rVert = 1</script>) that
+represents the ray direction,
+we will try to find all positive (<script type="math/tex">t > 0</script>)
+solutions to the equation:</p>
+
+<script type="math/tex; mode=display">F(r(t)) = 0,\; t > 0</script>
+
+<p>Notice that for a particular ray this equation can have
+0, 1, 2, 3 or 4 solutions:
+<img src="assets/images/2018-05-06/torus-sol4.svg" alt="Visual illustration of number of the solutions" /></p>
+
+<p>We will start by substituting <script type="math/tex">x, y, z</script> variables
+by <script type="math/tex">r(t)</script> point components 
+in the formula of function <script type="math/tex">F(x,y,z)</script>:</p>
+
+<script type="math/tex; mode=display">r(t) = \begin{bmatrix}r_x\\r_y\\r_z\end{bmatrix}</script>
+
+<script type="math/tex; mode=display">F(r_x,r_y,r_z) = (r_x^2 + r_y^2 + r_z^2)^2 - 2 (R^2 + r^2) (r_x^2 + r_y^2 + r_z^2) + 4 R^2 r_y^2 + (R^2 - r^2)^2</script>
+
+<p>And then we expand them to their full definition:</p>
+
+<script type="math/tex; mode=display">r_x = o_x + d_x*t \\
+r_y = o_y + d_y*t \\
+r_z = o_z + d_z*t \\</script>
+
+<p>After long and tedious calculations and a lot of grouping and 
+simplifications we finally get:</p>
+
+<script type="math/tex; mode=display">F(r(t)) = c_4 t^4 + c_3 t^3 + c_2 t^2 + c_1 t + c_0 = 0</script>
+
+<p>where</p>
+
+<script type="math/tex; mode=display">\begin{cases}
+c_4 = (d_x^2 + d_y^2 + d_z^2)^2 \\
+c_3 = 4 (d_x^2 + d_y^2 + d_z^2) (o_x d_x + o_y d_y + o_z d_z) \\
+c_2 = 2 (d_x^2 + d_y^2 + d_z^2) (o_x^2 + o_y^2 + o_z^2 - (r^2 + R^2)) + 4 (o_x d_x + o_y d_y + o_z d_z)^2 + 4 R^2 d_y^2 \\
+c_1 = 4 (o_x^2 + o_y^2 + o_z^2 - (r^2 + R^2)) (o_x d_x + o_y d_y + o_z d_z) + 8 R^2 o_y d_y \\
+c_0 = (o_x^2 + o_y^2 + o_z^2 - (r^2 + R^2))^2 - 4 R^2 (r^2 - o_y^2)
+\end{cases}</script>
+
+<p>Since our equation is just a polynomial of 4th degree, we may use 
+one of the standard algorithms to solve it. 
+In my demo application I used algorithm from 
+<a href="http://a.co/abkZKRO">Graphic Gems</a> book, freely available at
+<a href="https://github.com/erich666/GraphicsGems/blob/master/gems/Roots3And4.c">GitHub</a>.
+But you are free to use any other algorithm. In particular 
+<a href="http://www.nrbook.com/a/bookcpdf.php">Numerical Recipes in C</a> 
+book is a good source of numerical algorithms.</p>
+
+<p>TIP: Unfortunately <code class="highlighter-rouge">Roots3And4.c</code> file from Graphic Gems (called <code class="highlighter-rouge">solver.js</code> 
+in my demo app) is sparsely 
+documented. If you want to know how finding roots of 4th
+degree polynomial actually works please
+read section from Wikipedia about 
+<a href="https://en.wikipedia.org/wiki/Quartic_function#Ferrari's_solution">Ferrari method</a>,
+but use second definition of the <em>resolvent cubic</em> described in <a href="https://en.wikipedia.org/wiki/Resolvent_cubic#Second_definition">this Wikipedia article</a>.
+With a bit of effort you should be able to follow and understand source
+code of the solver then.</p>
+
+<h3 id="practical-considerations">Practical considerations</h3>
+
+<ol>
+  <li>
+    <p>Currently we can only render tori centered at point <script type="math/tex">(0,0,0)</script> and laying
+ on <script type="math/tex">XZ</script> plane. To obtain tori located at arbitrary points and/or in arbitrary
+ positions,
+ we must apply matrix transformations to the <em>ray</em>
+ just before computing intersections with the torus surface.
+ For example from the viewer point of view
+ the results of the following operations are the same:
+ translating ray by vector <script type="math/tex">(0,2,0)</script>,
+ translating torus by vector <script type="math/tex">(0,-2,0)</script>.
+ In my demo app this transformation is done in <code class="highlighter-rouge">RayTracer.js#rotationEnd</code>
+ method. For more details please see <em>Ray Tracing from the Ground Up</em> book.</p>
+  </li>
+  <li>
+    <p>Due to limited accuracy of the floating point computations
+ artifacts may be seen when we use huge numerical values for torus radiuses.
+ For the best results we should keep <script type="math/tex">% <![CDATA[
+R,r < 10 %]]></script>.
+ If you need huge tori in your scenes please use
+ ray transformation technique described in point (1) to scale 
+ small tori as needed.</p>
+  </li>
+  <li>
+    <p>From performance point of view rendering a torus by solving its equation
+ is slow. Rendering may be speed up considerably if we manage to avoid
+ solving the equation altogether e.g. by using 
+ <a href="https://en.wikipedia.org/wiki/Triangle_mesh">triangle meshes</a>.</p>
+  </li>
+</ol>
+
+<h4 id="source-code">Source code</h4>
+
+<p>As a part of preparations to write this post I created a
+simple demo app that ray traces a torus:
+<img src="assets/images/2018-05-06/demo-app-thumbnail.png" alt="Demo application" /></p>
+
+<p>Source code can be downloaded from
+<a href="https://github.com/marcin-chwedczuk/ray_tracing_torus_js">this GitHub repository</a>.</p>
+
+<p>Application is written in JavaScript.
+To run demo app execute:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cd path/to/ray_tracing_torus_js/repo
+$ npm install
+$ bower install
+$ gulp serve</code></pre></figure>
+
+<p><code class="highlighter-rouge">npm install</code> command may take a while to finish, so please be patient.
+Also notice that you have to had both <code class="highlighter-rouge">bower</code> and <code class="highlighter-rouge">gulp</code> installed
+on you local machine to make this work. 
+You can install them by executing:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ sudo npm install --global gulp-cli
+$ sudo npm install --global bower</code></pre></figure>
+
+<h4 id="references">References</h4>
+
+<ul>
+  <li>Ray Tracing from the Ground Up, Kevin Suffern, <a href="http://a.co/c5YAorf">Buy on Amazon</a></li>
+  <li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Torus">Torus entry</a></li>
+  <li><a href="https://github.com/erich666/GraphicsGems/blob/master/gems/Roots3And4.c">Roots3And4.c from Graphic Gems</a></li>
+</ul>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Ray tracing a torus&amp;url=https://marcin-chwedczuk.github.io/ray-tracing-torus"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/ray-tracing-torus"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/ray-tracing-torus"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//ray-tracing-torus';
+        this.page.identifier = '/ray-tracing-torus';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/devoxx_cover.jpeg)" href="/devoxx-poland-2018">
+            <section class="post">
+                <h2>Devoxx Poland 2018</h2>
+                <p>[Photo above shows Mr. Jakub Nabrdalik during his presentation about TDD in main conference room.]...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover4.jpg)" href="/dotnet-core-http-client-proxy-and-localhost">
+            <section class="post">
+                <h2>.NET Core, HttpClient, Proxy and localhost</h2>
+                <p>Recently I wanted to spy network traffic between a HttpClient and a REST service. This...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

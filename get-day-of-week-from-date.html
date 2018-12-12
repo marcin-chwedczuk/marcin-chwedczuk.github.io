@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Get day of week from date</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/cover7.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Get day of week from date</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2016-06-15">15 Jun 2016</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/java'>Java</a>,
+                       
+                
+                    
+                       <a href='/tag/algorithms'>Algorithms</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>Today we will try to solve the following problem:</p>
+
+<blockquote>
+  <p>Given year, month and day tell what day of week it is (Sunday, Monday etc.).</p>
+
+  <p>INPUT: Three numbers <code class="highlighter-rouge">year</code>, <code class="highlighter-rouge">month</code> and <code class="highlighter-rouge">day</code> representing valid date.
+<code class="highlighter-rouge">year</code> must be <code class="highlighter-rouge">&gt; 0</code>, months and days are numbered from 1.
+For example 3 January 2016 will be represented by <code class="highlighter-rouge">year = 2016</code>, <code class="highlighter-rouge">month = 1</code> and <code class="highlighter-rouge">day = 3</code>.</p>
+
+  <p>OUTPUT: A single number that represents day of week, we assume that <code class="highlighter-rouge">0</code> will represent
+Sunday, <code class="highlighter-rouge">1</code> Monday, <code class="highlighter-rouge">2</code> Tuesday, …, <code class="highlighter-rouge">6</code> Saturday.</p>
+</blockquote>
+
+<p>We will start by solving simpler problem:</p>
+
+<blockquote>
+  <p>Assume that you know what day of week is 31th December of previous year.
+Given day and month in current year tell what day of week it is.</p>
+</blockquote>
+
+<p>Formula to solve this problem is simple:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">day_of_week = (
+        day_of_week_31_dec_prev_year + 
+        number_of_days_since_year_start(month, day)
+        ) % 7</code></pre></figure>
+
+<p>Only tricky part is that <code class="highlighter-rouge">number_of_days_since_year_start(month, day)</code> must take into
+account leap years.</p>
+
+<p>Testing for <a href="https://en.wikipedia.org/wiki/Leap_year#Algorithm">leap years is easy</a>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">boolean</span> <span class="nf">isLeap</span><span class="p">(</span><span class="kt">int</span> <span class="n">year</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="o">(</span><span class="n">year</span> <span class="o">%</span> <span class="mi">4</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">year</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">||</span> <span class="o">(</span><span class="n">year</span> <span class="o">%</span> <span class="mi">400</span> <span class="o">==</span> <span class="mi">0</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Now we can write <code class="highlighter-rouge">number_of_days_since_year_start</code> function:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">numberOfDaysSinceYearStart</span><span class="p">(</span><span class="kt">int</span> <span class="n">year</span><span class="o">,</span> <span class="kt">int</span> <span class="n">month</span><span class="o">,</span> <span class="kt">int</span> <span class="n">day</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// (1) number of days in months: </span>
+    <span class="c1">// [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]</span>
+        
+    <span class="c1">// days[month-1] - number of days in year </span>
+    <span class="c1">//                 before month first day.</span>
+    <span class="c1">//</span>
+    <span class="c1">// This can be computed using (1). </span>
+    <span class="c1">// We don't take into account leap years.</span>
+    <span class="kt">int</span><span class="o">[]</span> <span class="n">days</span> <span class="o">=</span> <span class="o">{</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">31</span><span class="o">,</span> <span class="mi">59</span><span class="o">,</span> <span class="mi">90</span><span class="o">,</span> <span class="mi">120</span><span class="o">,</span> <span class="mi">151</span><span class="o">,</span> 
+                   <span class="mi">181</span><span class="o">,</span> <span class="mi">212</span><span class="o">,</span> <span class="mi">243</span><span class="o">,</span> <span class="mi">273</span><span class="o">,</span> <span class="mi">304</span><span class="o">,</span> <span class="mi">334</span> <span class="o">};</span>
+        
+    <span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="n">days</span><span class="o">[</span><span class="n">month</span><span class="o">-</span><span class="mi">1</span><span class="o">]</span> <span class="o">+</span> <span class="n">day</span><span class="o">;</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="n">month</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// add February 29th for leap years</span>
+        <span class="n">result</span> <span class="o">+=</span> <span class="n">isLeap</span><span class="o">(</span><span class="n">year</span><span class="o">)</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>And finally we may implement <code class="highlighter-rouge">day_of_week</code> function:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeek</span><span class="p">(</span>
+    <span class="kt">int</span> <span class="n">dayOfWeek31DecPrevYear</span><span class="o">,</span> 
+    <span class="kt">int</span> <span class="n">year</span><span class="o">,</span> <span class="kt">int</span> <span class="n">month</span><span class="o">,</span> <span class="kt">int</span> <span class="n">day</span><span class="o">)</span>
+<span class="o">{</span>
+    <span class="k">return</span> <span class="o">(</span>
+        <span class="n">dayOfWeek31DecPrevYear</span> <span class="o">+</span>
+        <span class="n">numberOfDaysSinceYearStart</span><span class="o">(</span><span class="n">year</span><span class="o">,</span> <span class="n">month</span><span class="o">,</span> <span class="n">day</span><span class="o">)</span>
+    <span class="o">)</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Let’s test it:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// 31 December 2015 is Thursday (= 4)</span>
+<span class="o">&gt;</span> <span class="n">dayOfWeek</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">2016</span><span class="o">,</span> <span class="mi">6</span><span class="o">,</span> <span class="mi">15</span><span class="o">)</span>
+<span class="mi">3</span> <span class="c1">// Wednesday OK</span>
+<span class="o">&gt;</span> <span class="n">dayOfWeek</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">2016</span><span class="o">,</span> <span class="mi">9</span><span class="o">,</span> <span class="mi">13</span><span class="o">)</span> 
+<span class="mi">2</span> <span class="c1">// Tuesday OK</span></code></pre></figure>
+
+<p>Looks like it works, so now we may return to our original problem.</p>
+
+<p>Let’s start with 
+<a href="https://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week">this Wikipedia article</a>
+which tell us that 1 January 0001 is a Monday. But for us it will be more convenient to count days
+not from 1 January of given year but from 31 December of the previous year. 
+It is interesting that
+there is no year 0000, year that precedes year 0001 or 1 AD is 1 BC (or in other words
+years are intervals not points). To sum up we start counting days
+from 31 December 1 BC.</p>
+
+<p>We already have function that returns day of week if we know day of week of 31 December 
+of the previous year. We can find out day of week of any date using formula:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">day_of_week_31_dec_1bc = 0; // Sunday
+
+day_of_week_31_dec_prev_year = (
+        day_of_week_31_dec_1bc +
+        number_of_days_in_years(year-1)
+) % 7;
+
+day_of_week = dayOfWeek(
+        day_of_week_31_dec_prev_year,
+        year, month, day);</code></pre></figure>
+
+<p>Let’s start by implementing <code class="highlighter-rouge">number_of_days_in_years(year)</code> function that will return
+number of days since 31 December 1 BC up to 31 December of given <code class="highlighter-rouge">year</code>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">numberOfDaysInYears</span><span class="p">(</span><span class="kt">int</span> <span class="n">year</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">normalDays</span> <span class="o">=</span> <span class="mi">365</span> <span class="o">*</span> <span class="n">year</span><span class="o">;</span>
+
+    <span class="c1">// number of leap years = number of leap days</span>
+    <span class="kt">int</span> <span class="n">leapDays</span> <span class="o">=</span> <span class="n">year</span><span class="o">/</span><span class="mi">4</span> <span class="o">-</span> <span class="n">year</span><span class="o">/</span><span class="mi">100</span> <span class="o">+</span> <span class="n">year</span><span class="o">/</span><span class="mi">400</span><span class="o">;</span>
+
+    <span class="k">return</span> <span class="n">normalDays</span><span class="o">+</span><span class="n">leapDays</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>To count number of leap years I used <a href="https://en.wikipedia.org/wiki/Inclusion–exclusion_principle">inclusion-exclusion principle</a>.</p>
+
+<p>And finally we may implement our <code class="highlighter-rouge">day_of_week</code> routine:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeek</span><span class="p">(</span><span class="kt">int</span> <span class="n">year</span><span class="o">,</span> <span class="kt">int</span> <span class="n">month</span><span class="o">,</span> <span class="kt">int</span> <span class="n">day</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">dayOfWeek31Dec1BC</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="c1">// Sunday</span>
+
+    <span class="kt">int</span> <span class="n">dayOfWeek31DecPrevYear</span> <span class="o">=</span> <span class="o">(</span>
+            <span class="n">dayOfWeek31Dec1BC</span> <span class="o">+</span>
+            <span class="n">numberOfDaysInYears</span><span class="o">(</span><span class="n">year</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span>
+    <span class="o">)</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
+
+    <span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="n">dayOfWeek</span><span class="o">(</span>
+            <span class="n">dayOfWeek31DecPrevYear</span><span class="o">,</span>
+            <span class="n">year</span><span class="o">,</span> <span class="n">month</span><span class="o">,</span> <span class="n">day</span><span class="o">);</span>
+
+    <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Now we may test it but we must be careful here. Our routine returns day of week
+using Gregorian calendar that was introduced in 1582 AD (or later depending on country). 
+If we want to test it
+in Java we should avoid using <code class="highlighter-rouge">GregorianCalendar</code> class since it will switch to
+Julian calendar mode for years before 1582 AD. More informations on this
+subject can be found in this <a href="http://stackoverflow.com/questions/23975205/why-does-converting-java-dates-before-1582-to-localdate-with-instant-give-a-diff">Stackoverflow question</a>.
+To avoid problems we will use <code class="highlighter-rouge">LocalDate</code> class
+that always uses Gregorian calendar:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Random</span> <span class="n">r</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Random</span><span class="o">();</span>
+<span class="kt">int</span><span class="o">[]</span> <span class="n">days</span> <span class="o">=</span> <span class="o">{</span><span class="mi">31</span><span class="o">,</span> <span class="mi">28</span><span class="o">,</span> <span class="mi">31</span><span class="o">,</span> <span class="mi">30</span><span class="o">,</span> <span class="mi">31</span><span class="o">,</span> <span class="mi">30</span><span class="o">,</span> <span class="mi">31</span><span class="o">,</span> <span class="mi">31</span><span class="o">,</span> <span class="mi">30</span><span class="o">,</span> <span class="mi">31</span><span class="o">,</span> <span class="mi">30</span><span class="o">,</span> <span class="mi">31</span><span class="o">};</span>
+
+<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">year</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">r</span><span class="o">.</span><span class="na">nextInt</span><span class="o">(</span><span class="mi">13000</span><span class="o">);</span>
+
+    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">m</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="mi">12</span><span class="o">;</span> <span class="n">m</span><span class="o">++)</span> <span class="o">{</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">d</span> <span class="o">&lt;=</span> <span class="n">days</span><span class="o">[</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="o">];</span> <span class="n">d</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="kt">int</span> <span class="n">actual</span> <span class="o">=</span> <span class="n">dayOfWeek</span><span class="o">(</span><span class="n">year</span><span class="o">,</span> <span class="n">m</span><span class="o">,</span> <span class="n">d</span><span class="o">);</span>
+            <span class="kt">int</span> <span class="n">expected</span> <span class="o">=</span> <span class="n">LocalDate</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">year</span><span class="o">,</span> <span class="n">m</span><span class="o">,</span> <span class="n">d</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">getDayOfWeek</span><span class="o">()</span>
+                        <span class="o">.</span><span class="na">getValue</span><span class="o">()</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
+
+            <span class="k">if</span> <span class="o">(</span><span class="n">actual</span> <span class="o">!=</span> <span class="n">expected</span><span class="o">)</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span>
+                        <span class="s">"failed for yyyy-mm-dd: %d-%d-%d, "</span> <span class="o">+</span> 
+                        <span class="s">"expected: %d, actual: %d."</span><span class="o">,</span>
+                        <span class="n">year</span><span class="o">,</span> <span class="n">m</span><span class="o">,</span> <span class="n">d</span><span class="o">,</span> <span class="n">expected</span><span class="o">,</span> <span class="n">actual</span><span class="o">));</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Our curde testing function returns without throwing any exceptions, so we may
+rest assured that our function works.</p>
+
+<h4 id="tomohiko-sakamoto-algorithm">Tomohiko Sakamoto algorithm</h4>
+
+<p>Before we end this post let’s challenge ourselves one more time.
+Here is Tomohiko Sakamoto algorithm for computing day of week:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeek2</span><span class="p">(</span><span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">m</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span>
+<span class="o">{</span>
+    <span class="kt">int</span> <span class="n">t</span><span class="o">[]</span> <span class="o">=</span> <span class="o">{</span><span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">6</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">4</span><span class="o">};</span>
+    <span class="n">y</span> <span class="o">-=</span> <span class="o">(</span><span class="n">m</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">)</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="k">return</span> <span class="o">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">y</span><span class="o">/</span><span class="mi">4</span> <span class="o">-</span> <span class="n">y</span><span class="o">/</span><span class="mi">100</span> <span class="o">+</span> <span class="n">y</span><span class="o">/</span><span class="mi">400</span> <span class="o">+</span> <span class="n">t</span><span class="o">[</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="o">]</span> <span class="o">+</span> <span class="n">d</span><span class="o">)</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>With our newly gained knowledge about computing day of week let’s find out
+how it works!</p>
+
+<p>The main idea behind the algorithm is to compute day of week from 31 December of the previous
+year for January and February (just as we do in our algorithm) and to compute day of week
+for all other months from 31 December of the <strong>current</strong> year. This greatly simplifies dealing
+with leap years.
+<img src="assets/images/2016-06-15/compute_from.svg" alt="Computing day of week from beginning or from ending of the year" /></p>
+
+<p>To compute day of week from year end we will do as follows: say we want to know day of week
+for 7 April 2016. We know that 31 December 2016 is Saturday. Next we must get day of week
+for last day of month that precedes April, in other words we must find out day of week for 31 March
+(that’s Thursday).
+Then we just add days and take rest modulo seven and we are done: 7 April is Thursday too. 
+This is illustrated on image below:
+<img src="assets/images/2016-06-15/backwards.svg" alt="Computing day of week backwards example" /></p>
+
+<p>To compute day of week for last day of prev month we will use formula:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">// DOW = day of week
+dow_last_day_of_prev_month = (
+    dow_last_day_of_year - 
+    number_of_days_from_prev_month_last_day_to_end_of_year
+    ) % 7;</code></pre></figure>
+
+<p>Notice that we are <em>subtracting</em> two values modulo seven to move backwards.
+Unfortunately in Java modulo can return negative values when used with negative numbers e.g.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">&gt;</span> <span class="o">-</span><span class="mi">32</span> <span class="o">%</span> <span class="mi">7</span>
+<span class="o">-</span><span class="mi">4</span></code></pre></figure>
+
+<p>To solve this problem we will use simple fact from
+<a href="https://en.wikipedia.org/wiki/Modular_arithmetic">modular arithmetic</a>:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">(a - b) % 7 = (a + (7 - (b%7))) % 7
+notice that (7 - (b%7)) cannot be negative 
+because 0 &lt;= (b%7) &lt; 7
+    
+for example:
+(5 - 3) % 7 = 2 % 7 = 2
+(5 + (7 - (3%7)) % 7 = (5 + (7 - 3)) % 7 =
+        = (5 + 4) % 7 = 9 % 7 = 2</code></pre></figure>
+
+<p>Now we will be guaranteed to get a number that represents valid day of week.</p>
+
+<p>Full algorithm looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeekBackwards</span><span class="p">(</span>
+        <span class="kt">int</span> <span class="n">dayOfWeek31DecCurrYear</span><span class="o">,</span> <span class="kt">int</span> <span class="n">year</span><span class="o">,</span> <span class="kt">int</span> <span class="n">month</span><span class="o">,</span> <span class="kt">int</span> <span class="n">day</span><span class="o">)</span> 
+<span class="o">{</span>
+<span class="c1">// number of days from last day of previous month to the year end</span>
+<span class="c1">// int[] daysToEndOfTheYear = </span>
+<span class="c1">//    { 365, 334, 306, 275, 245, 214, 184, 153, 122, 92, 61, 31 };</span>
+
+    <span class="c1">// notice: we use our modulo formula here</span>
+    <span class="c1">// days[i] = 7-(daysToTheEndOfTheYear[i]%7)</span>
+    <span class="c1">// thanks to this we may write later</span>
+    <span class="c1">// (lastDay + days[i]) % 7 instead of</span>
+    <span class="c1">// (lastDay - daysToEndOfTheYear[i]) % 7</span>
+    <span class="kt">int</span><span class="o">[]</span> <span class="n">days</span> <span class="o">=</span> <span class="o">{</span> <span class="mi">6</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">6</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">4</span> <span class="o">};</span>
+    <span class="kt">int</span> <span class="n">delta</span> <span class="o">=</span> <span class="n">days</span><span class="o">[</span><span class="n">month</span><span class="o">-</span><span class="mi">1</span><span class="o">];</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="n">month</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// for leap years in Jan or Feb</span>
+        <span class="c1">// there is one more day to year end</span>
+
+        <span class="c1">// again we add to avoid subtraction</span>
+        <span class="c1">// (x - 1) % 7 == (x + 6) % 7</span>
+        <span class="n">delta</span> <span class="o">+=</span> <span class="n">isLeap</span><span class="o">(</span><span class="n">year</span><span class="o">)</span> <span class="o">?</span> <span class="mi">6</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="kt">int</span> <span class="n">dayOfWeekLastDayPrevMonth</span> <span class="o">=</span> 
+        <span class="o">(</span><span class="n">dayOfWeek31DecCurrYear</span> <span class="o">+</span> <span class="n">delta</span><span class="o">)</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
+
+    <span class="k">return</span> <span class="o">(</span><span class="n">dayOfWeekLastDayPrevMonth</span> <span class="o">+</span> <span class="n">day</span><span class="o">)</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Now we can combine our forward and backward approaches to create one simple algorithm:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeekComb</span><span class="p">(</span><span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">m</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">dayOfWeekDec31</span> <span class="o">=</span> <span class="o">(</span><span class="n">m</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">)</span>
+            <span class="c1">// count from prev year</span>
+            <span class="o">?</span> <span class="n">numberOfDaysInYears</span><span class="o">(</span><span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span>
+            <span class="c1">// count from end of curr year</span>
+            <span class="o">:</span> <span class="n">numberOfDaysInYears</span><span class="o">(</span><span class="n">y</span><span class="o">);</span>
+
+    <span class="c1">// number of days -&gt; day of week</span>
+    <span class="n">dayOfWeekDec31</span> <span class="o">=</span> <span class="n">dayOfWeekDec31</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
+
+    <span class="c1">// 0,31 - comes from our first algorithm</span>
+    <span class="c1">// rest of values comes from backward algorithm</span>
+    <span class="kt">int</span><span class="o">[]</span> <span class="n">days</span> <span class="o">=</span> <span class="o">{</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">31</span><span class="o">,</span>  <span class="mi">2</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">6</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">4</span> <span class="o">};</span>
+
+    <span class="kt">int</span> <span class="n">dayOfWeekPrevMonthLastDay</span> <span class="o">=</span> 
+        <span class="o">(</span><span class="n">dayOfWeekDec31</span> <span class="o">+</span> <span class="n">days</span><span class="o">[</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="o">])</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
+
+    <span class="k">return</span> <span class="o">(</span><span class="n">dayOfWeekPrevMonthLastDay</span> <span class="o">+</span> <span class="n">d</span><span class="o">)</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Before we end let’s try to use refactoring to simplify code further.
+Let’s start with statement:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">dayOfWeekDec31</span> <span class="o">=</span> <span class="o">(</span><span class="n">m</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">)</span>
+        <span class="c1">// count from prev year</span>
+        <span class="o">?</span> <span class="n">numberOfDaysInYears</span><span class="o">(</span><span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span>
+        <span class="c1">// count from end of curr year</span>
+        <span class="o">:</span> <span class="n">numberOfDaysInYears</span><span class="o">(</span><span class="n">y</span><span class="o">);</span></code></pre></figure>
+
+<p>Since this is the only place that use <code class="highlighter-rouge">y</code> we can refactor this code into:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">y</span> <span class="o">-=</span> <span class="o">(</span><span class="n">m</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">)</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
+<span class="kt">int</span> <span class="n">dayOfWeekDec31</span> <span class="o">=</span> <span class="n">numberOfDaysInYears</span><span class="o">(</span><span class="n">y</span><span class="o">);</span></code></pre></figure>
+
+<p>Then we can inline <code class="highlighter-rouge">numberOfDaysInYears</code> function:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">y</span> <span class="o">-=</span> <span class="o">(</span><span class="n">m</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">)</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
+<span class="kt">int</span> <span class="n">dayOfWeekDec31</span> <span class="o">=</span> <span class="mi">365</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="n">y</span><span class="o">/</span><span class="mi">4</span> <span class="o">-</span> <span class="n">y</span><span class="o">/</span><span class="mi">100</span> <span class="o">+</span> <span class="n">y</span><span class="o">/</span><span class="mi">400</span><span class="o">;</span>
+
+<span class="n">dayOfWeekDec31</span> <span class="o">=</span> <span class="n">dayOfWeekDec31</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span></code></pre></figure>
+
+<p>Next since <code class="highlighter-rouge">365*y % 7 == 1*y % 7</code> and <code class="highlighter-rouge">(a + b) % 7 == (a % 7 + b % 7) % 7</code> we can
+simplify further:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeekComb</span><span class="p">(</span><span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">m</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">y</span> <span class="o">-=</span> <span class="o">(</span><span class="n">m</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">)</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="kt">int</span> <span class="n">dayOfWeekDec31</span> <span class="o">=</span> <span class="o">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">y</span><span class="o">/</span><span class="mi">4</span> <span class="o">-</span> <span class="n">y</span><span class="o">/</span><span class="mi">100</span> <span class="o">+</span> <span class="n">y</span><span class="o">/</span><span class="mi">400</span><span class="o">)</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
+
+    <span class="kt">int</span><span class="o">[]</span> <span class="n">days</span> <span class="o">=</span> <span class="o">{</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">31</span><span class="o">,</span>  <span class="mi">2</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">6</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">4</span> <span class="o">};</span>
+
+    <span class="kt">int</span> <span class="n">dayOfWeekPrevMonthLastDay</span> <span class="o">=</span> 
+        <span class="o">(</span><span class="n">dayOfWeekDec31</span> <span class="o">+</span> <span class="n">days</span><span class="o">[</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="o">])</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
+
+    <span class="k">return</span> <span class="o">(</span><span class="n">dayOfWeekPrevMonthLastDay</span> <span class="o">+</span> <span class="n">d</span><span class="o">)</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Finally because <code class="highlighter-rouge">31 % 7 == 3</code>, and combining all additions into single expression we get:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeekComb</span><span class="p">(</span><span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">m</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">int</span><span class="o">[]</span> <span class="n">days</span> <span class="o">=</span> <span class="o">{</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span>  <span class="mi">2</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">6</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">4</span> <span class="o">};</span>
+
+    <span class="n">y</span> <span class="o">-=</span> <span class="o">(</span><span class="n">m</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">)</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="k">return</span> <span class="o">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">y</span><span class="o">/</span><span class="mi">4</span> <span class="o">-</span> <span class="n">y</span><span class="o">/</span><span class="mi">100</span> <span class="o">+</span> <span class="n">y</span><span class="o">/</span><span class="mi">400</span> <span class="o">+</span> <span class="n">days</span><span class="o">[</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="o">]</span> <span class="o">+</span> <span class="n">d</span><span class="o">)</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>which is exactly Tomohiko Sakamoto algorithm.</p>
+
+<p>Wow! This post turned out to be rather lengthy, 
+if you are still with me thank you for your effort and hard work!</p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Get day of week from date&amp;url=https://marcin-chwedczuk.github.io/get-day-of-week-from-date"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/get-day-of-week-from-date"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/get-day-of-week-from-date"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//get-day-of-week-from-date';
+        this.page.identifier = '/get-day-of-week-from-date';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/cover5.jpg)" href="/hibernate-hello-world-app">
+            <section class="post">
+                <h2>Hibernate hello world application</h2>
+                <p>In this tutorial we'll create minimal application that will allow us to start playing with...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/cover7.jpg)" href="/reading-and-writing-files-in-java">
+            <section class="post">
+                <h2>Reading and writing files in Java</h2>
+                <p>Binary vs Text Files Java IO supports two distinct kinds of files: text files and...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

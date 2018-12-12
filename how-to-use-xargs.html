@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>How to use xargs</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover2.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">How to use xargs</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2016-07-09">09 Jul 2016</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/linux'>Linux</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>In this blog post I will show you how to use <code class="highlighter-rouge">xargs</code> command line utility.</p>
+
+<p>We will start by creating simple bash script <code class="highlighter-rouge">showargs</code> that prints all arguments
+passed to it on command line:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c">#!/usr/bin/env bash</span>
+
+<span class="c"># echo -n option prints text without new line</span>
+<span class="nb">echo</span> -n <span class="s2">"[ "</span>
+<span class="k">for </span>arg <span class="k">in</span> <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span>; <span class="k">do
+    </span><span class="nb">echo</span> -n <span class="s2">"{</span><span class="nv">$arg</span><span class="s2">} "</span>
+<span class="k">done
+</span><span class="nb">echo</span> <span class="s2">"]"</span></code></pre></figure>
+
+<p>We must make this script executable by running <code class="highlighter-rouge">chmod +x showargs</code>.
+Now we can check how it works:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ ./showargs 
+[ ]
+
+$ ./showargs a b c
+[ {a} {b} {c} ]
+
+$ ./showargs "foo bar" '#$%'
+[ {foo bar} {#$%} ]
+
+$ ./showargs 1 "foo bar" '()' blah
+[ {1} {foo bar} {()} {blah} ]</code></pre></figure>
+
+<p>As you can see invocation of <code class="highlighter-rouge">showargs</code> prints single line that starts with <code class="highlighter-rouge">[</code> and
+ends with <code class="highlighter-rouge">]</code> character 
+and contains all parameters passed to script surrounded by <code class="highlighter-rouge"><span class="p">{</span></code> and <code class="highlighter-rouge">}</code>
+braces. This will help us to see if arguments with spaces are properly passed 
+to our script.</p>
+
+<h4 id="how-xargs-work">How xargs work</h4>
+
+<p>When we run <code class="highlighter-rouge">xargs cmd</code> in the terminal, <code class="highlighter-rouge">xargs</code> first reads all
+lines from standard input, then concatenates them using space character, then
+it appends that concatenated input to <code class="highlighter-rouge">cmd</code> and finally it executes this
+extended command in the shell. It may sound a bit complicated but it is
+really a simple process:
+<img src="assets/images/2016-07-09/xargs_lines.svg" alt="How xargs works" /></p>
+
+<p>Let’s play a bit with <code class="highlighter-rouge">xargs</code> in the terminal.
+We’ll use <code class="highlighter-rouge">showargs</code> script to snoop arguments passed by <code class="highlighter-rouge">xargs</code> to the command.</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ echo a b c d | xargs ./showargs
+[ {a} {b} {c} {d} ]
+
+$ cat example
+a b c
+d
+e f
+$ cat example | xargs ./showargs 
+[ {a} {b} {c} {d} {e} {f} ]</code></pre></figure>
+
+<p>As we can see it doesn’t matter for <code class="highlighter-rouge">xargs</code> if arguments are on single line or in
+many lines of input.
+It also doesn’t matter if arguments are separated by space, newline or tabs:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ echo -e "foo\nbar\n\n\t\tnyu"
+foo
+bar
+
+                nyu
+
+$ echo -e "foo\nbar\n\n\t\tnyu" | xargs ./showargs 
+[ {foo} {bar} {nyu} ]</code></pre></figure>
+
+<p>We must also know that <code class="highlighter-rouge">xargs</code> properly escapes special shell characters like <code class="highlighter-rouge">|</code> or <code class="highlighter-rouge">&gt;</code>
+when it builds command arguments:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ echo a '&gt;' '|' d
+a &gt; | d
+
+$ echo a '&gt;' '|' d | xargs ./showargs 
+[ {a} {&gt;} {|} {d} ]</code></pre></figure>
+
+<p>NOTE: Here I used single quotes to escape special characters in echo command, 
+but you may also use backslash e.g. <code class="highlighter-rouge">\&gt;</code>.</p>
+
+<h5 id="custom-argument-separator-delimiter">Custom argument separator (delimiter)</h5>
+
+<p>Sometimes it happens that arguments to the program are not separated by spaces but
+e.g. by commas. By default <code class="highlighter-rouge">xargs</code> treats 
+<a href="https://en.wikipedia.org/wiki/Whitespace_character">whitespace</a> 
+as argument separators but this can
+be changed by using <code class="highlighter-rouge">-d</code> option:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ echo foo,bar,nyu | xargs ./showargs 
+[ {foo,bar,nyu} ]
+
+$ echo foo,bar,nyu | xargs -d, ./showargs 
+[ {foo} {bar} {nyu
+} ]
+
+$ echo -n foo,bar,nyu | xargs -d, ./showargs 
+[ {foo} {bar} {nyu} ]
+
+$ echo foo,bar,nyu | head -c -1 | xargs -d, ./showargs 
+[ {foo} {bar} {nyu} ]
+
+$ echo foo,bar,,nyu | head -c -1 | xargs -d, ./showargs 
+[ {foo} {bar} {} {nyu} ]</code></pre></figure>
+
+<p>Now <code class="highlighter-rouge">xargs</code> splits arguments on <code class="highlighter-rouge">,</code> character but we have encountered another problem.
+When we split arguments on <code class="highlighter-rouge">,</code> the last newline is treated as part of the last argument.
+We can fix this by preventing <code class="highlighter-rouge">echo</code> from printing newline with <code class="highlighter-rouge">-n</code> option, but this can
+be a problem when we get input from a file. If we are sure that file always ends
+with a newline we may truncate it using <code class="highlighter-rouge">head -c -1</code> command, that will print
+all characters of standard input except last.</p>
+
+<p>It’s worth to notice that when we use nonstandard separators arguments can contain spaces:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ echo -n foo,bar a la baz,nya | xargs -d, ./showargs 
+[ {foo} {bar a la baz} {nya} ]</code></pre></figure>
+
+<p>Often we want to pass entire line from file as a single argument, we may easily
+achive this with <code class="highlighter-rouge">xargs</code> by using newline as argument separator:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cat example 
+/foo/bar/file with space
+/other-file
+/dir with space/file
+
+$ cat example | xargs -d\\n ./showargs 
+[ {/foo/bar/file with space} {/other-file} {/dir with space/file} ]</code></pre></figure>
+
+<p>NOTE: Here we used <code class="highlighter-rouge">\\</code> to escape <code class="highlighter-rouge">\</code> character in the shell, we may also use single quotes
+as in <code class="highlighter-rouge">-d'\n'</code></p>
+
+<p>WARNING: Filenames in Unix can contain newline characters. Use this trick
+only when you are sure that filenames in input file will not contain newlines.</p>
+
+<h5 id="executing-command-per-argument-or-per-line-of-input">Executing command per argument or per line of input</h5>
+
+<p><code class="highlighter-rouge">xargs</code> have two modes of operation. We already know one of them: gather all arguments
+and execute command. The other is to execute command per argument of per line of input,
+as illustrated below:
+<img src="assets/images/2016-07-09/xargs_many.svg" alt="xargs 2nd mode of operation" /></p>
+
+<p>We may execute command per fixed number of arguments by using <code class="highlighter-rouge">-n</code> option:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ echo a b c d | xargs -n1 ./showargs 
+[ {a} ]
+[ {b} ]
+[ {c} ]
+[ {d} ]
+
+$ echo a b c d | xargs -n2 ./showargs 
+[ {a} {b} ]
+[ {c} {d} ]
+
+$ echo a b c d | xargs -n3 ./showargs 
+[ {a} {b} {c} ]
+[ {d} ]</code></pre></figure>
+
+<p>As we can see we may specify number of arguments that are needed by command.</p>
+
+<p>WARNING: There may be not enough arguments for the
+last command but <code class="highlighter-rouge">xargs</code> executes it anyway.</p>
+
+<p>We may also execute command per fixed number of lines of input using <code class="highlighter-rouge">-L</code> option:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cat example 
+arg1 arg2 arg3
+arg4
+arg5 arg6
+
+$ cat example | xargs -L1 ./showargs 
+[ {arg1} {arg2} {arg3} ]
+[ {arg4} ]
+[ {arg5} {arg6} ]
+
+$ cat example | xargs -L2 ./showargs 
+[ {arg1} {arg2} {arg3} {arg4} ]
+[ {arg5} {arg6} ]</code></pre></figure>
+
+<p>As with <code class="highlighter-rouge">-n</code> option we must be careful when we execute command per more than one line 
+of input because last command may not get
+all needed arguments.</p>
+
+<p>I personally find <code class="highlighter-rouge">-L1</code> option very useful but it doesn’t work well with <code class="highlighter-rouge">-d</code> option.</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cat example 
+arg1,"arg2 bar",arg3
+arg4
+arg5,arg6,arg7
+
+$ cat example | xargs -L1 -d, ./showargs 
+[ {arg1} ]
+[ {"arg2 bar"} ]
+[ {arg3
+arg4
+arg5} ]
+[ {arg6} ]
+[ {arg7
+} ]
+
+$ cat example | tr ',' ' ' |  xargs -L1 ./showargs 
+[ {arg1} {arg2 bar} {arg3} ]
+[ {arg4} ]
+[ {arg5} {arg6} {arg7} ]</code></pre></figure>
+
+<p>Here we used <code class="highlighter-rouge">tr</code> utility to convert <code class="highlighter-rouge">,</code> into spaces so we can avoid using <code class="highlighter-rouge">-d,</code> option.
+As we can see <code class="highlighter-rouge">xargs</code> preserved spaces in arguments surrounded by double quotes (this
+works with single quotes too).</p>
+
+<h5 id="passing-additional-argument-to-the-command">Passing additional argument to the command</h5>
+
+<p>Sometimes we need to provide additional arguments to <code class="highlighter-rouge">xargs</code> command, we may do this
+in a very simple way:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ echo a b c d | xargs ./showargs 
+[ {a} {b} {c} {d} ]
+
+$ echo a b c d | xargs ./showargs --long-arg -s
+[ {--long-arg} {-s} {a} {b} {c} {d} ]</code></pre></figure>
+
+<p>But what if our command expects arguments in format:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">some-command --input input-file --output output-file</code></pre></figure>
+
+<p>To work with command like that we must use <code class="highlighter-rouge">xargs</code> <code class="highlighter-rouge">-I</code> option:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cat example
+/file1
+/file with spaces
+/file3
+
+$ cat example | xargs -I{} ./showargs --input {} --output {}.processed
+[ {--input} {/file1} {--output} {/file1.processed} ]
+[ {--input} {/file with spaces} {--output} {/file with spaces.processed} ]
+[ {--input} {/file3} {--output} {/file3.processed} ]</code></pre></figure>
+
+<p>After <code class="highlighter-rouge">-I</code> we must provide placeholder string that will be replaced by actual
+command arguments. People usually use <code class="highlighter-rouge"><span class="p">{}</span></code> but we may use any string:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cat example | xargs -Ifoo ./showargs --input foo --output foo.processed</code></pre></figure>
+
+<p><code class="highlighter-rouge">-I</code> option is really useful but it doesn’t work with <code class="highlighter-rouge">-n</code> option, so if you plan to use
+<code class="highlighter-rouge">-I</code> you must process input line by line.</p>
+
+<h5 id="other-useful-options">Other useful options</h5>
+
+<p>With <code class="highlighter-rouge">-p</code> option <code class="highlighter-rouge">xargs</code> will prompt for user approval
+before executing command:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ touch file{1..3}
+
+$ echo file{1..3}
+file1 file2 file3
+        
+$ echo file{1..3} | xargs -n1 -p rm
+rm file1 ?...y
+rm file2 ?...n
+rm file3 ?...y
+        
+$ ls file*
+file2</code></pre></figure>
+
+<p><code class="highlighter-rouge">-0</code> or <code class="highlighter-rouge">--null</code> option is often used with <code class="highlighter-rouge">find</code> command to avoid problems
+with filenames that contain spaces or other non alphanumeric characters.
+<code class="highlighter-rouge">-0</code> option tells <code class="highlighter-rouge">xargs</code> that <code class="highlighter-rouge">\0</code> character will be used to separate arguments:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ touch file\ with\ space
+
+$ ls file*
+file with space
+
+$ find -type f -name '*with*'
+./file with space
+
+$ find -type f -name '*with*' | xargs ./showargs 
+[ {./file} {with} {space} ]
+
+$ find -type f -name '*with*' -print0 | xargs -0 ./showargs 
+[ {./file with space} ]</code></pre></figure>
+
+<p>TIP: Always use <code class="highlighter-rouge">-print0</code> and <code class="highlighter-rouge">-0</code> options when working with <code class="highlighter-rouge">find</code>.</p>
+
+<p>The last option that can be really useful is <code class="highlighter-rouge">-P</code>. This can be used to
+execute commands in parallel:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ echo {1..9} | tr '[:digit:]' '1'
+1 1 1 1 1 1 1 1 1
+
+# takes 9 seconds
+$ echo {1..9} | tr '[:digit:]' '1' | xargs -n1 sleep
+
+# takes 3 seconds
+$ echo {1..9} | tr '[:digit:]' '1' | xargs -n1 -P4 sleep</code></pre></figure>
+
+<p>By default commands are executed sequentially (<code class="highlighter-rouge">-P1</code>).</p>
+
+<p>I wasn’t able to describe all <code class="highlighter-rouge">xargs</code> options, 
+as usually you can find all of them on <code class="highlighter-rouge">xargs</code> manual page.</p>
+
+<p>Thanks for reading!</p>
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=How to use xargs&amp;url=https://marcin-chwedczuk.github.io/how-to-use-xargs"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/how-to-use-xargs"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/how-to-use-xargs"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//how-to-use-xargs';
+        this.page.identifier = '/how-to-use-xargs';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover1.jpg)" href="/powershell-function-declaration-pitfall">
+            <section class="post">
+                <h2>PowerShell function declaration pitfall</h2>
+                <p>Recently I had to write some scripts in PowerShell. Because I try to follow good...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover1.jpg)" href="/how-nulls-are-handled-in-switch-statement">
+            <section class="post">
+                <h2>How null's are handled in switch statement in C#, Java and JavaScript</h2>
+                <p>Let’s start with C#. In C# nulls may show up in switch statement in two...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

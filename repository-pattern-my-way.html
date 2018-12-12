@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>How NOT to use the repository pattern</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/park_cover_1.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">How NOT to use the repository pattern</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2018-07-08">08 Jul 2018</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/architecture'>Architecture</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <h3 id="generic-repository-pattern">Generic repository pattern</h3>
+
+<p>First, to avoid misunderstandings, let me explain what I understand
+by generic repository. Have your ever seen an interface like this:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IGenericRepository</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> 
+    <span class="n">where</span> <span class="n">TEntity</span> <span class="p">:</span> <span class="k">class</span> 
+<span class="err">{</span>
+    <span class="nc">IEnumerable</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="nf">Get</span><span class="p">(</span>
+        <span class="n">Expression</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">,</span> <span class="kt">bool</span><span class="p">&gt;&gt;</span> <span class="n">filter</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
+        <span class="n">Func</span><span class="p">&lt;</span><span class="n">IQueryable</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;,</span> <span class="n">IOrderedQueryable</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;&gt;</span> <span class="n">orderBy</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
+        <span class="kt">string</span> <span class="n">includeProperties</span> <span class="p">=</span> <span class="s">""</span><span class="p">);</span>
+    <span class="n">TEntity</span> <span class="nf">GetById</span><span class="p">(</span><span class="kt">object</span> <span class="n">id</span><span class="p">);</span>
+
+    <span class="k">void</span> <span class="nf">Insert</span><span class="p">(</span><span class="n">TEntity</span> <span class="n">entity</span><span class="p">);</span>
+
+    <span class="k">void</span> <span class="nf">Update</span><span class="p">(</span><span class="n">TEntity</span> <span class="n">entityToUpdate</span><span class="p">);</span>
+
+    <span class="k">void</span> <span class="nf">Delete</span><span class="p">(</span><span class="kt">object</span> <span class="n">id</span><span class="p">);</span>
+    <span class="k">void</span> <span class="nf">Delete</span><span class="p">(</span><span class="n">TEntity</span> <span class="n">entityToDelete</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Or maybe you saw it’s twin brother that have a slightly 
+different variant of <code class="highlighter-rouge">Get</code> method:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">IQueryable</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="nf">GetAll</span><span class="p">();</span></code></pre></figure>
+
+<p>Inspiration for the first of these examples comes from 
+<a href="https://docs.microsoft.com/en-us/aspnet/mvc/overview/older-versions/getting-started-with-ef-5-using-mvc-4/implementing-the-repository-and-unit-of-work-patterns-in-an-asp-net-mvc-application#implement-a-generic-repository-and-a-unit-of-work-class">official Microsoft documentation for ASP.NET MVC 4</a>.
+As for the second example you can find countless number of blogs that
+describe this variant of the repository pattern e.g.
+<a href="http://www.tugberkugurlu.com/archive/generic-repository-pattern-entity-framework-asp-net-mvc-and-unit-testing-triangle">here</a>,
+<a href="https://deviq.com/repository-pattern/">and here</a>,
+<a href="https://www.codeproject.com/Articles/814768/CRUD-Operations-Using-the-Generic-Repository-Patte">and also here</a>
+sometimes with slight variantions like returning <code class="highlighter-rouge">IEnumerable&lt;TEntity&gt;</code> instead of
+<code class="highlighter-rouge">IQueryable&lt;TEntity&gt;</code>. 
+And in the later case often with an additional method for generating
+queries like:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="nf">FindAll</span><span class="p">(</span><span class="n">Expression</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="kt">bool</span><span class="p">&gt;&gt;</span> <span class="n">predicate</span><span class="p">);</span></code></pre></figure>
+
+<p>So what is wrong with them you may ask? So far almost nothing,
+not counting of course badly naming of the methods from Microsoft example(
+they should be called <code class="highlighter-rouge">Find</code> and <code class="highlighter-rouge">FindAll</code> not <code class="highlighter-rouge">Get</code> and <code class="highlighter-rouge">GetAll</code>).</p>
+
+<p>But “almost nothing” does not equal “nothing”. One problem that I find with
+these interfaces is that they violate Interface Segregation Principle.
+They expose full set of CRUD operations even for entities for which 
+e.g. deleting does not make sense (for example when you deactivate users
+instead of deleting them from DB;
+also see <a href="http://udidahan.com/2009/09/01/dont-delete-just-dont/">Udi Dahan post about deleting data</a>).
+But this problem can be easily solved by splitting this interface into three -
+one for reading, one for updating and one for deleting entities.</p>
+
+<p>The real problem that I have with these interfaces comes from their <em>improper</em>
+usage. The original idea behind them is that they should be used as a base
+interfaces for your custom repository interfaces, just like this:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IFooRepository</span> <span class="p">:</span> <span class="n">IGenericRepository</span><span class="p">&lt;</span><span class="n">Foo</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="n">Foo</span> <span class="nf">FindNewest</span><span class="p">();</span>
+    <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Foo</span><span class="p">&gt;</span> <span class="nf">FindAllOutdated</span><span class="p">();</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>And that your command handlers and services 
+(in other words clients of your custom repositories) 
+should decide what methods are
+needed and should be put on your custom repository interfaces.</p>
+
+<p>That is the theory. Unfortunately what I already saw a few times in my career 
+instead is this:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// notice: this is NOT an abstract class
+</span><span class="k">public</span> <span class="k">class</span> <span class="nc">GenericRepostiory</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IGenericRepository</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="c1">// implementation details skiped
+</span>
+    <span class="k">public</span> <span class="n">IQueryable</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="nf">GetAll</span><span class="p">()</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="n">TEntity</span> <span class="nf">GetById</span><span class="p">(</span><span class="kt">object</span> <span class="n">id</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Insert</span><span class="p">(</span><span class="n">TEntity</span> <span class="n">entity</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Update</span><span class="p">(</span><span class="n">TEntity</span> <span class="n">entityToUpdate</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Delete</span><span class="p">(</span><span class="kt">object</span> <span class="n">id</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Delete</span><span class="p">(</span><span class="n">TEntity</span> <span class="n">entityToDelete</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Someone has created a working implementation of <code class="highlighter-rouge">IGenericRepostory</code> interface.
+What is worse this implementation is almost always registered in IoC container and
+can be injected into your command handlers and
+services like any other dependency:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">OrderService</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">IGenericRepository</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="n">_orderRepository</span><span class="p">;</span>
+
+    <span class="c1">// ctor and other stuff...
+</span>
+    <span class="k">public</span> <span class="n">NewestOrderDto</span> <span class="nf">FindNewestOrderForCurrentUser</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">var</span> <span class="n">newestOrders</span> <span class="p">=</span> <span class="n">_orderRepository</span><span class="p">.</span><span class="nf">GetAll</span><span class="p">()</span>
+            <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">AssignedTo</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">_currentUser</span><span class="p">.</span><span class="n">Id</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Closed</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">OrderByDescending</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">CreationDate</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">Take</span><span class="p">(</span><span class="m">10</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">ToList</span><span class="p">();</span>
+
+        <span class="k">return</span> <span class="n">_mapper</span><span class="p">.</span><span class="n">MapTo</span><span class="p">&lt;</span><span class="n">NewestOrderDto</span><span class="p">&gt;(</span><span class="n">newestOrders</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>This <em>looks</em> nice and clean but is not. I will tell you more about why
+this is wrong later. Now I want to deal with one “solution” to the
+<code class="highlighter-rouge">GenericRepository&lt;T&gt;</code> misinterpretation that 
+I often hear from other developers. 
+This solution sounds like this (dialog during code-review):</p>
+
+<p>JIM SENIOR: Have you ever heard that
+NHibernate <code class="highlighter-rouge">ISession</code> or Entity Framework <code class="highlighter-rouge">DbSet</code> <em>is a</em> repository?
+Indeed what you just created is a tin wrapper over either 
+<code class="highlighter-rouge">ISession</code> or <code class="highlighter-rouge">DbSet</code>.
+Actually we can replace this <code class="highlighter-rouge">GenericRepository&lt;T&gt;</code> by e.g.
+<code class="highlighter-rouge">DbSet</code> and get pretty must the same results.
+The only service that <code class="highlighter-rouge">IGenericRepository&lt;T&gt;</code> provides is that it hides
+most of the thirty methods that <code class="highlighter-rouge">DbSet</code> has. 
+JONNY JUNIOR: Oh, indeed what you just said make sense.
+I guess using generic repository
+pattern here was a bit of overengineering. (Happily gets back to coding…)</p>
+
+<p>For me using either <code class="highlighter-rouge">GenericRepository&lt;T&gt;</code> or raw <code class="highlighter-rouge">DbSet</code> is wrong most of the
+time (one exception that I can accept is when you write 
+the most CRUDest application ever, then don’t bother
+and use <code class="highlighter-rouge">DbSet</code> in your services). And why? Due to the following reasons:</p>
+
+<ul>
+  <li>The only option to make sure that your LINQ queries will be properly translated
+ to SQL is to test them against <strong>the same</strong> kind of database that you use 
+ in production environment. But when your queries are scattered over methods 
+ of your services it may be hard to create integration tests for them.
+ For example look at the code:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">if</span> <span class="p">(</span><span class="cm">/* some complicated condition */</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="cm">/* some other complicated condition */</span><span class="p">)</span> <span class="p">{</span>
+		 <span class="n">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">_orderRepository</span><span class="p">.</span><span class="nf">GetAll</span><span class="p">()</span>
+			  <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">AssignedTo</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">_currentUser</span><span class="p">.</span><span class="n">Id</span><span class="p">)</span>
+			  <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Closed</span><span class="p">)</span>
+			  <span class="p">.</span><span class="nf">OrderByDescending</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">CreationDate</span><span class="p">)</span>
+			  <span class="p">.</span><span class="nf">Take</span><span class="p">(</span><span class="m">10</span><span class="p">)</span>
+			  <span class="p">.</span><span class="nf">ToList</span><span class="p">();</span> 
+
+		 <span class="k">return</span> <span class="n">_mapper</span><span class="p">.</span><span class="n">MapTo</span><span class="p">&lt;</span><span class="n">NewestOrderDto</span><span class="p">&gt;(</span><span class="n">newestOrders</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="c1">// some code here
+</span><span class="p">}</span>
+<span class="p">//</span> <span class="n">more</span> <span class="n">code</span> <span class="n">here</span></code></pre></figure>
+
+<p>To execute above query you must fulfill two if’s conditions. This will make
+an integration test for the above query less readable and more fragile. 
+Instead imagine that this query is encapsulated by a repository method.
+In integration test you would just call that repo method and check the 
+results - simple isn’t it?</p>
+
+<ul>
+  <li>
+    <p>I am sure that you agree with me 
+ that inline LINQ queries inside services 
+ are not reusable and that they have a nasty tendency to
+ duplicate themselves over the codebase. Even when a programmer decides to
+ extract query to it’s own method, it will usually be a private method on 
+ a particular service. Moving queries to repository 
+ methods makes them automatically reusable
+ across entire application.</p>
+  </li>
+  <li>
+    <p>Inline LINQ queries are not named. Usually the only clue what a particular
+ query does (without going deep it’s logic) is the name of the variable that
+ holds query result. Unfortunately for us inventing a good variable names is a skill
+ that only comes with the experience and since we have a lot of junior devs in our 
+ industry we are faced with names like <code class="highlighter-rouge">result</code>, <code class="highlighter-rouge">ordersToProcess</code> or just <code class="highlighter-rouge">orders</code>.
+ Wrapping the query inside a repo method will automatically give it a name. 
+ Even if this name is not perfect we can refactor it later and all places 
+ that call this method will benefit from our refactoring automatically!</p>
+  </li>
+  <li>
+    <p>Sometimes for performance reasons we are forced to use raw SQL to get our
+ data from DB. Do you really want to litter your business logic with low
+ level technical stuff like <code class="highlighter-rouge">DbConnection</code>s, query parameters and <code class="highlighter-rouge">SqlException</code>s?
+ Let’s hide this low level stuff inside a repository and let our business code 
+ concentrate on business logic. Also see 
+ <a href="http://principles-wiki.net/principles:single_level_of_abstraction">Single level of abstraction principle</a>.</p>
+  </li>
+</ul>
+
+<p>So what is the solution you may ask? Get ready…</p>
+
+<h3 id="what-we-need-is-the-specific-repository-pattern">What we need is the “specific” repository pattern</h3>
+
+<p>We should start repository design by specifying it’s interface. 
+The interface should contain only methods required by clients of 
+the repository. In other words if nobody needs to delete entities of a given type
+or it does not make sense from business point of view
+we will not add <code class="highlighter-rouge">Delete</code> method to the interface.</p>
+
+<p>If you are afraid that you will end up with different names for
+basic CRUD operations like <code class="highlighter-rouge">Delete</code> on one repo and <code class="highlighter-rouge">Remove</code> on the other
+you may create helper interfaces like <code class="highlighter-rouge">ICanDeleteEntity&lt;TEntity&gt;</code>,
+<code class="highlighter-rouge">ICanUpdateEntity&lt;TEntity&gt;</code> etc. that will contain only methods for
+specific usage like deleting, updating etc. 
+Then the repository interface can inherit 
+appropriate subset of them.</p>
+
+<p>None of the methods on the repository interface should return <code class="highlighter-rouge">IQueryable&lt;T&gt;</code>
+type.
+Also make sure that the repository implementation does not 
+return <code class="highlighter-rouge">IQueryable&lt;T&gt;</code> value hidden as <code class="highlighter-rouge">IEnumerable&lt;T&gt;</code> one. 
+Always call <code class="highlighter-rouge">ToList()</code>
+or <code class="highlighter-rouge">ToArray()</code> to materialize query results before returning them 
+to the client.</p>
+
+<p>When it comes to the repository implementation, the implementation is free
+to inherit from <em>abstract</em> <code class="highlighter-rouge">GenericRepository&lt;TEntity&gt;</code> base class. 
+Alternatively it may use <code class="highlighter-rouge">ISession</code> or <code class="highlighter-rouge">DbSet</code> directly if it is more convenient. 
+No matter what approach you choose remember that “excessive” methods
+like <code class="highlighter-rouge">Delete</code>
+inherited from base class
+may be hidden by the repository interface.</p>
+
+<p>Please remember that your repository is NOT responsible for managing
+database transactions. This concern is best managed using 
+<a href="https://martinfowler.com/eaaCatalog/unitOfWork.html">Unit of Work pattern</a>.
+This pattern is already implemented by both <code class="highlighter-rouge">ISession</code> and <code class="highlighter-rouge">DatabaseContext</code>
+(think change tracking and dirty checking),
+we only need a better interface over them:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IUnitOfWork</span> <span class="p">{</span>
+    <span class="c1">// or just Begin()
+</span>    <span class="k">void</span> <span class="nf">BeginTransaction</span><span class="p">();</span>
+
+    <span class="k">void</span> <span class="nf">Commit</span><span class="p">();</span>
+    <span class="k">void</span> <span class="nf">Rollback</span><span class="p">();</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>For the most web applications it is enough to start transaction using <code class="highlighter-rouge">IUnitOfWork</code>
+at the beginning of the HTTP request and either <code class="highlighter-rouge">Commit</code> or <code class="highlighter-rouge">Rollback</code> at
+the end of the request. This can be done by using either an action filter
+or a decorator around command handlers and/or services.</p>
+
+<p>Example repository created using the above guidelines:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IOrderRepository</span> <span class="p">{</span>
+	<span class="c1">// We do not need FindById so we do not included it
+</span>	<span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="nf">FindActiveOrdersAssignedToUser</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span> 
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">OrderRepository</span> <span class="p">:</span> <span class="n">GenericRepository</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;,</span> <span class="n">IOrderRepository</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="nf">FindActiveOrdersAssignedToUser</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">base</span><span class="p">.</span><span class="nf">FindAll</span><span class="p">()</span>
+                <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">AssignedTo</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">id</span><span class="p">.</span><span class="n">Value</span><span class="p">)</span>
+                <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Closed</span><span class="p">)</span>
+                <span class="p">.</span><span class="nf">ToList</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>This should be obvious by now, but let’s not take chances.
+Every method of our repositories should be covered by one or more
+integration tests, which should use the same kind of DB that we use 
+in production environment. Remember always use <em>integration</em> tests to
+test your repositories.</p>
+
+<h3 id="turbocharging-the-repository-pattern">Turbocharging the repository pattern</h3>
+
+<p>There is no rose without thorns and presented above approach also has some
+serious drawbacks. Some of them can be fixed by using a different
+architecture than classic 3-layer arch.
+Most common problems with “specific” repositories are as follows:</p>
+
+<ul>
+  <li>Repositories can over long periods of time accumulate 
+ dozens and dozens of <code class="highlighter-rouge">Find*</code> methods. Often these methods will be very similar
+ to each other. There are two ways to combat this unwanted grow. One is to use 
+ a query object pattern. Basically you group several of these <code class="highlighter-rouge">Find*</code> methods together
+ into one more general <code class="highlighter-rouge">Find</code> method. That method should accept an object that will
+ represent a query criteria. For example:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">ordersToCancel</span> <span class="p">=</span> <span class="n">_orderRepository</span><span class="p">.</span><span class="nf">FindAllMatching</span><span class="p">(</span>
+	<span class="c1">// Alternatively you may use the builder pattern
+</span>	<span class="c1">// to create a criteria object.
+</span>	<span class="k">new</span> <span class="n">OrderCriteria</span> <span class="p">{</span>
+		<span class="n">StatusIsIn</span> <span class="p">=</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="n">OrderStatus</span><span class="p">.</span><span class="n">New</span><span class="p">,</span> <span class="n">OrderStatus</span><span class="p">.</span><span class="n">InProgres</span> <span class="p">},</span>
+		<span class="n">OrderedItemsContainAll</span> <span class="p">=</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="n">searchedItem</span> <span class="p">},</span>
+		<span class="n">CustomerIs</span> <span class="p">=</span> <span class="nf">GetCurrentCustomer</span><span class="p">()</span>
+	<span class="p">});</span></code></pre></figure>
+
+<p>To create a query from the criteria object we examine each search criteria and
+build query step-by-step:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">IQueryable</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="n">q</span> <span class="p">=</span> <span class="k">base</span><span class="p">.</span><span class="nf">FindAll</span><span class="p">();</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">criteria</span><span class="p">.</span><span class="n">StatusIsIn</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">q</span> <span class="p">=</span> <span class="n">q</span><span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">o</span> <span class="p">=&gt;</span> <span class="n">criteria</span><span class="p">.</span><span class="n">StatusIsIn</span><span class="p">.</span><span class="nf">Contains</span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="n">Status</span><span class="p">));</span>
+<span class="p">}</span>
+
+<span class="c1">// A long list of other conditions here..
+</span>
+<span class="k">return</span> <span class="n">q</span><span class="p">.</span><span class="nf">ToList</span><span class="p">();</span></code></pre></figure>
+
+<p>A closely related yet different aproach is to use the query object pattern (see 
+<a href="https://martinfowler.com/eaaCatalog/queryObject.html">this</a> and
+<a href="https://lostechies.com/jimmybogard/2012/10/08/favor-query-objects-over-repositories">this</a>).</p>
+
+<p>The second solution to this problem is more robust and reliable.
+Usually too big repositories are accompanied by huge services and 
+overgrown entities. You can slim down both your repos and services 
+by using something that I call CQRS-light. It differs from full-blown
+CQRS by using exactly the same database tables for both reads and writes.
+When doing CQRS-light we can use the same ORM framework for both reading and
+writing data and slowly migrate to real CQRS only in these parts of our
+application that really need it (do recall this 80+ columns searchable grid that
+generates 20+ inner join query that halts your DB server? - real CQRS can help here).</p>
+
+<p>The diagram below presents typical architecture of CQRS-light application:
+<img src="assets/images/2018-07-08/cqrs-light.svg" alt="CQRS-light architecture" /></p>
+
+<p>The key principles of CQRS-light are:</p>
+
+<ul>
+  <li>
+    <p>Split all user actions into two categories. In the first put all actions that
+ can modify the state of the system like e.g. creating a new order in an e-commerce app.
+ In the second<br />
+ category put all actions that do not modify state of the system e.g. 
+ viewing an order details. First category represents commands (writes), the second one
+ queries (reads). Only commands can change state of the system.</p>
+  </li>
+  <li>
+    <p>Query handlers do NOT use repositories to access data. They access DB 
+ using whatever technology they want.
+ Usual configurations include a single ORM on both read and write sides, 
+ ORM for writes and micro-ORM like Dapper for reads or 
+ using ORM for writes and raw SQL for reads.</p>
+  </li>
+  <li>
+    <p>Command handlers can only use repositories to access and modify data. 
+ Command handlers 
+ should not call query handlers to fetch data from database. 
+ If a command handler needs to execute 
+ a complex query and this query can be answered by a query handler
+ you should duplicate this query logic and put it
+ in both query handler and in a repository method
+ (read and write sides must be separated).</p>
+  </li>
+  <li>
+    <p>Query handlers are tested only using integration tests.
+ For command handlers you will have unit and optionally integration tests.
+ Repositories will be tested using integration tests.</p>
+  </li>
+</ul>
+
+<p>CQRS even in the “light” version is a huge topic and deserves a blog post of it’s own.
+<a href="https://github.com/jbogard/MediatR">MediatR</a> library is a good starting point
+if you want to find out more about CQRS-light approach.</p>
+
+<p>Let us return to the subject of the “specific” repository pattern drawbacks. 
+The second drawback that I want to mention is unwanted migration of the business
+logic into query definitions. For example even this simple query:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="nf">FindActiveOrders</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">base</span><span class="p">.</span><span class="nf">FindAll</span><span class="p">()</span>
+          <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Closed</span> 
+                       <span class="p">&amp;&amp;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Canceled</span><span class="p">)</span>
+          <span class="p">.</span><span class="nf">ToList</span><span class="p">();</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>contains a piece of business logic that describes what 
+it means for an order to be active.
+Usually ORM’s prevent us from encapsulating such pieces of logic
+into a separate properties like <code class="highlighter-rouge">IsActive</code>.</p>
+
+<p>What we need here is the specification pattern.
+You can find pretty decent overview of the specification pattern
+<a href="https://enterprisecraftsmanship.com/2016/02/08/specification-pattern-c-implementation/">here</a>.
+Our query method when we use the specification pattern should look similar to:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="nf">FindActiveOrders</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">base</span><span class="p">.</span><span class="nf">FindBySpec</span><span class="p">(</span><span class="k">new</span> <span class="nf">ActiveOrders</span><span class="p">())</span>
+          <span class="p">.</span><span class="nf">ToList</span><span class="p">();</span>
+<span class="p">}</span></code></pre></figure>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=How NOT to use the repository pattern&amp;url=https://marcin-chwedczuk.github.io/repository-pattern-my-way"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/repository-pattern-my-way"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/repository-pattern-my-way"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//repository-pattern-my-way';
+        this.page.identifier = '/repository-pattern-my-way';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover3.jpg)" href="/you-can-live-without-your-mocking-framework">
+            <section class="post">
+                <h2>You can live without mocking frameworks</h2>
+                <p>For a long time I have been fan of mocking frameworks like [Moq](https://github.com/Moq/moq4/wiki/Quickstart) and [NSubstitute](http://nsubstitute.github.io)....</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/devoxx_cover.jpeg)" href="/devoxx-poland-2018">
+            <section class="post">
+                <h2>Devoxx Poland 2018</h2>
+                <p>[Photo above shows Mr. Jakub Nabrdalik during his presentation about TDD in main conference room.]...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

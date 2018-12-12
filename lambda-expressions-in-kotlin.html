@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Lambda expressions in Kotlin</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover2.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Lambda expressions in Kotlin</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2017-06-10">10 Jun 2017</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/kotlin'>Kotlin</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>In this blog post we will learn about Kotlin lambda expressions
+and how they are compiled to JVM bytecode.</p>
+
+<h4 id="basic-syntax">Basic syntax</h4>
+
+<p>To create lambda expression that just prints <code class="highlighter-rouge">Hello, world!</code>
+we write:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">val printHelloWorld = {
+   println("Hello, world!")
+}</code></pre></figure>
+
+<p>We may invoke this function using either syntax:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">printHelloWorld()
+// or
+printHelloWorld.invoke()</code></pre></figure>
+
+<p>The former is idiomatic and should be used in your code.</p>
+
+<p>When we need to create a lambda that takes parameters we
+use syntax:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">val sayHello = { user: String -&gt; 
+   println("Hello, $user!") 
+}
+sayHello("johnny")
+// or with multiple parameters
+val printSummary = { user: String, score: Int -&gt; 
+   println("User '$user' get $score points.")
+}
+printSummary("johnny", 123)</code></pre></figure>
+
+<p>When types of parameters may be inferred from the context we may skip them
+as in:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">val names = arrayOf("joe", "ann", "molly", "dolly")
+names.sortedBy { name -&gt; name.length }
+// equivalent to
+names.sortedBy { name: String -&gt; name.length }</code></pre></figure>
+
+<p>When working with Kotlin Sequence library you often need to define
+short function literals (another name for a lambda expression) that take only
+one parameter, for example:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">val russianNames = arrayOf("Maksim", "Artem", "Sophia", "Maria", "Maksim")
+
+val selectedName = russianNames
+      .filter { name -&gt; name.startsWith("m", ignoreCase = true) }
+      .sortedBy { name -&gt; name.length }
+      .firstOrNull()</code></pre></figure>
+
+<p>For this special case Kotlin provides a shortcut, instead of writing:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">.filter { name -&gt; name.startsWith("m", ignoreCase = true) }
+// we may write
+.filter { it.startsWith("m", ignoreCase = true) }</code></pre></figure>
+
+<p>Notice that we skipped parameter declaration altogether and 
+use <code class="highlighter-rouge">it</code> keyword to access parameter value. 
+If we rewrite our earlier example to use this new feature
+we get not only shorter but also much more clearer code:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">val selectedName = russianNames
+      .filter { it.startsWith("m", ignoreCase = true) }
+      .sortedBy { it.length }
+      .firstOrNull()</code></pre></figure>
+
+<p>Function literals in Kotlin always return a value. By default
+value of the last expression in a lambda body is returned, for example:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">val produceValue = { "foo" }
+println(produceValue()) // prints "foo"
+
+val max = { a: Int, b: Int -&gt;
+  if (a &gt; b)
+      a
+  else
+      b
+}
+println(max(10,4)) // prints "10"</code></pre></figure>
+
+<p>Sometimes we want to return early from a lambda body, in this case
+we must follow “return-at-label” syntax:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">val doStuff = lambda@ { stopEarly: Boolean -&gt;
+   println("line 1")
+   if (stopEarly) return@lambda
+   println("line 2")
+}
+
+doStuff(true)
+doStuff(false)</code></pre></figure>
+
+<p>First we tag lambda expression with label <code class="highlighter-rouge">lambda@</code>.
+You may use any name you like but label must ends with <code class="highlighter-rouge">@</code> character
+(called ‘at’ character).
+Then inside lambda body to signify return we use <code class="highlighter-rouge">return</code> keyword followed
+by label name. There must be no whitespace between <code class="highlighter-rouge">return</code>
+and label name.</p>
+
+<p>Since “return-at-label” syntax is a bit cumbersome, we may use alternative
+approach.
+Instead of using a lambda expression we may use an anonymous function:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">val doStuff = fun(stopEarly: Boolean) {
+   println("line 1")
+   if (stopEarly) return
+   println("line 2")
+}</code></pre></figure>
+
+<p>Inside anonymous function <code class="highlighter-rouge">return</code> works like in any other Kotlin function.
+Anonymous functions can also be used in cases when we must specify return
+type of lambda explicitly:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">val returnAny = {
+   "foo" as Any
+}
+
+val returnAny2 = 
+   fun(): Any = "foo"</code></pre></figure>
+
+<p>Sometimes you do not need a value of particular lambda parameter,
+in this case to avoid mistakes you may replace parameter name with <code class="highlighter-rouge">_</code>.
+For example:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">(1..5)
+   .map { _ -&gt; rand.nextInt(100) }
+   .forEach { println(it) }</code></pre></figure>
+
+<h5 id="function-types">Function types</h5>
+
+<p>Kotlin provides succinct syntax for specifying function types,
+for example <code class="highlighter-rouge">() -&gt; Unit</code> is type of a function that doesn’t take
+any parameters and returns nothing, and <code class="highlighter-rouge">(Int) -&gt; Int</code> is type
+of a function that takes single parameter of type <code class="highlighter-rouge">Int</code> and returns
+value of type <code class="highlighter-rouge">Int</code>. Here are more examples:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">val fun1: (Int,Int)-&gt;Int = 
+   { a,b -&gt; Math.max(a,b) }
+
+val fun2: (String,MutableList&lt;String&gt;)-&gt;Unit =
+   { s,list -&gt; list.add(s) }
+
+val fun3: (Int,(Int)-&gt;Int)-&gt;Int = 
+   { value, func -&gt; func(value) }</code></pre></figure>
+
+<p>I believe that <code class="highlighter-rouge">fun1</code> and <code class="highlighter-rouge">fun2</code> declarations needs no explanation.
+When it comes to <code class="highlighter-rouge">fun3</code> it is a higher level function, it
+returns an integer and takes two arguments,
+an integer and a function that takes an integer
+and returns an integer.</p>
+
+<p>When we use function types we may also provide names
+for parameters, this further improves clarity of
+code:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">val sin: (angleInRadians: Double) -&gt; Double =
+    Math::sin</code></pre></figure>
+
+<p>In the example above I used method reference <code class="highlighter-rouge">Math::sin</code>,
+this is equivalent to <code class="highlighter-rouge"><span class="p">{</span><span class="w"> </span><span class="err">x</span><span class="w"> </span><span class="err">-&gt;</span><span class="w"> </span><span class="err">Math.sin(x)</span><span class="w"> </span><span class="p">}</span></code>.</p>
+
+<h5 id="type-aliases">Type aliases</h5>
+
+<p>Since repeating function types may be tiring and error prone,
+we should use Kotlin type aliases to give them meaningful names.</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">typealias IntToStringConverter = 
+   (Int) -&gt; String
+
+typealias StringListAppender = 
+   (String,MutableList&lt;String&gt;)-&gt;Unit</code></pre></figure>
+
+<p>Now we may use aliases instead of repeating types in our declarations, e.g.</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">val fun2: StringListAppender =
+   { s,list -&gt; list.add(s) }</code></pre></figure>
+
+<p>The last cool thing about type aliases is that they
+can use generic parameters. This allows us to
+easily create types like:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">typealias Predicate&lt;T&gt; = (T) -&gt; Boolean
+typealias Converter&lt;FROM,TO&gt; = (FROM) -&gt; TO</code></pre></figure>
+
+<h5 id="closures">Closures</h5>
+
+<p>Kotlin lambda expressions may be passed as arguments and returned
+from functions. This allows us to apply many techniques from functional
+programming. For example:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">typealias Counter = ()-&gt;Int
+
+fun counter(initValue: Int): Counter {
+    var n = initValue
+    return { n++ }
+}
+
+fun main(args: Array&lt;String&gt;) {
+    val c1 = counter(100)
+
+    println(c1()) // 100
+    println(c1()) // 101
+    println(c1()) // 102
+}</code></pre></figure>
+
+<p>Yet best feature of Kotlin lambdas in comparison to Java 8
+lambdas is support of true 
+<a href="https://en.wikipedia.org/wiki/Closure_(computer_programming)">closures</a>
+- using simple words this is a language feature that allows lambda expression
+to access and modify all variables that are in scope of their declarations.
+Java 8 lambdas can only access external variables but cannot modify
+them, this may be quite limiting when we try to use functional programming
+in Java.</p>
+
+<p>Following program demonstrates how closures work in Kotlin:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">fun main(args: Array&lt;String&gt;) {
+    var sum = 0
+    (1..10).forEach { sum += it }
+    println(sum)
+}</code></pre></figure>
+
+<p>Here we see that <code class="highlighter-rouge"><span class="p">{</span><span class="w"> </span><span class="err">sum</span><span class="w"> </span><span class="err">+=</span><span class="w"> </span><span class="err">it</span><span class="w"> </span><span class="p">}</span></code> lambda can access and modify <code class="highlighter-rouge">sum</code> 
+variable that is declared outside of lambda body.</p>
+
+<h5 id="implementation">Implementation</h5>
+
+<p>Now you may be wondering how lambda expressions are translated to
+JVM bytecode. In Kotlin every lambda is compiled to a small class.
+For example simple expression that doesn’t use any variables:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">val printHelloWorld = {
+    println("Hello, world!")
+}</code></pre></figure>
+
+<p>Is compiled to:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Metadata</span><span class="o">(</span><span class="cm">/*...*/</span><span class="o">)</span>
+<span class="kd">final</span> <span class="kd">class</span> <span class="nc">AppKt</span><span class="n">$main$printHelloWorld</span><span class="err">$</span><span class="mi">1</span> 
+        <span class="kd">extends</span> <span class="n">Lambda</span> <span class="kd">implements</span> <span class="n">Function0</span> <span class="o">{</span>
+   
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">AppKt$main$printHelloWorld</span><span class="err">$</span><span class="mi">1</span> <span class="n">INSTANCE</span> <span class="o">=</span> 
+        <span class="k">new</span> <span class="n">AppKt$main$printHelloWorld</span><span class="err">$</span><span class="mi">1</span><span class="o">();</span>
+
+    <span class="n">AppKt$main$printHelloWorld</span><span class="err">$</span><span class="mi">1</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="cm">/*arity:*/</span> <span class="mi">0</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">final</span> <span class="kt">void</span> <span class="n">invoke</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">// actual body of lambda expression</span>
+        <span class="n">String</span> <span class="n">var1</span> <span class="o">=</span> <span class="s">"Hello, world!"</span><span class="o">;</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">var1</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This class was generated by Kotlin compiler
+and uses types form Kotlin runtime to provide its
+functionality. In particular it extends <code class="highlighter-rouge">Lambda</code> abstract
+class. 
+<code class="highlighter-rouge">Lambda</code> constructor takes single parameter that specify 
+function arity - a number of parameters that lambda expression takes.
+<code class="highlighter-rouge">Lambda</code> also implements <code class="highlighter-rouge">Function</code> and <code class="highlighter-rouge">FunctionBase</code> interfaces,
+and provides simple <code class="highlighter-rouge">toString()</code> implementation that prints function 
+type - in our case <code class="highlighter-rouge">() -&gt; kotlin.Unit</code>.
+For your convinience here are simplified definitions of the above types:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// from Kotlin runtime (kotlin.* packages)</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Function</span> <span class="o">{</span> <span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">FunctionBase</span> <span class="kd">extends</span> <span class="n">Function</span><span class="o">,</span> <span class="n">Serializable</span> <span class="o">{</span>
+   <span class="kt">int</span> <span class="n">getArity</span><span class="o">();</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Lambda</span> <span class="kd">implements</span> <span class="n">FunctionBase</span> <span class="o">{</span>
+   <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">arity</span><span class="o">;</span>
+
+   <span class="kd">public</span> <span class="n">Lambda</span><span class="o">(</span><span class="kt">int</span> <span class="n">arity</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">arity</span> <span class="o">=</span> <span class="n">arity</span><span class="o">;</span>
+   <span class="o">}</span>
+
+   <span class="kd">public</span> <span class="kt">int</span> <span class="n">getArity</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">arity</span><span class="o">;</span>
+   <span class="o">}</span>
+
+   <span class="kd">public</span> <span class="n">String</span> <span class="n">toString</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">Reflection</span><span class="o">.</span><span class="na">renderLambdaToString</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+   <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Classes generated for lambda expressions also implement <code class="highlighter-rouge">FunctionN</code>
+interfaces, where <code class="highlighter-rouge">N</code> is lambda arity. Again <code class="highlighter-rouge">FunctionN</code> interfaces
+are provided by Kotlin runtime:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Function0</span> <span class="kd">extends</span> <span class="n">Function</span> <span class="o">{</span>
+   <span class="n">Object</span> <span class="n">invoke</span><span class="o">();</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Function1</span> <span class="kd">extends</span> <span class="n">Function</span> <span class="o">{</span>
+   <span class="n">Object</span> <span class="n">invoke</span><span class="o">(</span><span class="n">Object</span> <span class="n">var1</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Function2</span> <span class="kd">extends</span> <span class="n">Function</span> <span class="o">{</span>
+   <span class="n">Object</span> <span class="n">invoke</span><span class="o">(</span><span class="n">Object</span> <span class="n">var1</span><span class="o">,</span> <span class="n">Object</span> <span class="n">var2</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="c1">// Kotlin runtime contains FunctionN defintions</span>
+<span class="c1">// up to N=22</span></code></pre></figure>
+
+<p>Now lets take a look at how lambda expressions are invoked,
+following code:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">printHelloWorld()</code></pre></figure>
+
+<p>Is translated into:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">Function0 printHelloWorld = (Function0)
+    AppKt$main$printHelloWorld$1.INSTANCE;
+
+printHelloWorld.invoke();</code></pre></figure>
+
+<p>Notice that since our lambda expression doesn’t capture
+any external variables in its closure, compiler is free to
+share single lambda instance (contained in
+static field <code class="highlighter-rouge">INSTANCE</code>) across all codebase.</p>
+
+<p>The case is more complicated when closures are involved,
+for example consider the following code:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">var value = 0
+
+val incValue = { value++ }
+val decValue = { value-- }
+
+incValue()
+decValue()
+
+println(value)</code></pre></figure>
+
+<p>As usual Kotlin compiler generated classes for lambdas:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">final</span> <span class="kd">class</span> <span class="nc">AppKt</span><span class="n">$main$incValue</span><span class="err">$</span><span class="mi">1</span> <span class="kd">extends</span> <span class="n">Lambda</span> <span class="kd">implements</span> <span class="n">Function0</span> <span class="o">{</span>
+   <span class="kd">final</span> <span class="n">IntRef</span> <span class="n">$value</span><span class="o">;</span>
+
+   <span class="n">AppKt$main$incValue</span><span class="err">$</span><span class="mi">1</span><span class="o">(</span><span class="n">IntRef</span> <span class="n">var1</span><span class="o">)</span> <span class="o">{</span>
+      <span class="kd">super</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+      <span class="k">this</span><span class="o">.</span><span class="n">$value</span> <span class="o">=</span> <span class="n">var1</span><span class="o">;</span>
+   <span class="o">}</span>
+
+   <span class="kd">public</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">invoke</span><span class="o">()</span> <span class="o">{</span>
+      <span class="kt">int</span> <span class="n">var1</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="n">$value</span><span class="o">.</span><span class="na">element</span><span class="o">++;</span>
+      <span class="k">return</span> <span class="n">var1</span><span class="o">;</span>
+   <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">final</span> <span class="kd">class</span> <span class="nc">AppKt</span><span class="n">$main$decValue</span><span class="err">$</span><span class="mi">1</span> <span class="kd">extends</span> <span class="n">Lambda</span> <span class="kd">implements</span> <span class="n">Function0</span> <span class="o">{</span>
+   <span class="kd">final</span> <span class="n">IntRef</span> <span class="n">$value</span><span class="o">;</span>
+
+   <span class="n">AppKt$main$decValue</span><span class="err">$</span><span class="mi">1</span><span class="o">(</span><span class="n">IntRef</span> <span class="n">var1</span><span class="o">)</span> <span class="o">{</span>
+      <span class="kd">super</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+      <span class="k">this</span><span class="o">.</span><span class="n">$value</span> <span class="o">=</span> <span class="n">var1</span><span class="o">;</span>
+   <span class="o">}</span>
+
+   <span class="kd">public</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">invoke</span><span class="o">()</span> <span class="o">{</span>
+      <span class="kt">int</span> <span class="n">var1</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="n">$value</span><span class="o">.</span><span class="na">element</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="n">$value</span><span class="o">.</span><span class="na">element</span> <span class="o">+=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+      <span class="k">return</span> <span class="n">var1</span><span class="o">;</span>
+   <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Both classes generated for lambda expressions now take a single
+parameter of type <code class="highlighter-rouge">IntRef</code>. As you may suspect this class is a
+wrapper around <code class="highlighter-rouge">value</code> variable, its definition is again part of Kotlin
+runtime:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">IntRef</span> <span class="kd">implements</span> <span class="n">Serializable</span> <span class="o">{</span>
+   <span class="kd">public</span> <span class="kt">int</span> <span class="n">element</span><span class="o">;</span>
+
+   <span class="kd">public</span> <span class="n">String</span> <span class="n">toString</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">element</span><span class="o">);</span>
+   <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This time our original code is compiled into:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// var value = 0</span>
+<span class="n">IntRef</span> <span class="n">value</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IntRef</span><span class="o">();</span>
+<span class="n">value</span><span class="o">.</span><span class="na">element</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+
+<span class="c1">// val incValue = { value++ }</span>
+<span class="n">Function0</span> <span class="n">incValue</span> <span class="o">=</span> 
+    <span class="o">(</span><span class="n">Function0</span><span class="o">)(</span><span class="k">new</span> <span class="n">AppKt</span><span class="o">.</span><span class="na">main</span><span class="o">.</span><span class="na">incValue</span><span class="o">.</span><span class="mi">1</span><span class="o">(</span><span class="n">value</span><span class="o">));</span>
+
+<span class="c1">// val decValue = { value-- }</span>
+<span class="n">Function0</span> <span class="n">decValue</span> <span class="o">=</span> 
+    <span class="o">(</span><span class="n">Function0</span><span class="o">)(</span><span class="k">new</span> <span class="n">AppKt</span><span class="o">.</span><span class="na">main</span><span class="o">.</span><span class="na">decValue</span><span class="o">.</span><span class="mi">1</span><span class="o">(</span><span class="n">value</span><span class="o">));</span>
+
+<span class="c1">// incValue()</span>
+<span class="n">incValue</span><span class="o">.</span><span class="na">invoke</span><span class="o">();</span>
+
+<span class="c1">// decValue()</span>
+<span class="n">decValue</span><span class="o">.</span><span class="na">invoke</span><span class="o">();</span>
+
+<span class="c1">// println(value)</span>
+<span class="kt">int</span> <span class="n">var4</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="na">element</span><span class="o">;</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">var4</span><span class="o">);</span></code></pre></figure>
+
+<p>As we can see code generated for lambdas with closures is much
+more complicated. Value of every variable accessed by lambda expression
+must be stored in lambda class field. Primitive types must be wrapped
+in classes like <code class="highlighter-rouge">IntRef</code> and unwrapped when they values are needed
+(reference types are not wrapped).
+Also bear in mind that compiler instantiates plenty of new objects even
+for a simple code used in our example, this may negatively affect
+performance of your application if you are not careful.</p>
+
+<h4 id="using-receiver-object">Using receiver object</h4>
+
+<p>Sometimes we want lambda expression to behave as it was
+a method on some object, we will call this object receiver.
+By this I mean that lambda will have
+access to <code class="highlighter-rouge">this</code> value and also lambda will be able to
+call other methods on receiver without any qualification. 
+This behaviour is mostly used when we create
+custom <a href="https://en.wikipedia.org/wiki/Domain-specific_language">DSLs</a>
+(for more details <a href="https://kotlinlang.org/docs/reference/type-safe-builders.html">see Kotlin official documentation</a>).</p>
+
+<p>Let’s look at a simple example:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">class DummyObject {
+    fun foo() { println("foo") }
+    fun bar() { println("bar") }
+}
+
+fun main(args: Array&lt;String&gt;) {
+    val f1: DummyObject.() -&gt; Unit = {
+        // call methods without qualification
+        foo()
+        bar()
+
+        // we can use this
+        this.foo()
+
+        // this will have type of the receiver object
+        val this_: DummyObject = this
+        this_.bar()
+    }
+
+    // we can call lambda in a classic way
+    f1(DummyObject())
+
+    // or using more idiomatic syntax
+    val dummy = DummyObject()
+    dummy.f1()
+    
+}</code></pre></figure>
+
+<p>First we declare <code class="highlighter-rouge">f1</code> to be a lambda that operates on receiver objects
+of type <code class="highlighter-rouge">DummyObject</code>, to do that we prepend <code class="highlighter-rouge">TypeOfReceiver.</code> to
+a function type.
+Then we may call methods on current receiver object without any qualification,
+and use <code class="highlighter-rouge">this</code> to obtain current receiver.
+Of course when invoking such a lambda we must provide receiver, we can
+either pass it as a first parameter or use special <code class="highlighter-rouge">receiver.lambda_name(args)</code> syntax.</p>
+
+<p>A bit of warning here, in our example if we add <code class="highlighter-rouge">f1()</code> method to
+our <code class="highlighter-rouge">DummyObject</code> then that method would be called and not our
+lambda if we use <code class="highlighter-rouge">receiver.lambda_name(args)</code> syntax:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">val dummy = DummyObject()
+dummy.f1() // object methods have precedence</code></pre></figure>
+
+<p>Lambdas with receiver were devised to allow creation of
+easy to use DSLs, you should not use them in you code until
+you are building custom DSL.</p>
+
+<p>One more thing, sometimes we want to convert a call to an object
+method to a lambda expression. We don’t need to use lambdas with
+receiver to achieve that, plain lambda is enough:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">val dummy = DummyObject()
+
+val x: ()-&gt;Unit = { dummy.foo() }
+x()
+
+val y = { dummy.bar() }
+y()</code></pre></figure>
+
+<p>Or even better we may use method references (borrowed by Kotlin from Java 8):</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">val dummy = DummyObject()
+
+val x: ()-&gt;Unit = dummy::foo
+x() // calls foo on dummy
+
+val y = dummy::bar
+y() // calls bar on dummy</code></pre></figure>
+
+<h4 id="using-lambdas-with-inline-methods">Using lambdas with <code class="highlighter-rouge">inline</code> methods</h4>
+
+<p>Kotlin supports <code class="highlighter-rouge">inline</code> methods, they are similar to macros in
+C and LISP and allow us to add new statements to the language.
+To understand how <code class="highlighter-rouge">inline</code> methods work we will create a new
+statement that executes given block of code and reports how much
+time that execution took.</p>
+
+<p>We will start with plain method:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">fun time(blockName: String, codeBlock: ()-&gt;Unit) {
+    val startTime = System.currentTimeMillis()
+
+    try {
+        codeBlock()
+    }
+    finally {
+        val endTime = System.currentTimeMillis()
+        println("execution of $blockName took ${endTime-startTime} ms.")
+    }
+}</code></pre></figure>
+
+<p>Then we may use this method to measure time of e.g. printing new line
+to the standard output:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">time("simple println", {
+    println("Hello, world!")
+})</code></pre></figure>
+
+<p>This doesn’t look very readable, fortunately in Kotlin when last
+function parameter is of function type we may use alternative syntax:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">time("simple println") {
+    println("Hello, world!")
+}</code></pre></figure>
+
+<p>This looks more like a language statement than a function call, but we still
+call <code class="highlighter-rouge">time</code> function. Yet we may do even better than that, if we add <code class="highlighter-rouge">inline</code>
+modifier to the <code class="highlighter-rouge">time</code> function compiler will inline our function at callsite
+instead of calling it.
+For example with:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">inline fun time(blockName: String, codeBlock: ()-&gt;Unit) {</code></pre></figure>
+
+<p>Our sample call is translated by compiler into:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">String</span> <span class="n">blockName$iv</span> <span class="o">=</span> <span class="s">"simple println"</span><span class="o">;</span>
+<span class="kt">long</span> <span class="n">startTime$iv</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+
+<span class="n">String</span> <span class="n">var4</span><span class="o">,</span> <span class="n">var11</span><span class="o">;</span>
+<span class="kt">long</span> <span class="n">endTime$iv1</span><span class="o">;</span>
+<span class="k">try</span> <span class="o">{</span>
+    <span class="n">var4</span> <span class="o">=</span> <span class="s">"Hello, world!"</span><span class="o">;</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">var4</span><span class="o">);</span>
+<span class="o">}</span>
+<span class="k">finally</span> <span class="o">{</span>
+    <span class="n">endTime$iv1</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+    <span class="n">var11</span> <span class="o">=</span> <span class="s">"execution of "</span> <span class="o">+</span> <span class="n">blockName$iv</span> <span class="o">+</span> <span class="s">" took "</span> <span class="o">+</span> 
+        <span class="o">(</span><span class="n">endTime$iv1</span> <span class="o">-</span> <span class="n">startTime$iv</span><span class="o">)</span> <span class="o">+</span> <span class="s">" ms."</span><span class="o">;</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">var11</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Kotlin compiler assumes that if we pass lambda expression to
+inline function it also will be inlined. For this reason
+Kotlin allows us to use <code class="highlighter-rouge">break</code>, <code class="highlighter-rouge">continue</code>[1] and <code class="highlighter-rouge">return</code> statements
+in lambdas that are passed to inline functions, for example:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">time("simple println") {
+    println("Hello, world!")
+    return
+}</code></pre></figure>
+
+<p>Sometimes inline function takes lambda parameter but passes it
+to another function, such parameters may not be inlined and should
+be marked with <code class="highlighter-rouge">crossinline</code> modifier. We may also mark 
+lambda parameter as “noninlineable” with <code class="highlighter-rouge">noinline</code> modifier.
+In both cases we will
+not be able to use <code class="highlighter-rouge">return</code> and other control flow instructions in
+lambdas passed as values to such parameters.</p>
+
+<ul>
+  <li>[1] - <code class="highlighter-rouge">break</code> and <code class="highlighter-rouge">continue</code> are not yet supported, but Kotlin team
+ plans to add them to the language in a future release.</li>
+</ul>
+
+<h4 id="covariance-and-contravariance">Covariance and contravariance</h4>
+
+<p>Kotlin lambda expressions support 
+<a href="https://en.wikipedia.org/wiki/Covariance_and_contravariance_(computer_science)">covariance and contravariance</a>
+as is illustrated by the following example:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin">val stringProducer: ()-&gt;String = { "foo" }
+val anyProducer: ()-&gt;Any = stringProducer
+
+println(stringProducer())
+println(anyProducer())
+
+val anyConsumer: (Any)-&gt;Unit = { any -&gt; println("consumed '$any'") }
+val stringConsumer: (String)-&gt;Unit = anyConsumer
+
+anyConsumer("bar")
+stringConsumer("bar")</code></pre></figure>
+
+<p>We can see that a lambda that returns <code class="highlighter-rouge">String</code> may be used
+anywhere where a lambda that returns <code class="highlighter-rouge">Any</code> is expected.
+The same goes for parameters, lambda that takes <code class="highlighter-rouge">Any</code> parameter
+may be used in place of a function that takes <code class="highlighter-rouge">String</code> parameter.</p>
+
+<h4 id="how-to-decompile-kotlin-code">How to decompile Kotlin code</h4>
+
+<p>To provide decompiled code samples I used <a href="https://github.com/Konloch/bytecode-viewer/releases">Bytecode Viewer</a> with <a href="https://github.com/fesh0r/fernflower">FernFlower</a> engine:
+<img src="assets/images/2017-06-10/bytecode_viewer.png" alt="Bytecode Viewer main window" /></p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Lambda expressions in Kotlin&amp;url=https://marcin-chwedczuk.github.io/lambda-expressions-in-kotlin"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/lambda-expressions-in-kotlin"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/lambda-expressions-in-kotlin"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//lambda-expressions-in-kotlin';
+        this.page.identifier = '/lambda-expressions-in-kotlin';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover6.jpg)" href="/debugging-openjdk8-with-netbeans-on-ubuntu">
+            <section class="post">
+                <h2>Debugging OpenJDK 8 with NetBeans on Ubuntu</h2>
+                <p>In this post we will learn how to download, compile and debug OpenJDK 8 using...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/zen_cover2.jpg)" href="/zen-and-the-art-of-unit-testing">
+            <section class="post">
+                <h2>Zen and the Art of Unit Testing</h2>
+                <p>In this blog post we will concern ourselves with unit testing of classic 3-layer business...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

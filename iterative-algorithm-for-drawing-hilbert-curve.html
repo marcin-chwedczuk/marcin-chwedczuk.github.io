@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Iterative algorithm for drawing Hilbert curve</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover2.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Iterative algorithm for drawing Hilbert curve</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2016-08-06">06 Aug 2016</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/algorithm'>Algorithm</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>In this post I will describe how to draw Hilbert curve iteratively.
+To avoid recursion we will use <code class="highlighter-rouge">hindex2xy</code> algorithm that
+translates Hilbert curve node index to 
+Cartesian coordinates.</p>
+
+<p>To index Hilbert curve nodes we assume that
+curve starts in the left bottom corner and ends in the right bottom corner.
+Indexes start at zero. Here is example numbering of <code class="highlighter-rouge">N=8</code> Hilbert curve:
+<img src="assets/images/2016-08-13/hnumbering.svg" alt="N=8 Hilbert curve node indexing" />
+We expect that <code class="highlighter-rouge">hindex2xy(17) = (x:1, y:4)</code> and <code class="highlighter-rouge">hindex2xy(40) = (x:6, y:6)</code>.</p>
+
+<p><code class="highlighter-rouge">hindex2xy</code> algorithm uses bottom-up approach to compute node coordinates without
+using recursion. When we look at the binary representation of the node indexes we may
+notice that the last two bits represent node position inside <code class="highlighter-rouge">N=2</code> Hilbert curve.
+Next two bits represent where that <code class="highlighter-rouge">N=2</code> Hilbert curve is located inside bigger
+<code class="highlighter-rouge">N=4</code> curve etc.</p>
+
+<p>Example will show us
+how it works for <code class="highlighter-rouge">N=4</code> Hilbert curve and <code class="highlighter-rouge">index=7</code>:
+<img src="assets/images/2016-08-13/hbottomup.svg" alt="Computing coordinates bottom-up" />
+Let’s start by writing index value as binary number: 7 <sub>dec</sub> is equal 0111<sub>bin</sub>.
+The last two bits of 0111<sub>bin</sub> are
+11<sub>bin</sub>, they
+corresponds to the bottom right node of the <code class="highlighter-rouge">N=2</code> Hilbert curve (marked green on the image).
+This node has Cartesian coordinates <code class="highlighter-rouge">(x:1, y:0)</code>.
+Now let’s move to the next two bits:
+01<sub>bin</sub>, these bits corresponds to the left upper corner of <code class="highlighter-rouge">N=4</code> Hilbert curve
+(marked yellow on the image).
+To transform <code class="highlighter-rouge">N=2</code> into <code class="highlighter-rouge">N=4</code> coords we must notice that 
+left upper corner of <code class="highlighter-rouge">N=4</code> curve is just translated copy of <code class="highlighter-rouge">N=2</code> curve.
+So to get <code class="highlighter-rouge">N=4</code> coords we must apply translation <code class="highlighter-rouge">(x:0, y:2)</code> to <code class="highlighter-rouge">N=2</code> coords:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">(x:1, y:2) = (x:1, y:0) + (x:0, y:2)</code></pre></figure>
+
+<p>We end with <code class="highlighter-rouge">(x:1, y:2)</code> point that correctly 
+represent node with index 7 inside <code class="highlighter-rouge">N=4</code> curve.</p>
+
+<p>Let’s assume that we want to find out coords of node in <code class="highlighter-rouge">N=2K</code> Hilbert curve,
+given that we have coords <code class="highlighter-rouge">(x,y)</code> of node in <code class="highlighter-rouge">N=K</code> curve.
+In general when computing coords bottom-up we have four cases:
+<img src="assets/images/2016-08-13/hblocks.svg" alt="Computing coordinates bottom-up" />
+Cases B and C are really simple since <code class="highlighter-rouge">N=2K</code> curve contains copies
+of <code class="highlighter-rouge">N=K</code> curve in B and C squares. In case B we should
+transform coords using equation:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">coords_2K = coords_K + (x:0, y:K)</code></pre></figure>
+
+<p>And in case C we should use equation:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">coords_2K = coords_K + (x:K, y:K)</code></pre></figure>
+
+<p>In cases A and D we must be careful when transforming coords because we must
+preserve order of traversal of <code class="highlighter-rouge">N=K</code> curve inside <code class="highlighter-rouge">N=2K</code> curve.
+I marked each curve start and end with red and blue dots so we can
+see better how we should perform transformation.</p>
+
+<p>In case A first node of <code class="highlighter-rouge">N=K</code> curve should coincide with first node of <code class="highlighter-rouge">N=2K</code> curve
+and <code class="highlighter-rouge">N=K</code> curve should end next to the start of “case B” curve.
+We can achieve this by flipping coords around diagonal:
+<img src="assets/images/2016-08-13/casea.svg" alt="Case A transformation" /></p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">coords_2K.x = coords_K.y
+coords_2K.y = coords_K.x</code></pre></figure>
+
+<p>Case D is similar to case A, we must flip coords but around second diagonal:
+<img src="assets/images/2016-08-13/cased.svg" alt="Case D transformation" />
+In addition to that we must translate node coords to the right:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">coords_2K.x = (K-1) - coords_K.y
+coords_2K.y = (K-1) - coords_K.x
+
+coords_2K.x = coords_2K.x + K</code></pre></figure>
+
+<p>Finally let’s see full algorithm code in JavaScript:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">last2bits</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">(</span><span class="nx">x</span> <span class="o">&amp;</span> <span class="mi">3</span><span class="p">);</span> <span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">hindex2xy</span><span class="p">(</span><span class="nx">hindex</span><span class="p">,</span> <span class="nx">N</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 1. compute position of node in N=2 curve</span>
+    <span class="kd">var</span> <span class="nx">positions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="cm">/* 0: */</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="cm">/* 1: */</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="cm">/* 2: */</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="cm">/* 3: */</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="p">];</span>
+
+    <span class="kd">var</span> <span class="nx">tmp</span> <span class="o">=</span> <span class="nx">positions</span><span class="p">[</span><span class="nx">last2bits</span><span class="p">(</span><span class="nx">hindex</span><span class="p">)];</span>
+    <span class="nx">hindex</span> <span class="o">=</span> <span class="p">(</span><span class="nx">hindex</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">2</span><span class="p">);</span>
+
+    <span class="c1">// 2. iteratively compute coords</span>
+    <span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="kd">var</span> <span class="nx">y</span> <span class="o">=</span> <span class="nx">tmp</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+    
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">n</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span> <span class="nx">n</span> <span class="o">&lt;=</span> <span class="nx">N</span><span class="p">;</span> <span class="nx">n</span> <span class="o">*=</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">n2</span> <span class="o">=</span> <span class="nx">n</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+
+        <span class="k">switch</span> <span class="p">(</span><span class="nx">last2bits</span><span class="p">(</span><span class="nx">hindex</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="mi">0</span><span class="err">:</span> <span class="cm">/* case A: left-bottom */</span>
+            <span class="nx">tmp</span> <span class="o">=</span> <span class="nx">x</span><span class="p">;</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">y</span><span class="p">;</span> <span class="nx">y</span> <span class="o">=</span> <span class="nx">tmp</span><span class="p">;</span>
+            <span class="k">break</span><span class="p">;</span>
+
+        <span class="k">case</span> <span class="mi">1</span><span class="err">:</span> <span class="cm">/* case B: left-upper */</span>
+            <span class="nx">x</span> <span class="o">=</span> <span class="nx">x</span><span class="p">;</span>
+            <span class="nx">y</span> <span class="o">=</span> <span class="nx">y</span> <span class="o">+</span> <span class="nx">n2</span><span class="p">;</span>
+            <span class="k">break</span><span class="p">;</span>
+
+        <span class="k">case</span> <span class="mi">2</span><span class="err">:</span> <span class="cm">/* case C: right-upper */</span>
+            <span class="nx">x</span> <span class="o">=</span> <span class="nx">x</span> <span class="o">+</span> <span class="nx">n2</span><span class="p">;</span>
+            <span class="nx">y</span> <span class="o">=</span> <span class="nx">y</span> <span class="o">+</span> <span class="nx">n2</span><span class="p">;</span>
+            <span class="k">break</span><span class="p">;</span>
+
+        <span class="k">case</span> <span class="mi">3</span><span class="err">:</span> <span class="cm">/* case D: right-bottom */</span>
+            <span class="nx">tmp</span> <span class="o">=</span> <span class="nx">y</span><span class="p">;</span>
+            <span class="nx">y</span> <span class="o">=</span> <span class="p">(</span><span class="nx">n2</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="nx">x</span><span class="p">;</span>
+            <span class="nx">x</span> <span class="o">=</span> <span class="p">(</span><span class="nx">n2</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="nx">tmp</span><span class="p">;</span>
+            <span class="nx">x</span> <span class="o">=</span> <span class="nx">x</span> <span class="o">+</span> <span class="nx">n2</span><span class="p">;</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="nx">hindex</span> <span class="o">=</span> <span class="p">(</span><span class="nx">hindex</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">2</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="p">[</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">];</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Having this algorithm we may draw Hilbert curve as follows:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">N</span> <span class="o">=</span> <span class="mi">32</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">prev</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="nx">curr</span><span class="p">;</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">N</span><span class="o">*</span><span class="nx">N</span><span class="p">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">curr</span> <span class="o">=</span> <span class="nx">hindex2xy</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">N</span><span class="p">);</span>
+
+    <span class="nx">dot</span><span class="p">(</span><span class="nx">curr</span><span class="p">);</span>
+    <span class="nx">line</span><span class="p">(</span><span class="nx">prev</span><span class="p">,</span> <span class="nx">curr</span><span class="p">);</span>
+
+    <span class="nx">prev</span> <span class="o">=</span> <span class="nx">curr</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>And here are results:
+<img src="assets/images/2016-08-13/hilb.png" alt="Hilbert curve" /></p>
+
+<h5 id="github">Github</h5>
+<p>Source code: <a href="https://github.com/marcin-chwedczuk/hilbert_curve">hilbert_curve</a></p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Iterative algorithm for drawing Hilbert curve&amp;url=https://marcin-chwedczuk.github.io/iterative-algorithm-for-drawing-hilbert-curve"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/iterative-algorithm-for-drawing-hilbert-curve"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/iterative-algorithm-for-drawing-hilbert-curve"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//iterative-algorithm-for-drawing-hilbert-curve';
+        this.page.identifier = '/iterative-algorithm-for-drawing-hilbert-curve';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover4.jpg)" href="/how-to-use-grep-command">
+            <section class="post">
+                <h2>How to use grep command</h2>
+                <p>`grep` is a command line program that allows us to find all occurrences of given...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover2.jpg)" href="/indexes-in-postgresql">
+            <section class="post">
+                <h2>Indexes in PostgreSQL database</h2>
+                <p>In this article I will present how to use indexes in PostgreSQL database. We will...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

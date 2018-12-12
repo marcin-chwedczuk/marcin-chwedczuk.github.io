@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Mapping class inheritance in Hibernate 5</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover3.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Mapping class inheritance in Hibernate 5</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2016-06-30">30 Jun 2016</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/java'>Java</a>,
+                       
+                
+                    
+                       <a href='/tag/hibernate'>Hibernate</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>In this post I want to present four basic strategies for mapping class inheritance
+in Hibernate:</p>
+
+<ol>
+  <li>No inheritance - just copy superclass properties to subclasses</li>
+  <li>Table per class hierarchy</li>
+  <li>Table per concrete class</li>
+  <li>Table per every class</li>
+</ol>
+
+<h4 id="no-inheritance">No inheritance</h4>
+
+<p>This strategy is used if we want to share Java code between entity classes.
+An example will show us how it works. 
+Let’s say we want to avoid declaring <code class="highlighter-rouge">id</code> and <code class="highlighter-rouge">version</code> fields in every entity
+class. 
+We can solve this by creating abstract superclass <code class="highlighter-rouge">BaseEntity</code> that will hold common code
+and annotating it with
+<code class="highlighter-rouge">@MappedSuperclass</code> to enable no inheritance strategy.
+Here is <code class="highlighter-rouge">BaseEntity</code> class code:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@MappedSuperclass</span>
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">BaseEntity</span> <span class="o">{</span>
+    <span class="nd">@Id</span>
+    <span class="nd">@GeneratedValue</span>
+    <span class="kd">private</span> <span class="n">Long</span> <span class="n">id</span><span class="o">;</span>
+
+    <span class="nd">@Version</span>
+    <span class="kd">private</span> <span class="kt">long</span> <span class="n">version</span><span class="o">;</span>
+
+    <span class="c1">// getters/setters etc.</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Now we may create two independent entity classes <code class="highlighter-rouge">User</code> and <code class="highlighter-rouge">Product</code> that
+will inherit <code class="highlighter-rouge">id</code> and <code class="highlighter-rouge">version</code> fields with mappings from <code class="highlighter-rouge">BaseEntity</code>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="nd">@Table</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"\"user\""</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="kd">extends</span> <span class="n">BaseEntity</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">username</span><span class="o">;</span>
+
+    <span class="nd">@org</span><span class="o">.</span><span class="na">hibernate</span><span class="o">.</span><span class="na">annotations</span><span class="o">.</span><span class="na">Type</span><span class="o">(</span><span class="n">type</span> <span class="o">=</span> <span class="s">"yes_no"</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">isAdmin</span><span class="o">;</span>
+
+    <span class="c1">// constructor/getters/setters etc.</span>
+<span class="o">}</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Product</span> <span class="kd">extends</span> <span class="n">BaseEntity</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="n">BigDecimal</span> <span class="n">price</span><span class="o">;</span>
+
+    <span class="c1">// constructor/getters/setters etc.</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>For given classes Hibernate will generate database schema:
+<img src="assets/images/2016-06-30/noinh_1.png" alt="DB Schema generated for User and Product" /></p>
+
+<p>Since this strategy is used to only share Java code we should not query database
+for <code class="highlighter-rouge">BaseEntity</code> instances. If we do Hibernate will execute many select statements -
+one for every class inheriting from <code class="highlighter-rouge">BaseEntity</code>.
+For example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">entityManager</span><span class="o">.</span><span class="na">unwrap</span><span class="o">(</span><span class="n">Session</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">createCriteria</span><span class="o">(</span><span class="n">BaseEntity</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">list</span><span class="o">();</span></code></pre></figure>
+
+<p>Will result in queries:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">select</span>
+    <span class="n">this_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id1_0_0_</span><span class="p">,</span>
+    <span class="n">this_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version2_0_0_</span><span class="p">,</span>
+    <span class="n">this_</span><span class="p">.</span><span class="n">name</span> <span class="k">as</span> <span class="n">name3_0_0_</span><span class="p">,</span>
+    <span class="n">this_</span><span class="p">.</span><span class="n">price</span> <span class="k">as</span> <span class="n">price4_0_0_</span> 
+<span class="k">from</span>
+    <span class="n">product</span> <span class="n">this_</span>
+
+<span class="k">select</span>
+    <span class="n">this_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id1_1_0_</span><span class="p">,</span>
+    <span class="n">this_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version2_1_0_</span><span class="p">,</span>
+    <span class="n">this_</span><span class="p">.</span><span class="n">isAdmin</span> <span class="k">as</span> <span class="n">isAdmin3_1_0_</span><span class="p">,</span>
+    <span class="n">this_</span><span class="p">.</span><span class="n">username</span> <span class="k">as</span> <span class="n">username4_1_0_</span> 
+<span class="k">from</span>
+    <span class="nv">"user"</span> <span class="n">this_</span></code></pre></figure>
+
+<p>NOTE: Querying for <code class="highlighter-rouge">BaseEntity</code> via JPA will throw exception with message
+<code class="highlighter-rouge">Not an entity: class BaseEntity</code>. We
+can query for <code class="highlighter-rouge">BaseEntity</code> only via Hibernate <code class="highlighter-rouge">Session</code> object.</p>
+
+<p>We will use our <code class="highlighter-rouge">BaseEntity</code> class in the example code of the remaining strategies to show that
+it can be mixed with “real” ORM inheritance.</p>
+
+<h4 id="table-per-class-hierarchy">Table per class hierarchy</h4>
+
+<p>In this strategy all subclasses data will be stored in single table.
+A special column called discriminator is added to that table
+to help Hibernate know which subclass is stored in given row.</p>
+
+<p>An example will show how it works. We start by creating a superclass called <code class="highlighter-rouge">Animal</code>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="nd">@Inheritance</span><span class="o">(</span><span class="n">strategy</span> <span class="o">=</span> <span class="n">InheritanceType</span><span class="o">.</span><span class="na">SINGLE_TABLE</span><span class="o">)</span>
+<span class="nd">@DiscriminatorColumn</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"animal_type"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Animal</span> <span class="kd">extends</span> <span class="n">BaseEntity</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">getName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>And two subclasses <code class="highlighter-rouge">Cat</code> and <code class="highlighter-rouge">Dog</code>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="nd">@DiscriminatorValue</span><span class="o">(</span><span class="s">"cat"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Cat</span> <span class="kd">extends</span> <span class="n">Animal</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">isPurring</span><span class="o">;</span>
+
+    <span class="c1">// getters/setter etc.</span>
+<span class="o">}</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="nd">@DiscriminatorValue</span><span class="o">(</span><span class="s">"dog"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Dog</span> <span class="kd">extends</span> <span class="n">Animal</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">isBarking</span><span class="o">;</span>
+
+    <span class="c1">// getters/setter etc.</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>To enable table per hierarchy strategy, superclass must be marked as <code class="highlighter-rouge">@Entity</code> and must have
+<code class="highlighter-rouge">@Inheritance(strategy = InheritanceType.SINGLE_TABLE)</code> annotation.
+We can choose discriminator column name and type using <code class="highlighter-rouge">@DiscriminatorColumn</code> annotation.
+Subclasses must be marked as <code class="highlighter-rouge">@Entity</code> and can provide values for 
+discriminator column via <code class="highlighter-rouge">@DiscriminatorValue</code> annotation (discriminator value defaults to class name).</p>
+
+<p>For this example Hibernate will generate schema:
+<img src="assets/images/2016-06-30/single_1.png" alt="Schema generated by Hibernate" /></p>
+
+<p>Let’s save some data:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Cat</span> <span class="n">cat</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Cat</span><span class="o">();</span>
+<span class="n">cat</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"kitty"</span><span class="o">);</span>
+<span class="n">cat</span><span class="o">.</span><span class="na">setPurring</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+<span class="n">entityManager</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">cat</span><span class="o">);</span>
+
+<span class="n">Dog</span> <span class="n">dog</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Dog</span><span class="o">();</span>
+<span class="n">dog</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"barky"</span><span class="o">);</span>
+<span class="n">dog</span><span class="o">.</span><span class="na">setBarking</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+<span class="n">entityManager</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">dog</span><span class="o">);</span></code></pre></figure>
+
+<p>And check how they are stored in database:
+<img src="assets/images/2016-06-30/single_2.png" alt="Data stored in database" /></p>
+
+<p>Saving was easy, now let’s check querying. We start
+by getting all <code class="highlighter-rouge">Animal</code> instances from database:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">"from Animal"</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">getResultList</span><span class="o">()</span>
+        <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">a</span><span class="o">));</span></code></pre></figure>
+
+<p>This will result in SQL query:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">select</span>
+    <span class="n">animal0_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id2_0_</span><span class="p">,</span>
+    <span class="n">animal0_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version3_0_</span><span class="p">,</span>
+    <span class="n">animal0_</span><span class="p">.</span><span class="n">name</span> <span class="k">as</span> <span class="n">name4_0_</span><span class="p">,</span>
+    <span class="n">animal0_</span><span class="p">.</span><span class="n">isBarking</span> <span class="k">as</span> <span class="n">isBarkin5_0_</span><span class="p">,</span>
+    <span class="n">animal0_</span><span class="p">.</span><span class="n">isPurring</span> <span class="k">as</span> <span class="n">isPurrin6_0_</span><span class="p">,</span>
+    <span class="n">animal0_</span><span class="p">.</span><span class="n">animal_type</span> <span class="k">as</span> <span class="n">animal_t1_0_</span> 
+<span class="k">from</span>
+    <span class="n">Animal</span> <span class="n">animal0_</span></code></pre></figure>
+
+<p>With this strategy we may also query specific animal types e.g. cats:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span>
+    <span class="s">"select c from Cat c where c.isPurring = true"</span><span class="o">)</span></code></pre></figure>
+
+<p>This will result in the following SQL:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">select</span>
+    <span class="n">cat0_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id2_0_</span><span class="p">,</span>
+    <span class="n">cat0_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version3_0_</span><span class="p">,</span>
+    <span class="n">cat0_</span><span class="p">.</span><span class="n">name</span> <span class="k">as</span> <span class="n">name4_0_</span><span class="p">,</span>
+    <span class="n">cat0_</span><span class="p">.</span><span class="n">isPurring</span> <span class="k">as</span> <span class="n">isPurrin6_0_</span> 
+<span class="k">from</span>
+    <span class="n">Animal</span> <span class="n">cat0_</span> 
+<span class="k">where</span>
+    <span class="n">cat0_</span><span class="p">.</span><span class="n">animal_type</span><span class="o">=</span><span class="s1">'cat'</span> 
+    <span class="k">and</span> <span class="n">cat0_</span><span class="p">.</span><span class="n">isPurring</span><span class="o">=</span><span class="k">true</span></code></pre></figure>
+
+<p>We can see that Hibernate added test for discriminator column <code class="highlighter-rouge">animal_type='cat'</code> to
+limit returned animals to cats only.</p>
+
+<p>Before we move to next strategy let’s 
+see what are pros and cons of table per hierarchy strategy:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>pros</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Fast - no joins are needed to retrieve data</td>
+    </tr>
+    <tr>
+      <td>Simple - only single table is needed in database</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>cons</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Cannot create constrains in database - all columns representing subclass data must be nullable. This is serious drawback because without constrains data can be easily corrupted by application bug or by inattentive users</td>
+    </tr>
+    <tr>
+      <td>Wasted space - when subclasses have many fields shared table will contain many columns most of which will contain <code class="highlighter-rouge">NULL</code>s</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="table-per-concrete-class">Table per concrete class</h4>
+
+<p>This inheritance strategy will generate database table per each concrete class in 
+the hierarchy. Let’s demonstrate on example. 
+Given classes (abstract classes are in the blue boxes):
+<img src="assets/images/2016-06-30/tpcc_1.svg" alt="UML diagram of classes used in this example" />
+This strategy will generate tables for <code class="highlighter-rouge">Dog</code>, <code class="highlighter-rouge">GrumpyCat</code> and <code class="highlighter-rouge">Kitten</code> classes.</p>
+
+<p>Here is code for all classes used in this example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="nd">@Inheritance</span><span class="o">(</span><span class="n">strategy</span> <span class="o">=</span> <span class="n">InheritanceType</span><span class="o">.</span><span class="na">TABLE_PER_CLASS</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Animal</span> <span class="kd">extends</span> <span class="n">BaseEntity</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Dog</span> <span class="kd">extends</span> <span class="n">Animal</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">isBarking</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractCat</span> <span class="kd">extends</span> <span class="n">Animal</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">isPurring</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GrumpyCat</span> <span class="kd">extends</span> <span class="n">AbstractCat</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">grumpiness</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Kitten</span> <span class="kd">extends</span> <span class="n">AbstractCat</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="n">sweetness</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>To enable table per concrete class strategy, root of the inheritance hierarchy must
+be marked as <code class="highlighter-rouge">@Entity</code> and must have <code class="highlighter-rouge">@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)</code>
+annotation. All subclasses (even abstract ones) must be marked as <code class="highlighter-rouge">@Entity</code>. Abstract classes
+will not be represented in database.</p>
+
+<p>For our <code class="highlighter-rouge">Animal</code> example Hibernate will generate database schema:
+<img src="assets/images/2016-06-30/tpcc_2.png" alt="Schema generated by Hibernate for our animal example" /></p>
+
+<p>When we query for all instances of <code class="highlighter-rouge">Animal</code>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">"from Animal"</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">getResultList</span><span class="o">();</span></code></pre></figure>
+
+<p>Hibernate uses SQL subquery and <code class="highlighter-rouge">union all</code> operator to gather rows from
+all tables containing subclasses data. To differentiate between subclasses
+in the result set, Hibernate adds special column <code class="highlighter-rouge">clazz_</code> that will contain different numbers
+for different subclasses:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">select</span>
+        <span class="n">animal0_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id1_1_</span><span class="p">,</span> <span class="n">animal0_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version2_1_</span><span class="p">,</span> <span class="n">animal0_</span><span class="p">.</span><span class="n">name</span> <span class="k">as</span> <span class="n">name3_1_</span><span class="p">,</span> <span class="n">animal0_</span><span class="p">.</span><span class="n">isBarking</span> <span class="k">as</span> <span class="n">isBarkin1_2_</span><span class="p">,</span> <span class="n">animal0_</span><span class="p">.</span><span class="n">isPurring</span> <span class="k">as</span> <span class="n">isPurrin1_0_</span><span class="p">,</span> <span class="n">animal0_</span><span class="p">.</span><span class="n">grumpiness</span> <span class="k">as</span> <span class="n">grumpine1_3_</span><span class="p">,</span> <span class="n">animal0_</span><span class="p">.</span><span class="n">sweetness</span> <span class="k">as</span> <span class="n">sweetnes1_4_</span><span class="p">,</span> 
+        <span class="n">animal0_</span><span class="p">.</span><span class="n">clazz_</span> <span class="k">as</span> <span class="n">clazz_</span> 
+    <span class="k">from</span>
+        <span class="p">(</span> <span class="k">select</span>
+            <span class="n">id</span><span class="p">,</span> <span class="k">version</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">boolean</span> <span class="k">as</span> <span class="n">isBarking</span><span class="p">,</span> <span class="n">isPurring</span><span class="p">,</span> <span class="n">grumpiness</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">int4</span> <span class="k">as</span> <span class="n">sweetness</span><span class="p">,</span> 
+            <span class="mi">3</span> <span class="k">as</span> <span class="n">clazz_</span> 
+        <span class="k">from</span>
+            <span class="n">GrumpyCat</span> 
+
+        <span class="k">union</span> <span class="k">all</span> 
+        
+        <span class="k">select</span>
+            <span class="n">id</span><span class="p">,</span> <span class="k">version</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">boolean</span> <span class="k">as</span> <span class="n">isBarking</span><span class="p">,</span> <span class="n">isPurring</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">int4</span> <span class="k">as</span> <span class="n">grumpiness</span><span class="p">,</span> <span class="n">sweetness</span><span class="p">,</span> 
+            <span class="mi">4</span> <span class="k">as</span> <span class="n">clazz_</span> 
+        <span class="k">from</span>
+            <span class="n">Kitten</span>
+        
+        <span class="k">union</span> <span class="k">all</span> 
+
+        <span class="k">select</span>
+            <span class="n">id</span><span class="p">,</span> <span class="k">version</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">isBarking</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">boolean</span> <span class="k">as</span> <span class="n">isPurring</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">int4</span> <span class="k">as</span> <span class="n">grumpiness</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">int4</span> <span class="k">as</span> <span class="n">sweetness</span><span class="p">,</span> 
+            <span class="mi">1</span> <span class="k">as</span> <span class="n">clazz_</span> 
+        <span class="k">from</span>
+            <span class="n">Dog</span> 
+    <span class="p">)</span> <span class="n">animal0_</span></code></pre></figure>
+
+<p>When we query for one of the concrete subclasses Hibernate will directly query
+table containing that subclass data. For example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span>
+        <span class="s">"select gc from GrumpyCat gc where gc.grumpiness &gt; 0"</span>
+    <span class="o">).</span><span class="na">getResultList</span><span class="o">()</span></code></pre></figure>
+
+<p>Will generate SQL query:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">select</span>
+    <span class="n">grumpycat0_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id1_1_</span><span class="p">,</span>
+    <span class="n">grumpycat0_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version2_1_</span><span class="p">,</span>
+    <span class="n">grumpycat0_</span><span class="p">.</span><span class="n">name</span> <span class="k">as</span> <span class="n">name3_1_</span><span class="p">,</span>
+    <span class="n">grumpycat0_</span><span class="p">.</span><span class="n">isPurring</span> <span class="k">as</span> <span class="n">isPurrin1_0_</span><span class="p">,</span>
+    <span class="n">grumpycat0_</span><span class="p">.</span><span class="n">grumpiness</span> <span class="k">as</span> <span class="n">grumpine1_3_</span> 
+<span class="k">from</span>
+    <span class="n">GrumpyCat</span> <span class="n">grumpycat0_</span> 
+<span class="k">where</span>
+    <span class="n">grumpycat0_</span><span class="p">.</span><span class="n">grumpiness</span><span class="o">&gt;</span><span class="mi">0</span></code></pre></figure>
+
+<p>Before we move to the next strategy let’s consider one more example. Say
+we want to store photos of animals using <code class="highlighter-rouge">Photo</code> entity:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Photo</span> <span class="kd">extends</span> <span class="n">BaseEntity</span> <span class="o">{</span>
+    <span class="nd">@ManyToOne</span>
+    <span class="kd">private</span> <span class="n">Animal</span> <span class="n">animal</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">photoFilename</span><span class="o">;</span>
+
+    <span class="c1">// ...</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>For this class Hibernate will generate table:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">photo</span>
+<span class="p">(</span>
+  <span class="n">id</span> <span class="n">bigint</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="k">version</span> <span class="n">bigint</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">photofilename</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span>
+  <span class="n">animal_id</span> <span class="n">bigint</span><span class="p">,</span>
+
+  <span class="k">CONSTRAINT</span> <span class="n">photo_pkey</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="p">)</span></code></pre></figure>
+
+<p>This time I used SQL instead of table picture to show an important fact.
+Do you see <code class="highlighter-rouge">animal_id</code> column in that table, it will be used to
+connect photos to animals. Unfortunately because various types of  animals are
+stored in different tables we cannot create foreign key constraint on
+that column, this is serious drawback of table per concrete class strategy.</p>
+
+<p>When we query for all photos with animals:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span>
+        <span class="s">"select p from Photo p join fetch p.animal"</span>
+    <span class="o">).</span><span class="na">getResultList</span><span class="o">()</span></code></pre></figure>
+
+<p>Hibernate will execute this monstrous query:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">select</span>
+    <span class="n">photo0_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id1_5_0_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id1_1_1_</span><span class="p">,</span> <span class="n">photo0_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version2_5_0_</span><span class="p">,</span> <span class="n">photo0_</span><span class="p">.</span><span class="n">animal_id</span> <span class="k">as</span> <span class="n">animal_i4_5_0_</span><span class="p">,</span> <span class="n">photo0_</span><span class="p">.</span><span class="n">photoFilename</span> <span class="k">as</span> <span class="n">photoFil3_5_0_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version2_1_1_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">name</span> <span class="k">as</span> <span class="n">name3_1_1_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">isBarking</span> <span class="k">as</span> <span class="n">isBarkin1_2_1_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">isPurring</span> <span class="k">as</span> <span class="n">isPurrin1_0_1_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">grumpiness</span> <span class="k">as</span> <span class="n">grumpine1_3_1_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">sweetness</span> <span class="k">as</span> <span class="n">sweetnes1_4_1_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">clazz_</span> <span class="k">as</span> <span class="n">clazz_1_</span> 
+<span class="k">from</span>
+    <span class="n">Photo</span> <span class="n">photo0_</span> 
+<span class="k">inner</span> <span class="k">join</span>
+    <span class="p">(</span>
+        <span class="k">select</span>
+            <span class="n">id</span><span class="p">,</span> <span class="k">version</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">boolean</span> <span class="k">as</span> <span class="n">isBarking</span><span class="p">,</span> <span class="n">isPurring</span><span class="p">,</span> <span class="n">grumpiness</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">int4</span> <span class="k">as</span> <span class="n">sweetness</span><span class="p">,</span> <span class="mi">3</span> <span class="k">as</span> <span class="n">clazz_</span> 
+        <span class="k">from</span>
+            <span class="n">GrumpyCat</span> 
+        <span class="k">union</span>
+        <span class="k">all</span> <span class="k">select</span>
+            <span class="n">id</span><span class="p">,</span> <span class="k">version</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">boolean</span> <span class="k">as</span> <span class="n">isBarking</span><span class="p">,</span> <span class="n">isPurring</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">int4</span> <span class="k">as</span> <span class="n">grumpiness</span><span class="p">,</span> <span class="n">sweetness</span><span class="p">,</span> <span class="mi">4</span> <span class="k">as</span> <span class="n">clazz_</span> 
+        <span class="k">from</span>
+            <span class="n">Kitten</span> 
+        <span class="k">union</span>
+        <span class="k">all</span> <span class="k">select</span>
+            <span class="n">id</span><span class="p">,</span> <span class="k">version</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">isBarking</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">boolean</span> <span class="k">as</span> <span class="n">isPurring</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">int4</span> <span class="k">as</span> <span class="n">grumpiness</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">int4</span> <span class="k">as</span> <span class="n">sweetness</span><span class="p">,</span> <span class="mi">1</span> <span class="k">as</span> <span class="n">clazz_</span> 
+        <span class="k">from</span>
+            <span class="n">Dog</span> 
+    <span class="p">)</span> <span class="n">animal1_</span> 
+        <span class="k">on</span> <span class="n">photo0_</span><span class="p">.</span><span class="n">animal_id</span><span class="o">=</span><span class="n">animal1_</span><span class="p">.</span><span class="n">id</span></code></pre></figure>
+
+<p>I only add that complicated queries like this may cause serious performance problems.</p>
+
+<p>To sum up here are pros and cons of table per concrete class strategy:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>pros</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Constraint friendly - You can introduce separate database constrains for each concrete subclass</td>
+    </tr>
+    <tr>
+      <td>Fast when querying concrete subclasses (queries directly access subclass table)</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>cons</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>May be slow when you query/lazy load abstract superclasses (<code class="highlighter-rouge">union all</code> and subquery)</td>
+    </tr>
+    <tr>
+      <td>Cannot introduce foreign key constrains for superclasses references (like in <code class="highlighter-rouge">Photo</code> example)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>As you see when you are not using references to superclasses in your model this is
+strategy to go. When you have many references to superclasses it is better to use
+single table or table per every class strategies.</p>
+
+<h4 id="table-per-every-class">Table per every class</h4>
+
+<p>To demonstrate table per every class strategy we’ll use the same example
+that was used in the 
+description of table per concrete class strategy:
+<img src="assets/images/2016-06-30/tpcc_1.svg" alt="UML diagram of classes used in this example" /></p>
+
+<p>Here are Java classes annotated to use table per every class strategy:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="nd">@Inheritance</span><span class="o">(</span><span class="n">strategy</span> <span class="o">=</span> <span class="n">InheritanceType</span><span class="o">.</span><span class="na">JOINED</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Animal</span> <span class="kd">extends</span> <span class="n">BaseEntity</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="nd">@Entity</span>
+<span class="nd">@PrimaryKeyJoinColumn</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"cat_id"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractCat</span> <span class="kd">extends</span> <span class="n">Animal</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">isPurring</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GrumpyCat</span> <span class="kd">extends</span> <span class="n">AbstractCat</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">grumpiness</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Kitten</span> <span class="kd">extends</span> <span class="n">AbstractCat</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="n">sweetness</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="nd">@Entity</span>
+<span class="nd">@PrimaryKeyJoinColumn</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"dog_id"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Dog</span> <span class="kd">extends</span> <span class="n">Animal</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">isBarking</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Notice that every class is marked as <code class="highlighter-rouge">@Entity</code> and root of inheritance hierarchy is
+annotated with <code class="highlighter-rouge">@Inheritance(strategy = InheritanceType.JOINED)</code>. By default
+primary keys in tables corresponding to mapped classes will be named <code class="highlighter-rouge">id</code>. Sometimes
+it is useful to change name of the primary key column, we can use
+<code class="highlighter-rouge">@PrimaryKeyJoinColumn(name = "primary_key_name")</code> to provide new primary key column name.</p>
+
+<p>For given example Hibernate will generate database schema:
+<img src="assets/images/2016-06-30/tpec_1.png" alt="DB Schema generated for table per every class strategy" />
+Notice that Hibernate generated table per every class in the hierarchy. Lines between tables
+represent foreign key constrains inside database.</p>
+
+<p>In table per every class strategy data from 
+superclasses will be stored in dedicated tables, SQL joins will be used
+to gather entity data from all superclasses. When we add new entity to database Hibernate will
+split it according to inheritance hierarchy and will execute many inserts.
+An example will help us understand how it works.</p>
+
+<p>First let’s try to insert some grumpy animals into database:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">GrumpyCat</span> <span class="n">cat</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GrumpyCat</span><span class="o">();</span>
+<span class="n">cat</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"grumpy"</span><span class="o">);</span>
+<span class="n">cat</span><span class="o">.</span><span class="na">setPurring</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+<span class="n">cat</span><span class="o">.</span><span class="na">setGrumpiness</span><span class="o">(</span><span class="mi">130</span><span class="o">);</span>
+
+<span class="n">entityManager</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">cat</span><span class="o">);</span></code></pre></figure>
+
+<p>To save single <code class="highlighter-rouge">GrumpyCat</code> entity to database Hibernate must generate three inserts:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">insert</span> <span class="k">into</span>
+    <span class="n">Animal</span>
+    <span class="p">(</span><span class="k">version</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">id</span><span class="p">)</span> 
+<span class="k">values</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">'grumpy'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="k">insert</span> <span class="k">into</span>
+    <span class="n">AbstractCat</span>
+    <span class="p">(</span><span class="n">isPurring</span><span class="p">,</span> <span class="n">cat_id</span><span class="p">)</span> 
+<span class="k">values</span>
+    <span class="p">(</span><span class="k">true</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="k">insert</span> <span class="k">into</span>
+    <span class="n">GrumpyCat</span>
+    <span class="p">(</span><span class="n">grumpiness</span><span class="p">,</span> <span class="n">cat_id</span><span class="p">)</span> 
+<span class="k">values</span>
+    <span class="p">(</span><span class="mi">130</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></code></pre></figure>
+
+<p>Let’s see what will happen when we try to load all <code class="highlighter-rouge">GrupyCat</code>s from database:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">entityManager</span>
+        <span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">"from GrumpyCat"</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">getResultList</span><span class="o">()</span></code></pre></figure>
+
+<p>Hibernate will execute following SQL query:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">select</span>
+    <span class="n">grumpycat0_</span><span class="p">.</span><span class="n">cat_id</span> <span class="k">as</span> <span class="n">id1_1_</span><span class="p">,</span>
+    <span class="n">grumpycat0_2_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version2_1_</span><span class="p">,</span>
+    <span class="n">grumpycat0_2_</span><span class="p">.</span><span class="n">name</span> <span class="k">as</span> <span class="n">name3_1_</span><span class="p">,</span>
+    <span class="n">grumpycat0_1_</span><span class="p">.</span><span class="n">isPurring</span> <span class="k">as</span> <span class="n">isPurrin1_0_</span><span class="p">,</span>
+    <span class="n">grumpycat0_</span><span class="p">.</span><span class="n">grumpiness</span> <span class="k">as</span> <span class="n">grumpine1_3_</span> 
+<span class="k">from</span>
+    <span class="n">GrumpyCat</span> <span class="n">grumpycat0_</span> 
+<span class="k">inner</span> <span class="k">join</span>
+    <span class="n">AbstractCat</span> <span class="n">grumpycat0_1_</span> 
+        <span class="k">on</span> <span class="n">grumpycat0_</span><span class="p">.</span><span class="n">cat_id</span><span class="o">=</span><span class="n">grumpycat0_1_</span><span class="p">.</span><span class="n">cat_id</span> 
+<span class="k">inner</span> <span class="k">join</span>
+    <span class="n">Animal</span> <span class="n">grumpycat0_2_</span> 
+        <span class="k">on</span> <span class="n">grumpycat0_</span><span class="p">.</span><span class="n">cat_id</span><span class="o">=</span><span class="n">grumpycat0_2_</span><span class="p">.</span><span class="n">id</span></code></pre></figure>
+
+<p>As we can see Hibernate used <code class="highlighter-rouge">inner join</code>s to gather <code class="highlighter-rouge">GrumpyCat</code> data
+that was split into <code class="highlighter-rouge">GrumpyCat</code>, <code class="highlighter-rouge">AbstractCat</code> and <code class="highlighter-rouge">Animal</code> tables.
+If we would query for <code class="highlighter-rouge">Animal</code>s there would be ever more <code class="highlighter-rouge">join</code>s.</p>
+
+<p>Now let’s see how storing/retrieving animal photos changed in table
+per every class strategy. We will use the same <code class="highlighter-rouge">Photo</code> class as in previous example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Photo</span> <span class="kd">extends</span> <span class="n">BaseEntity</span> <span class="o">{</span>
+    <span class="nd">@ManyToOne</span>
+    <span class="kd">private</span> <span class="n">Animal</span> <span class="n">animal</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">photoFilename</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>First we must notice that <code class="highlighter-rouge">Photo</code> table now has a foreign key constrain to <code class="highlighter-rouge">Animal</code> table:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">photo</span>
+<span class="p">(</span>
+  <span class="n">id</span> <span class="n">bigint</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="k">version</span> <span class="n">bigint</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">photofilename</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span>
+  <span class="n">animal_id</span> <span class="n">bigint</span><span class="p">,</span>
+  <span class="k">CONSTRAINT</span> <span class="n">photo_pkey</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">),</span>
+
+  <span class="k">CONSTRAINT</span> <span class="n">fk6mbbc9717gifwpiqhd13t060r</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">animal_id</span><span class="p">)</span>
+      <span class="k">REFERENCES</span> <span class="n">animal</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span> <span class="k">MATCH</span> <span class="k">SIMPLE</span>
+<span class="p">)</span></code></pre></figure>
+
+<p>When we try to query database for all photos with animals:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span>
+        <span class="s">"select p from Photo p join fetch p.animal"</span>
+    <span class="o">).</span><span class="na">getResultList</span><span class="o">()</span></code></pre></figure>
+
+<p>Hibernate will execute query:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">select</span>
+    <span class="n">photo0_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id1_5_0_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id1_1_1_</span><span class="p">,</span> <span class="n">photo0_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version2_5_0_</span><span class="p">,</span> <span class="n">photo0_</span><span class="p">.</span><span class="n">animal_id</span> <span class="k">as</span> <span class="n">animal_i4_5_0_</span><span class="p">,</span> <span class="n">photo0_</span><span class="p">.</span><span class="n">photoFilename</span> <span class="k">as</span> <span class="n">photoFil3_5_0_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version2_1_1_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">name</span> <span class="k">as</span> <span class="n">name3_1_1_</span><span class="p">,</span> <span class="n">animal1_1_</span><span class="p">.</span><span class="n">isBarking</span> <span class="k">as</span> <span class="n">isBarkin1_2_1_</span><span class="p">,</span> <span class="n">animal1_2_</span><span class="p">.</span><span class="n">isPurring</span> <span class="k">as</span> <span class="n">isPurrin1_0_1_</span><span class="p">,</span> <span class="n">animal1_3_</span><span class="p">.</span><span class="n">grumpiness</span> <span class="k">as</span> <span class="n">grumpine1_3_1_</span><span class="p">,</span> <span class="n">animal1_4_</span><span class="p">.</span><span class="n">sweetness</span> <span class="k">as</span> <span class="n">sweetnes1_4_1_</span><span class="p">,</span>
+    <span class="k">case</span> 
+        <span class="k">when</span> <span class="n">animal1_3_</span><span class="p">.</span><span class="n">cat_id</span> <span class="k">is</span> <span class="k">not</span> <span class="k">null</span> <span class="k">then</span> <span class="mi">3</span> 
+        <span class="k">when</span> <span class="n">animal1_4_</span><span class="p">.</span><span class="n">cat_id</span> <span class="k">is</span> <span class="k">not</span> <span class="k">null</span> <span class="k">then</span> <span class="mi">4</span> 
+        <span class="k">when</span> <span class="n">animal1_1_</span><span class="p">.</span><span class="n">dog_id</span> <span class="k">is</span> <span class="k">not</span> <span class="k">null</span> <span class="k">then</span> <span class="mi">1</span> 
+        <span class="k">when</span> <span class="n">animal1_2_</span><span class="p">.</span><span class="n">cat_id</span> <span class="k">is</span> <span class="k">not</span> <span class="k">null</span> <span class="k">then</span> <span class="mi">2</span> 
+        <span class="k">when</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">id</span> <span class="k">is</span> <span class="k">not</span> <span class="k">null</span> <span class="k">then</span> <span class="mi">0</span> 
+    <span class="k">end</span> <span class="k">as</span> <span class="n">clazz_1_</span> 
+<span class="k">from</span>
+    <span class="n">Photo</span> <span class="n">photo0_</span> 
+<span class="k">inner</span> <span class="k">join</span>
+    <span class="n">Animal</span> <span class="n">animal1_</span> 
+        <span class="k">on</span> <span class="n">photo0_</span><span class="p">.</span><span class="n">animal_id</span><span class="o">=</span><span class="n">animal1_</span><span class="p">.</span><span class="n">id</span> 
+<span class="k">left</span> <span class="k">outer</span> <span class="k">join</span>
+    <span class="n">Dog</span> <span class="n">animal1_1_</span> 
+        <span class="k">on</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">id</span><span class="o">=</span><span class="n">animal1_1_</span><span class="p">.</span><span class="n">dog_id</span> 
+<span class="k">left</span> <span class="k">outer</span> <span class="k">join</span>
+    <span class="n">AbstractCat</span> <span class="n">animal1_2_</span> 
+        <span class="k">on</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">id</span><span class="o">=</span><span class="n">animal1_2_</span><span class="p">.</span><span class="n">cat_id</span> 
+<span class="k">left</span> <span class="k">outer</span> <span class="k">join</span>
+    <span class="n">GrumpyCat</span> <span class="n">animal1_3_</span> 
+        <span class="k">on</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">id</span><span class="o">=</span><span class="n">animal1_3_</span><span class="p">.</span><span class="n">cat_id</span> 
+<span class="k">left</span> <span class="k">outer</span> <span class="k">join</span>
+    <span class="n">Kitten</span> <span class="n">animal1_4_</span> 
+        <span class="k">on</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">id</span><span class="o">=</span><span class="n">animal1_4_</span><span class="p">.</span><span class="n">cat_id</span></code></pre></figure>
+
+<p>This is really heavy query if plenty of <code class="highlighter-rouge">join</code>s, it may cause some performance problems.</p>
+
+<p>Let’s end by presenting pros and cons of table per every class strategy:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>pros</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Constraint friendly - we may easily add constrains to database. References to superclasses are guarded by foreign key constrains.</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>cons</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Poor performance - simple operations like saving entity to database or reading entity from database often require many SQL statements or complicated SQL queries with joins</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Before using this strategy you should consider using simpler and faster 
+table per hierarchy strategy. Use this strategy only if you have many subclasses that define
+many fields that cannot by shared using superclass.</p>
+
+<h4 id="the-end">The End</h4>
+
+<p>That was really long post, I hope it help you understand various inheritance strategies
+that we can use in Hibernate. As always with ORM’s the key to master this material is
+to spend few hours creating dummy models with mappings and checking what queries Hibernate
+generate.
+<img src="assets/images/2016-06-30/grumpy.gif" alt="Party over meme" /></p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Mapping class inheritance in Hibernate 5&amp;url=https://marcin-chwedczuk.github.io/mapping-inheritance-in-hibernate"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/mapping-inheritance-in-hibernate"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/mapping-inheritance-in-hibernate"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//mapping-inheritance-in-hibernate';
+        this.page.identifier = '/mapping-inheritance-in-hibernate';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover1.jpg)" href="/how-nulls-are-handled-in-switch-statement">
+            <section class="post">
+                <h2>How null's are handled in switch statement in C#, Java and JavaScript</h2>
+                <p>Let's start with C#. In C# `null`s may show up in `switch` statement in two...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover2.jpg)" href="/find-cycle-start-in-singly-linked-list">
+            <section class="post">
+                <h2>Find cycle start in singly linked list</h2>
+                <p>In this post I will present solution to the following problem: We have a non...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

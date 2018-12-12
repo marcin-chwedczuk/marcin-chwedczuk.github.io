@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>How to use find command</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover3.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">How to use find command</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2016-07-26">26 Jul 2016</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/linux'>Linux</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>Linux <code class="highlighter-rouge">find</code> command may be used to find files and directories
+that meet specified conditions. The most popular
+conditions test file size, filename and file type 
+(do we want regular files, directories or both).
+By default <code class="highlighter-rouge">find</code> prints paths to found files and directories but it can 
+perform various operations on found files e.g. it may remove them.
+In this article I will present how to use <code class="highlighter-rouge">find</code> and how to create complex
+search conditions, so let’s begin.</p>
+
+<p>Generally <code class="highlighter-rouge">find</code> invocation looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ find startDirectory filterOrAction1 ... filterOrActionN</code></pre></figure>
+
+<p>Here <code class="highlighter-rouge">startDirectory</code> is root of directories tree that we want to search.
+After <code class="highlighter-rouge">startDirectory</code> we pass zero or more filters and/or actions.
+Filters define conditions that given file/directory must meet, e.g. filter <code class="highlighter-rouge">-type f</code>
+tells <code class="highlighter-rouge">find</code> that it should only process regular files and skip other file system
+objects like directories or named pipes. Actions on the other hand define what
+should be done with found files/directories, we may for example print 
+their filenames using <code class="highlighter-rouge">-print</code> action or we may delete them via <code class="highlighter-rouge">-delete</code> action.</p>
+
+<p>If you pass no arguments to <code class="highlighter-rouge">find</code> as in:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ find</code></pre></figure>
+
+<p>it will assume that <code class="highlighter-rouge">startDirectory</code> is current directory and that you want to
+print filenames of all found files/directories. In other words it will be equivalent to
+invocation:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ find . -print</code></pre></figure>
+
+<p><code class="highlighter-rouge">find</code> performs search by enumerating all files and directories contained in
+the <code class="highlighter-rouge">startDirectory</code>. For each file/directory <code class="highlighter-rouge">find</code> executes specified filters and
+actions, from left to right and stops on the first filter or action that returns <code class="highlighter-rouge">false</code>.
+Filters return <code class="highlighter-rouge">false</code> when filter condition is not met. Actions return <code class="highlighter-rouge">false</code> when
+action ends with an error
+e.g. user has insufficient permissions to remove file for <code class="highlighter-rouge">-delete</code> action.</p>
+
+<p>Image below presents how <code class="highlighter-rouge">find dir -type f -name '*.java' -print</code> works
+assuming that <code class="highlighter-rouge">dir</code> contains two files <code class="highlighter-rouge">foo.java</code> and <code class="highlighter-rouge">foo.cpp</code>:
+<img src="assets/images/2016-07-26/find1_2.svg" alt="Illustration how find works" />
+To keep image size reasonable I skipped one more “file” that was checked by <code class="highlighter-rouge">find</code> in
+our example - the <code class="highlighter-rouge">dir</code> directory itself.</p>
+
+<p>Before you proceed please answer the following questions 
+(use <code class="highlighter-rouge">dir</code> directory from previous example). 
+Verify your answers by running <code class="highlighter-rouge">find</code> and checking it’s output:</p>
+
+<ul>
+  <li>What will be printed by <code class="highlighter-rouge">find dir -print -print</code>?</li>
+  <li>What will be printed by <code class="highlighter-rouge">find dir -print -name '*.java' -print</code>?</li>
+  <li>What will happen when we specify no action like in <code class="highlighter-rouge">find dir -name 'foo*'</code>?</li>
+</ul>
+
+<h4 id="filters">Filters</h4>
+
+<p>After reading previous section you should have firm understanding
+how <code class="highlighter-rouge">find</code> works. Now let’s move to describing most usefull filters
+provided by <code class="highlighter-rouge">find</code>.</p>
+
+<h5 id="type-filter">Type filter</h5>
+
+<p>We will start with <code class="highlighter-rouge">-type</code> filter that allows us to find 
+filesystem objects that have specified type. 
+For example to find only directories
+we will use <code class="highlighter-rouge">-type d</code> and to find only regular files we will use <code class="highlighter-rouge">-type f</code>.
+<code class="highlighter-rouge">-type</code> filter takes single parameter that is one letter abbreviation of 
+filesystem object type.
+All available values are presented in table below:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Argument</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">b</td>
+      <td>Block device e.g. <code class="highlighter-rouge">/dev/sda</code> on most modern systems</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">c</td>
+      <td>Character device e.g. <code class="highlighter-rouge">/dev/tty0</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: center">d</td>
+      <td>Directory e.g. <code class="highlighter-rouge">/etc</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: center">p</td>
+      <td>Named pipe</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">f</td>
+      <td>Regular file e.g. <code class="highlighter-rouge">/etc/profile</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: center">l</td>
+      <td>Symbolic link</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">s</td>
+      <td>Socket</td>
+    </tr>
+  </tbody>
+</table>
+
+<h5 id="name-filter">Name filter</h5>
+
+<p><code class="highlighter-rouge">-name</code> filter allows us to find files/directories that have names
+that match specified pattern e.g. <code class="highlighter-rouge">*.java</code>. Only filename is checked 
+against the pattern, rest
+of the file path is ignored e.g. <code class="highlighter-rouge">./usr/foo</code> file doesn’t match <code class="highlighter-rouge">u*foo</code> pattern, but
+<code class="highlighter-rouge">./uberfoo</code> file does.
+<code class="highlighter-rouge">-name</code> filter performs <em>case sensitive</em> comparisons so <code class="highlighter-rouge">foo</code> doesn’t match <code class="highlighter-rouge">FOO</code> pattern,
+to use case insensitive comparisons use <code class="highlighter-rouge">-iname</code> filter instead.</p>
+
+<p>Inside name filter pattern some characters like <code class="highlighter-rouge">*</code> or expressions like <code class="highlighter-rouge">[abc]</code> have
+special meaning (see <a href="https://en.wikipedia.org/wiki/Glob_(programming)">glob expression</a>).
+Table below lists all special expressions that may be used inside patterns:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Special character / expression</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">*</code></td>
+      <td>Matches zero or more characters</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">?</code></td>
+      <td>Matches single character</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">[abc]</code></td>
+      <td>Character set. Matches any character in set</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">[!abc]</code></td>
+      <td>Inverted character set. Matches any character NOT in set</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">[a-z]</code></td>
+      <td>Character range. Matches any character in range</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">[!a-z]</code></td>
+      <td>Inverted character range. Matches any character NOT in range</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>BE CAREFUL: It is always
+good idea to quote patterns using single quotes to prevent shell expansion of the pattern</p>
+
+<p>Examples:</p>
+
+<ul>
+  <li>To find all java files we can use <code class="highlighter-rouge">-name '*.java'</code> filter</li>
+  <li>To find all files that have three letter names we may use <code class="highlighter-rouge">-name '???'</code> filter</li>
+  <li>To find all files that have names starting with <code class="highlighter-rouge">a</code>, <code class="highlighter-rouge">b</code> or <code class="highlighter-rouge">c</code> we can use <code class="highlighter-rouge">-name '[abc]*'</code> filter</li>
+  <li>To find all files that have names that doesn’t start with <code class="highlighter-rouge">1</code> we may use <code class="highlighter-rouge">-name '[!1]*'</code> filter</li>
+</ul>
+
+<h5 id="size-filter">Size filter</h5>
+
+<p><code class="highlighter-rouge">-size</code> filter can be used to search for files of given size, for example <code class="highlighter-rouge">find dir -size 1M</code> will find
+all one megabyte files in <code class="highlighter-rouge">dir</code> directory.</p>
+
+<p>We may use <code class="highlighter-rouge">+</code> and <code class="highlighter-rouge">-</code> prefixes to
+signify that we want files bigger or smaller than specified size e.g. <code class="highlighter-rouge">find dir -size +64k</code> will
+find all files contained in <code class="highlighter-rouge">dir</code> directory that are bigger than 64 kilobytes.
+Conversely <code class="highlighter-rouge">find dir -size -64k</code> will find all files in <code class="highlighter-rouge">dir</code> directory that are smaller than 64 kilobytes.</p>
+
+<p>We may use popular <code class="highlighter-rouge">k</code>, <code class="highlighter-rouge">M</code>, <code class="highlighter-rouge">G</code> suffixes to signify kilo-, mega- and gigabytes, <code class="highlighter-rouge">c</code> suffix can be used to
+specify file size in bytes.</p>
+
+<h5 id="time-filter">Time filter</h5>
+
+<p>For every file filesystem tracks up to three times:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">atime</code> or Access time - time when give file was last read</li>
+  <li><code class="highlighter-rouge">mtime</code> or Modification time - last time when contents of file changed</li>
+  <li><code class="highlighter-rouge">ctime</code> or Change time - last time when contents or attributes of file changed. 
+ Here attributes refers to file metadata like filename or file permissions</li>
+</ul>
+
+<p>To find all files that were modified exactly one day ago we may use <code class="highlighter-rouge">-mtime 1</code> filter.
+And to find all files that were accessed exactly one minute ago we may use <code class="highlighter-rouge">-amin 1</code> filter.</p>
+
+<p>First letter of these filters (<code class="highlighter-rouge">a</code>, <code class="highlighter-rouge">m</code> or <code class="highlighter-rouge">c</code>) signifies on what file time filter should operate,
+next word (<code class="highlighter-rouge">time</code> or <code class="highlighter-rouge">min</code>) signifies in what time unit will be passed argument - we may use only
+days or minutes.</p>
+
+<p>As with size filter we may use <code class="highlighter-rouge">+</code> and <code class="highlighter-rouge">-</code> prefixes to signify that we want to find files
+that were modified at most one day ago (<code class="highlighter-rouge">-mtime -1</code>) or at least one day ago (<code class="highlighter-rouge">-mtime +1</code>).</p>
+
+<h5 id="permissions-filter">Permissions filter</h5>
+
+<p><code class="highlighter-rouge">-perm</code> filter can be used to find files/dirs that have specific permissions set.</p>
+
+<p>In the examples I will use octal notation for permissions e.g. <code class="highlighter-rouge">-perm 644</code> but <code class="highlighter-rouge">-perm</code> filter
+also supports symbolic notation e.g. <code class="highlighter-rouge">-perm u=rw</code>.<br />
+Here is quick remainder of the octal
+notation:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">    owner  |  group  |  others
+    r w x  |  r w x  |  r w x
+    4 2 1  |  4 2 1  |  4 2 1</code></pre></figure>
+
+<p>To find all files/dirs that have permissions set 
+exactly to <code class="highlighter-rouge">644</code> we may use <code class="highlighter-rouge">find dir -perm 644</code>, this will find
+all files/dirs that are readable/writable for file owner and readable for everyone else.</p>
+
+<p>Often we want to find files that have <em>at least</em> specified permissions, to do so 
+we must prefix permissions with minus sign (<code class="highlighter-rouge">-</code>) e.g. <code class="highlighter-rouge">-perm -644</code>.
+Filter <code class="highlighter-rouge">-perm -644</code> will
+find all files that are at least readable/writable for file owner and readable for everybody
+else e.g. files with permissions <code class="highlighter-rouge">666</code>, <code class="highlighter-rouge">655</code> and <code class="highlighter-rouge">777</code> will be included.</p>
+
+<p>Sometimes we want to find files that have a common permission bit with specified permission, 
+to do this
+we should prefix permissions with <code class="highlighter-rouge">/</code> character. For example to find files that have
+<em>any</em> permission for others set we may use <code class="highlighter-rouge">find dir -perm /007</code>.</p>
+
+<h4 id="actions">Actions</h4>
+
+<p>No let’s see what we can do with found files. In this section I will describe most
+popular actions used with <code class="highlighter-rouge">find</code>.</p>
+
+<h5 id="print-and-print0-actions">print and print0 actions</h5>
+
+<p><code class="highlighter-rouge">-print</code> and <code class="highlighter-rouge">-print0</code> actions print on <code class="highlighter-rouge">stdout</code> path to found files.
+Printed path is <strong>relative</strong> to <code class="highlighter-rouge">startDirectory</code> so:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ find dir -print
+dir
+dir/foo.java
+dir/foo.cpp
+
+$ find ./././dir -print
+./././dir
+./././dir/foo.java
+./././dir/foo.cpp
+
+$ readlink -f dir
+/home/user/dir
+
+$ find $(readlink -f dir) -print
+/home/user/dir
+/home/user/dir/foo.java
+/home/user/dir/foo.cpp</code></pre></figure>
+
+<p>In the last example I used <code class="highlighter-rouge">readlink</code> command to get absolute path to <code class="highlighter-rouge">dir</code> directory.</p>
+
+<p>When we pipe <code class="highlighter-rouge">find</code> output to other programs like <code class="highlighter-rouge">xargs</code> we should definitely use <code class="highlighter-rouge">-print0</code>
+action. The main difference between <code class="highlighter-rouge">-print</code> and <code class="highlighter-rouge">-print0</code> is that the last one
+uses <code class="highlighter-rouge">NUL</code> character (<code class="highlighter-rouge">\0</code>) instead of new line to separate paths. 
+This allows other tools to process
+paths that contains spaces including new lines without problems. 
+Here’s how we use it with <code class="highlighter-rouge">xargs</code>:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">find dir -print0 | xargs -0 -n 1 echo</code></pre></figure>
+
+<p>The important part is to pass <code class="highlighter-rouge">-0</code> or <code class="highlighter-rouge">--null</code> option to <code class="highlighter-rouge">xargs</code> so it will know that
+we will separate paths using <code class="highlighter-rouge">NUL</code> character.</p>
+
+<h5 id="delete-action">delete action</h5>
+
+<p>This action is pretty self-explanatory, you may use it to remove files.</p>
+
+<p>WARNING: Please remember that <code class="highlighter-rouge">find</code> processes filters and actions from left to right so
+if you you put <code class="highlighter-rouge">-delete</code> action first <code class="highlighter-rouge">find</code> will try to delete all found files and
+directories before trying other filters/actions.</p>
+
+<p>If the delete operation fail <code class="highlighter-rouge">-delete</code> will return <code class="highlighter-rouge">false</code>, otherwise it will
+return <code class="highlighter-rouge">true</code>.</p>
+
+<p>Example usage:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ find dir -name '*foo*' -delete</code></pre></figure>
+
+<h5 id="exec-action">exec action</h5>
+
+<p><code class="highlighter-rouge">-exec</code> is the most useful action that you can use with <code class="highlighter-rouge">find</code>. It allows you
+to execute arbitrary command for each found file. 
+You must pass command to execute after <code class="highlighter-rouge">-exec</code> argument and you must end it with
+<code class="highlighter-rouge">;</code> character. 
+Since semicolon has special meaning in the shell you must escape it using <code class="highlighter-rouge">\;</code> or <code class="highlighter-rouge">';'</code>.
+Inside command you may use <code class="highlighter-rouge"><span class="p">{}</span></code> placeholder that will be replaced by the path to 
+the found file before command execution.
+<code class="highlighter-rouge">-exec</code> action returns <code class="highlighter-rouge">true</code> if executed command returned <code class="highlighter-rouge">0</code> exit code, otherwise
+it will return <code class="highlighter-rouge">false</code>.</p>
+
+<p>Let’s see some examples:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ find dir -name 'foo*' -exec echo "found file: {}" ';'
+found file: dir/foo.java
+found file: dir/foo.cpp
+
+
+$ ls -l dir/*
+-rw-rw-r-- 1 user user 0 lip 30 11:22 dir/foo.cpp
+-rw-rw-r-- 1 user user 0 lip 30 11:22 dir/foo.java
+
+$ find dir -name 'foo*' -exec chmod o+w {} \;
+
+$ ls -l dir/*
+-rw-rw-rw- 1 user user 0 lip 30 11:22 dir/foo.cpp
+-rw-rw-rw- 1 user user 0 lip 30 11:22 dir/foo.java</code></pre></figure>
+
+<h5 id="ok-action">ok action</h5>
+
+<p><code class="highlighter-rouge">-ok</code> is like <code class="highlighter-rouge">-exec</code> action with the exception that <code class="highlighter-rouge">find</code> will ask you
+for confirmation before executing command:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ find dir -ok chmod o+w {} \;
+&lt; chmod ... dir &gt; ? y
+&lt; chmod ... dir/foo.java &gt; ? n
+&lt; chmod ... dir/a &gt; ? n
+&lt; chmod ... dir/foo.cpp &gt; ? y
+&lt; chmod ... dir/c &gt; ? y
+&lt; chmod ... dir/b &gt; ? n
+&lt; chmod ... dir/d &gt; ? n</code></pre></figure>
+
+<h4 id="advanced-expressions">Advanced expressions</h4>
+
+<p>As we have seen <code class="highlighter-rouge">find</code> command is very versatile. We already know how to
+create complex search conditions and how to execute actions for found files.
+Yet we still don’t know full power of <code class="highlighter-rouge">find</code>, now it’s time to change that.</p>
+
+<p>Let’s start with simple example: we want to find all files in <code class="highlighter-rouge">dir</code> directory
+that have names that  <em>doesn’t</em> end with <code class="highlighter-rouge">.java</code>. 
+It’s impossible to do so with <code class="highlighter-rouge">-name</code> filter that we know. 
+But if there was a way to negate a filter it would be simple, right?
+In fact there is, just precede a filter with <code class="highlighter-rouge">!</code>
+character to negate it (since <code class="highlighter-rouge">!</code> is special shell character we need to escape it e.g. <code class="highlighter-rouge">\!</code>).</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ tree dir
+ dir
+ |-- foo.cpp
+ |-- foo.java
+ `-- foo.py
+
+$ find dir \! -name '*.java' -type f
+dir/foo.py
+dir/foo.cpp</code></pre></figure>
+
+<p>Beside negation <code class="highlighter-rouge">find</code> also provides two other boolean operators: AND (<code class="highlighter-rouge">-a</code>) and OR (<code class="highlighter-rouge">-o</code>).
+We may also use parentheses to group filters/actions into subexpressions
+(as you probably guessed parentheses have special meaning in the shell and we must 
+escape them e.g. <code class="highlighter-rouge">\(</code> or <code class="highlighter-rouge">')'</code>).</p>
+
+<p>When <code class="highlighter-rouge">find</code> evaluates complex expressions it tries to 
+<a href="https://en.wikipedia.org/wiki/Short-circuit_evaluation">short-circuit</a> AND and OR
+operators. Short-circuiting means that if the left 
+operand of the AND is false right operand is not evaluated,
+and if the left operand of OR is true the right operand is not evaluated. This is very
+important when we mix filters with actions.
+Let’s see some examples that show us AND and OR operators in action:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ # find files ending with .cpp or .py
+$ find dir \( -name '*.cpp' -o -name '*.py' \)
+dir/foo.py
+dir/foo.cpp
+
+$ # print files once but directories twice
+$ find dir \( -type f -a -print \) -o \( -type d -a -print -a -print \)
+dir
+dir
+dir/foo.java
+dir/foo.py
+dir/foo.cpp
+
+$ # this one is tricky, we remove all NON-DIRECTORIES
+$ # e.g. files, pipes, sockets etc.
+$ # here we use fact that OR operator short-circuit's
+$ find dir -type d -o -delete</code></pre></figure>
+
+<p>The last think to remember is that <code class="highlighter-rouge">\( filter1 -a filter2 -a filter3 \)</code> expression is 
+equivalent to <code class="highlighter-rouge">\( filter1 filter2 filter3 \)</code>.</p>
+
+<h4 id="other">Other</h4>
+
+<p>Before we end I want to mention two handy options <code class="highlighter-rouge">-mindepth</code> and <code class="highlighter-rouge">-maxdepth</code> that
+allow us to limit search depth to a specific range. Here’s how to use them:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ mkdir -p dir/dir1/dir2/dir3/dir4
+
+$ tree dir
+ dir
+ `-- dir1
+     `-- dir2
+         `-- dir3
+             `-- dir4
+
+$ find dir -mindepth 1 -maxdepth 3
+dir/dir1
+dir/dir1/dir2
+dir/dir1/dir2/dir3
+
+$ find dir
+dir
+dir/dir1
+dir/dir1/dir2
+dir/dir1/dir2/dir3
+dir/dir1/dir2/dir3/dir4</code></pre></figure>
+
+<p>Intuitively <code class="highlighter-rouge">mindepth</code>/<code class="highlighter-rouge">maxdepth</code> tells us how many <code class="highlighter-rouge">/</code> characters we want to have in file path.</p>
+
+<h4 id="findform-application"><code class="highlighter-rouge">findform</code> application</h4>
+
+<p>To help you quickly recall all most useful <code class="highlighter-rouge">find</code> options I created simple interactive
+app that provides GUI for <code class="highlighter-rouge">find</code>, you may add it as a bookmark if you find it useful.</p>
+
+<p><a href="/assets/apps/findform/">Open FindFORM app</a></p>
+
+<p>That’s all for today, thanks for reading!</p>
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=How to use find command&amp;url=https://marcin-chwedczuk.github.io/how-to-use-find-command"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/how-to-use-find-command"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/how-to-use-find-command"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//how-to-use-find-command';
+        this.page.identifier = '/how-to-use-find-command';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover2.jpg)" href="/indexes-in-postgresql">
+            <section class="post">
+                <h2>Indexes in PostgreSQL database</h2>
+                <p>In this article I will present how to use indexes in PostgreSQL database. We will...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover4.jpg)" href="/introduction-to-hibernate-embeddable-types">
+            <section class="post">
+                <h2>Introduction to Hibernate embeddable types</h2>
+                <p>Entities vs Value types When we create domain model we must deal with two kinds...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

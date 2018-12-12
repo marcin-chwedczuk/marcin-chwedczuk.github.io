@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Hoisting in JavaScript</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript  nav-current" role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches  nav-current" role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover8.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Hoisting in JavaScript</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2016-10-30">30 Oct 2016</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/javascript'>Javascript</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>In this post I will describe what is variable hoisting in JavaScript.
+But before we go into detailed explanations let’s look at
+a few code examples.</p>
+
+<p>Let’s start with function <code class="highlighter-rouge">bad()</code> that tries to
+access not defined variable:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">bad</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">notDefinedVariable</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">bad</span><span class="p">();</span>
+<span class="c1">// result:</span>
+<span class="c1">// "ReferenceError: notDefinedVariable is not defined</span></code></pre></figure>
+
+<p>As we would expected attempt to read <code class="highlighter-rouge">notDefinedVariable</code>
+ends with an error, namely <code class="highlighter-rouge">ReferenceError</code> exception.</p>
+
+<p>Now you may be wondering what will happen when we try
+to write value to not defined variable:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">bad2</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">notDefinedVariable</span> <span class="o">=</span> <span class="s1">'fufufu'</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">bad2</span><span class="p">();</span> <span class="c1">// no error</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">notDefinedVariable</span><span class="p">);</span>
+<span class="c1">// prints: "fufufu"</span></code></pre></figure>
+
+<p>In this case we get no error and everything seems to work,
+but after a call to <code class="highlighter-rouge">bad2()</code> <code class="highlighter-rouge">notDefinedVariable</code> is still visible.
+What happened here is that we accidentally create 
+<code class="highlighter-rouge">notDefinedVariable</code> <em>global</em> variable.</p>
+
+<p>Using global variables is regarded by many programmers as
+bad practice, especially when you can create them accidentally.
+To prevent errors and encourage good programming style 
+ECMAScript 5 standard (which defines JavaScript language)
+introduced so called <em>strict mode</em>.
+We can enable strict mode by beginning function with <code class="highlighter-rouge">'use strict';</code>
+instruction.
+With strict mode enabled we get <code class="highlighter-rouge">ReferenceError</code> exception
+when we try to write to undefined variable:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">bad3</span><span class="p">()</span> <span class="p">{</span>
+    <span class="s1">'use strict'</span><span class="p">;</span>
+    <span class="nx">notDefinedVariable</span> <span class="o">=</span> <span class="s1">'fufufu'</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">bad3</span><span class="p">();</span>
+<span class="c1">// result: "ReferenceError: undefinedVariable is not defined</span></code></pre></figure>
+
+<p>You may be wondering what will happen when we declare
+variable but didn’t assign any value to it, will we get
+an error while accessing variable value or not?</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">soSo</span><span class="p">()</span> <span class="p">{</span>
+    <span class="s1">'use strict'</span><span class="p">;</span>
+    
+    <span class="kd">var</span> <span class="nx">foo</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">foo</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">soSo</span><span class="p">();</span>
+<span class="c1">// prints: undefined</span></code></pre></figure>
+
+<p>We didn’t get an error, that’s because variables declared using <code class="highlighter-rouge">var</code> keyword
+initially have value of <code class="highlighter-rouge">undefined</code> until explicitly assigned by the user.</p>
+
+<p>Now let’s look on a bit more complicated example:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">hoisting1</span><span class="p">()</span> <span class="p">{</span>
+    <span class="s1">'use strict'</span><span class="p">;</span>
+
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+    
+    <span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">hoisting1</span><span class="p">();</span>
+<span class="c1">// prints: undefined 3</span></code></pre></figure>
+
+<p>You may wonder what happened here. We already know that reading
+from undefined variables causes <code class="highlighter-rouge">ReferenceError</code> exception, but
+why first call to <code class="highlighter-rouge">console.log(x)</code> didn’t throw any?
+And what about <code class="highlighter-rouge">undefined</code> value that was printed, 
+we know that this is the value of declared but not initialized variables.
+So to sum up this function behaves as if variable <code class="highlighter-rouge">x</code> was declared
+at the very beginning of <code class="highlighter-rouge">hoisting1</code> function:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">hoisting1</span><span class="p">()</span> <span class="p">{</span>
+    <span class="s1">'use strict'</span><span class="p">;</span>
+    
+    <span class="kd">var</span> <span class="nx">x</span><span class="p">;</span>
+
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+    <span class="nx">x</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>And this is what hoisting is all about. In JavaScript it doesn’t
+matter where you declare variables inside function body
+because they declarations will be implicitly 
+moved to the beginning of the function.
+For example <code class="highlighter-rouge">func1()</code> when processed by JavaScript interpreter
+behaves exactly the same as <code class="highlighter-rouge">func2()</code>:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">func1</span><span class="p">()</span> <span class="p">{</span>
+    <span class="s1">'use strict'</span><span class="p">;</span>
+    
+    <span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">x</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span> <span class="p">{</span>
+       <span class="kd">var</span> <span class="nx">y</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="nx">x</span><span class="p">;</span>
+       <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">y</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">func2</span><span class="p">()</span> <span class="p">{</span>
+    <span class="s1">'use strict'</span><span class="p">;</span>
+
+    <span class="kd">var</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">y</span><span class="p">;</span>
+
+    <span class="nx">x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">x</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span> <span class="p">{</span>
+       <span class="nx">y</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="nx">x</span><span class="p">;</span>
+       <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">y</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>As you may expect hoisting can make troubles when we are not
+alert, for example can you spot a bug here:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">withBug</span><span class="p">()</span> <span class="p">{</span>
+    <span class="s1">'use strict'</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">arrayI</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span>
+        <span class="nx">arrayJ</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">];</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">arrayI</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">arrayI</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">arrayJ</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">j</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">arrayJ</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arrayJ</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">withBug</span><span class="p">();</span>
+<span class="c1">// prints: undefined</span></code></pre></figure>
+
+<p>If <code class="highlighter-rouge">i</code> was accessible only inside <code class="highlighter-rouge">for(var i ...)</code> loop
+interpreter would spot problem with <code class="highlighter-rouge">console.log(arrayJ[i])</code> line
+and would thrown a <code class="highlighter-rouge">ReferenceError</code> exception. Unfortunately 
+because of hoisting
+variable <code class="highlighter-rouge">i</code> is accessible through entire function body and only
+wrong behaviour of our program can tell us that something is wrong.</p>
+
+<p>So how can we make our programs secure against bugs caused by
+hoisting? The simples thing to do is to declare all function
+variables at the beginning of function body, thus making
+hoisting explicit:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">sum</span><span class="p">(</span><span class="nx">array</span><span class="p">)</span> <span class="p">{</span>
+    <span class="s1">'use strict'</span><span class="p">;</span>
+
+    <span class="c1">// declare all variables at the beginning   </span>
+    <span class="kd">var</span> <span class="nx">arrSum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">i</span><span class="p">;</span>
+  
+    <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">array</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">arrSum</span> <span class="o">+=</span> <span class="nx">array</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+    <span class="p">}</span>
+  
+    <span class="k">return</span> <span class="nx">arrSum</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>This is simple and effective solution but a bit cumbersome to use,
+it would be better to declare variables in the place of their first usage
+right? So the second solution is to just ignore the problem, if
+you are keeping size of your function small (no longer than 20 lines
+of code) and you follow good coding practices (especially you give
+your variables good descriptive names, and prefer <code class="highlighter-rouge">forEach</code> method to
+<code class="highlighter-rouge">for</code> loops)
+you should have no problems with hoisting.</p>
+
+<p>In some cases you really want to reduce visibility of a variable to
+some block of code, the popular solution to this problem is 
+to use <a href="https://developer.mozilla.org/en-US/docs/Glossary/IIFE">IIFE pattern</a>:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">iife</span><span class="p">()</span> <span class="p">{</span>
+    <span class="s1">'use strict'</span><span class="p">;</span>
+    
+    <span class="c1">// following line produces: ReferenceError: i is not defined</span>
+    <span class="c1">// console.log('before IIFE: ' + i);</span>
+  
+    <span class="c1">// iife expression - we declare anonymous</span>
+    <span class="c1">// function and immediately invoke it</span>
+    <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="nx">i</span><span class="o">+=</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}());</span>
+  
+    <span class="c1">// following line produces: ReferenceError: i is not defined</span>
+    <span class="c1">// console.log('after IIFE: ' + i);</span>
+<span class="p">}</span>
+
+<span class="nx">iife</span><span class="p">();</span>
+<span class="c1">// prints: 0 1 2</span></code></pre></figure>
+
+<p>Here variable <code class="highlighter-rouge">i</code> is visible only inside IIFE expression.
+Using IIFE has it’s own problems especially when we want to
+access <code class="highlighter-rouge">this</code> value inside IIFE expression.
+We must either pass <code class="highlighter-rouge">this</code> via local variable:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c1">// it is a convention to call such a variable</span>
+	<span class="c1">// that or self</span>
+	<span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+
+	<span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">that</span><span class="p">.</span><span class="nx">someMethod</span><span class="p">();</span>
+	<span class="p">}());</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>or use <code class="highlighter-rouge">call()</code> to invoke function:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+	<span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">someMethod</span><span class="p">();</span>
+	<span class="p">}).</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Almost every popular language (e.g. Java, C#, C++) follows block scoping
+rules, this means that variable is visible only inside a block of
+code in which it is declared. For example in Java:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+<span class="o">{</span>
+	<span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">3</span><span class="o">;</span>
+	<span class="c1">// we can use i and j here</span>
+<span class="o">}</span>
+<span class="c1">// j no longer visible here</span>
+<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">;</span> <span class="n">k</span><span class="o">++</span> <span class="o">)</span> <span class="o">{</span>
+	<span class="c1">// k and i are visible here</span>
+<span class="o">}</span>
+<span class="c1">// k is no longer visible here</span>
+<span class="c1">// but we can access i</span></code></pre></figure>
+
+<p>Compare this with JavaScript version:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// can use i, j and k here</span>
+<span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="c1">// can use i, j and k here</span>
+<span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+	<span class="c1">// can use i, j and k here</span>
+<span class="p">}</span>
+<span class="c1">// can use i, j and k here</span>
+<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">k</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">k</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="nx">k</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// can use i, j and k here</span>
+<span class="p">}</span>
+<span class="c1">// can use i, j and k here</span></code></pre></figure>
+
+<p>If you have this strange feeling that something is wrong here
+you are not the only one.
+JavaScript community decided to introduce proper lexical scoping
+to JavaScript in ECMAScript 2015 standard (sometimes called ES6).
+ECMAScript 2015 introduces a new JavaScript keyword <code class="highlighter-rouge">let</code> that
+works like <code class="highlighter-rouge">var</code> but with lexical scoping.
+Here’s how our example looks with <code class="highlighter-rouge">let</code>:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">letTest</span><span class="p">()</span> <span class="p">{</span>
+	<span class="s1">'use strict'</span><span class="p">;</span>
+	<span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="p">{</span>
+		<span class="kd">let</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="c1">// cannot use j here</span>
+	<span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">k</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">k</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">k</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">k</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="c1">// cannot use k here </span>
+<span class="p">}</span>
+
+<span class="nx">letTest</span><span class="p">();</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">let</code> also prohibits redeclarations of variables:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+	<span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span> <span class="c1">// ok</span>
+
+	<span class="kd">let</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+	<span class="kd">let</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span> <span class="c1">// error</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Support of ES6 among browsers is pretty good right now (you may also use it
+with node.js), but I guess if you have a chance to work with ES6 you most
+probably will be transpiling ES6 code into ES5 code (a plain old JavaScript)
+using Babel or some other transpiler.</p>
+
+<p>I hope you now know what hoisting is and what troubles it can make.
+If you have any remarks how I can improve this article please leave a comment.</p>
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Hoisting in JavaScript&amp;url=https://marcin-chwedczuk.github.io/hoisting-in-javascript"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/hoisting-in-javascript"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/hoisting-in-javascript"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//hoisting-in-javascript';
+        this.page.identifier = '/hoisting-in-javascript';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover8.jpg)" href="/using-tomcat-8.5-with-eclipse-neon">
+            <section class="post">
+                <h2>Using Tomcat 8.5 with Eclipse Neon on Ubuntu</h2>
+                <p>When you start learning Spring MVC development configuring Tomcat server in Eclipse Neon IDE can...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover6.jpg)" href="/introduction-to-spring-expression-language">
+            <section class="post">
+                <h2>Introduction to SpEL (Spring Expression Language)</h2>
+                <p>When writing bean wiring configuration in Spring it happens from time to time that we...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

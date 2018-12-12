@@ -1,0 +1,1201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+   
+      <title>marcin-chwedczuk.github.io/</title>
+   
+   <link>https://marcin-chwedczuk.github.io/</link>
+   <description>A place where I can share my thoughts about programming</description>
+   <language>en-uk</language>
+   <managingEditor> marcin-chwedczuk</managingEditor>
+   <atom:link href="rss" rel="self" type="application/rss+xml" />
+   
+	<item>
+	  <title>Inheritance? Just say no!</title>
+	  <link>//inheritance-just-say-no</link>
+	  <author>marcin-chwedczuk</author>
+	  <pubDate>2018-12-12T01:00:00+01:00</pubDate>
+	  <guid>//inheritance-just-say-no</guid>
+	  <description><![CDATA[
+	     <p>Recently during a code review I have found the following piece
+of code:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">TemplateCache</span> 
+    <span class="p">:</span> <span class="n">ConcurrentDictionary</span><span class="p">&lt;</span><span class="n">TemplateName</span><span class="p">,</span> <span class="n">Template</span><span class="p">&gt;</span> <span class="p">{</span> <span class="p">}</span></code></pre></figure>
+
+<p>Here the programmer broke one of the most fundamental principles
+of modern object oriented programming:</p>
+
+<blockquote>
+  <p>Prefer composition over inheritance</p>
+</blockquote>
+
+<p>Why inheritance is bad in most of the cases? Here are the reasons:</p>
+
+<h6 id="watered-down-component-api">Watered down component API</h6>
+
+<p>What methods would you expect on a cache? Something that gets
+values from the cache if they are already there. Let us call 
+this operation <code class="highlighter-rouge">TryGetValue(cacheKey, out value)</code>. 
+And of course a method to
+add a new or overwrite an existing cache entry, let’s call it
+<code class="highlighter-rouge">SetValue(cacheKey, value)</code>. Do we need more methods on a cache
+from the client point of view? Maybe in the future we will want to
+extend <code class="highlighter-rouge">SetValue</code> operation to allow client to specify for how
+long items added to the cache should be stored? Who knows. 
+But still we would end up with only two operations.</p>
+
+<blockquote>
+  <p>NOTE A truly generic and reusable cache 
+is usually slightly more complicated - instead of two
+we have three methods! For example please see
+<a href="https://github.com/aspnet/Caching/blob/master/src/Microsoft.Extensions.Caching.Abstractions/IMemoryCache.cs">IMemoryCache</a> interface.</p>
+</blockquote>
+
+<p>On the other hand if we use inheritance we end up with something 
+like this:
+<img src="assets/images/2018-12-12/cache_api.png" alt="Cache API when we use inheritance" />
+This is much more than we asked for. We actually get operations
+that make no sense for a cache like <code class="highlighter-rouge">IsEmpty</code>. I mean either an item
+that we are looking for is in the cache or it is not - who cares
+if the cache is empty itself?</p>
+
+<p>I hope that I managed to persuade you that a good component
+API should be small, focused and easy to use. We get none of these 
+if we use inheritance.</p>
+
+<h6 id="broken-encapsulation">Broken encapsulation</h6>
+
+<p>By using inheritance we are making it clear to the clients of
+our component that it is implemented using <code class="highlighter-rouge">ConcurrentDictionary</code> class.
+If we wait long enough we will notice that some of them 
+will start relaying on that knowledge in their code. 
+For example they may use <code class="highlighter-rouge">ContainsKey</code> method for checking if
+the cache contains a given entry. 
+What will happen later, when we decide that we want to change 
+the cache implementation and use for example 
+<a href="https://dotnetcoretutorials.com/2017/03/05/using-inmemory-cache-net-core/">IMemoryCache</a> instead?
+Clients of our component will get angry, because
+our new version of the cache<br />
+introduced a breaking change into their code.</p>
+
+<p>Just to sum up: Inheritance both exposes implementation
+details of components and makes evolution of their APIs more difficult.</p>
+
+<h6 id="liskov-substitution-principle-is-broken">Liskov substitution principle is broken</h6>
+
+<p>In short some operations that make sense for a dictionary
+may not make sense for a cache. For example it makes no
+sense to cache a template that does not exists, yet with
+inheritance we may write:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">foo</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">TemplateName</span><span class="p">(</span><span class="s">"foo"</span><span class="p">);</span>
+
+<span class="n">ConcurrentDictionary</span><span class="p">&lt;</span><span class="n">TemplateName</span><span class="p">,</span> <span class="n">Template</span><span class="p">&gt;</span> <span class="n">dict</span> 
+   <span class="p">=</span> <span class="k">new</span> <span class="nf">TemplateCache</span><span class="p">();</span>
+
+<span class="n">dict</span><span class="p">.</span><span class="nf">GetOrAdd</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="p">(</span><span class="n">Template</span><span class="p">)</span><span class="k">null</span><span class="p">);</span>
+
+<span class="c1">// Ops we have a null template here...
+</span><span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"value is: "</span> <span class="p">+</span> 
+   <span class="n">dict</span><span class="p">.</span><span class="nf">GetOrAdd</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="p">(</span><span class="n">Template</span><span class="p">)</span><span class="k">null</span><span class="p">));</span></code></pre></figure>
+
+<p>When we use inheritance we are telling the type system that
+<code class="highlighter-rouge">TemplateCache</code> <em>is a</em> <code class="highlighter-rouge">ConcurrentDictionary</code>. 
+From logical point of view this makes no sense. They are two
+different components that have two different purposes and also
+different usage patterns. 
+They should have nothing in common.</p>
+
+<blockquote>
+  <p>BTW You should avoid putting <code class="highlighter-rouge">null</code>s into collection classes of any sort.</p>
+</blockquote>
+
+<p>Let’s finish this post by seeing how composition can be used
+to improve our <code class="highlighter-rouge">TemplateCache</code> component:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">TemplateCache</span> <span class="p">{</span>
+  <span class="k">private</span> <span class="k">readonly</span> <span class="n">ConcurrentDictionary</span><span class="p">&lt;</span><span class="n">TemplateName</span><span class="p">,</span> <span class="n">Template</span><span class="p">&gt;</span> <span class="n">_cache</span> 
+      <span class="p">=</span> <span class="k">new</span> <span class="n">ConcurrentDictionary</span><span class="p">&lt;</span><span class="n">TemplateName</span><span class="p">,</span> <span class="n">Template</span><span class="p">&gt;();</span>
+
+  <span class="k">public</span> <span class="kt">bool</span> <span class="nf">TryGetTemplate</span><span class="p">(</span><span class="n">TemplateName</span> <span class="n">name</span><span class="p">,</span> <span class="k">out</span> <span class="n">Template</span> <span class="n">template</span><span class="p">)</span>
+      <span class="p">=&gt;</span> <span class="n">_cache</span><span class="p">.</span><span class="nf">TryGetValue</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="k">out</span> <span class="n">template</span><span class="p">);</span>
+
+  <span class="k">public</span> <span class="k">void</span> <span class="nf">AddTemplate</span><span class="p">(</span><span class="n">Template</span> <span class="n">template</span><span class="p">)</span>
+      <span class="p">=&gt;</span> <span class="n">_cache</span><span class="p">.</span><span class="nf">AddOrUpdate</span><span class="p">(</span>
+          <span class="n">template</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">existing</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">template</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Yep, simple, clean and easy to use!</p>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
+	  <title>Abusing local functions to hide design problems</title>
+	  <link>//abusing-local-functions-to-hide-design-problems</link>
+	  <author>marcin-chwedczuk</author>
+	  <pubDate>2018-10-08T02:00:00+02:00</pubDate>
+	  <guid>//abusing-local-functions-to-hide-design-problems</guid>
+	  <description><![CDATA[
+	     <p>Recently I was browsing through a certain code base
+and I saw a code similar to this:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">EnterpriseNotificationSender</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">IUserManagementService</span> <span class="n">_userManagementService</span><span class="p">;</span>
+    <span class="c1">// ctor and stuff...
+</span>  
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">SendNotificationsToUsers</span><span class="p">(</span><span class="kt">string</span> <span class="n">companyId</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">var</span> <span class="n">addresses</span> <span class="p">=</span> <span class="nf">GetRecipientsAddresses</span><span class="p">(</span><span class="n">companyId</span><span class="p">);</span>
+        <span class="k">foreach</span><span class="p">(</span><span class="n">var</span> <span class="n">address</span> <span class="k">in</span> <span class="n">addresses</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nf">SendNotification</span><span class="p">(</span><span class="n">address</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+  
+    <span class="k">private</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">EmailAddress</span><span class="p">&gt;</span> 
+                     <span class="nf">GetRecipientsAddresses</span><span class="p">(</span><span class="kt">string</span> <span class="n">companyId</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">_userManagementService</span>
+             <span class="p">.</span><span class="nf">FindUsersBelongingToCompany</span><span class="p">(</span><span class="n">companyId</span><span class="p">)</span>
+             <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">UserShouldReciveNotification</span><span class="p">)</span>
+             <span class="p">.</span><span class="nf">Select</span><span class="p">(</span><span class="n">user</span> <span class="p">=&gt;</span> <span class="n">user</span><span class="p">.</span><span class="n">EmailAddress</span><span class="p">)</span>
+             <span class="p">.</span><span class="nf">ToList</span><span class="p">();</span>
+  
+        <span class="kt">bool</span> <span class="nf">UserShouldReciveNotification</span><span class="p">(</span><span class="n">User</span> <span class="n">user</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">user</span><span class="p">.</span><span class="n">EmailAddress</span> <span class="p">!=</span> <span class="k">null</span>
+                <span class="p">&amp;&amp;</span> <span class="n">user</span><span class="p">.</span><span class="n">IsRegistered</span>
+                <span class="p">&amp;&amp;</span> <span class="p">!</span><span class="n">user</span><span class="p">.</span><span class="n">IsDisabled</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+  
+    <span class="k">private</span> <span class="k">void</span> <span class="nf">SendNotification</span><span class="p">(</span><span class="n">EmailAddress</span> <span class="n">address</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// do stuff...
+</span>    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Especially <code class="highlighter-rouge">GetRecipientsAddresses</code> method draw my attention.
+Someone extracted quite complicated lambda expression
+to a local function.
+At first I thought that this is indeed a very nice usage for local
+functions.
+LINQ query is much more readable
+with expressions like <code class="highlighter-rouge">Where(UserShouldReciveNotification)</code>
+instead of long lambdas.</p>
+
+<p>It took me a while to realize that the local function
+in the code above, was used to hide design problems.
+Let’s take a closer look at the condition encapsulated by
+<code class="highlighter-rouge">UserShouldReciveNotification</code> function:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">return</span> <span class="n">user</span><span class="p">.</span><span class="n">EmailAddress</span> <span class="p">!=</span> <span class="k">null</span>
+    <span class="p">&amp;&amp;</span> <span class="n">user</span><span class="p">.</span><span class="n">IsRegistered</span>
+    <span class="p">&amp;&amp;</span> <span class="p">!</span><span class="n">user</span><span class="p">.</span><span class="n">IsDisabled</span><span class="p">;</span></code></pre></figure>
+
+<p>We should deal with the simplest to fix problems first:</p>
+
+<p><strong>Bad naming:</strong> We should always format predicates in “a positive way”.
+For examples we should prefer <code class="highlighter-rouge">IsOpen</code> and <code class="highlighter-rouge">IsAvailable</code> to <code class="highlighter-rouge">IsClose</code>
+and <code class="highlighter-rouge">IsUnavailable</code>. Here <code class="highlighter-rouge">IsDisabled</code> should be named <code class="highlighter-rouge">IsEnabled</code>.
+As a first step in refactoring we may add <code class="highlighter-rouge">IsEnabled</code> property
+to the <code class="highlighter-rouge">User</code> class:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="kt">bool</span> <span class="n">IsEnabled</span> <span class="p">=&gt;</span> <span class="p">!</span><span class="n">IsDisabled</span><span class="p">;</span></code></pre></figure>
+
+<p><strong>Unreadable condition:</strong> If a user has optional email then we may expect
+that our codebase is littered with little <code class="highlighter-rouge">user.EmailAddres != null</code> checks.
+To increase readability we should encapsulate this check into a separate property:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="kt">bool</span> <span class="n">HasEmailAddress</span> <span class="p">=&gt;</span> <span class="p">(</span><span class="n">EmailAddress</span> <span class="p">!=</span> <span class="k">null</span><span class="p">);</span></code></pre></figure>
+
+<p><strong>Missing entity attributes:</strong> When I looked closely at the condition
+<code class="highlighter-rouge">user.IsRegistered &amp;&amp; !user.IsDisabled</code> I found out that it occurs
+in many places in that codebase. For some reason the system was creating
+users before they actually registered. A user that not registered yet was basically
+a stub not a real user. Users could also be disabled by admins (registered or not),
+this is what the second part of the condition was responsible for.
+Clearly <code class="highlighter-rouge">User</code> entity is missing an attribute that could tell us whatever
+a user is active, so let’s add one:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="kt">bool</span> <span class="n">IsActive</span>
+    <span class="p">=&gt;</span> <span class="n">IsRegistered</span> <span class="p">&amp;&amp;</span> <span class="n">IsEnabled</span><span class="p">;</span></code></pre></figure>
+
+<p>After all these refactorings we may finally rewrite our LINQ query:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">return</span> <span class="n">_userManagementService</span>
+    <span class="p">.</span><span class="nf">FindUsersBelongingToCompany</span><span class="p">(</span><span class="n">companyId</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">user</span> <span class="p">=&gt;</span> <span class="n">user</span><span class="p">.</span><span class="n">IsActive</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">user</span> <span class="p">=&gt;</span> <span class="n">user</span><span class="p">.</span><span class="n">HasEmailAddress</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">Select</span><span class="p">(</span><span class="n">user</span> <span class="p">=&gt;</span> <span class="n">user</span><span class="p">.</span><span class="n">EmailAddress</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">ToList</span><span class="p">();</span></code></pre></figure>
+
+<p>This version is as readable as version with the local function,
+but does not attempt to hide code smells.</p>
+
+<p>Conclusion: Every time when you have a too long or too complicated
+lambda expression, that you what to extract to a local function,
+think if you can simplify that lambda by extracting conditions and checks
+into new methods and properties on processed objects.</p>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
+	  <title>Avoid hidden coupling to interface implementation</title>
+	  <link>//avoid-hidden-coupling-to-interface-implementation</link>
+	  <author>marcin-chwedczuk</author>
+	  <pubDate>2018-09-21T02:00:00+02:00</pubDate>
+	  <guid>//avoid-hidden-coupling-to-interface-implementation</guid>
+	  <description><![CDATA[
+	     <p>A few days ago I was reviewing a pull request at work and
+one line of code catch my eye:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">@event</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">CupOfCoffeeReadyEvent</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">);</span>
+<span class="n">_logger</span><span class="p">.</span><span class="nf">LogInformation</span><span class="p">(</span>
+    <span class="s">"Publishing cup of coffee event: {@Event}."</span><span class="p">,</span> <span class="n">@event</span><span class="p">);</span> <span class="c1">// &lt;== this one
+</span><span class="n">_mediator</span><span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="n">@event</span><span class="p">);</span></code></pre></figure>
+
+<p>At my workplace we are using standard <code class="highlighter-rouge">ILogger</code> interface from 
+<code class="highlighter-rouge">Microsoft.Extensions.Logging.Abstractions</code>
+package. Also logged variable name starts with <code class="highlighter-rouge">@</code> (<code class="highlighter-rouge">@event</code>). 
+And so I started to suspect that 
+the log statement contains an error and instead it should be written as:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// {@Event} -&gt; {Event}
+</span><span class="n">_logger</span><span class="p">.</span><span class="nf">LogInformation</span><span class="p">(</span>
+    <span class="s">"Publishing cup of coffee event: {Event}."</span><span class="p">,</span> <span class="n">@event</span><span class="p">);</span></code></pre></figure>
+
+<p>Without thinking any further I put a friendly comment, that 
+this logging statement should be fixed.
+After half an hour, instead of a fix I get the following response:</p>
+
+<blockquote>
+  <p>In this microservice we are using Serilog as third-party logging provider.</p>
+
+  <p>In Serilog <code class="highlighter-rouge">@</code> is used as destructuring operator,
+please see: 
+https://github.com/serilog/serilog/wiki/Structured-Data#preserving-object-structure</p>
+
+  <p>Basically this means that the argument will be logged in JSON form.</p>
+</blockquote>
+
+<p>So <code class="highlighter-rouge">@</code> character was put there on purpose. OK, fine.
+But there still was something fishy about this code. 
+On the one hand we are using <code class="highlighter-rouge">ILogger</code> from 
+<code class="highlighter-rouge">Microsoft.Extensions.Logging.Abstractions</code> to decouple ourselves 
+from any specific logging provider,
+on the other hand we are using Serilog specific extensions.
+This results in a false sense of security. 
+We may think that since we are
+using standard <code class="highlighter-rouge">ILogger</code>, changing logging provider to e.g.
+Azure Web App Diagnostics would be as simple as changing <code class="highlighter-rouge">Startup</code> 
+class of our application.
+Unfortunately since we coupled ourselves with Serilog 
+(by Serilog specific extensions to the log message template),
+some of our log statements may not work with the new logging provider.</p>
+
+<p>So what is the solution to this problem? We must choose whatever we
+want to use Serilog specific features. If we want to use them, then 
+we should not hide the fact that we are using Serilog. Fortunately for
+us Serilog provides it’s own, ready to use <code class="highlighter-rouge">ILogger</code> interface.
+And we should use that interface instead of standard one accross
+the entire application.</p>
+
+<p>On the other hand, if we expect that we may need to change logging
+provider in the future, we should stick with 
+<code class="highlighter-rouge">Microsoft.Extensions.Logging.Abstractions</code> <code class="highlighter-rouge">ILogger</code> and we should
+use only the features that are described in 
+<a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-2.1">the official documentation</a>. 
+If our needs are not fully covered
+by the standard <code class="highlighter-rouge">ILogger</code> 
+e.g. we must log objects as JSON, then we must implement them
+ourselves by e.g. creating wrappers around parameters:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">_logger</span><span class="p">.</span><span class="nf">LogInformation</span><span class="p">(</span>
+    <span class="s">"Publishing cup of coffee {Event}."</span><span class="p">,</span> <span class="k">new</span> <span class="nf">LogAsJson</span><span class="p">(</span><span class="n">@event</span><span class="p">));</span></code></pre></figure>
+
+<p>It is really interesting that a similar coupling happens when using
+<code class="highlighter-rouge">IEnumerable&lt;T&gt;</code> interface as the return type of a method.
+How many times have you seen a code similar to:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">void</span> <span class="nf">SomeMethod</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// IEnumerable&lt;User&gt;
+</span>    <span class="n">var</span> <span class="n">users</span> <span class="p">=</span> <span class="n">userService</span><span class="p">.</span><span class="nf">FindAllUsers</span><span class="p">();</span>
+    
+    <span class="n">users</span>
+        <span class="p">.</span><span class="nf">ToList</span><span class="p">()</span>
+        <span class="p">.</span><span class="nf">ForEach</span><span class="p">(</span><span class="n">user</span> <span class="p">=&gt;</span> <span class="n">user</span><span class="p">.</span><span class="n">IsActive</span> <span class="p">=</span> <span class="k">false</span><span class="p">);</span>
+    
+    <span class="n">userService</span><span class="p">.</span><span class="nf">SaveAll</span><span class="p">(</span><span class="n">users</span><span class="p">.</span><span class="nf">ToArray</span><span class="p">());</span>
+<span class="p">}</span>
+<span class="k">class</span> <span class="nc">UserSerivce</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="nf">FindAllUsers</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="p">{</span>
+            <span class="k">new</span> <span class="n">User</span> <span class="p">{</span> <span class="n">IsActive</span> <span class="p">=</span> <span class="k">true</span> <span class="p">},</span>
+            <span class="k">new</span> <span class="n">User</span> <span class="p">{</span> <span class="n">IsActive</span> <span class="p">=</span> <span class="k">false</span> <span class="p">}</span>
+        <span class="p">};</span>
+    <span class="p">}</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">SaveAll</span><span class="p">(</span><span class="k">params</span> <span class="n">User</span><span class="p">[]</span> <span class="n">users</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">foreach</span> <span class="p">(</span><span class="n">var</span> <span class="n">user</span> <span class="k">in</span> <span class="n">users</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="n">user</span><span class="p">.</span><span class="n">IsActive</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">User</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">bool</span> <span class="n">IsActive</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Again we have here a bad case of hidden coupling to the interface implementation.
+We are using <code class="highlighter-rouge">IEnumerable&lt;T&gt;</code>
+interface but we are assuming that it is backed by
+a collection for which multiple enumerations always
+return the same elements. 
+Our code will break 
+when someone will change <code class="highlighter-rouge">FindAllUsers</code> implementation to
+e.g.:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="nf">FindAllUsers</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">yield</span> <span class="k">return</span> <span class="k">new</span> <span class="n">User</span> <span class="p">{</span> <span class="n">IsActive</span> <span class="p">=</span> <span class="k">true</span> <span class="p">};</span>
+    <span class="k">yield</span> <span class="k">return</span> <span class="k">new</span> <span class="n">User</span> <span class="p">{</span> <span class="n">IsActive</span> <span class="p">=</span> <span class="k">false</span> <span class="p">};</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>The solution to this problem is honesty. If you have
+a value of type <code class="highlighter-rouge">IEnumerable&lt;T&gt;</code>, tread it as 
+a value of type <code class="highlighter-rouge">IEnumerable&lt;T&gt;</code>. Nothing more, nothing less.
+Do not assume that multiple enumerations
+will return the same elements. 
+This is not guaranteed by that interface.</p>
+
+<p>If you want to return a sequence of elements from a method with
+this additional guarantee, then please use a more specific 
+interface like <code class="highlighter-rouge">ICollection&lt;T&gt;</code> or <code class="highlighter-rouge">IReadOnlyList&lt;T&gt;</code> or 
+maybe even something from <code class="highlighter-rouge">System.Collections.Immutable</code> package.</p>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
+	  <title>Fluent Validation and complex dependencies between properties</title>
+	  <link>//fluent-validation-and-complex-dependencies-between-properties</link>
+	  <author>marcin-chwedczuk</author>
+	  <pubDate>2018-09-18T02:00:00+02:00</pubDate>
+	  <guid>//fluent-validation-and-complex-dependencies-between-properties</guid>
+	  <description><![CDATA[
+	     <p><a href="https://fluentvalidation.net/">FluentValidation</a> is one of the
+best validation libraries for .NET. I use it daily both at work
+and in my personal pet projects. Still from time to time I
+encounter situations where it is not obvious how 
+I should use FluentValidation.
+In this blog post I describe one such situation that I have to
+deal with recently.</p>
+
+<p>In short I had to validate a simple DTO:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">SampleRequestDto</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="n">AddressDto</span> <span class="n">Address</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="n">ContactInfoDto</span> <span class="n">ContactInfo</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">AddressDto</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">AddressLine1</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">AddressLine2</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">City</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">ZipCode</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">CountryIsoCode</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">ContactInfoDto</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">EmailAddress</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="c1">// Phone number validation depends on CountryIsoCode.
+</span>    <span class="k">public</span> <span class="kt">string</span> <span class="n">PhoneNumber</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>With a small twist that <code class="highlighter-rouge">ContactInfo.PhoneNumber</code> was 
+validated using country dependent format and information
+about country itself was stored in <code class="highlighter-rouge">Address.CountryIsoCode</code> field.</p>
+
+<p>This is generally a good use-case for FluentValidation <code class="highlighter-rouge">Custom</code> rule:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">Custom</span><span class="p">((</span><span class="n">dto</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+        <span class="n">var</span> <span class="n">countryIsoCode</span> <span class="p">=</span> <span class="n">dto</span><span class="p">?.</span><span class="n">Address</span><span class="p">?.</span><span class="n">CountryIsoCode</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="nf">IsNullOrEmpty</span><span class="p">(</span><span class="n">countryIsoCode</span><span class="p">))</span> 
+            <span class="k">return</span><span class="p">;</span>
+
+        <span class="n">var</span> <span class="n">country</span> <span class="p">=</span> <span class="n">Countries</span><span class="p">.</span><span class="nf">FindCountryByIsoCode</span><span class="p">(</span><span class="n">countryIsoCode</span><span class="p">);</span>
+        <span class="c1">// invalid country code - cannot validate phone number
+</span>        <span class="k">if</span> <span class="p">(</span><span class="n">country</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+            <span class="k">return</span><span class="p">;</span>
+
+        <span class="n">var</span> <span class="n">phoneNumber</span> <span class="p">=</span> <span class="n">dto</span><span class="p">?.</span><span class="n">ContactInfo</span><span class="p">?.</span><span class="n">PhoneNumber</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="nf">IsNullOrWhiteSpace</span><span class="p">(</span><span class="n">phoneNumber</span><span class="p">))</span>
+            <span class="k">return</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(!</span><span class="n">country</span><span class="p">.</span><span class="n">PhoneNumberFormat</span><span class="p">.</span><span class="nf">Matches</span><span class="p">(</span><span class="n">phoneNumber</span><span class="p">))</span> <span class="p">{</span>
+            <span class="n">context</span><span class="p">.</span><span class="nf">AddFailure</span><span class="p">(</span><span class="k">new</span> <span class="nf">ValidationFailure</span><span class="p">(</span>
+                <span class="err">$</span><span class="s">"ContactInfo.PhoneNumber"</span><span class="p">,</span> <span class="c1">// property name
+</span>                <span class="err">$</span><span class="s">"'{phoneNumber}' is not a valid phone number in {country.Name}."</span><span class="p">));</span>
+        <span class="p">}</span>
+    <span class="p">});</span></code></pre></figure>
+
+<p>Unfortunately in my case I also had a bunch of other country dependent 
+values like VAT numbers scattered across many DTOs. And I needed
+a more reusable and programmer friendly solution than <code class="highlighter-rouge">Custom</code> rule.</p>
+
+<p>Ideally my validator definition should look like this:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">SampleRequestDtoValidator</span> <span class="p">:</span> <span class="n">AbstractValidator</span><span class="p">&lt;</span><span class="n">SampleRequestDto</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="k">public</span>  <span class="nf">SampleRequestDtoValidator</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Address</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">SetValidator</span><span class="p">(</span><span class="k">new</span> <span class="nf">AddressDtoValidator</span><span class="p">());</span>
+
+        <span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">ContactInfo</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">SetValidator</span><span class="p">(</span><span class="k">new</span> <span class="nf">ContactInfoDtoValidator</span><span class="p">());</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">AddressDtoValidator</span> <span class="p">:</span> <span class="n">AbstractValidator</span><span class="p">&lt;</span><span class="n">AddressDto</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="nf">AddressDtoValidator</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">CountryIsoCode</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">NotEmpty</span><span class="p">()</span>
+            <span class="p">.</span><span class="nf">CountryIsoCode</span><span class="p">();</span> <span class="c1">// custom extension
+</span>        <span class="c1">// other rules...
+</span>    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">ContactInfoDtoValidator</span> <span class="p">:</span> <span class="n">AbstractValidator</span><span class="p">&lt;</span><span class="n">ContactInfoDto</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="nf">ContactInfoDtoValidator</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">PhoneNumber</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">NotEmpty</span><span class="p">()</span>
+            <span class="p">.</span><span class="nf">MaximumLength</span><span class="p">(</span><span class="m">50</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">PhoneNumber</span><span class="p">();</span> <span class="c1">// custom extension
+</span>        <span class="c1">// other rules...
+</span>    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Creating property validators like <code class="highlighter-rouge">CountryIsoCode</code> using FluentValidation
+is very simple. You just extend <code class="highlighter-rouge">PropertyValidator</code> class,
+provide an error message template to the base class ctor and override
+<code class="highlighter-rouge">IsValid</code> method. 
+Additionally you may define an extension method 
+to the <code class="highlighter-rouge">IRuleBuilder&lt;T,TProperty&gt;</code>
+interface to make your validator behave like build-in ones.</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">CountryIsoCodeValidator</span> <span class="p">:</span> <span class="n">PropertyValidator</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="nf">CountryIsoCodeValidator</span><span class="p">()</span> 
+        <span class="p">:</span> <span class="k">base</span><span class="p">(</span><span class="s">"'{PropertyValue}' is not a valid country iso code."</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+    <span class="k">protected</span> <span class="k">override</span> <span class="kt">bool</span> <span class="nf">IsValid</span><span class="p">(</span><span class="n">PropertyValidatorContext</span> <span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">var</span> <span class="n">isoCode</span> <span class="p">=</span> <span class="p">(</span><span class="kt">string</span><span class="p">)</span> <span class="n">context</span><span class="p">.</span><span class="n">PropertyValue</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="nf">IsNullOrEmpty</span><span class="p">(</span><span class="n">isoCode</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">Countries</span><span class="p">.</span><span class="nf">IsKnownIsoCode</span><span class="p">(</span><span class="n">isoCode</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">CountryIsoCodeValidatorExtension</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="n">IRuleBuilderOptions</span><span class="p">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">CountryIsoCode</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span>
+        <span class="k">this</span> <span class="n">IRuleBuilder</span><span class="p">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">rule</span>
+    <span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">rule</span><span class="p">.</span><span class="nf">SetValidator</span><span class="p">(</span><span class="k">new</span> <span class="nf">CountryIsoCodeValidator</span><span class="p">());</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">CountryCode</code> validator was easy, what about <code class="highlighter-rouge">PhoneNumber</code> validator?
+Here the only challenge that we must solve 
+is finding a way to pass country ISO code from <code class="highlighter-rouge">Address</code> to 
+phone number validator.
+To solve this problem I decided to use “advanced” FluentValidation
+feature called “Root Context Data”. Basically this is a 
+<code class="highlighter-rouge">IDictionary&lt;string, object&gt;</code> that can be prefilled with custom data
+before validation starts and then is accessible to every validator
+in validators tree.</p>
+
+<p>Let’s take a look at an example from 
+<a href="https://fluentvalidation.net/start#root-context-data">official documentation</a>:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">instanceToValidate</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Person</span><span class="p">();</span>
+
+<span class="n">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ValidationContext</span><span class="p">&lt;</span><span class="n">Person</span><span class="p">&gt;(</span><span class="n">person</span><span class="p">);</span>
+<span class="n">context</span><span class="p">.</span><span class="n">RootContextData</span><span class="p">[</span><span class="s">"MyCustomData"</span><span class="p">]</span> <span class="p">=</span> <span class="s">"Test"</span><span class="p">;</span>
+
+<span class="n">var</span> <span class="n">validator</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">PersonValidator</span><span class="p">();</span>
+<span class="n">validator</span><span class="p">.</span><span class="nf">Validate</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
+
+<span class="c1">// usage inside validator:
+</span><span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Surname</span><span class="p">).</span><span class="nf">Custom</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">context</span><span class="p">.</span><span class="n">ParentContext</span><span class="p">.</span><span class="n">RootContextData</span><span class="p">.</span><span class="nf">ContainsKey</span><span class="p">(</span><span class="s">"MyCustomData"</span><span class="p">))</span> <span class="p">{</span>
+    <span class="n">context</span><span class="p">.</span><span class="nf">AddFailure</span><span class="p">(</span><span class="s">"My error message"</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">});</span></code></pre></figure>
+
+<p>Looks very promising, and what’s better we can add values to <code class="highlighter-rouge">RootContextData</code>
+straight inside top-level validators by overriding <code class="highlighter-rouge">PreValidate</code> method:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">SampleRequestDtoValidator</span> <span class="p">:</span> <span class="n">AbstractValidator</span><span class="p">&lt;</span><span class="n">SampleRequestDto</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="k">public</span>  <span class="nf">SampleRequestDtoValidator</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Address</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">SetValidator</span><span class="p">(</span><span class="k">new</span> <span class="nf">AddressDtoValidator</span><span class="p">());</span>
+
+        <span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">ContactInfo</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">SetValidator</span><span class="p">(</span><span class="k">new</span> <span class="nf">ContactInfoDtoValidator</span><span class="p">());</span>
+    <span class="p">}</span>
+
+    <span class="k">protected</span> <span class="k">override</span> <span class="kt">bool</span> <span class="nf">PreValidate</span><span class="p">(</span>
+        <span class="n">ValidationContext</span><span class="p">&lt;</span><span class="n">SampleRequestDto</span><span class="p">&gt;</span> <span class="n">context</span><span class="p">,</span> <span class="n">ValidationResult</span> <span class="n">result</span><span class="p">)</span> 
+    <span class="p">{</span>
+        <span class="n">var</span> <span class="n">contextData</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ValidationContextData</span><span class="p">(</span>
+            <span class="n">context</span><span class="p">.</span><span class="n">RootContextData</span><span class="p">);</span>
+
+        <span class="n">contextData</span><span class="p">.</span><span class="n">CountryIsoCode</span> <span class="p">=</span> 
+            <span class="n">context</span><span class="p">.</span><span class="n">InstanceToValidate</span><span class="p">?.</span><span class="n">Address</span><span class="p">?.</span><span class="n">CountryIsoCode</span><span class="p">;</span>
+
+        <span class="k">return</span> <span class="k">true</span><span class="p">;</span> <span class="c1">// continue validation
+</span>    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>To avoid dealing with <code class="highlighter-rouge">object</code>s I have also created a strongly typed
+wrapper (<code class="highlighter-rouge">ValidationContextData</code> class) around <code class="highlighter-rouge">RootContextData</code>
+dictionary.</p>
+
+<p>IMPORTANT: To make validators reusable you should set <code class="highlighter-rouge">RootContextData</code> only
+in top level validators. Validators used with <code class="highlighter-rouge">SetValidator</code>
+method are not considered top level.</p>
+
+<p>Now implementing <code class="highlighter-rouge">PhoneNumberValidator</code> is easy:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">PhoneNumberValidator</span> <span class="p">:</span> <span class="n">PropertyValidator</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="nf">PhoneNumberValidator</span><span class="p">()</span> 
+        <span class="p">:</span> <span class="k">base</span><span class="p">(</span><span class="s">"'{PropertyValue}' is not a valid phone number in {Country}."</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+    <span class="k">protected</span> <span class="k">override</span> <span class="kt">bool</span> <span class="nf">IsValid</span><span class="p">(</span><span class="n">PropertyValidatorContext</span> <span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">var</span> <span class="n">phoneNumber</span> <span class="p">=</span> <span class="p">(</span><span class="kt">string</span><span class="p">)</span> <span class="n">context</span><span class="p">.</span><span class="n">PropertyValue</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="nf">IsNullOrEmpty</span><span class="p">(</span><span class="n">phoneNumber</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">var</span> <span class="n">contextData</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ValidationContextData</span><span class="p">(</span>
+            <span class="n">context</span><span class="p">.</span><span class="n">ParentContext</span><span class="p">.</span><span class="n">RootContextData</span><span class="p">);</span>
+
+        <span class="n">var</span> <span class="n">country</span> <span class="p">=</span> <span class="nf">TryFindCountry</span><span class="p">(</span><span class="n">contextData</span><span class="p">.</span><span class="n">CountryIsoCode</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">country</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// without a country we cannot validate a phone number
+</span>            <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">context</span><span class="p">.</span><span class="n">MessageFormatter</span><span class="p">.</span><span class="nf">AppendArgument</span><span class="p">(</span><span class="s">"Country"</span><span class="p">,</span> <span class="n">country</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="n">country</span><span class="p">.</span><span class="n">PhoneNumberFormat</span><span class="p">.</span><span class="nf">Matches</span><span class="p">(</span><span class="n">phoneNumber</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="n">Country</span> <span class="nf">TryFindCountry</span><span class="p">(</span><span class="kt">string</span> <span class="n">countryIsoCode</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="nf">IsNullOrEmpty</span><span class="p">(</span><span class="n">countryIsoCode</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="k">null</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">Countries</span><span class="p">.</span><span class="nf">FindCountryByIsoCode</span><span class="p">(</span><span class="n">countryIsoCode</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">PhoneNumberValidatorExtension</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="n">IRuleBuilderOptions</span><span class="p">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">PhoneNumber</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span>
+        <span class="k">this</span> <span class="n">IRuleBuilder</span><span class="p">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">rule</span>
+    <span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">rule</span><span class="p">.</span><span class="nf">SetValidator</span><span class="p">(</span><span class="k">new</span> <span class="nf">PhoneNumberValidator</span><span class="p">());</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>And we are done!</p>
+
+<h4 id="unit-testing-validators">Unit-testing validators</h4>
+
+<p>FluentValidation provides several extension methods that
+make unit-testing easy, just take a look:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">using</span> <span class="nn">FluentValidation.TestHelper</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">SampleRequestDtoValidatorTest</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">SampleRequestDtoValidator</span> <span class="n">_validator</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="nf">SampleRequestDtoValidatorTest</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">_validator</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">SampleRequestDtoValidator</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="p">[</span><span class="n">Fact</span><span class="p">]</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Should_return_error_when_phone_number_is_invalid_and_countryIsoCode_is_set</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// Arrange
+</span>        <span class="n">var</span> <span class="n">invalidRequest</span> <span class="p">=</span> 
+            <span class="n">SampleRequestDtoFixture</span><span class="p">.</span><span class="nf">CreateValidRequest</span><span class="p">();</span>
+        <span class="n">invalidRequest</span><span class="p">.</span><span class="n">Address</span><span class="p">.</span><span class="n">CountryIsoCode</span> <span class="p">=</span> <span class="s">"PL"</span><span class="p">;</span>
+        <span class="n">invalidRequest</span><span class="p">.</span><span class="n">ContactInfo</span><span class="p">.</span><span class="n">PhoneNumber</span> <span class="p">=</span> <span class="s">"+48 123"</span><span class="p">;</span>
+
+        <span class="c1">// Assert
+</span>        <span class="n">_validator</span>
+            <span class="p">.</span><span class="nf">ShouldHaveValidationErrorFor</span><span class="p">(</span>
+                <span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">ContactInfo</span><span class="p">.</span><span class="n">PhoneNumber</span><span class="p">,</span> <span class="n">invalidRequest</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">WithErrorMessage</span><span class="p">(</span>
+                <span class="s">"'+48 123' is not a valid phone number in Poland."</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<h4 id="design-considerations">Design considerations</h4>
+
+<p>Everything works right now, but there is still place for improvement.
+For example what happens when a programmer forgets to
+override <code class="highlighter-rouge">PreValidate</code> method and set all required properties?
+Validation of certain properties will be silently skipped.
+This is not good.
+To minimize this problem I put additional checks inside <code class="highlighter-rouge">ValidationContextData</code>
+class. They will throw an exception with a descriptive message if
+validator tries to access a property that was not previously set.</p>
+
+<p>In my application values like phone numbers are always validated against
+country specific formats. But I can imaging situations where
+sometimes we use country agnostic phone number validator and
+sometimes 
+we use country specific one. In such cases it would be good
+to call the country agnostic validator just a <code class="highlighter-rouge">PhoneNumberValidator</code> and
+the country specific validator a <code class="highlighter-rouge">CountryDependentPhoneNumberValidator</code>.</p>
+
+<p>I have a mixed feelings about <code class="highlighter-rouge">ValidationContextData</code> class because
+it is used by every country specific validator in my code. Maybe 
+instead of introducing this common dependency every validator should
+access <code class="highlighter-rouge">RootContextData</code> and check if the property is set itself?</p>
+
+<p>Sample source code: <a href="https://github.com/marcin-chwedczuk/blog-fluent-validation-adventure">GitHub</a>.</p>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
+	  <title>You can live without mocking frameworks</title>
+	  <link>//you-can-live-without-your-mocking-framework</link>
+	  <author>marcin-chwedczuk</author>
+	  <pubDate>2018-09-08T02:00:00+02:00</pubDate>
+	  <guid>//you-can-live-without-your-mocking-framework</guid>
+	  <description><![CDATA[
+	     <p>For a long time I have been fan of mocking frameworks like 
+<a href="https://github.com/Moq/moq4/wiki/Quickstart">Moq</a>
+and <a href="http://nsubstitute.github.io">NSubstitute</a>.
+These libraries seems indispensable while unit-testing.
+They allow us to easily generate subs and mocks and assert that
+certain interaction between components took place.</p>
+
+<p>NOTE: If you do not remember difference between stub and mock
+please read <a href="https://martinfowler.com/articles/mocksArentStubs.html">this Martin Fowler article</a>. 
+In short mocks are used to test interactions between components 
+(a method was called, a property was set) 
+while stubs are used as dumb implementations of component dependencies 
+(they usually either do nothing or provide some preset data).</p>
+
+<p>But recently, after reading volume 1 of 
+<a href="https://www.yegor256.com/elegant-objects.html">Elegant Objects</a>
+which by the way I strongly recommend, I changed my mind.
+In one of the chapters author presents the idea that every interface
+should have an associated fake object. A fake object is a simple
+but <em>working</em> implementation of an interface and resides in the same
+source code file as the interface itself.
+Fake objects serve two purposes. First, they are example implementations
+of interfaces that show users how the interfaces should be implemented.
+And second they can be used as stubs and mocks in unit-tests.</p>
+
+<p>Of course this idea seemed a bit extreme to me, so I decided to go with
+a bit more evolutionary approach.
+I <strong>slowly</strong> replaced all mock object that I had in my unit-tests 
+with fakes (I put all fakes in my unit test projects - but I am still thinking that maybe they deserve a project of their own). 
+During this process all interaction testing assertions 
+that are usually performed using mocking frameworks
+were replaced by behaviour testing assertions on fake objects.</p>
+
+<p>It will be the best to illustrate this process using an example.
+Say we have a simple component <code class="highlighter-rouge">EventPublishingComponent</code> that
+publishes two events (order is not important):</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">EventPublishingComponent</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">EventPublisher</span> <span class="n">_eventPublisher</span><span class="p">;</span>
+    <span class="k">public</span> <span class="nf">EventPublishingComponent</span><span class="p">(</span><span class="n">EventPublisher</span> <span class="n">eventPublisher</span><span class="p">)</span>
+        <span class="p">=&gt;</span> <span class="n">_eventPublisher</span> <span class="p">=</span> <span class="n">eventPublisher</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="n">async</span> <span class="n">Task</span> <span class="nf">Publish</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">await</span> <span class="n">_eventPublisher</span><span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="k">new</span> <span class="nf">FirstEvent</span><span class="p">(</span><span class="n">id</span><span class="p">:</span> <span class="m">3</span><span class="p">));</span>
+        <span class="n">await</span> <span class="n">_eventPublisher</span><span class="p">.</span><span class="nf">Publish</span><span class="p">(</span>
+          <span class="k">new</span> <span class="nf">SecondEvent</span><span class="p">(</span><span class="n">id</span><span class="p">:</span> <span class="s">"ZDKA9JOPCKXI7"</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">FirstEvent</span> <span class="p">:</span> <span class="n">Event</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="nf">FirstEvent</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">)</span>
+        <span class="p">=&gt;</span> <span class="n">Id</span> <span class="p">=</span> <span class="n">id</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">SecondEvent</span> <span class="p">:</span> <span class="n">Event</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="nf">SecondEvent</span><span class="p">(</span><span class="kt">string</span> <span class="n">id</span><span class="p">)</span>
+        <span class="p">=&gt;</span> <span class="n">Id</span> <span class="p">=</span> <span class="n">id</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">interface</span> <span class="n">EventPublisher</span> <span class="p">{</span>
+    <span class="n">Task</span> <span class="nf">Publish</span><span class="p">(</span><span class="n">Event</span> <span class="n">@event</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">interface</span> <span class="n">Event</span> <span class="p">{</span> <span class="p">}</span></code></pre></figure>
+
+<p>A “classic” unit test for this component using NSubstitute 
+could look like this:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">EventPublishingComponentTest</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">EventPublisher</span> <span class="n">_eventPublisher</span><span class="p">;</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">EventPublishingComponent</span> <span class="n">_component</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="nf">EventPublishingComponentTest</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">_eventPublisher</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">EventPublisher</span><span class="p">&gt;();</span>
+        <span class="n">_component</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">EventPublishingComponent</span><span class="p">(</span><span class="n">_eventPublisher</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">[</span><span class="n">Fact</span><span class="p">]</span>
+    <span class="k">public</span> <span class="n">async</span> <span class="n">Task</span> <span class="nf">Should_publish_FirstEvent</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// Arrange
+</span>        <span class="n">FirstEvent</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+        <span class="n">await</span> <span class="n">_eventPublisher</span>
+            <span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="n">FirstEvent</span><span class="p">&gt;(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="n">e</span><span class="p">));</span>
+
+        <span class="c1">// Act
+</span>        <span class="n">await</span> <span class="n">_component</span><span class="p">.</span><span class="nf">Publish</span><span class="p">();</span>
+
+        <span class="c1">// Assert
+</span>        <span class="n">await</span> <span class="n">_eventPublisher</span><span class="p">.</span><span class="nf">Received</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">FirstEvent</span><span class="p">&gt;());</span>
+
+        <span class="n">Check</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">firstEvent</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">IsNotNull</span><span class="p">();</span>
+
+        <span class="n">Check</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">firstEvent</span><span class="p">.</span><span class="n">Id</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">IsNotZero</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>I am sure you have seen a lot of tests like this. 
+The key points are: Your create mocks and stubs using your
+favourite mocking library in the test constructor or setup method.
+In the arrange (given) part of the test you define mocks and stubs
+behaviour using library specific syntax. Here e.g. we are capturing
+argument passed to <code class="highlighter-rouge">Publish</code> method for later use:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">FirstEvent</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+<span class="n">await</span> <span class="n">_eventPublisher</span>
+    <span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="n">FirstEvent</span><span class="p">&gt;(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="n">e</span><span class="p">));</span></code></pre></figure>
+
+<p>In the assert (then) part of the test we use again library specific
+syntax to check that a method on a mock 
+was called with given set of arguments.</p>
+
+<p>This approach is fine but it has some disadvantages:</p>
+
+<ol>
+  <li>
+    <p>It makes your tests very brittle. For example if I add a new method
+ on <code class="highlighter-rouge">EventPublisher</code> called 
+ <code class="highlighter-rouge">PublishAll(events)</code> that allows me to publish all events at once and
+ refactor <code class="highlighter-rouge">EventPublishingComponent</code> to use it
+ then <code class="highlighter-rouge">EventPublishingComponent</code> tests would stop working.
+ The main problem here is that my tests check internal interaction
+ between components 
+ (was method <code class="highlighter-rouge">Publish</code> called?) instead of checking external behaviour 
+ of the system (was event published?).</p>
+  </li>
+  <li>
+    <p>Mocking library is another tool that you must learn. 
+ And please remember that most of the developers are not too eager to
+ read documentation. Time presumably saved by using mocking library 
+ will be lost on reading StackOverflow answers and on fighting with
+ the library itself 
+ (ever have a problem that your stub does not return intended value?).</p>
+  </li>
+  <li>
+    <p>It makes your tests less readable. I must admit that 
+ NSubstitute is a huge improvement over Moq in terms
+ of readability but it still introduces a lot of visual noise in the test
+ code. For example do see all 
+ those <code class="highlighter-rouge">&lt;</code>, <code class="highlighter-rouge">&gt;</code>, <code class="highlighter-rouge">(</code> and <code class="highlighter-rouge">)</code> in the code below:</p>
+  </li>
+</ol>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">FirstEvent</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+<span class="n">await</span> <span class="n">_eventPublisher</span>
+    <span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="n">FirstEvent</span><span class="p">&gt;(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="n">e</span><span class="p">));</span></code></pre></figure>
+
+<p>Now let us see how our test can look like if we use fakes instead:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">EventPublishingComponentTest_UsingFakes</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">InMemoryEventPublisher</span> <span class="n">_eventPublisher</span><span class="p">;</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">EventPublishingComponent</span> <span class="n">_component</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="nf">EventPublishingComponentTest_UsingFakes</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">_eventPublisher</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">InMemoryEventPublisher</span><span class="p">();</span>
+        <span class="n">_component</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">EventPublishingComponent</span><span class="p">(</span><span class="n">_eventPublisher</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">[</span><span class="n">Fact</span><span class="p">]</span>
+    <span class="k">public</span> <span class="n">async</span> <span class="n">Task</span> <span class="nf">Should_publish_FirstEvent</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// Act
+</span>        <span class="n">await</span> <span class="n">_component</span><span class="p">.</span><span class="nf">Publish</span><span class="p">();</span>
+
+        <span class="c1">// Assert
+</span>        <span class="n">var</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="n">_eventPublisher</span><span class="p">.</span><span class="n">PublishedEvents</span>
+            <span class="p">.</span><span class="n">OfType</span><span class="p">&lt;</span><span class="n">FirstEvent</span><span class="p">&gt;()</span>
+            <span class="p">.</span><span class="nf">SingleOrDefault</span><span class="p">();</span>
+
+        <span class="n">Check</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">firstEvent</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">IsNotNull</span><span class="p">();</span>
+
+        <span class="n">Check</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">firstEvent</span><span class="p">.</span><span class="n">Id</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">IsNotZero</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>To make this test compile we also need to write a fake for 
+<code class="highlighter-rouge">EventPublisher</code> interface. Please keep in mind that fake is a simple
+but <strong>working</strong> implementation of the interface:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">InMemoryEventPublisher</span> <span class="p">:</span> <span class="n">EventPublisher</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Event</span><span class="p">&gt;</span> <span class="n">_publishedEvents</span> 
+      <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Event</span><span class="p">&gt;();</span>
+
+    <span class="k">public</span> <span class="n">IReadOnlyList</span><span class="p">&lt;</span><span class="n">Event</span><span class="p">&gt;</span> <span class="n">PublishedEvents</span>
+        <span class="p">=&gt;</span> <span class="n">_publishedEvents</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="n">Task</span> <span class="nf">Publish</span><span class="p">(</span><span class="n">Event</span> <span class="n">@event</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">@event</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentNullException</span><span class="p">(</span><span class="nf">nameof</span><span class="p">(</span><span class="n">@event</span><span class="p">));</span>
+
+        <span class="n">_publishedEvents</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">@event</span><span class="p">);</span>
+        <span class="k">return</span> <span class="n">Task</span><span class="p">.</span><span class="n">CompletedTask</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>I am sure that after seeing both versions of the test 
+you agree with me that both are quite short and readable,
+yet the second version does not have the earlier mentioned disadvantages.
+Now you may rightly say that with the second approach 
+you are forced to create fakes for
+almost all interfaces in your application. You are right, but
+you actually want to create fakes. Here is why:</p>
+
+<ol>
+  <li>
+    <p>Fakes are like TDD for your interface <strong>design</strong>. By creating a fake
+ you actually check how difficult it is for a client 
+ of your API to provide an implementation. A fake too big or 
+ too difficult to
+ implement is a sign that maybe your interface is doing too much.
+ Also fakes can be treated as “reference implementations” of interfaces
+ and as such they are part of your API documentation.</p>
+  </li>
+  <li>
+    <p>Writing a fake is a one-time effort. After fake is written it can
+ be reused across many tests. Compare this with subs and mocks that you
+ need to setup every time you want to use them.</p>
+  </li>
+</ol>
+
+<p>Now it is time for a more real world example. 
+As you probably heard <em>Performance is a feature</em> but logging can 
+also be a feature. Imagine an application where we must log
+every failed login attempt. Since this is a business requirement
+we want to code it as an acceptance test.
+How difficult it can be to check that one method call was
+performed:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">logger</span><span class="p">.</span><span class="nf">LogDebug</span><span class="p">(</span><span class="s">"User '{userName}' log into application."</span><span class="p">,</span> <span class="s">"root"</span><span class="p">);</span></code></pre></figure>
+
+<p>In practice it can be more difficult than it seems especially if you use
+notoriously hard to test <code class="highlighter-rouge">ILogger</code> from <code class="highlighter-rouge">Microsoft.Extensions.Logging.Abstractions</code> package.</p>
+
+<p>Why is <code class="highlighter-rouge">ILogger</code> hard to test?</p>
+
+<ol>
+  <li>
+    <p><code class="highlighter-rouge">ILogger</code> interface contains only three methods 
+ (<a href="https://github.com/aspnet/Logging/blob/master/src/Microsoft.Extensions.Logging.Abstractions/ILogger.cs">source code here</a>)
+ rest of its functionality is provided via extension methods.</p>
+  </li>
+  <li>
+    <p>Extension methods that operate on <code class="highlighter-rouge">ILogger</code> often 
+ create wrappers around original 
+ arguments using classes like <code class="highlighter-rouge">FormattedLogValues</code>.
+ Most of these wrapper classes does not 
+ overload <code class="highlighter-rouge">Equals</code> and <code class="highlighter-rouge">GetHashCode</code> rendering
+ argument matchers from mocking frameworks useless.</p>
+  </li>
+  <li>
+    <p>No easy access to the logged message.
+ Only method responsible for actual logging on <code class="highlighter-rouge">ILogger</code> interface
+ is <code class="highlighter-rouge">Log</code>:</p>
+  </li>
+</ol>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">void</span> <span class="n">Log</span><span class="p">&lt;</span><span class="n">TState</span><span class="p">&gt;(</span>
+  <span class="n">LogLevel</span> <span class="n">logLevel</span><span class="p">,</span> 
+  <span class="n">EventId</span> <span class="n">eventId</span><span class="p">,</span> 
+  <span class="n">TState</span> <span class="n">state</span><span class="p">,</span> 
+  <span class="n">Exception</span> <span class="n">exception</span><span class="p">,</span> 
+  <span class="n">Func</span><span class="p">&lt;</span><span class="n">TState</span><span class="p">,</span> <span class="n">Exception</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">formatter</span><span class="p">);</span></code></pre></figure>
+
+<p>To gain access to the logged message we must either dig 
+into <code class="highlighter-rouge">state</code> argument
+or call <code class="highlighter-rouge">formatter(state, exception)</code>.</p>
+
+<p>All this causes that naive testing aproachs like this fail:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
+<span class="k">public</span> <span class="n">async</span> <span class="n">Task</span> <span class="nf">Naive_test</span><span class="p">()</span> <span class="p">{</span>
+  <span class="n">var</span> <span class="n">logger</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ILogger</span><span class="p">&lt;</span><span class="n">SomeClass</span><span class="p">&gt;&gt;();</span>
+      
+  <span class="n">logger</span>
+    <span class="p">.</span><span class="nf">LogDebug</span><span class="p">(</span><span class="s">"User '{userName}' log into application."</span><span class="p">,</span> <span class="s">"root"</span><span class="p">);</span>
+
+  <span class="n">logger</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
+    <span class="p">.</span><span class="nf">LogDebug</span><span class="p">(</span><span class="s">"User '{userName}' log into application."</span><span class="p">,</span> <span class="s">"root"</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>And how they fail? With confusing error messages like this one:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">Error Message:
+ NSubstitute.Exceptions.ReceivedCallsException : 
+  Expected to receive a call matching:
+  Log&lt;Object&gt;(Debug, 0, User 'root' log into application., &lt;null&gt;, Func&lt;Object, Exception, String&gt;)
+Actually received no matching calls.
+Received 1 non-matching call 
+ (non-matching arguments indicated with '*' characters):
+  Log&lt;Object&gt;(Debug, 0, *User 'root' log into application.*, &lt;null&gt;, Func&lt;Object, Exception, String&gt;)</code></pre></figure>
+
+<p>Not very helpful, isn’t it?</p>
+
+<p>If you really want to test <code class="highlighter-rouge">ILogger</code> using NSubstitute you must
+use the following code:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">logger</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ILogger</span><span class="p">&lt;</span><span class="n">SomeClass</span><span class="p">&gt;&gt;();</span>
+
+<span class="n">dynamic</span> <span class="n">state</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+<span class="n">Exception</span> <span class="n">exception</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span> 
+<span class="n">Func</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">,</span> <span class="n">Exception</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">formatter</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+
+<span class="n">logger</span><span class="p">.</span><span class="nf">Log</span><span class="p">(</span><span class="n">LogLevel</span><span class="p">.</span><span class="n">Debug</span><span class="p">,</span> 
+  <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">EventId</span><span class="p">&gt;(),</span> 
+  <span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">&gt;(</span><span class="n">s</span> <span class="p">=&gt;</span> <span class="n">state</span> <span class="p">=</span> <span class="n">s</span><span class="p">),</span> 
+  <span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="n">Exception</span><span class="p">&gt;(</span><span class="n">ex</span> <span class="p">=&gt;</span> <span class="n">exception</span> <span class="p">=</span> <span class="n">ex</span><span class="p">),</span> 
+  <span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">,</span> <span class="n">Exception</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;&gt;(</span><span class="n">f</span> <span class="p">=&gt;</span> <span class="n">formatter</span> <span class="p">=</span> <span class="n">f</span><span class="p">));</span>
+
+<span class="n">logger</span>
+  <span class="p">.</span><span class="nf">LogDebug</span><span class="p">(</span><span class="s">"User '{userName}' log into application."</span><span class="p">,</span> <span class="s">"root"</span><span class="p">);</span>
+
+<span class="n">logger</span><span class="p">.</span><span class="nf">Received</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+  <span class="p">.</span><span class="nf">Log</span><span class="p">(</span><span class="n">LogLevel</span><span class="p">.</span><span class="n">Debug</span><span class="p">,</span> 
+      <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">EventId</span><span class="p">&gt;(),</span> 
+      <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">&gt;(),</span> 
+      <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">Exception</span><span class="p">&gt;(),</span> 
+      <span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">,</span> <span class="n">Exception</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;&gt;());</span>
+
+<span class="n">Check</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="nf">formatter</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">exception</span><span class="p">))</span>
+    <span class="p">.</span><span class="nf">IsEqualIgnoringCase</span><span class="p">(</span><span class="s">"User 'root' log into application."</span><span class="p">);</span></code></pre></figure>
+
+<p>Did I say something earlier about unreadable tests and a lot of 
+visual noise caused by mocking frameworks? Now you can see it with your
+own eyes!</p>
+
+<p>Now it is time for our second approach using fakes. First we create
+a fake logger:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">InMemoryListOfEntriesLogger</span> <span class="p">:</span> <span class="n">ILogger</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">LogEntry</span><span class="p">&gt;</span> <span class="n">_loggedEntries</span> 
+      <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">LogEntry</span><span class="p">&gt;();</span>
+
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="kt">int</span><span class="p">&gt;</span> <span class="n">_bookmarks</span> 
+      <span class="p">=</span> <span class="k">new</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="kt">int</span><span class="p">&gt;();</span>
+
+    <span class="k">public</span> <span class="n">IReadOnlyList</span><span class="p">&lt;</span><span class="n">LogEntry</span><span class="p">&gt;</span> <span class="n">LoggedEntries</span> 
+        <span class="p">=&gt;</span> <span class="n">_loggedEntries</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="n">IDisposable</span> <span class="n">BeginScope</span><span class="p">&lt;</span><span class="n">TState</span><span class="p">&gt;(</span><span class="n">TState</span> <span class="n">state</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// Notice that we do not have to implement
+</span>        <span class="c1">// all methods for interfaces that are *not
+</span>        <span class="c1">// part* of our application.
+</span>        <span class="k">throw</span> <span class="k">new</span> <span class="nf">NotImplementedException</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="kt">bool</span> <span class="nf">IsEnabled</span><span class="p">(</span><span class="n">LogLevel</span> <span class="n">logLevel</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">void</span> <span class="n">Log</span><span class="p">&lt;</span><span class="n">TState</span><span class="p">&gt;(</span>
+        <span class="n">LogLevel</span> <span class="n">logLevel</span><span class="p">,</span> 
+        <span class="n">EventId</span> <span class="n">eventId</span><span class="p">,</span> 
+        <span class="n">TState</span> <span class="n">state</span><span class="p">,</span> 
+        <span class="n">Exception</span> <span class="n">exception</span><span class="p">,</span> 
+        <span class="n">Func</span><span class="p">&lt;</span><span class="n">TState</span><span class="p">,</span> <span class="n">Exception</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">formatter</span><span class="p">)</span> 
+    <span class="p">{</span>
+        <span class="n">_loggedEntries</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span>
+          <span class="k">new</span> <span class="nf">LogEntry</span><span class="p">(</span>
+            <span class="n">logLevel</span><span class="p">,</span> 
+            <span class="nf">formatter</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">exception</span><span class="p">),</span> 
+            <span class="n">exception</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">LogEntry</span> <span class="p">{</span>
+  <span class="k">public</span> <span class="n">LogLevel</span> <span class="n">LogLevel</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+  <span class="k">public</span> <span class="kt">string</span> <span class="n">Message</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+  <span class="k">public</span> <span class="n">Exception</span> <span class="n">Exception</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+
+  <span class="k">public</span> <span class="nf">LogEntry</span><span class="p">(</span><span class="n">LogLevel</span> <span class="n">logLevel</span><span class="p">,</span> <span class="kt">string</span> <span class="n">message</span><span class="p">,</span> 
+    <span class="n">Exception</span> <span class="n">ex</span> <span class="p">=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">LogLevel</span> <span class="p">=</span> <span class="n">logLevel</span><span class="p">;</span>
+      <span class="n">Message</span> <span class="p">=</span> <span class="n">message</span><span class="p">;</span>
+      <span class="n">Exception</span> <span class="p">=</span> <span class="n">ex</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="nf">ToString</span><span class="p">()</span>
+      <span class="p">=&gt;</span> <span class="err">$</span><span class="s">"{LogLevel}: {Message}"</span> <span class="p">+</span> 
+         <span class="p">(</span><span class="n">Exception</span> <span class="p">!=</span> <span class="k">null</span> 
+            <span class="p">?</span> <span class="err">$</span><span class="s">" Exception: {Exception.GetType().Name}"</span> 
+            <span class="p">:</span> <span class="s">""</span><span class="p">)</span> <span class="p">+</span>
+         <span class="s">"."</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Notice that we did not implement all methods of <code class="highlighter-rouge">ILogger</code> interface.
+For external interfaces that are not under our control we should
+implement just enough functionality in our fakes to make them usable.</p>
+
+<p>Now it is time for writing actual test:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">logger</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">InMemoryListOfEntriesLogger</span><span class="p">();</span>
+
+<span class="n">logger</span><span class="p">.</span><span class="nf">LogDebug</span><span class="p">(</span><span class="s">"User '{userName}' log into application."</span><span class="p">,</span> <span class="s">"root"</span><span class="p">);</span>
+
+<span class="n">Check</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">logger</span><span class="p">.</span><span class="n">LoggedEntries</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">HasElementThatMatches</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> 
+        <span class="n">x</span><span class="p">.</span><span class="n">Level</span> <span class="p">==</span> <span class="n">LogLevel</span><span class="p">.</span><span class="n">Debug</span> <span class="p">&amp;&amp;</span>
+        <span class="n">x</span><span class="p">.</span><span class="n">Message</span> <span class="p">==</span> <span class="s">"User 'root' log into application."</span><span class="p">);</span></code></pre></figure>
+
+<p>Wow! Test is short, readable and simple. Exactly what I was looking for.</p>
+
+<p>I hope that this blog post persuaded you to start using fakes in your
+unit tests. At least you now know that you have a good alternative to
+mocking frameworks.</p>
+
+<p>Sample source code (with a bit more complicated example): 
+<a href="https://github.com/marcin-chwedczuk/blog-fakes-vs-mocks">GitHub</a>.</p>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
+	  <title>.NET Core, HttpClient, Proxy and localhost</title>
+	  <link>//dotnet-core-http-client-proxy-and-localhost</link>
+	  <author>marcin-chwedczuk</author>
+	  <pubDate>2018-05-03T02:00:00+02:00</pubDate>
+	  <guid>//dotnet-core-http-client-proxy-and-localhost</guid>
+	  <description><![CDATA[
+	     <p>Recently I wanted to spy network traffic between a <code class="highlighter-rouge">HttpClient</code> and
+a REST service. This task turned out to be more difficult than I
+though.</p>
+
+<p>My first challenge was to force <code class="highlighter-rouge">HttpClient</code> to use a proxy.
+After a bit of googling I have found 
+the following code:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">using</span> <span class="nn">System.Net</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Net.Http</span><span class="p">;</span>
+
+<span class="n">var</span> <span class="n">builder</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ConfigurationBuilder</span><span class="p">()</span>
+	 <span class="p">.</span><span class="nf">SetBasePath</span><span class="p">(</span><span class="n">Directory</span><span class="p">.</span><span class="nf">GetCurrentDirectory</span><span class="p">())</span>
+	 <span class="p">.</span><span class="nf">AddJsonFile</span><span class="p">(</span><span class="s">"appsettings.json"</span><span class="p">);</span>
+<span class="n">var</span> <span class="n">configuration</span> <span class="p">=</span> <span class="n">builder</span><span class="p">.</span><span class="nf">Build</span><span class="p">();</span>
+
+<span class="n">var</span> <span class="n">webProxy</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">WebProxy</span><span class="p">(</span>
+	 <span class="k">new</span> <span class="nf">Uri</span><span class="p">(</span><span class="n">configuration</span><span class="p">[</span><span class="s">"ProxyUri"</span><span class="p">]),</span> 
+	 <span class="n">BypassOnLocal</span><span class="p">:</span> <span class="k">false</span><span class="p">);</span>
+
+<span class="n">var</span> <span class="n">proxyHttpClientHandler</span> <span class="p">=</span> <span class="k">new</span> <span class="n">HttpClientHandler</span> <span class="p">{</span>
+	 <span class="n">Proxy</span> <span class="p">=</span> <span class="n">webProxy</span><span class="p">,</span>
+	 <span class="n">UseProxy</span> <span class="p">=</span> <span class="k">true</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="n">var</span> <span class="n">httpClient</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">HttpClient</span><span class="p">(</span><span class="n">proxyHttpClientHandler</span><span class="p">)</span> <span class="p">{</span>
+	 <span class="n">BaseAddress</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Uri</span><span class="p">(</span><span class="n">configuration</span><span class="p">[</span><span class="s">"RestServiceUri"</span><span class="p">])</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>Unfortunately my REST service was exposed on <code class="highlighter-rouge">localhost</code>
+and later I found out that proxies are not used for local requests:</p>
+
+<figure class="highlight"><pre><code class="language-json" data-lang="json"><span class="err">/*</span><span class="w"> </span><span class="err">appsettings.json</span><span class="w"> </span><span class="err">*/</span><span class="w">
+</span><span class="p">{</span><span class="w">
+    </span><span class="nt">"RestServiceUri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:5001/api"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"ProxyUri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:8080"</span><span class="w">
+</span><span class="p">}</span></code></pre></figure>
+
+<p>OK, no problem I though,
+let’s just add another DNS alias to localhost - 
+just to fool <code class="highlighter-rouge">Uri</code> class to think 
+that we are accessing some other machine.
+This can be done by modifying <code class="highlighter-rouge">hosts</code> file, which
+on my Ubuntu machine is located in <code class="highlighter-rouge">/etc</code> directory:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">127.0.0.1   localhost
+127.0.0.2   mymachine</code></pre></figure>
+
+<p>Then I had to change my <code class="highlighter-rouge">appsettings.json</code> file:</p>
+
+<figure class="highlight"><pre><code class="language-json" data-lang="json"><span class="err">/*</span><span class="w"> </span><span class="err">appsettings.json</span><span class="w"> </span><span class="err">*/</span><span class="w">
+</span><span class="p">{</span><span class="w">
+    </span><span class="nt">"RestServiceUri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://mymachine:5001/api"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"ProxyUri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:8080"</span><span class="w">
+</span><span class="p">}</span></code></pre></figure>
+
+<p>And my REST service configuration so that it will listen for
+incoming connections on all interfaces:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">static</span> <span class="n">IWebHost</span> <span class="nf">BuildWebHost</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span> <span class="p">=&gt;</span>
+	<span class="n">WebHost</span><span class="p">.</span><span class="nf">CreateDefaultBuilder</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+		 <span class="p">.</span><span class="n">UseStartup</span><span class="p">&lt;</span><span class="n">Startup</span><span class="p">&gt;()</span>
+		 <span class="p">.</span><span class="nf">UseUrls</span><span class="p">(</span><span class="s">"http://0.0.0.0:5001"</span><span class="p">)</span>
+		 <span class="p">.</span><span class="nf">Build</span><span class="p">();</span></code></pre></figure>
+
+<p>After all these preparations I was able to intercept traffic
+using <a href="https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project">ZAP Proxy</a>:
+<img src="assets/images/2018-05-03/zap_1.png" alt="Intercepted traffix" /></p>
+
+<p>But was this all necessary? Turns out that not really.
+You may use your vanilla <code class="highlighter-rouge">HttpClient</code>:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">restServiceUri</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Uri</span><span class="p">(</span><span class="n">configuration</span><span class="p">[</span><span class="s">"RestServiceUri"</span><span class="p">]);</span>
+<span class="n">var</span> <span class="n">httpClient</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">HttpClient</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">BaseAddress</span> <span class="p">=</span> <span class="n">restServiceUri</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>And then just set <code class="highlighter-rouge">http_proxy</code> environmental variable to get
+exactly the same behaviour (without any need to modify <code class="highlighter-rouge">hosts</code>, or
+to force REST service to listen on all interfaces).
+Just run in Bash:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">http_proxy=http://localhost:8080 dotnet run</code></pre></figure>
+
+<p>Since I don’t have any machine with Windows/MacOS I cannot
+confirm that it works on all OS’es, but at least it works
+on my Ubuntu.</p>
+
+
+	  ]]></description>
+	</item>
+
+
+</channel>
+</rss>

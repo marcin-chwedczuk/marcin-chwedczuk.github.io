@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Augmenting JavaScript objects with toString and valueOf</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/cover7.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Augmenting JavaScript objects with toString and valueOf</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2016-06-09">09 Jun 2016</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/javascript'>Javascript</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>Today I want to present two useful methods: <code class="highlighter-rouge">toString</code> and <code class="highlighter-rouge">valueOf</code>. Both of these methods are 
+used by JavaScript interpreter when converting objects to primitive types.</p>
+
+<p>We will start with <code class="highlighter-rouge">toString</code> that can be useful for debugging purposes, say we have an object:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">point</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">x</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+  <span class="na">y</span><span class="p">:</span> <span class="mi">20</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>When we try to convert it to <code class="highlighter-rouge">String</code> e.g. using <code class="highlighter-rouge">'' + point</code> expression, we get (in Chrome):</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">[object Object]</code></pre></figure>
+
+<p>Wouldn’t it be nice to get <code class="highlighter-rouge">(10, 20)</code>? With support of <code class="highlighter-rouge">toString</code> we can do it, simply
+let’s augment our point with <code class="highlighter-rouge">toString</code> method:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">point</span><span class="p">.</span><span class="nx">toString</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s1">'('</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">x</span> <span class="o">+</span> <span class="s1">', '</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">y</span> <span class="o">+</span> <span class="s1">')'</span><span class="p">;</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>now <code class="highlighter-rouge">String(point)</code> returns:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="s2">"(10, 20)"</span></code></pre></figure>
+
+<p>This works too when we concatenate our point with string, or when we are join’ing array of points:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="o">&gt;</span> <span class="s1">'current position: '</span> <span class="o">+</span> <span class="nx">point</span>
+<span class="s2">"current position: (10, 20)"</span>
+
+<span class="o">&gt;</span> <span class="p">[</span><span class="nx">point</span><span class="p">,</span> <span class="nx">point</span><span class="p">,</span> <span class="nx">point</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">'; '</span><span class="p">);</span>
+<span class="s2">"(10, 20); (10, 20); (10, 20)"</span></code></pre></figure>
+
+<p>It will also work in any other situation when object is coerced to <code class="highlighter-rouge">String</code> type. Unfortunately
+it doesn’t work with <code class="highlighter-rouge">console.log</code>:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="o">&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">point</span><span class="p">)</span>
+<span class="nb">Object</span> <span class="p">{</span><span class="nl">x</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="nx">y</span><span class="err">:</span> <span class="mi">20</span><span class="p">}</span></code></pre></figure>
+
+<p>Now we go into interesting topic: when JavaScript objects are converted to string’s?
+We already given two examples: when object is concatenated with string and when we explicitly
+convert object to string via <code class="highlighter-rouge">String(obj)</code> call.
+But this will also happen when we use object with operators like <code class="highlighter-rouge">&gt;</code> or <code class="highlighter-rouge">&gt;=</code>. 
+Exact rules are pretty compiled and
+if your are interested in them I advice reading chapter 8 (Type coercion) and 9 (Operators) from excellent 
+<a href="http://speakingjs.com/es5/ch08.html">Speaking JS book.</a>
+For now let’s consider simple example, what will happen when we try to use <code class="highlighter-rouge">&gt;</code> on
+points with <code class="highlighter-rouge">toString</code> method:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">Point</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="nx">x</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="nx">y</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="nx">Point</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">toString</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s1">'('</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">x</span> <span class="o">+</span> <span class="s1">', '</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">y</span> <span class="o">+</span> <span class="s1">')'</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">p1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Point</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">p2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Point</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">p3</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Point</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">15</span><span class="p">);</span></code></pre></figure>
+
+<p>When interpreter executes expression like <code class="highlighter-rouge">p1 &gt; p2</code> first it tries to convert objects to
+primitives - first by calling <code class="highlighter-rouge">valueOf</code> method (by default it will return <code class="highlighter-rouge">this</code>) and if 
+it not return primitive value then it tries <code class="highlighter-rouge">toString</code>. Since we are providing our own
+version of <code class="highlighter-rouge">toString</code> that returns primitive value (a <code class="highlighter-rouge">String</code>) interpreter will use values returned
+by <code class="highlighter-rouge">toString</code> to compare points, so:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="o">&gt;</span> <span class="c1">// because '(20, 30)' &gt; '(10, 20)'  - strings in JS are compared lexicographically</span>
+<span class="o">&gt;</span> <span class="nx">p1</span> <span class="o">&gt;</span> <span class="nx">p2</span>
+<span class="kc">false</span>
+<span class="o">&gt;</span> <span class="nx">p2</span> <span class="o">&gt;</span> <span class="nx">p1</span>
+<span class="kc">true</span>
+<span class="o">&gt;</span> <span class="c1">// because '(20, 30)' &gt; '(20, 15)':</span>
+<span class="o">&gt;</span> <span class="nx">p2</span> <span class="o">&gt;</span> <span class="nx">p3</span>
+<span class="kc">true</span></code></pre></figure>
+
+<p>Looks like we overloaded <code class="highlighter-rouge">&gt;</code> operator in JavaScript, yay! But we must be aware of limitations of
+this technique: first we are comparing strings not object properties, second string in JS are compared
+lexicographically so <code class="highlighter-rouge">'2' &gt; '111'</code>. In other words don’t use it in production code it may cause
+too much confusion, explicit method like
+<code class="highlighter-rouge">Point.compare</code> would be much better.</p>
+
+<p>Now we can turn to <code class="highlighter-rouge">valueOf</code> method, in it’s working it is similar to <code class="highlighter-rouge">toString</code> method, only difference
+is that it is called when object must be converted to <code class="highlighter-rouge">Number</code>.
+Let’s see quick example:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">valueOf</span><span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="mi">42</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">Number</span><span class="p">(</span><span class="nx">obj</span><span class="p">));</span> <span class="c1">// prints 42</span></code></pre></figure>
+
+<p>Object is converted to number when used with operators like: <code class="highlighter-rouge">+</code>, <code class="highlighter-rouge">*</code> and <code class="highlighter-rouge">-</code>. Also <code class="highlighter-rouge">valueOf</code> is used
+when objects are compared using <code class="highlighter-rouge">&gt;</code> or <code class="highlighter-rouge">&gt;=</code> operators. <code class="highlighter-rouge">valueOf</code> is not as useful as <code class="highlighter-rouge">toString</code> IMHO,
+but it’s worth to know. One more fact is that <code class="highlighter-rouge">Date</code> objects have custom implementation of <code class="highlighter-rouge">valueOf</code> method
+that returns number of milliseconds from epoch (in other words it returns same value as <code class="highlighter-rouge">getTime()</code>). Thanks
+to this we can use <code class="highlighter-rouge">&gt;</code> to compare dates, and get difference in milliseconds between dates as: <code class="highlighter-rouge">date2 - date1</code>.</p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Augmenting JavaScript objects with toString and valueOf&amp;url=https://marcin-chwedczuk.github.io/augmenting-JavaScript-objects-with-toString-and-valueOf"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/augmenting-JavaScript-objects-with-toString-and-valueOf"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/augmenting-JavaScript-objects-with-toString-and-valueOf"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/cover2.jpg)" href="/object-and-collection-initializers-in-csharp">
+            <section class="post">
+                <h2>Object and collection initializers in C#</h2>
+                <p>In this post I want to present a nice C# syntax sugar: object and collection...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/cover7.jpg)" href="/creating-and-using-adnotations-in-java">
+            <section class="post">
+                <h2>Creating and using annotations in Java</h2>
+                <p>Java annotations are simple data that we can attach to program elements like classes, fields...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

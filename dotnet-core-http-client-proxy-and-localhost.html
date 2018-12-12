@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>.NET Core, HttpClient, Proxy and localhost</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover4.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">.NET Core, HttpClient, Proxy and localhost</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2018-05-03">03 May 2018</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/dotnet'>Dotnet</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>Recently I wanted to spy network traffic between a <code class="highlighter-rouge">HttpClient</code> and
+a REST service. This task turned out to be more difficult than I
+though.</p>
+
+<p>My first challenge was to force <code class="highlighter-rouge">HttpClient</code> to use a proxy.
+After a bit of googling I have found 
+the following code:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">using</span> <span class="nn">System.Net</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Net.Http</span><span class="p">;</span>
+
+<span class="n">var</span> <span class="n">builder</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ConfigurationBuilder</span><span class="p">()</span>
+	 <span class="p">.</span><span class="nf">SetBasePath</span><span class="p">(</span><span class="n">Directory</span><span class="p">.</span><span class="nf">GetCurrentDirectory</span><span class="p">())</span>
+	 <span class="p">.</span><span class="nf">AddJsonFile</span><span class="p">(</span><span class="s">"appsettings.json"</span><span class="p">);</span>
+<span class="n">var</span> <span class="n">configuration</span> <span class="p">=</span> <span class="n">builder</span><span class="p">.</span><span class="nf">Build</span><span class="p">();</span>
+
+<span class="n">var</span> <span class="n">webProxy</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">WebProxy</span><span class="p">(</span>
+	 <span class="k">new</span> <span class="nf">Uri</span><span class="p">(</span><span class="n">configuration</span><span class="p">[</span><span class="s">"ProxyUri"</span><span class="p">]),</span> 
+	 <span class="n">BypassOnLocal</span><span class="p">:</span> <span class="k">false</span><span class="p">);</span>
+
+<span class="n">var</span> <span class="n">proxyHttpClientHandler</span> <span class="p">=</span> <span class="k">new</span> <span class="n">HttpClientHandler</span> <span class="p">{</span>
+	 <span class="n">Proxy</span> <span class="p">=</span> <span class="n">webProxy</span><span class="p">,</span>
+	 <span class="n">UseProxy</span> <span class="p">=</span> <span class="k">true</span><span class="p">,</span>
+<span class="p">};</span>
+
+<span class="n">var</span> <span class="n">httpClient</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">HttpClient</span><span class="p">(</span><span class="n">proxyHttpClientHandler</span><span class="p">)</span> <span class="p">{</span>
+	 <span class="n">BaseAddress</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Uri</span><span class="p">(</span><span class="n">configuration</span><span class="p">[</span><span class="s">"RestServiceUri"</span><span class="p">])</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>Unfortunately my REST service was exposed on <code class="highlighter-rouge">localhost</code>
+and later I found out that proxies are not used for local requests:</p>
+
+<figure class="highlight"><pre><code class="language-json" data-lang="json"><span class="err">/*</span><span class="w"> </span><span class="err">appsettings.json</span><span class="w"> </span><span class="err">*/</span><span class="w">
+</span><span class="p">{</span><span class="w">
+    </span><span class="nt">"RestServiceUri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:5001/api"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"ProxyUri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:8080"</span><span class="w">
+</span><span class="p">}</span></code></pre></figure>
+
+<p>OK, no problem I though,
+let’s just add another DNS alias to localhost - 
+just to fool <code class="highlighter-rouge">Uri</code> class to think 
+that we are accessing some other machine.
+This can be done by modifying <code class="highlighter-rouge">hosts</code> file, which
+on my Ubuntu machine is located in <code class="highlighter-rouge">/etc</code> directory:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">127.0.0.1   localhost
+127.0.0.2   mymachine</code></pre></figure>
+
+<p>Then I had to change my <code class="highlighter-rouge">appsettings.json</code> file:</p>
+
+<figure class="highlight"><pre><code class="language-json" data-lang="json"><span class="err">/*</span><span class="w"> </span><span class="err">appsettings.json</span><span class="w"> </span><span class="err">*/</span><span class="w">
+</span><span class="p">{</span><span class="w">
+    </span><span class="nt">"RestServiceUri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://mymachine:5001/api"</span><span class="p">,</span><span class="w">
+    </span><span class="nt">"ProxyUri"</span><span class="p">:</span><span class="w"> </span><span class="s2">"http://localhost:8080"</span><span class="w">
+</span><span class="p">}</span></code></pre></figure>
+
+<p>And my REST service configuration so that it will listen for
+incoming connections on all interfaces:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">static</span> <span class="n">IWebHost</span> <span class="nf">BuildWebHost</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span> <span class="p">=&gt;</span>
+	<span class="n">WebHost</span><span class="p">.</span><span class="nf">CreateDefaultBuilder</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+		 <span class="p">.</span><span class="n">UseStartup</span><span class="p">&lt;</span><span class="n">Startup</span><span class="p">&gt;()</span>
+		 <span class="p">.</span><span class="nf">UseUrls</span><span class="p">(</span><span class="s">"http://0.0.0.0:5001"</span><span class="p">)</span>
+		 <span class="p">.</span><span class="nf">Build</span><span class="p">();</span></code></pre></figure>
+
+<p>After all these preparations I was able to intercept traffic
+using <a href="https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project">ZAP Proxy</a>:
+<img src="assets/images/2018-05-03/zap_1.png" alt="Intercepted traffix" /></p>
+
+<p>But was this all necessary? Turns out that not really.
+You may use your vanilla <code class="highlighter-rouge">HttpClient</code>:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">restServiceUri</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Uri</span><span class="p">(</span><span class="n">configuration</span><span class="p">[</span><span class="s">"RestServiceUri"</span><span class="p">]);</span>
+<span class="n">var</span> <span class="n">httpClient</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">HttpClient</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">BaseAddress</span> <span class="p">=</span> <span class="n">restServiceUri</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>And then just set <code class="highlighter-rouge">http_proxy</code> environmental variable to get
+exactly the same behaviour (without any need to modify <code class="highlighter-rouge">hosts</code>, or
+to force REST service to listen on all interfaces).
+Just run in Bash:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">http_proxy=http://localhost:8080 dotnet run</code></pre></figure>
+
+<p>Since I don’t have any machine with Windows/MacOS I cannot
+confirm that it works on all OS’es, but at least it works
+on my Ubuntu.</p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=.NET Core, HttpClient, Proxy and localhost&amp;url=https://marcin-chwedczuk.github.io/dotnet-core-http-client-proxy-and-localhost"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/dotnet-core-http-client-proxy-and-localhost"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/dotnet-core-http-client-proxy-and-localhost"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//dotnet-core-http-client-proxy-and-localhost';
+        this.page.identifier = '/dotnet-core-http-client-proxy-and-localhost';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover2.jpg)" href="/ray-tracing-torus">
+            <section class="post">
+                <h2>Ray tracing a torus</h2>
+                <p>In this blog post I will show you how to ray trace a torus. I...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover4.jpg)" href="/how-to-check-if-a-number-is-a-power-of-two">
+            <section class="post">
+                <h2>How to check if a number is a power of two</h2>
+                <p>In this blog post we will learn about two algorithms that allow us to quickly...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

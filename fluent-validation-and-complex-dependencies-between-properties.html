@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Fluent Validation and complex dependencies between properties</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover3.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Fluent Validation and complex dependencies between properties</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2018-09-18">18 Sep 2018</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/dotnet'>Dotnet</a>,
+                       
+                
+                    
+                       <a href='/tag/unit-testing'>Unit-testing</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p><a href="https://fluentvalidation.net/">FluentValidation</a> is one of the
+best validation libraries for .NET. I use it daily both at work
+and in my personal pet projects. Still from time to time I
+encounter situations where it is not obvious how 
+I should use FluentValidation.
+In this blog post I describe one such situation that I have to
+deal with recently.</p>
+
+<p>In short I had to validate a simple DTO:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">SampleRequestDto</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="n">AddressDto</span> <span class="n">Address</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="n">ContactInfoDto</span> <span class="n">ContactInfo</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">AddressDto</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">AddressLine1</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">AddressLine2</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">City</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">ZipCode</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">CountryIsoCode</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">ContactInfoDto</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">EmailAddress</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="c1">// Phone number validation depends on CountryIsoCode.
+</span>    <span class="k">public</span> <span class="kt">string</span> <span class="n">PhoneNumber</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>With a small twist that <code class="highlighter-rouge">ContactInfo.PhoneNumber</code> was 
+validated using country dependent format and information
+about country itself was stored in <code class="highlighter-rouge">Address.CountryIsoCode</code> field.</p>
+
+<p>This is generally a good use-case for FluentValidation <code class="highlighter-rouge">Custom</code> rule:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">Custom</span><span class="p">((</span><span class="n">dto</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+        <span class="n">var</span> <span class="n">countryIsoCode</span> <span class="p">=</span> <span class="n">dto</span><span class="p">?.</span><span class="n">Address</span><span class="p">?.</span><span class="n">CountryIsoCode</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="nf">IsNullOrEmpty</span><span class="p">(</span><span class="n">countryIsoCode</span><span class="p">))</span> 
+            <span class="k">return</span><span class="p">;</span>
+
+        <span class="n">var</span> <span class="n">country</span> <span class="p">=</span> <span class="n">Countries</span><span class="p">.</span><span class="nf">FindCountryByIsoCode</span><span class="p">(</span><span class="n">countryIsoCode</span><span class="p">);</span>
+        <span class="c1">// invalid country code - cannot validate phone number
+</span>        <span class="k">if</span> <span class="p">(</span><span class="n">country</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+            <span class="k">return</span><span class="p">;</span>
+
+        <span class="n">var</span> <span class="n">phoneNumber</span> <span class="p">=</span> <span class="n">dto</span><span class="p">?.</span><span class="n">ContactInfo</span><span class="p">?.</span><span class="n">PhoneNumber</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="nf">IsNullOrWhiteSpace</span><span class="p">(</span><span class="n">phoneNumber</span><span class="p">))</span>
+            <span class="k">return</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(!</span><span class="n">country</span><span class="p">.</span><span class="n">PhoneNumberFormat</span><span class="p">.</span><span class="nf">Matches</span><span class="p">(</span><span class="n">phoneNumber</span><span class="p">))</span> <span class="p">{</span>
+            <span class="n">context</span><span class="p">.</span><span class="nf">AddFailure</span><span class="p">(</span><span class="k">new</span> <span class="nf">ValidationFailure</span><span class="p">(</span>
+                <span class="err">$</span><span class="s">"ContactInfo.PhoneNumber"</span><span class="p">,</span> <span class="c1">// property name
+</span>                <span class="err">$</span><span class="s">"'{phoneNumber}' is not a valid phone number in {country.Name}."</span><span class="p">));</span>
+        <span class="p">}</span>
+    <span class="p">});</span></code></pre></figure>
+
+<p>Unfortunately in my case I also had a bunch of other country dependent 
+values like VAT numbers scattered across many DTOs. And I needed
+a more reusable and programmer friendly solution than <code class="highlighter-rouge">Custom</code> rule.</p>
+
+<p>Ideally my validator definition should look like this:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">SampleRequestDtoValidator</span> <span class="p">:</span> <span class="n">AbstractValidator</span><span class="p">&lt;</span><span class="n">SampleRequestDto</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="k">public</span>  <span class="nf">SampleRequestDtoValidator</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Address</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">SetValidator</span><span class="p">(</span><span class="k">new</span> <span class="nf">AddressDtoValidator</span><span class="p">());</span>
+
+        <span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">ContactInfo</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">SetValidator</span><span class="p">(</span><span class="k">new</span> <span class="nf">ContactInfoDtoValidator</span><span class="p">());</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">AddressDtoValidator</span> <span class="p">:</span> <span class="n">AbstractValidator</span><span class="p">&lt;</span><span class="n">AddressDto</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="nf">AddressDtoValidator</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">CountryIsoCode</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">NotEmpty</span><span class="p">()</span>
+            <span class="p">.</span><span class="nf">CountryIsoCode</span><span class="p">();</span> <span class="c1">// custom extension
+</span>        <span class="c1">// other rules...
+</span>    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">ContactInfoDtoValidator</span> <span class="p">:</span> <span class="n">AbstractValidator</span><span class="p">&lt;</span><span class="n">ContactInfoDto</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="nf">ContactInfoDtoValidator</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">PhoneNumber</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">NotEmpty</span><span class="p">()</span>
+            <span class="p">.</span><span class="nf">MaximumLength</span><span class="p">(</span><span class="m">50</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">PhoneNumber</span><span class="p">();</span> <span class="c1">// custom extension
+</span>        <span class="c1">// other rules...
+</span>    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Creating property validators like <code class="highlighter-rouge">CountryIsoCode</code> using FluentValidation
+is very simple. You just extend <code class="highlighter-rouge">PropertyValidator</code> class,
+provide an error message template to the base class ctor and override
+<code class="highlighter-rouge">IsValid</code> method. 
+Additionally you may define an extension method 
+to the <code class="highlighter-rouge">IRuleBuilder&lt;T,TProperty&gt;</code>
+interface to make your validator behave like build-in ones.</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">CountryIsoCodeValidator</span> <span class="p">:</span> <span class="n">PropertyValidator</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="nf">CountryIsoCodeValidator</span><span class="p">()</span> 
+        <span class="p">:</span> <span class="k">base</span><span class="p">(</span><span class="s">"'{PropertyValue}' is not a valid country iso code."</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+    <span class="k">protected</span> <span class="k">override</span> <span class="kt">bool</span> <span class="nf">IsValid</span><span class="p">(</span><span class="n">PropertyValidatorContext</span> <span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">var</span> <span class="n">isoCode</span> <span class="p">=</span> <span class="p">(</span><span class="kt">string</span><span class="p">)</span> <span class="n">context</span><span class="p">.</span><span class="n">PropertyValue</span><span class="p">;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="nf">IsNullOrEmpty</span><span class="p">(</span><span class="n">isoCode</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">Countries</span><span class="p">.</span><span class="nf">IsKnownIsoCode</span><span class="p">(</span><span class="n">isoCode</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">CountryIsoCodeValidatorExtension</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="n">IRuleBuilderOptions</span><span class="p">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">CountryIsoCode</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span>
+        <span class="k">this</span> <span class="n">IRuleBuilder</span><span class="p">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">rule</span>
+    <span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">rule</span><span class="p">.</span><span class="nf">SetValidator</span><span class="p">(</span><span class="k">new</span> <span class="nf">CountryIsoCodeValidator</span><span class="p">());</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">CountryCode</code> validator was easy, what about <code class="highlighter-rouge">PhoneNumber</code> validator?
+Here the only challenge that we must solve 
+is finding a way to pass country ISO code from <code class="highlighter-rouge">Address</code> to 
+phone number validator.
+To solve this problem I decided to use “advanced” FluentValidation
+feature called “Root Context Data”. Basically this is a 
+<code class="highlighter-rouge">IDictionary&lt;string, object&gt;</code> that can be prefilled with custom data
+before validation starts and then is accessible to every validator
+in validators tree.</p>
+
+<p>Let’s take a look at an example from 
+<a href="https://fluentvalidation.net/start#root-context-data">official documentation</a>:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">instanceToValidate</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Person</span><span class="p">();</span>
+
+<span class="n">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ValidationContext</span><span class="p">&lt;</span><span class="n">Person</span><span class="p">&gt;(</span><span class="n">person</span><span class="p">);</span>
+<span class="n">context</span><span class="p">.</span><span class="n">RootContextData</span><span class="p">[</span><span class="s">"MyCustomData"</span><span class="p">]</span> <span class="p">=</span> <span class="s">"Test"</span><span class="p">;</span>
+
+<span class="n">var</span> <span class="n">validator</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">PersonValidator</span><span class="p">();</span>
+<span class="n">validator</span><span class="p">.</span><span class="nf">Validate</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
+
+<span class="c1">// usage inside validator:
+</span><span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Surname</span><span class="p">).</span><span class="nf">Custom</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+  <span class="k">if</span><span class="p">(</span><span class="n">context</span><span class="p">.</span><span class="n">ParentContext</span><span class="p">.</span><span class="n">RootContextData</span><span class="p">.</span><span class="nf">ContainsKey</span><span class="p">(</span><span class="s">"MyCustomData"</span><span class="p">))</span> <span class="p">{</span>
+    <span class="n">context</span><span class="p">.</span><span class="nf">AddFailure</span><span class="p">(</span><span class="s">"My error message"</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">});</span></code></pre></figure>
+
+<p>Looks very promising, and what’s better we can add values to <code class="highlighter-rouge">RootContextData</code>
+straight inside top-level validators by overriding <code class="highlighter-rouge">PreValidate</code> method:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">SampleRequestDtoValidator</span> <span class="p">:</span> <span class="n">AbstractValidator</span><span class="p">&lt;</span><span class="n">SampleRequestDto</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="k">public</span>  <span class="nf">SampleRequestDtoValidator</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Address</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">SetValidator</span><span class="p">(</span><span class="k">new</span> <span class="nf">AddressDtoValidator</span><span class="p">());</span>
+
+        <span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">ContactInfo</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">SetValidator</span><span class="p">(</span><span class="k">new</span> <span class="nf">ContactInfoDtoValidator</span><span class="p">());</span>
+    <span class="p">}</span>
+
+    <span class="k">protected</span> <span class="k">override</span> <span class="kt">bool</span> <span class="nf">PreValidate</span><span class="p">(</span>
+        <span class="n">ValidationContext</span><span class="p">&lt;</span><span class="n">SampleRequestDto</span><span class="p">&gt;</span> <span class="n">context</span><span class="p">,</span> <span class="n">ValidationResult</span> <span class="n">result</span><span class="p">)</span> 
+    <span class="p">{</span>
+        <span class="n">var</span> <span class="n">contextData</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ValidationContextData</span><span class="p">(</span>
+            <span class="n">context</span><span class="p">.</span><span class="n">RootContextData</span><span class="p">);</span>
+
+        <span class="n">contextData</span><span class="p">.</span><span class="n">CountryIsoCode</span> <span class="p">=</span> 
+            <span class="n">context</span><span class="p">.</span><span class="n">InstanceToValidate</span><span class="p">?.</span><span class="n">Address</span><span class="p">?.</span><span class="n">CountryIsoCode</span><span class="p">;</span>
+
+        <span class="k">return</span> <span class="k">true</span><span class="p">;</span> <span class="c1">// continue validation
+</span>    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>To avoid dealing with <code class="highlighter-rouge">object</code>s I have also created a strongly typed
+wrapper (<code class="highlighter-rouge">ValidationContextData</code> class) around <code class="highlighter-rouge">RootContextData</code>
+dictionary.</p>
+
+<p>IMPORTANT: To make validators reusable you should set <code class="highlighter-rouge">RootContextData</code> only
+in top level validators. Validators used with <code class="highlighter-rouge">SetValidator</code>
+method are not considered top level.</p>
+
+<p>Now implementing <code class="highlighter-rouge">PhoneNumberValidator</code> is easy:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">PhoneNumberValidator</span> <span class="p">:</span> <span class="n">PropertyValidator</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="nf">PhoneNumberValidator</span><span class="p">()</span> 
+        <span class="p">:</span> <span class="k">base</span><span class="p">(</span><span class="s">"'{PropertyValue}' is not a valid phone number in {Country}."</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+    <span class="k">protected</span> <span class="k">override</span> <span class="kt">bool</span> <span class="nf">IsValid</span><span class="p">(</span><span class="n">PropertyValidatorContext</span> <span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">var</span> <span class="n">phoneNumber</span> <span class="p">=</span> <span class="p">(</span><span class="kt">string</span><span class="p">)</span> <span class="n">context</span><span class="p">.</span><span class="n">PropertyValue</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="nf">IsNullOrEmpty</span><span class="p">(</span><span class="n">phoneNumber</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">var</span> <span class="n">contextData</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ValidationContextData</span><span class="p">(</span>
+            <span class="n">context</span><span class="p">.</span><span class="n">ParentContext</span><span class="p">.</span><span class="n">RootContextData</span><span class="p">);</span>
+
+        <span class="n">var</span> <span class="n">country</span> <span class="p">=</span> <span class="nf">TryFindCountry</span><span class="p">(</span><span class="n">contextData</span><span class="p">.</span><span class="n">CountryIsoCode</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">country</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">// without a country we cannot validate a phone number
+</span>            <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="n">context</span><span class="p">.</span><span class="n">MessageFormatter</span><span class="p">.</span><span class="nf">AppendArgument</span><span class="p">(</span><span class="s">"Country"</span><span class="p">,</span> <span class="n">country</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
+
+        <span class="k">return</span> <span class="n">country</span><span class="p">.</span><span class="n">PhoneNumberFormat</span><span class="p">.</span><span class="nf">Matches</span><span class="p">(</span><span class="n">phoneNumber</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">private</span> <span class="n">Country</span> <span class="nf">TryFindCountry</span><span class="p">(</span><span class="kt">string</span> <span class="n">countryIsoCode</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="nf">IsNullOrEmpty</span><span class="p">(</span><span class="n">countryIsoCode</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="k">null</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">Countries</span><span class="p">.</span><span class="nf">FindCountryByIsoCode</span><span class="p">(</span><span class="n">countryIsoCode</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">PhoneNumberValidatorExtension</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="n">IRuleBuilderOptions</span><span class="p">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">PhoneNumber</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span>
+        <span class="k">this</span> <span class="n">IRuleBuilder</span><span class="p">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">rule</span>
+    <span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">rule</span><span class="p">.</span><span class="nf">SetValidator</span><span class="p">(</span><span class="k">new</span> <span class="nf">PhoneNumberValidator</span><span class="p">());</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>And we are done!</p>
+
+<h4 id="unit-testing-validators">Unit-testing validators</h4>
+
+<p>FluentValidation provides several extension methods that
+make unit-testing easy, just take a look:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">using</span> <span class="nn">FluentValidation.TestHelper</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">SampleRequestDtoValidatorTest</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">SampleRequestDtoValidator</span> <span class="n">_validator</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="nf">SampleRequestDtoValidatorTest</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">_validator</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">SampleRequestDtoValidator</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="p">[</span><span class="n">Fact</span><span class="p">]</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Should_return_error_when_phone_number_is_invalid_and_countryIsoCode_is_set</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// Arrange
+</span>        <span class="n">var</span> <span class="n">invalidRequest</span> <span class="p">=</span> 
+            <span class="n">SampleRequestDtoFixture</span><span class="p">.</span><span class="nf">CreateValidRequest</span><span class="p">();</span>
+        <span class="n">invalidRequest</span><span class="p">.</span><span class="n">Address</span><span class="p">.</span><span class="n">CountryIsoCode</span> <span class="p">=</span> <span class="s">"PL"</span><span class="p">;</span>
+        <span class="n">invalidRequest</span><span class="p">.</span><span class="n">ContactInfo</span><span class="p">.</span><span class="n">PhoneNumber</span> <span class="p">=</span> <span class="s">"+48 123"</span><span class="p">;</span>
+
+        <span class="c1">// Assert
+</span>        <span class="n">_validator</span>
+            <span class="p">.</span><span class="nf">ShouldHaveValidationErrorFor</span><span class="p">(</span>
+                <span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">ContactInfo</span><span class="p">.</span><span class="n">PhoneNumber</span><span class="p">,</span> <span class="n">invalidRequest</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">WithErrorMessage</span><span class="p">(</span>
+                <span class="s">"'+48 123' is not a valid phone number in Poland."</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<h4 id="design-considerations">Design considerations</h4>
+
+<p>Everything works right now, but there is still place for improvement.
+For example what happens when a programmer forgets to
+override <code class="highlighter-rouge">PreValidate</code> method and set all required properties?
+Validation of certain properties will be silently skipped.
+This is not good.
+To minimize this problem I put additional checks inside <code class="highlighter-rouge">ValidationContextData</code>
+class. They will throw an exception with a descriptive message if
+validator tries to access a property that was not previously set.</p>
+
+<p>In my application values like phone numbers are always validated against
+country specific formats. But I can imaging situations where
+sometimes we use country agnostic phone number validator and
+sometimes 
+we use country specific one. In such cases it would be good
+to call the country agnostic validator just a <code class="highlighter-rouge">PhoneNumberValidator</code> and
+the country specific validator a <code class="highlighter-rouge">CountryDependentPhoneNumberValidator</code>.</p>
+
+<p>I have a mixed feelings about <code class="highlighter-rouge">ValidationContextData</code> class because
+it is used by every country specific validator in my code. Maybe 
+instead of introducing this common dependency every validator should
+access <code class="highlighter-rouge">RootContextData</code> and check if the property is set itself?</p>
+
+<p>Sample source code: <a href="https://github.com/marcin-chwedczuk/blog-fluent-validation-adventure">GitHub</a>.</p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Fluent Validation and complex dependencies between properties&amp;url=https://marcin-chwedczuk.github.io/fluent-validation-and-complex-dependencies-between-properties"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/fluent-validation-and-complex-dependencies-between-properties"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/fluent-validation-and-complex-dependencies-between-properties"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//fluent-validation-and-complex-dependencies-between-properties';
+        this.page.identifier = '/fluent-validation-and-complex-dependencies-between-properties';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover2.jpg)" href="/avoid-hidden-coupling-to-interface-implementation">
+            <section class="post">
+                <h2>Avoid hidden coupling to interface implementation</h2>
+                <p>A few days ago I was reviewing a pull request at work and one line...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover3.jpg)" href="/you-can-live-without-your-mocking-framework">
+            <section class="post">
+                <h2>You can live without mocking frameworks</h2>
+                <p>For a long time I have been fan of mocking frameworks like Moq and NSubstitute....</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

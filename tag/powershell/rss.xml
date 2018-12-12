@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+   
+      <title>marcin-chwedczuk.github.io/</title>
+   
+   <link>https://marcin-chwedczuk.github.io/</link>
+   <description>A place where I can share my thoughts about programming</description>
+   <language>en-uk</language>
+   <managingEditor> marcin-chwedczuk</managingEditor>
+   <atom:link href="rss" rel="self" type="application/rss+xml" />
+   
+	<item>
+	  <title>PowerShell function declaration pitfall</title>
+	  <link>//powershell-function-declaration-pitfall</link>
+	  <author>marcin-chwedczuk</author>
+	  <pubDate>2016-07-15T02:00:00+02:00</pubDate>
+	  <guid>//powershell-function-declaration-pitfall</guid>
+	  <description><![CDATA[
+	     <p>Recently I had to write some scripts in PowerShell.
+Because I try to follow good software development practices I decided to split
+script logic into functions. First I defined a few functions
+that taken or returned single value:</p>
+
+<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="k">function </span>printArg<span class="o">(</span><span class="nv">$arg1</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nb">write-host</span> <span class="s2">"printArg: arg1=</span><span class="nv">$arg1</span><span class="s2">"</span>;
+<span class="o">}</span>
+    
+<span class="k">function </span>transformArg<span class="o">(</span><span class="nv">$n</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nv">$n</span><span class="k">*</span><span class="nv">$n</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Of course they worked brilliantly:</p>
+
+<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="gp">&gt; </span>printArg<span class="o">(</span>1<span class="o">)</span>
+printArg: <span class="nv">arg1</span><span class="o">=</span>1
+    
+<span class="gp">&gt; </span>printArg<span class="o">(</span><span class="s2">"foo"</span><span class="o">)</span>
+printArg: <span class="nv">arg1</span><span class="o">=</span>foo
+    
+<span class="gp">&gt; </span><span class="nb">write-host</span> <span class="k">$(</span>transformArg<span class="o">(</span>3<span class="k">)</span><span class="o">)</span>
+9</code></pre></figure>
+
+<p>But then I needed to declare function that takes three arguments,
+I started with code:</p>
+
+<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="k">function </span>manyArgs<span class="o">(</span><span class="nv">$arg1</span>, <span class="nv">$arg2</span>, <span class="nv">$arg3</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nb">write-host</span> <span class="s2">"manyArgs: arg1=</span><span class="nv">$arg1</span><span class="s2">, arg2=</span><span class="nv">$arg2</span><span class="s2">, arg3=</span><span class="nv">$arg3</span><span class="s2">"</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Unfortunatelly it didn’t work as expected:</p>
+
+<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="gp">&gt; </span>manyArgs<span class="o">(</span>1, 2, 3<span class="o">)</span>
+manyArgs: <span class="nv">arg1</span><span class="o">=</span>1 2 3, <span class="nv">arg2</span><span class="o">=</span>, <span class="nv">arg3</span><span class="o">=</span></code></pre></figure>
+
+<p>After a bit of research
+it turned out that PowerShell <strong><em>uses space as argument separator</em></strong>.
+So to pass three arguments we need to write:</p>
+
+<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="gp">&gt; </span>manyArgs 1 2 3
+manyArgs: <span class="nv">arg1</span><span class="o">=</span>1, <span class="nv">arg2</span><span class="o">=</span>2, <span class="nv">arg3</span><span class="o">=</span>3
+    
+<span class="c1"># or using more verbose syntax:</span>
+<span class="gp">&gt; </span>manyArgs -arg1 1 -arg2 2 -arg3 3
+manyArgs: <span class="nv">arg1</span><span class="o">=</span>1, <span class="nv">arg2</span><span class="o">=</span>2, <span class="nv">arg3</span><span class="o">=</span>3</code></pre></figure>
+
+<p>This also works with single argument functions:</p>
+
+<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="gp">&gt; </span>printArg 1
+printArg: <span class="nv">arg1</span><span class="o">=</span>1
+    
+<span class="gp">&gt; </span>printArg -arg1 1
+printArg: <span class="nv">arg1</span><span class="o">=</span>1</code></pre></figure>
+
+<p>Before we end let’s find out what exactly is <code class="highlighter-rouge">(1, 2, 3)</code> 
+and why calling <code class="highlighter-rouge">printArg(1)</code> works. 
+It turns out that
+<code class="highlighter-rouge">(a, b, ..., z)</code> expression represents array of objects in PowerShell:</p>
+
+<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="gp">&gt; </span><span class="o">(</span>1, 2, 3<span class="o">)</span>.getType<span class="o">()</span>.name
+<span class="kt">Object</span><span class="o">[]</span></code></pre></figure>
+
+<p>And <code class="highlighter-rouge">(x)</code> expression represents just <code class="highlighter-rouge">x</code> value :</p>
+
+<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="gp">&gt; </span><span class="o">(</span>1<span class="o">)</span>.getType<span class="o">()</span>.name
+Int32</code></pre></figure>
+
+<p>and thats explain outputs of <code class="highlighter-rouge">printArg(1)</code> and <code class="highlighter-rouge">manyArgs(1, 2, 3)</code> command.</p>
+
+<p>This behaviour of PowerShell may be surprising for C# programmers,
+I hope this post will help you remember about this problem.</p>
+
+
+	  ]]></description>
+	</item>
+
+
+</channel>
+</rss>

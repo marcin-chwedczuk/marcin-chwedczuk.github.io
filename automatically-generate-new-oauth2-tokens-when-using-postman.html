@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Automatically generate new OAuth 2.0 access tokens when using Postman</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover2.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Automatically generate new OAuth 2.0 access tokens when using Postman</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2018-09-29">29 Sep 2018</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/tips'>Tips</a>,
+                       
+                
+                    
+                       <a href='/tag/postman'>Postman</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>Did you ever try to use <a href="https://www.getpostman.com/">Postman</a>
+with OAuth 2.0 protected API? 
+It is pretty annoying. 
+First you must select the correct authorization type, 
+then you must open a popup to request a new access token,
+and only then you can send your HTTP request.
+And of course when the token expires or when for some reason you need a
+new one (e.g. because you want to switching from development to staging environment),
+you need to go through the process again.
+Fortunately for us this can be automated using Postman pre-request scripts.</p>
+
+<p>To test that my pre-request script works I used publicly available 
+<a href="http://identityserver.io/">IdentityServer</a>
+<a href="https://demo.identityserver.io/">demo instance</a>.
+We may use it to manually generate a new access token and
+to preform a test API call:
+<img src="assets/images/2018-09-29/Postman_1.png" alt="Manually generating token 1" />
+<img src="assets/images/2018-09-29/Postman_2.png" alt="Manually generating token 2" />
+<img src="assets/images/2018-09-29/Postman_3.png" alt="Performing test API call" /></p>
+
+<p>OK, so how will we automate this stuff? Let’s start by creating a new
+collection that will contain all requests for which we want to automatically
+generate OAuth access tokens:
+<img src="assets/images/2018-09-29/Postman_4.png" alt="Create a new collection" />
+On Authorization tab use {{accessToken}}
+ as a value of the Access Token
+field, this way Postman will try to load the token value from a variable:
+<img src="assets/images/2018-09-29/Postman_6.png" alt="Set Access Token field" />
+We will populate this variable using the following pre-request script:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// Adapted from: https://gist.github.com/harryi3t/dd5c61451206047db70710ff6174c3c1</span>
+
+<span class="kd">let</span> <span class="nx">tokenUrl</span> <span class="o">=</span> <span class="s1">'https://demo.identityserver.io/connect/token'</span><span class="p">;</span>
+<span class="kd">let</span> <span class="nx">clientId</span> <span class="o">=</span> <span class="s1">'client'</span><span class="p">;</span>
+<span class="kd">let</span> <span class="nx">clientSecret</span> <span class="o">=</span> <span class="s1">'secret'</span><span class="p">;</span>
+<span class="kd">let</span> <span class="nx">scope</span> <span class="o">=</span> <span class="s1">'api'</span>
+
+<span class="kd">let</span> <span class="nx">getTokenRequest</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">method</span><span class="p">:</span> <span class="s1">'POST'</span><span class="p">,</span>
+    <span class="na">url</span><span class="p">:</span> <span class="nx">tokenUrl</span><span class="p">,</span>
+    <span class="na">auth</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">type</span><span class="p">:</span> <span class="s2">"basic"</span><span class="p">,</span>
+        <span class="na">basic</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span> <span class="na">key</span><span class="p">:</span> <span class="s2">"username"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="nx">clientId</span> <span class="p">},</span>
+            <span class="p">{</span> <span class="na">key</span><span class="p">:</span> <span class="s2">"password"</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="nx">clientSecret</span> <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="na">body</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">mode</span><span class="p">:</span> <span class="s1">'formdata'</span><span class="p">,</span>
+        <span class="na">formdata</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span> <span class="na">key</span><span class="p">:</span> <span class="s1">'grant_type'</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="s1">'client_credentials'</span> <span class="p">},</span>
+            <span class="p">{</span> <span class="na">key</span><span class="p">:</span> <span class="s1">'scope'</span><span class="p">,</span> <span class="na">value</span><span class="p">:</span> <span class="nx">scope</span> <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="nx">pm</span><span class="p">.</span><span class="nx">sendRequest</span><span class="p">(</span><span class="nx">getTokenRequest</span><span class="p">,</span> <span class="p">(</span><span class="nx">err</span><span class="p">,</span> <span class="nx">response</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">jsonResponse</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">json</span><span class="p">(),</span>
+        <span class="nx">newAccessToken</span> <span class="o">=</span> <span class="nx">jsonResponse</span><span class="p">.</span><span class="nx">access_token</span><span class="p">;</span>
+
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">({</span> <span class="nx">err</span><span class="p">,</span> <span class="nx">jsonResponse</span><span class="p">,</span> <span class="nx">newAccessToken</span> <span class="p">})</span>
+
+    <span class="nx">pm</span><span class="p">.</span><span class="nx">environment</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'accessToken'</span><span class="p">,</span> <span class="nx">newAccessToken</span><span class="p">);</span>
+    <span class="nx">pm</span><span class="p">.</span><span class="nx">variables</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'accessToken'</span><span class="p">,</span> <span class="nx">newAccessToken</span><span class="p">);</span>
+<span class="p">});</span></code></pre></figure>
+
+<p>Which should be set on Pre-request Scripts tab:
+<img src="assets/images/2018-09-29/Postman_5.png" alt="Set pre-request script" />
+Let’s save all changes.</p>
+
+<p>Now we must add a new request to our collection:
+<img src="assets/images/2018-09-29/Postman_7.png" alt="Add a new request" />
+<strong>This is very important.</strong> Without this step our
+pre-request script will not be called:
+<img src="assets/images/2018-09-29/Postman_8.png" alt="Save the new request" />
+When creating the new request we should select “Inherit auth from parent”
+as the authentication type.</p>
+
+<p>Now if we send our test request we should get <code class="highlighter-rouge">200 OK</code> response:
+<img src="assets/images/2018-09-29/Postman_9.png" alt="It works" /></p>
+
+<h2 id="making-our-pre-request-script-work-with-multiple-environments">Making our pre-request script work with multiple environments</h2>
+
+<p>Often we have to work with multiple environments like
+development, staging (UAT) and production.
+Each of these environments uses different URLs for services
+and for OAuth authorization server. 
+Not to mention that each environment will 
+have its own set of client secrets (passwords).</p>
+
+<p>Fortunately for us Postman has build in support for multiple environments.
+Let’s start by creating a new environment with all necessary values
+that are needed by our pre-request script:
+<img src="assets/images/2018-09-29/Postman_10.png" alt="Create a new environment" /></p>
+
+<p>Then we must modify our script to use values from the selected
+environment:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">getvar</span><span class="p">(</span><span class="nx">variableName</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">pm</span><span class="p">.</span><span class="nx">variables</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">variableName</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">value</span><span class="p">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span>
+        <span class="err">`</span><span class="nx">Variable</span> <span class="s1">'${variableName}'</span> <span class="nx">is</span> <span class="nx">not</span> <span class="nx">defined</span><span class="p">.</span> <span class="nx">Do</span> <span class="nx">you</span> <span class="nx">forget</span> <span class="nx">to</span> <span class="nx">select</span> <span class="nx">an</span> <span class="nx">environment</span><span class="p">?</span><span class="err">`</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">let</span> <span class="nx">tokenUrl</span> <span class="o">=</span> <span class="nx">getvar</span><span class="p">(</span><span class="s1">'tokenUrl'</span><span class="p">);</span>
+<span class="kd">let</span> <span class="nx">clientId</span> <span class="o">=</span> <span class="nx">getvar</span><span class="p">(</span><span class="s1">'clientId'</span><span class="p">);</span>
+<span class="kd">let</span> <span class="nx">clientSecret</span> <span class="o">=</span> <span class="nx">getvar</span><span class="p">(</span><span class="s1">'clientSecret'</span><span class="p">);</span>
+<span class="kd">let</span> <span class="nx">scope</span> <span class="o">=</span> <span class="nx">getvar</span><span class="p">(</span><span class="s1">'scope'</span><span class="p">);</span> 
+
+<span class="c1">// rest of the script is the same as before</span></code></pre></figure>
+
+<p>And that is all. Now we must define all environments that
+we need and we are ready to go:
+<img src="assets/images/2018-09-29/Postman_11.png" alt="Sending request with environment set" /></p>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<p>Select <code class="highlighter-rouge">View -&gt; Show Postman Console</code> to see all log statements
+made by our pre-request script: 
+<img src="assets/images/2018-09-29/Postman_12.png" alt="Postman Console" /></p>
+
+<p>Also using traffic sniffer like <a href="https://www.telerik.com/fiddler">Fiddler</a>
+or <a href="https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project">ZAP</a>
+to compare requests made by auth popup and pre-request script may be helpful:
+<img src="assets/images/2018-09-29/zap.png" alt="ZAP" /></p>
+
+<p>If you are going to use ZAP do not forget to set ZAP as a proxy in Postman settings.</p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Automatically generate new OAuth 2.0 access tokens when using Postman&amp;url=https://marcin-chwedczuk.github.io/automatically-generate-new-oauth2-tokens-when-using-postman"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/automatically-generate-new-oauth2-tokens-when-using-postman"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/automatically-generate-new-oauth2-tokens-when-using-postman"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//automatically-generate-new-oauth2-tokens-when-using-postman';
+        this.page.identifier = '/automatically-generate-new-oauth2-tokens-when-using-postman';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover2.jpg)" href="/abusing-local-functions-to-hide-design-problems">
+            <section class="post">
+                <h2>Abusing local functions to hide design problems</h2>
+                <p>Recently I was browsing through a certain code base and I saw a code similar...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover2.jpg)" href="/avoid-hidden-coupling-to-interface-implementation">
+            <section class="post">
+                <h2>Avoid hidden coupling to interface implementation</h2>
+                <p>A few days ago I was reviewing a pull request at work and one line...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

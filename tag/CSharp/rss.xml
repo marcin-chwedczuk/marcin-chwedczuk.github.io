@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+   
+      <title>marcin-chwedczuk.github.io/</title>
+   
+   <link>https://marcin-chwedczuk.github.io/</link>
+   <description>A place where I can share my thoughts about programming</description>
+   <language>en-uk</language>
+   <managingEditor> marcin-chwedczuk</managingEditor>
+   <atom:link href="rss" rel="self" type="application/rss+xml" />
+   
+	<item>
+	  <title>Castle Windsor most popular features</title>
+	  <link>//castle-windsor-most-popular-features</link>
+	  <author>marcin-chwedczuk</author>
+	  <pubDate>2016-09-11T02:00:00+02:00</pubDate>
+	  <guid>//castle-windsor-most-popular-features</guid>
+	  <description><![CDATA[
+	     <p>In this post I will present the most popular 
+<a href="http://www.castleproject.org/projects/windsor/">Castle Windsor</a> features
+encountered in typical enterprise applications.</p>
+
+<blockquote>
+  <p>Source code: <a href="https://github.com/marcin-chwedczuk/castle-windsor-most-popular-features">https://github.com/marcin-chwedczuk/castle-windsor-most-popular-features</a></p>
+</blockquote>
+
+<h5 id="typed-factory">Typed factory</h5>
+
+<p>When I follow good software development practices like
+<a href="https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)">SOLID</a>
+I find myself writing plenty of <a href="https://en.wikipedia.org/wiki/Factory_(object-oriented_programming)">factory</a> classes.
+These factory classes often fall in one of the two categories:</p>
+
+<ul>
+  <li>I need to create instance of generic service for specific type e.g. I want to get 
+ service that implements <code class="highlighter-rouge">ICommandHandler&lt;TCommand&gt;</code> for <code class="highlighter-rouge">TCommand</code> type</li>
+  <li>I must pass parameters and/or configuration to the service before I
+ can use it e.g. <code class="highlighter-rouge">HeuristicSearch</code> service has <code class="highlighter-rouge">quality</code> constructor parameter
+ to decide what solutions are good enough for the user</li>
+</ul>
+
+<p>In cases like these we can use typed factory feature to generate
+factory implementations:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// to enable typed factory we must add TypedFactoryFacility
+// to the container
+</span><span class="n">container</span><span class="p">.</span><span class="n">AddFacility</span><span class="p">&lt;</span><span class="n">TypedFactoryFacility</span><span class="p">&gt;();</span>
+
+<span class="c1">// case  I: get generic service instance for specific type
+</span><span class="k">public</span> <span class="k">interface</span> <span class="n">ICommandHandler</span><span class="p">&lt;</span><span class="n">TCommand</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="k">void</span> <span class="nf">Handle</span><span class="p">(</span><span class="n">TCommand</span> <span class="n">command</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="n">ICommandHandlerFactory</span> <span class="p">{</span>
+    <span class="n">ICommandHandler</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">Create</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;();</span>
+    <span class="k">void</span> <span class="n">Release</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">ICommandHandler</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">instance</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">AddUserCommandHandler</span> <span class="p">:</span> <span class="n">ICommandHandler</span><span class="p">&lt;</span><span class="n">AddUserCommand</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="nf">AddUserCommandHandler</span><span class="p">(</span><span class="cm">/* dependencies */</span><span class="p">)</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Handle</span><span class="p">(</span><span class="n">AddUserCommand</span> <span class="n">command</span><span class="p">)</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICommandHandler</span><span class="p">&lt;</span><span class="n">AddUserCommand</span><span class="p">&gt;&gt;()</span>
+        <span class="p">.</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">AddUserCommandHandler</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">LifeStyle</span><span class="p">.</span><span class="n">Transient</span><span class="p">,</span>
+
+    <span class="c1">// tell Windsor that it should generate factory for me
+</span>    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICommandHandlerFactory</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="nf">AsFactory</span><span class="p">()</span>
+    <span class="p">);</span>
+
+<span class="c1">// usage
+</span><span class="n">ICommandHandlerFactory</span> <span class="n">factory</span> <span class="p">=</span>
+        <span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">ICommandHandlerFactory</span><span class="p">&gt;();</span>
+
+<span class="n">ICommandHandler</span><span class="p">&lt;</span><span class="n">AddUserCommand</span><span class="p">&gt;</span> <span class="n">handler</span> <span class="p">=</span>
+    <span class="n">factory</span><span class="p">.</span><span class="n">Create</span><span class="p">&lt;</span><span class="n">AddUserCommand</span><span class="p">&gt;();</span>
+
+<span class="n">handler</span><span class="p">.</span><span class="nf">Handle</span><span class="p">(</span><span class="k">new</span> <span class="nf">AddUserCommand</span><span class="p">());</span>
+
+<span class="n">factory</span><span class="p">.</span><span class="nf">Release</span><span class="p">(</span><span class="n">handler</span><span class="p">);</span>
+
+<span class="c1">// case II: pass configuration to the service
+</span><span class="k">public</span> <span class="k">interface</span> <span class="n">IGreeter</span> <span class="p">{</span>
+    <span class="k">void</span> <span class="nf">Greet</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="n">IGreeterFactory</span> <span class="p">{</span>
+    <span class="n">IGreeter</span> <span class="nf">Create</span><span class="p">(</span><span class="kt">string</span> <span class="n">greeting</span><span class="p">);</span>
+    <span class="k">void</span> <span class="nf">Release</span><span class="p">(</span><span class="n">IGreeter</span> <span class="n">instance</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">ConsoleGreeter</span> <span class="p">:</span> <span class="n">IGreeter</span> <span class="p">{</span>
+    <span class="p">...</span>
+    <span class="k">public</span> <span class="nf">ConsoleGreeter</span><span class="p">(</span><span class="kt">string</span> <span class="n">greeting</span>
+        <span class="cm">/* you may add other dependencies here,
+         * e.g. ITextWrapper wrapper */</span><span class="p">)</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IGreeter</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">ConsoleGreeter</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="nf">LifestyleTransient</span><span class="p">(),</span>
+
+    <span class="c1">// tell Windsor that it should generate factory for me
+</span>    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IGreeterFactory</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="nf">AsFactory</span><span class="p">()</span>
+    <span class="p">);</span>
+
+<span class="c1">// usage
+</span><span class="n">IGreeterFactory</span> <span class="n">greeterFactory</span> <span class="p">=</span> 
+    <span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">IGreeterFactory</span><span class="p">&gt;();</span>
+
+<span class="n">IGreeter</span> <span class="n">helloWorldGreeter</span> <span class="p">=</span> <span class="n">greeterFactory</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="s">"hello, world!"</span><span class="p">);</span>
+<span class="n">IGreeter</span> <span class="n">goodbyeGreeter</span> <span class="p">=</span> <span class="n">greeterFactory</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="s">"goodbye cruel world!"</span><span class="p">);</span>
+
+<span class="n">helloWorldGreeter</span><span class="p">.</span><span class="nf">Greet</span><span class="p">();</span>
+<span class="n">goodbyeGreeter</span><span class="p">.</span><span class="nf">Greet</span><span class="p">();</span>
+
+<span class="n">greeterFactory</span><span class="p">.</span><span class="nf">Release</span><span class="p">(</span><span class="n">helloWorldGreeter</span><span class="p">);</span>
+<span class="n">greeterFactory</span><span class="p">.</span><span class="nf">Release</span><span class="p">(</span><span class="n">goodbyeGreeter</span><span class="p">);</span></code></pre></figure>
+
+<p>Things to remember when using typed factory:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">Release</code> method in factory interface is optional.<br />
+ It is a good practice to
+ always include <code class="highlighter-rouge">Release</code> method in factory interface and to release all instances
+ created using factory when they are no longer needed</li>
+  <li>In case of transient or per-web-request components that are disposable
+ not releasing component will result in a memory leak</li>
+  <li>Remember that some factories should be implemented manually especially these 
+ that contain domain knowledge e.g. factory that selects discount
+ <a href="https://en.wikipedia.org/wiki/Strategy_pattern">strategy</a> based on user profile</li>
+</ul>
+
+<h5 id="collection-resolver">Collection resolver</h5>
+
+<p>Sometime we want to get all components that provide given service.
+For example we may try to implement message filtering component and
+we want to get all components that implement <code class="highlighter-rouge">IFilter</code> interface.
+We may achieve this easily by using Castle Windsor <code class="highlighter-rouge">CollectionResolver</code>:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// register CollectionResolver in the container:
+</span><span class="n">container</span><span class="p">.</span><span class="n">Kernel</span><span class="p">.</span><span class="n">Resolver</span><span class="p">.</span><span class="nf">AddSubResolver</span><span class="p">(</span>
+        <span class="k">new</span> <span class="nf">CollectionResolver</span><span class="p">(</span><span class="n">container</span><span class="p">.</span><span class="n">Kernel</span><span class="p">));</span>
+
+<span class="c1">// demo:
+</span><span class="k">public</span> <span class="k">interface</span> <span class="n">IFilter</span> <span class="p">{</span>
+    <span class="kt">bool</span> <span class="nf">IsAllowed</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">MessageFilterService</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">IFilter</span><span class="p">&gt;</span> <span class="n">_filters</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="nf">MessageFilterService</span><span class="p">(</span><span class="n">ICollection</span><span class="p">&lt;</span><span class="n">IFilter</span><span class="p">&gt;</span> <span class="n">filters</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">_filters</span> <span class="p">=</span> <span class="n">filters</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+
+<span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">MessageFilterService</span><span class="p">&gt;().</span><span class="n">LifeStyle</span><span class="p">.</span><span class="n">Transient</span><span class="p">,</span>
+
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IFilter</span><span class="p">&gt;().</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">RejectBazWordFilter</span><span class="p">&gt;(),</span>
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IFilter</span><span class="p">&gt;().</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">FooOrBazFilter</span><span class="p">&gt;()</span>
+<span class="p">);</span>
+
+<span class="n">MessageFilterService</span> <span class="n">service</span> <span class="p">=</span> <span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">MessageFilterService</span><span class="p">&gt;();</span>
+<span class="n">service</span><span class="p">.</span><span class="nf">IsAllowed</span><span class="p">(</span><span class="s">"foo"</span><span class="p">);</span></code></pre></figure>
+
+<p>Since registering <code class="highlighter-rouge">CollectionResolver</code> requires a bit of interaction
+with a container it is advisable to wrap that logic into custom facility:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">ResolveCollectionsFacility</span> <span class="p">:</span> <span class="n">AbstractFacility</span> <span class="p">{</span>
+    <span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Init</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">Kernel</span><span class="p">.</span><span class="n">Resolver</span><span class="p">.</span><span class="nf">AddSubResolver</span><span class="p">(</span><span class="k">new</span> <span class="nf">CollectionResolver</span><span class="p">(</span><span class="n">Kernel</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// then use:
+</span><span class="p">//</span> <span class="n">container</span><span class="p">.</span><span class="n">AddFacility</span><span class="p">&lt;</span><span class="n">ResolveCollectionsFacility</span><span class="p">&gt;();</span></code></pre></figure>
+
+<h5 id="component-registration-using-conventions">Component registration using conventions</h5>
+
+<p><a href="https://en.wikipedia.org/wiki/Convention_over_configuration">Convention over configuration</a>
+is popular subject these days so why not to apply it to the component registration.
+Instead of writing boring:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IFooRepository</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">FooRepository</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">Lifestyle</span><span class="p">.</span><span class="n">PerWebRequest</span><span class="p">,</span>
+<span class="p">...</span>
+<span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IBarRepository</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">BarRepository</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">Lifestyle</span><span class="p">.</span><span class="n">PerWebRequest</span></code></pre></figure>
+
+<p>We may write just once:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">Classes</span><span class="p">.</span><span class="nf">FromThisAssembly</span><span class="p">()</span>
+    <span class="p">.</span><span class="nf">BasedOn</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IRepository</span><span class="p">&lt;&gt;))</span>
+    <span class="p">.</span><span class="n">WithService</span><span class="p">.</span><span class="nf">AllInterfaces</span><span class="p">()</span>
+    <span class="p">.</span><span class="n">Lifestyle</span><span class="p">.</span><span class="n">PerWebRequest</span></code></pre></figure>
+
+<p>Castle Windsor is very flexible when it comes to registering components
+by convention, we may scan selected assemblies and/or namespaces, we
+may even select components to register by testing component <code class="highlighter-rouge">Type</code>.</p>
+
+<blockquote>
+  <p>PITFALL: Avoid creating conventions based on type name (e.g. register all classes that
+have names ending with <code class="highlighter-rouge">Repository</code>) as
+much as possible. It is always better to create empty marker interface
+e.g. <code class="highlighter-rouge">IApplicationService</code> and use it to register all necessary components.</p>
+</blockquote>
+
+<h5 id="installers">Installers</h5>
+
+<p>Castle Windsor installers allow us to group component registrations into
+reusable pieces of code. The real power of installers comes from the fact that
+we may pass them arguments or in other words we may configure them.
+For example installer may take a single argument that tells what lifestyle should
+be applied to all registrations contained in the installer. Such installer can
+be used in both ASP.NET MVC app when most of the components will be
+registered as <code class="highlighter-rouge">PerWebRequest</code> and in Windows service app where components will 
+be registered as either <code class="highlighter-rouge">Transient</code> or <code class="highlighter-rouge">Singleton</code>.</p>
+
+<p>Here is example of very simple installer:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">DummyModuleInstaller</span> <span class="p">:</span> <span class="n">IWindsorInstaller</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Install</span><span class="p">(</span><span class="n">IWindsorContainer</span> <span class="n">container</span><span class="p">,</span> <span class="n">IConfigurationStore</span> <span class="n">store</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">container</span><span class="p">.</span><span class="n">AddFacility</span><span class="p">&lt;</span><span class="n">TypedFactoryFacility</span><span class="p">&gt;();</span>
+
+        <span class="c1">// add other installers, facilities etc.
+</span>
+        <span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+            <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">DummyService</span><span class="p">&gt;().</span><span class="n">LifeStyle</span><span class="p">.</span><span class="n">Transient</span>
+            <span class="c1">// other components
+</span>            <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">container</span><span class="p">.</span><span class="nf">Install</span><span class="p">(</span><span class="k">new</span> <span class="p">[]</span> <span class="p">{</span>
+    <span class="k">new</span> <span class="nf">DummyModuleInstaller</span><span class="p">()</span>
+<span class="p">});</span></code></pre></figure>
+
+<h5 id="fallback-and-default-components">Fallback and default components</h5>
+
+<p>When we start grouping registrations into installers often we will find ourselves
+in situation that we want to register given service only when user of the installer
+didn’t provide she’s own implementation. We may achieve this by passing parameters
+to the installer but a fallback components are a better choice here.
+Components registered as fallbacks will be used by the container only when there is no
+other component that provides given service:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// fallback is used when no other component
+// for service is registered
+</span><span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IFooService</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">FallbackFooService</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">LifeStyle</span><span class="p">.</span><span class="n">Transient</span>
+        <span class="p">.</span><span class="nf">IsFallback</span><span class="p">()</span>
+        <span class="p">);</span>
+
+<span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">IFooService</span><span class="p">&gt;(),</span>
+    <span class="n">Is</span><span class="p">.</span><span class="n">InstanceOf</span><span class="p">&lt;</span><span class="n">FallbackFooService</span><span class="p">&gt;());</span>
+
+<span class="c1">// we may register our own component for FooService
+</span><span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IFooService</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">FooService</span><span class="p">&gt;()</span>
+        <span class="p">);</span>
+
+<span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">IFooService</span><span class="p">&gt;(),</span>
+    <span class="n">Is</span><span class="p">.</span><span class="n">InstanceOf</span><span class="p">&lt;</span><span class="n">FooService</span><span class="p">&gt;());</span></code></pre></figure>
+
+<p>Since word isn’t perfect it happens from time to time that we want to
+overwrite component registration for some particular service. This usually happens
+because author of the installer doesn’t use fallback components. But don’t panic
+Castle Windsor allow us to overwrite service registrations using default components:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IFooService</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">FooService</span><span class="p">&gt;());</span>
+
+<span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">IFooService</span><span class="p">&gt;(),</span>
+    <span class="n">Is</span><span class="p">.</span><span class="n">InstanceOf</span><span class="p">&lt;</span><span class="n">FooService</span><span class="p">&gt;());</span>
+
+<span class="c1">// Without IsDefault() we
+// would get an exception telling us that
+// there is already component registered for IFooService
+// interface.
+</span><span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+   <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IFooService</span><span class="p">&gt;()</span>
+       <span class="p">.</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">DefaultFooService</span><span class="p">&gt;()</span>
+       <span class="p">.</span><span class="nf">IsDefault</span><span class="p">()</span>
+       <span class="p">);</span>
+
+<span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">IFooService</span><span class="p">&gt;(),</span>
+    <span class="n">Is</span><span class="p">.</span><span class="n">InstanceOf</span><span class="p">&lt;</span><span class="n">DefaultFooService</span><span class="p">&gt;());</span></code></pre></figure>
+
+<h5 id="interceptors">Interceptors</h5>
+
+<p>Interceptors are most powerful Castle Windsor feature that
+brings power of <a href="https://en.wikipedia.org/wiki/Aspect-oriented_programming">aspect oriented programming</a>
+to .NET.
+Interceptors can be used to implement transaction management, logging, security checks,
+we may use them to gather performance related statistics and for many other purposes.</p>
+
+<p>Here is a simple interceptor that log the invocations of all component methods:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">EventTracingInterceptor</span> <span class="p">:</span> <span class="n">IInterceptor</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Intercept</span><span class="p">(</span><span class="n">IInvocation</span> <span class="n">invocation</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">EventTracer</span><span class="p">.</span><span class="nf">AddEvent</span><span class="p">(</span><span class="s">"BEFORE "</span> <span class="p">+</span> <span class="n">invocation</span><span class="p">.</span><span class="n">Method</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
+
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="c1">// call original method, we may inspect method arguments,
+</span>            <span class="c1">// generic parameters, return value and many others
+</span>            <span class="n">invocation</span><span class="p">.</span><span class="nf">Proceed</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="k">finally</span> <span class="p">{</span>
+            <span class="n">EventTracer</span><span class="p">.</span><span class="nf">AddEvent</span><span class="p">(</span><span class="s">"AFTER "</span> <span class="p">+</span> <span class="n">invocation</span><span class="p">.</span><span class="n">Method</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="na">[Interceptor(typeof(EventTracingInterceptor))]</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Service</span> <span class="p">:</span> <span class="n">IService</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Foo</span><span class="p">()</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Bar</span><span class="p">()</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+    <span class="c1">// interceptors work only when you expose your
+</span>    <span class="c1">// components via interfaces.
+</span>    <span class="c1">// here I registered interceptors by using
+</span>    <span class="c1">// attributes on Service class but you may also
+</span>    <span class="c1">// use fluent api.
+</span>    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IService</span><span class="p">&gt;().</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">Service</span><span class="p">&gt;(),</span>
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">EventTracingInterceptor</span><span class="p">&gt;()</span>
+    <span class="p">);</span>
+
+<span class="n">IService</span> <span class="n">service</span> <span class="p">=</span> <span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">IService</span><span class="p">&gt;();</span>
+<span class="n">service</span><span class="p">.</span><span class="nf">Foo</span><span class="p">();</span></code></pre></figure>
+
+<p>When you start writing your own interceptors it is generally advisable to
+create custom attribute e.g. <code class="highlighter-rouge">TransactionalAttribute</code> to mark classes that
+should have interceptors attached. 
+Then you should write your own facility that will scan all components
+registered in container
+and will attach interceptor for these marked with your custom attribute.
+<a href="http://blog.willbeattie.net/2010/09/implementing-custom-castle-windsor.html">Here is a good example of this approach</a>
+used to implement caching.</p>
+
+<p>That’s all for today! Thanks for reading.</p>
+
+	  ]]></description>
+	</item>
+
+
+</channel>
+</rss>

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Introduction to SpEL (Spring Expression Language)</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover6.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Introduction to SpEL (Spring Expression Language)</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2016-10-22">22 Oct 2016</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/java'>Java</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>When writing bean wiring configuration in Spring it happens
+from time to time that we need something more than just primitive
+values and references to other beans to setup our bean.
+For example we may want to set bean property to value of some class static
+field or maybe we need to initialize that property with result of some
+method call. Of course we could use bean <code class="highlighter-rouge">init-method</code> and
+initialize these properties from Java code but doing this from configuration
+file would be more convenient and would keep our business logic separated
+from configuration. Fortunately Spring allows us to use simple expressions
+while wiring beans via SpEL - Spring Expression Language.</p>
+
+<p>SpEL expression in configuration files must be put inside <code class="highlighter-rouge">#{ }</code> delimiters.<br />
+As every self respecting language SpEL supports literals:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"spelDemo"</span> <span class="na">class=</span><span class="s">"SpELDemo"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"boolValue"</span> <span class="na">value=</span><span class="s">"#{true}"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"intValue"</span> <span class="na">value=</span><span class="s">"#{22}"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"doubleValue"</span> <span class="na">value=</span><span class="s">"#{1.23e4}"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"stringValue"</span> <span class="na">value=</span><span class="s">"#{'foo'}"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+<span class="c">&lt;!-- this produces bean with values:
+  boolValue=true, intValue=22, 
+  doubleValue=12300.0, stringValue=foo --&gt;</span></code></pre></figure>
+
+<p>SpEL also supports simple arithmetic 
+(<code class="highlighter-rouge">+</code>,<code class="highlighter-rouge">-</code>,<code class="highlighter-rouge">*</code>,<code class="highlighter-rouge">/</code>,<code class="highlighter-rouge">%</code> and <code class="highlighter-rouge">^</code> - exponentiation),
+string concatenation (via <code class="highlighter-rouge">+</code>) and string interpolation:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"spelDemo"</span> <span class="na">class=</span><span class="s">"SpELDemo"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"intExpr"</span> <span class="na">value=</span><span class="s">"#{1+2+3}"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"stringExpr"</span> <span class="na">value=</span><span class="s">"#{'foo'+'bar'}"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"stringInterpolation"</span> 
+      <span class="na">value=</span><span class="s">"[#{'foo'}: #{3*4}]"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+<span class="c">&lt;!-- this produces bean with values:
+  intExpr=6, stringExpr=foobar,
+  stringInterpolation=[foo: 12] --&gt;</span></code></pre></figure>
+
+<p>SpEL supports full range of boolean (<code class="highlighter-rouge">!</code>, <code class="highlighter-rouge">not</code>, <code class="highlighter-rouge">and</code>, <code class="highlighter-rouge">or</code>)
+and comparison operators (<code class="highlighter-rouge">eq</code>, <code class="highlighter-rouge">ne</code>, <code class="highlighter-rouge">lt</code>, <code class="highlighter-rouge">le</code>, <code class="highlighter-rouge">gt</code>, <code class="highlighter-rouge">ge</code>).
+We can refer to boolean negation using either <code class="highlighter-rouge">!</code> or <code class="highlighter-rouge">not</code>.
+Comparison operators can be written using mnemonics e.g. <code class="highlighter-rouge">lt</code> or
+symbols e.g. <code class="highlighter-rouge">&lt;</code>, since in XML files we must escape <code class="highlighter-rouge">&lt;</code> and <code class="highlighter-rouge">&gt;</code> characters
+it’s better to stick to mnemonics.
+Again example will be handy here:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"bool1"</span> <span class="na">value=</span><span class="s">"#{4 lt 8}"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"bool2"</span> <span class="na">value=</span><span class="s">"#{true or false}"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"bool3"</span> <span class="na">value=</span><span class="s">"#{(3 gt 5) or not (5 gt 3)}"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"bool4"</span> <span class="na">value=</span><span class="s">"#{8 ne 8}"</span> <span class="nt">/&gt;</span>
+
+<span class="c">&lt;!-- property values:
+  bool1=true, bool2=true, 
+  bool3=false, bool4=false --&gt;</span></code></pre></figure>
+
+<p>Now it’s time to move to more advanced SpEL features,
+let’s start with method calls and reading JavaBeans properties:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"myJavaBean"</span> <span class="na">class=</span><span class="s">"MyJavaBean"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"myProperty"</span> <span class="na">value=</span><span class="s">"SpEL is awesome!"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+
+<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"spelDemo"</span> <span class="na">class=</span><span class="s">"SpELDemo"</span><span class="nt">&gt;</span>
+  <span class="c">&lt;!-- when reading properties we may write obj.foo
+        instead of obj.getFoo() --&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"stringExpr"</span> <span class="na">value=</span><span class="s">"#{myJavaBean.myProperty}"</span> <span class="nt">/&gt;</span>
+
+  <span class="c">&lt;!-- method calls work just as in Java, we may also
+        chain them e.g. 'foo'.substring(1).toUpperCase() --&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"boolExpr"</span> <span class="na">value=</span><span class="s">"#{'foo'.contains('o')}"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+
+<span class="c">&lt;!-- this produces bean with values:
+  stringExpr=SpEL is awesome!, boolExpr=true --&gt;</span></code></pre></figure>
+
+<p>The last example showed important feature of SpEL - inside SpEL expressions
+we may refer to other beans by their <code class="highlighter-rouge">id</code>.
+This allows us to create complex wirings. For example let’s say that
+we have two <code class="highlighter-rouge">consumer</code>s and a single <code class="highlighter-rouge">producer</code> beans that must share
+the same instance of <code class="highlighter-rouge">queue</code>. To complicate things <code class="highlighter-rouge">queue</code> is
+a part of the <code class="highlighter-rouge">producer</code> bean (imagine that we use some complex legacy library
+that we cannot change).
+With SpEL we can produce such wiring with ease:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"producer"</span> <span class="na">class=</span><span class="s">"..."</span><span class="nt">&gt;</span>...<span class="nt">&lt;/bean&gt;</span>
+
+<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"consumer1"</span> <span class="na">class=</span><span class="s">"..."</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"inQueue"</span> <span class="na">value=</span><span class="s">"#{producer.outQueue}"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"consumer2"</span> <span class="na">class=</span><span class="s">"..."</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"inQueue"</span> <span class="na">value=</span><span class="s">"#{producer.outQueue}"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/bean&gt;</span></code></pre></figure>
+
+<p>The other scenario when SpEL shines
+is injection of beans created by factory method.
+For example let’s say we have <code class="highlighter-rouge">emailService</code> bean that takes
+collection of <code class="highlighter-rouge">MessageFilter</code>s. All message filters
+are created via <code class="highlighter-rouge">filterFactory</code> bean, and we want
+to keep configuration of what filters to use in XML.
+We can code such scenario using SpEL:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"filterFactory"</span> <span class="na">class=</span><span class="s">"FilterFactory"</span><span class="nt">&gt;&lt;/bean&gt;</span>
+<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"emailService"</span> <span class="na">class=</span><span class="s">"EmailService"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;constructor-arg&gt;</span>
+    <span class="nt">&lt;list&gt;</span>
+      <span class="nt">&lt;value&gt;</span>#{filterFactory.createFilter("SPAM")}<span class="nt">&lt;/value&gt;</span>
+      <span class="nt">&lt;value&gt;</span>#{filterFactory.createFilter("ANTIVIRUS")}<span class="nt">&lt;/value&gt;</span>
+      <span class="nt">&lt;value&gt;</span>#{filterFactory.createFilter("SIZE")}<span class="nt">&lt;/value&gt;</span>
+    <span class="nt">&lt;/list&gt;</span>
+  <span class="nt">&lt;/constructor-arg&gt;</span>
+<span class="nt">&lt;/bean&gt;</span></code></pre></figure>
+
+<p>As mentioned previously SpEL allows us to access static class
+members using syntax <code class="highlighter-rouge">T(full.class.name).member</code>, for example:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"doubleValue"</span> 
+  <span class="na">value=</span><span class="s">"#{T(java.lang.Math).random()}"</span> <span class="nt">/&gt;</span>
+
+<span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"doubleValue2"</span> 
+  <span class="na">value=</span><span class="s">"#{T(java.lang.Math).PI}"</span> <span class="nt">/&gt;</span></code></pre></figure>
+
+<p>Sometimes when writing SpEL expressions we want to inject
+different beans depending on some condition.
+For example we may want to inject <code class="highlighter-rouge">TextMessageNotificationService</code>
+only when text messages are enabled in configuration.
+Fortunately for us SpEL supports good old <code class="highlighter-rouge">?:</code> ternary operator:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"configuration"</span> <span class="na">class=</span><span class="s">"Configuration"</span>
+  <span class="na">init-method=</span><span class="s">"loadConfiguration"</span><span class="nt">&gt;</span>
+  <span class="c">&lt;!-- this bean loads configuration from database --&gt;</span>
+<span class="nt">&lt;/bean&gt;</span>
+
+<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"textMessageNotificationService"</span>
+   <span class="na">class=</span><span class="s">"TextMessageNotificationService"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"emailNotificationService"</span>
+   <span class="na">class=</span><span class="s">"EmailNotificationService"</span> <span class="nt">/&gt;</span>
+ 
+<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"orderingService"</span> <span class="na">class=</span><span class="s">"OrderingService"</span><span class="nt">&gt;</span>
+   <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"notificationService"</span>
+      <span class="na">value=</span><span class="s">"#{configuration.useTextMessages</span> <span class="err">?</span> 
+         <span class="err">textMessageNotificationService</span> <span class="err">:</span> 
+         <span class="err">emailNotificationService}"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/bean&gt;</span></code></pre></figure>
+
+<p>SpEL also supports so known Elvis operator <code class="highlighter-rouge">?:</code>.
+Writing <code class="highlighter-rouge">foo ?: bar</code> is equivalent to writing <code class="highlighter-rouge">(foo != null) ? foo : bar</code>,
+in other words Elvis operator is mostly used to provide default values:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"myProperty"</span> 
+  <span class="na">value=</span><span class="s">"#{someBean.stringProperty ?: 'default'}"</span> <span class="nt">/&gt;</span></code></pre></figure>
+
+<p>The last thing that I want to show is how to use SpEL
+to get values from <code class="highlighter-rouge">.properties</code> file.
+First we must load properties using Spring <code class="highlighter-rouge">util:properties</code> element
+which will create instance of <code class="highlighter-rouge">java.util.Properties</code> class and
+register it as a bean with <code class="highlighter-rouge">appProperties</code> name.
+Then inside SpEL expression 
+we may use <code class="highlighter-rouge">appProperties.propertyName</code> or <code class="highlighter-rouge">appProperties['propertyName']</code>
+to get actual property value:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;util:properties</span> <span class="na">id=</span><span class="s">"appProperties"</span>
+    <span class="na">location=</span><span class="s">"classpath:app.properties"</span> <span class="nt">/&gt;</span>
+
+<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"someBean"</span> <span class="na">class=</span><span class="s">"MyJavaBean"</span><span class="nt">&gt;</span>
+   <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"foo"</span> <span class="na">value=</span><span class="s">"#{appProperties.foo}"</span> <span class="nt">/&gt;</span>
+   <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"bar"</span> <span class="na">value=</span><span class="s">"#{appProperties['bar']}"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/bean&gt;</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight"># app.properties
+foo=1
+bar=2</code></pre></figure>
+
+<p>That’s all for today! We only scratched the surface of what SpEL can do so
+if you get interested don’t forget to check <a href="http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html">friendly Spring docs</a>.</p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Introduction to SpEL (Spring Expression Language)&amp;url=https://marcin-chwedczuk.github.io/introduction-to-spring-expression-language"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/introduction-to-spring-expression-language"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/introduction-to-spring-expression-language"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//introduction-to-spring-expression-language';
+        this.page.identifier = '/introduction-to-spring-expression-language';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover8.jpg)" href="/hoisting-in-javascript">
+            <section class="post">
+                <h2>Hoisting in JavaScript</h2>
+                <p>In this post I will describe what is variable hoisting in JavaScript. But before we...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover6.jpg)" href="/notes-on-spring-xml-configuration">
+            <section class="post">
+                <h2>Notes on Spring XML configuration</h2>
+                <p>This post is below my usual quality standards, it’s just bunch of notes that I...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

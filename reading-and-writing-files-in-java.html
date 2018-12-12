@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Reading and writing files in Java</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches  nav-current" role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/cover7.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Reading and writing files in Java</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2016-06-13">13 Jun 2016</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/java'>Java</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <h4 id="binary-vs-text-files">Binary vs Text Files</h4>
+<p>Java IO supports two distinct kinds of files: text files and binary files.
+To understand difference between these two let’s look at an example. Say
+we have text file encoded using UTF-8 that contains text: “Привет мир!” (“Hello
+world!” in Russian), 
+when written to disk this file consists of
+bytes:</p>
+<pre>
+$ xxd -g1 hello_ru.txt 
+0000000: d0 9f d1 80 d0 b8 d0 b2 d0 b5 d1 82 20 d0 bc d0  ............ ...
+0000010: b8 d1 80 21 0a                                   ...!.
+</pre>
+<p>Let’s say that we want to print contents of this file to standard output, we can read
+<em>bytes</em> contained in the file using the following code:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+    <span class="n">FileInputStream</span> <span class="n">input</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+    
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">input</span> <span class="o">=</span> <span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="s">"hello_ru.txt"</span><span class="o">);</span>
+        
+        <span class="kt">int</span> <span class="n">b</span><span class="o">;</span>
+        <span class="k">while</span> <span class="o">((</span><span class="n">b</span> <span class="o">=</span> <span class="n">input</span><span class="o">.</span><span class="na">read</span><span class="o">())</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"%02x "</span><span class="o">,</span> <span class="n">b</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">finally</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">input</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+            <span class="n">input</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>When ran this program prints:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">d0 9f d1 80 d0 b8 d0 b2 d0 b5 d1 82 20 d0 bc d0 b8 d1 80 21 0a</code></pre></figure>
+
+<p>Pretty much the same output as returned by <code class="highlighter-rouge">xxd</code>. This is because <code class="highlighter-rouge">FileInputStream</code> is
+a byte stream - a stream that treads file contents as array of bytes. When we call <code class="highlighter-rouge">input.read()</code> we
+told stream to read next single <em>byte</em> from file. But wait our file contains text in Russian not
+some bytes. To read text we must use another kind of stream called character stream, here is next
+program that correctly prints “Привет мир!” to standard output:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+    <span class="n">InputStreamReader</span> <span class="n">characterStream</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">FileInputStream</span> <span class="n">byteStream</span> <span class="o">=</span> 
+            <span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="s">"hello_ru.txt"</span><span class="o">);</span>
+                
+        <span class="n">characterStream</span> <span class="o">=</span> <span class="k">new</span> <span class="n">InputStreamReader</span><span class="o">(</span><span class="n">byteStream</span><span class="o">,</span> <span class="s">"UTF8"</span><span class="o">);</span>
+        
+        <span class="kt">int</span> <span class="n">c</span><span class="o">;</span>
+        <span class="k">while</span> <span class="o">((</span><span class="n">c</span> <span class="o">=</span> <span class="n">characterStream</span><span class="o">.</span><span class="na">read</span><span class="o">())</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">((</span><span class="kt">char</span><span class="o">)</span><span class="n">c</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">finally</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">characterStream</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+            <span class="n">characterStream</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This time we are using <code class="highlighter-rouge">InputStreamReader</code> to read file contents. 
+When we call <code class="highlighter-rouge">characterStream.read()</code>
+we get next <em>character</em> from file (which may consists of one or more bytes). 
+Notice that <code class="highlighter-rouge">InputStreamReader</code> to work must known encoding used to
+create file, in our case we pass <code class="highlighter-rouge">"UTF8"</code> encoding as a 
+parameter to <code class="highlighter-rouge">InputStreamReader</code> constructor.</p>
+
+<p>To sum up table below presents classes used to read and write text and binary files in Java:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Stream</th>
+      <th>Read</th>
+      <th>Write</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Byte</td>
+      <td><code class="highlighter-rouge">FileInputStream</code></td>
+      <td><code class="highlighter-rouge">FileOutputStream</code></td>
+    </tr>
+    <tr>
+      <td>Character</td>
+      <td><code class="highlighter-rouge">InputStreamReader</code></td>
+      <td><code class="highlighter-rouge">OutputStreamWriter</code></td>
+    </tr>
+    <tr>
+      <td>Character</td>
+      <td><code class="highlighter-rouge">FileReader</code></td>
+      <td><code class="highlighter-rouge">FileWriter</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Last two classes <code class="highlighter-rouge">FileReader</code> and <code class="highlighter-rouge">FileWriter</code> are equivalent to using <code class="highlighter-rouge">InputStreamReader</code> and
+<code class="highlighter-rouge">OutputStreamWriter</code> with <code class="highlighter-rouge">Charset.defaultCharset().name()</code> as encoding.
+Default encoding (charset) may differ between various JVM’s, it is always better to use
+<code class="highlighter-rouge">InputStreamReader</code> and <code class="highlighter-rouge">OutputStreamWriter</code> with explicit encoding than to relay on <code class="highlighter-rouge">FileReader</code>
+and <code class="highlighter-rouge">FileWriter</code> classes.</p>
+
+<p>Finally let’s see class diagrams that connects classes described above with abstract classes
+like <code class="highlighter-rouge">Reader</code> and <code class="highlighter-rouge">Writer</code>:
+<img src="assets/images/2016-06-13/fileio_class_diag.svg" alt="Java IO classes hierarchy" /></p>
+
+<h4 id="buffered-io">Buffered IO</h4>
+<p>So far we were using only unbuffered streams, when we call <code class="highlighter-rouge">read()</code> JVM invoked some OS functions that
+actually read byte(s) from file. Since calling OS functions is slow this approach is inefficient. 
+We could do better if we read bytes in big
+chunks say by 8KB and then store them in some internal array and serve next 8192 <code class="highlighter-rouge">read()</code>’s from
+that internal array without any further OS calls.</p>
+
+<p>Fortunately we don’t need to write such a <em>buffered</em> streams ourselves, Java comes with already
+tested and documented implementations. Similar to unbuffered streams there are two flavours
+of buffered streams one for text and one for binary files. Let’s see an example that
+demonstrates how to use buffered streams:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+    <span class="n">BufferedReader</span> <span class="n">bufferedReader</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">FileInputStream</span> <span class="n">byteStream</span> <span class="o">=</span> 
+            <span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="s">"hello_ru.txt"</span><span class="o">);</span>
+
+        <span class="n">InputStreamReader</span> <span class="n">characterStream</span> <span class="o">=</span> 
+                <span class="k">new</span> <span class="n">InputStreamReader</span><span class="o">(</span><span class="n">byteStream</span><span class="o">,</span> <span class="s">"UTF8"</span><span class="o">);</span>
+        
+        <span class="n">bufferedReader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span><span class="n">characterStream</span><span class="o">);</span>
+        
+        <span class="kt">int</span> <span class="n">c</span><span class="o">;</span>
+        <span class="k">while</span> <span class="o">((</span><span class="n">c</span> <span class="o">=</span> <span class="n">bufferedReader</span><span class="o">.</span><span class="na">read</span><span class="o">())</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">print</span><span class="o">((</span><span class="kt">char</span><span class="o">)</span><span class="n">c</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">finally</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">bufferedReader</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+            <span class="n">bufferedReader</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>As you can see all you need to do is to wrap <code class="highlighter-rouge">InputStreamReader</code> into <code class="highlighter-rouge">BufferedReader</code> class.</p>
+
+<p>Table below presents buffered streams for each of the unbuffered streams we already know:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Stream</th>
+      <th>Unbuffered</th>
+      <th>Buffered</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Byte</td>
+      <td><code class="highlighter-rouge">FileInputStream</code></td>
+      <td><code class="highlighter-rouge">BufferedInputStream</code></td>
+    </tr>
+    <tr>
+      <td>Byte</td>
+      <td><code class="highlighter-rouge">FileOutputStream</code></td>
+      <td><code class="highlighter-rouge">BufferedOutputStream</code></td>
+    </tr>
+    <tr>
+      <td>Character</td>
+      <td><code class="highlighter-rouge">InputStreamReader</code></td>
+      <td><code class="highlighter-rouge">BufferedReader</code></td>
+    </tr>
+    <tr>
+      <td>Character</td>
+      <td><code class="highlighter-rouge">OutputStreamWriter</code></td>
+      <td><code class="highlighter-rouge">BufferedWriter</code></td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Let’s finish by presenting some benchmarks that will show how much we can gain
+using buffered streams:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Test</th>
+      <th>Unbuffered</th>
+      <th>Buffered</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Read 1MB*</td>
+      <td>161 773 ms</td>
+      <td>18 568 ms</td>
+    </tr>
+    <tr>
+      <td>Write 1MB*</td>
+      <td>236 892 ms</td>
+      <td>22 280 ms</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>*Reading from <code class="highlighter-rouge">/dev/zero</code> and writing to <code class="highlighter-rouge">/dev/null</code> on Ubuntu 14 LTS with Oracle Java 8<br />
+As we can see there is almost x10 speed gain, so if you find yourself reading or writing
+huge files try to use buffered streams!</p>
+
+<h4 id="line-oriented-io">Line oriented IO</h4>
+<p>When we work with text files usually we are more interested in reading/writing lines of text
+instead of characters.</p>
+
+<p>Let’s start with an example that will demonstrate how to read text files line by line:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+    <span class="n">BufferedReader</span> <span class="n">reader</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">FileInputStream</span> <span class="n">byteStream</span> <span class="o">=</span> 
+            <span class="k">new</span> <span class="n">FileInputStream</span><span class="o">(</span><span class="s">"/proc/meminfo"</span><span class="o">);</span>
+
+        <span class="n">reader</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedReader</span><span class="o">(</span>
+            <span class="k">new</span> <span class="n">InputStreamReader</span><span class="o">(</span><span class="n">byteStream</span><span class="o">,</span> <span class="s">"UTF8"</span><span class="o">));</span>
+        
+        <span class="n">String</span> <span class="n">line</span><span class="o">;</span>
+        <span class="k">while</span> <span class="o">((</span><span class="n">line</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="na">readLine</span><span class="o">())</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">line</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">finally</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">reader</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+            <span class="n">reader</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">BufferedReader</code> class contains useful <code class="highlighter-rouge">readLine()</code> method that allows us to
+read entire line from file into <code class="highlighter-rouge">String</code> object. Unfortunately it doesn’t provide
+any methods that will allow us to read e.g. numbers from file. If you find yourself
+trying to parse lines of text contained in some text file you may want to check
+<a href="https://docs.oracle.com/javase/7/docs/api/java/util/Scanner.html">Scanner class</a>.
+<code class="highlighter-rouge">Scanner</code> is a huge class that deserves a blog post on it’s own - I will not describe how
+to use it here.</p>
+
+<p>When writing content to text files we are in much more better situation thanks to
+<code class="highlighter-rouge">PrintWriter</code> class. <code class="highlighter-rouge">PrintWriter</code> allows us to write not only lines of text but also
+numbers, booleans and even custom formated strings:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+    <span class="n">PrintWriter</span> <span class="n">writer</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+        
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">FileOutputStream</span> <span class="n">byteStream</span> <span class="o">=</span> 
+                <span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="s">"output.txt"</span><span class="o">);</span>
+        
+        <span class="n">writer</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PrintWriter</span><span class="o">(</span>
+                <span class="k">new</span> <span class="n">OutputStreamWriter</span><span class="o">(</span><span class="n">byteStream</span><span class="o">,</span> <span class="s">"UTF8"</span><span class="o">));</span>
+        
+        <span class="n">writer</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">Math</span><span class="o">.</span><span class="na">PI</span><span class="o">);</span>
+
+        <span class="n">writer</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span> 
+        <span class="n">writer</span><span class="o">.</span><span class="na">print</span><span class="o">(</span><span class="sc">' '</span><span class="o">);</span> 
+        <span class="n">writer</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+        
+        <span class="n">writer</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"this is formatted text "</span> <span class="o">+</span> 
+                <span class="s">"with number: %d and string: %s%n"</span><span class="o">,</span> 
+                <span class="mi">42</span><span class="o">,</span> <span class="s">"foo"</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">finally</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">writer</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+            <span class="n">writer</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">output.txt</code> file created by this program looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">3.141592653589793
+true false
+this is formatted text with number: 42 and string: foo</code></pre></figure>
+
+<p>When you’re working with <code class="highlighter-rouge">PrintWriter</code> you definitely want to familiarize yourself with
+<code class="highlighter-rouge">printf</code> method. There is already plenty of blog posts/articles describing how formatting works
+e.g. <a href="http://alvinalexander.com/programming/printf-format-cheat-sheet">printf cheatsheet</a> and
+<a href="http://www.homeandlearn.co.uk/java/java_formatted_strings.html">introduction to printf</a>.</p>
+
+<h4 id="closing-streams-after-use">Closing streams after use</h4>
+<p>In all presented examples so far we always wrapped code reading or writing to stream
+into <code class="highlighter-rouge">try</code> block and we always closed the stream inside <code class="highlighter-rouge">finally</code> block. 
+Closing streams is very important because program can have only
+limited number of open files at any given time. 
+For example on my machine Java program can only have 4080 open files,
+after than any attempt to open another file throws:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">java.io.FileNotFoundException: filename (Too many open files)</code></pre></figure>
+
+<p>Generally when dealing with wrapping streams like buffered streams that use 
+other streams to read/write data we should close only wrapper. 
+This is particularly important
+with <code class="highlighter-rouge">BufferedWriter</code> because closing inner stream may not save data that
+were in <code class="highlighter-rouge">BufferedWriter</code> buffer. Following program illustrates this problem:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+    <span class="n">OutputStreamWriter</span> <span class="n">output</span> <span class="o">=</span> <span class="k">new</span> <span class="n">OutputStreamWriter</span><span class="o">(</span>
+            <span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="s">"test.txt"</span><span class="o">),</span> <span class="s">"UTF-8"</span><span class="o">);</span>
+
+    <span class="n">BufferedWriter</span> <span class="n">buffered</span> <span class="o">=</span>
+            <span class="k">new</span> <span class="n">BufferedWriter</span><span class="o">(</span><span class="n">output</span><span class="o">);</span>
+
+    <span class="n">buffered</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="s">"hello world!"</span><span class="o">);</span>
+
+    <span class="n">output</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Running this program will create <em>empty</em> <code class="highlighter-rouge">test.txt</code> file. Changing last line to
+<code class="highlighter-rouge">buffered.close()</code> will fix this issue.</p>
+
+<h4 id="try-with-resources-java-7">Try with resources (Java 7+)</h4>
+
+<p>After working with files for a while writing <code class="highlighter-rouge">try ... finally</code> blocks and
+manually closing streams becomes tiring.
+Java 7 introduced new statement called try-with-resources that greatly
+reduces amount of code needed to properly handle streams.
+Let’s look at an example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">try</span><span class="o">(</span><span class="n">OutputStreamWriter</span> <span class="n">output</span> <span class="o">=</span> <span class="k">new</span> <span class="n">OutputStreamWriter</span><span class="o">(</span>
+        <span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="s">"test.txt"</span><span class="o">),</span> <span class="s">"UTF-8"</span><span class="o">);</span>
+    <span class="n">BufferedWriter</span> <span class="n">buffered</span> <span class="o">=</span>
+        <span class="k">new</span> <span class="n">BufferedWriter</span><span class="o">(</span><span class="n">output</span><span class="o">))</span> 
+<span class="o">{</span>
+    <span class="n">buffered</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="s">"hello world!"</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This code will be translated by Java compiler into
+(you may use <a href="http://www.benf.org/other/cfr/">CFR decompiler</a> to get actual code):</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">OutputStreamWriter</span> <span class="n">output</span> <span class="o">=</span> <span class="k">new</span> <span class="n">OutputStreamWriter</span><span class="o">(</span>
+        <span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="s">"test.txt"</span><span class="o">),</span> <span class="s">"UTF-8"</span><span class="o">);</span>
+    
+<span class="k">try</span> <span class="o">{</span>
+    <span class="n">BufferedWriter</span> <span class="n">buffered</span> <span class="o">=</span> <span class="k">new</span> <span class="n">BufferedWriter</span><span class="o">(</span><span class="n">output</span><span class="o">);</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">buffered</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="s">"hello world!"</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">finally</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">buffered</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">buffered</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+<span class="k">finally</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">output</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">output</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>As we can see all boring code like <code class="highlighter-rouge">finally</code> and <code class="highlighter-rouge">if (stream == null)</code> will be generated
+by compiler for us.</p>
+
+<p>NOTE: When we call <code class="highlighter-rouge">buffered.close()</code> it will write all changes to <code class="highlighter-rouge">output</code> stream and 
+call <code class="highlighter-rouge">output.close()</code>. Notice that in second <code class="highlighter-rouge">finally</code> block compiler generated code that
+tries to close <code class="highlighter-rouge">output</code> stream second time. This is perfectly valid, when you call <code class="highlighter-rouge">close()</code>
+on already closed streams this is a <a href="https://en.wiktionary.org/wiki/no-op">no-op</a>.</p>
+
+<p>Try-with-resources can be also used with <code class="highlighter-rouge">catch</code> clause:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">try</span><span class="o">(</span><span class="n">OutputStreamWriter</span> <span class="n">output</span> <span class="o">=</span> <span class="k">new</span> <span class="n">OutputStreamWriter</span><span class="o">(</span>
+        <span class="k">new</span> <span class="n">FileOutputStream</span><span class="o">(</span><span class="s">"test.txt"</span><span class="o">),</span> <span class="s">"UTF-8"</span><span class="o">);</span>
+    <span class="n">BufferedWriter</span> <span class="n">buffered</span> <span class="o">=</span>
+        <span class="k">new</span> <span class="n">BufferedWriter</span><span class="o">(</span><span class="n">output</span><span class="o">))</span>
+<span class="o">{</span>
+    <span class="n">buffered</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="s">"hello world!"</span><span class="o">);</span>
+<span class="o">}</span>
+<span class="k">catch</span> <span class="o">(</span><span class="n">IOException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">ex</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This will end our tour of classic Java IO. In the next blog post I will present
+<code class="highlighter-rouge">Files</code> and <code class="highlighter-rouge">Path</code> classes - they are part of Java NIO and can further simplify working
+with files.</p>
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Reading and writing files in Java&amp;url=https://marcin-chwedczuk.github.io/reading-and-writing-files-in-java"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/reading-and-writing-files-in-java"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/reading-and-writing-files-in-java"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//reading-and-writing-files-in-java';
+        this.page.identifier = '/reading-and-writing-files-in-java';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/cover7.jpg)" href="/get-day-of-week-from-date">
+            <section class="post">
+                <h2>Get day of week from date</h2>
+                <p>Today we will try to solve the following problem: > Given year, month and day...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/cover2.jpg)" href="/object-and-collection-initializers-in-csharp">
+            <section class="post">
+                <h2>Object and collection initializers in C#</h2>
+                <p>In this post I want to present a nice C# syntax sugar: object and collection...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

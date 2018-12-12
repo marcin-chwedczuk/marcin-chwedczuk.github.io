@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>How to use grep command</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover4.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">How to use grep command</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2016-08-20">20 Aug 2016</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/linux'>Linux</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p><code class="highlighter-rouge">grep</code> is a command line program that allows us to find all occurrences of given pattern
+in the text.
+We can use <code class="highlighter-rouge">grep</code> to search command standard output, for example:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ # grep will print lines containing "eth0" phrase
+$ ifconfig | grep eth0
+eth0      Link encap:Ethernet  HWaddr xx:xx:xx:xx:xx:xx
+        
+$ cat /usr/share/dict/words | grep nerd
+nerd
+nerd's
+nerdier
+(...)</code></pre></figure>
+
+<p>We may also use <code class="highlighter-rouge">grep</code> to find given pattern in the set of text files:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cat &gt; foo.txt &lt;&lt;EOF
+foo
+FOO
+foobar
+xfoox
+in the middle of the line foo is
+EOF
+    
+$ # search for foo in foo.txt file
+$ grep foo foo.txt
+foo
+foobar
+(...)
+        
+$ cat &gt; bar.txt &lt;&lt;EOF
+bar
+Bar
+foobar
+EOF
+    
+$ # search for foo in foo.txt and bar.txt 
+$ grep foo {foo,bar}.txt
+foo.txt:foo
+(...)
+bar.txt:foobar</code></pre></figure>
+
+<p>NOTE: In the last example I used 
+<a href="http://tldp.org/LDP/abs/html/here-docs.html">heredoc’s</a> to create <code class="highlighter-rouge">foo.txt</code> and
+<code class="highlighter-rouge">bar.txt</code> files. <br />
+NOTE: <code class="highlighter-rouge"><span class="p">{</span><span class="err">foo,bar</span><span class="p">}</span><span class="err">.txt</span></code> is expanded by bash into <code class="highlighter-rouge">foo.txt bar.txt</code>, this is
+called <a href="https://en.wikipedia.org/wiki/Bash_(Unix_shell)#Brace_expansion">brace expansion</a>.</p>
+
+<p>We may also peform recursive searches using <code class="highlighter-rouge">-r</code> or <code class="highlighter-rouge">-R</code> options (<code class="highlighter-rouge">grep</code> will search in
+every file contained in the specified directory and it’s subdirectories):</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ tree grep_exercises/
+grep_exercises/
+  |-- bar.txt
+  `-- foo.txt
+     
+$ grep -r foo grep_exercises/
+grep_exercises/bar.txt:foobar
+grep_exercises/foo.txt:foo
+(...)</code></pre></figure>
+
+<h4 id="grep-command-in-details">grep command in details</h4>
+
+<p>General <code class="highlighter-rouge">grep</code> invocation has form:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep [options] pattern [files|directories]</code></pre></figure>
+
+<p><code class="highlighter-rouge">grep</code> searches standard input when no files were given or
+specified files/directories for occurrences of the <code class="highlighter-rouge">pattern</code>.
+When <code class="highlighter-rouge">grep</code> finds a line that contains the <code class="highlighter-rouge">pattern</code> it prints it to
+the standard output.
+When we search multiple files each printed line
+is prefixed by a filename.</p>
+
+<h5 id="i---ignore-case">-i (--ignore-case)</h5>
+<p>By default <code class="highlighter-rouge">grep</code> is case sensitive, so pattern <code class="highlighter-rouge">foo</code> doesn’t match
+word <code class="highlighter-rouge">FOO</code>, we can perform case insensitive search using <code class="highlighter-rouge">-i</code> option:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep bar bar.txt
+bar
+foobar
+
+$ grep -i bar bar.txt
+bar
+Bar
+foobar</code></pre></figure>
+
+<h5 id="v---invert-match">-v (--invert-match)</h5>
+
+<p>We can use <code class="highlighter-rouge">-v</code> option to negate search, that is to print
+all lines that don’t contain given pattern:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cat bar.txt 
+bar
+Bar
+foobar
+
+$ grep -v foo bar.txt 
+bar
+Bar</code></pre></figure>
+
+<h5 id="r-and--r">-r and -R</h5>
+
+<p>Both options can be used to perform recursive searches, the only difference
+is that <code class="highlighter-rouge">-R</code> will follow 
+<a href="https://en.wikipedia.org/wiki/Symbolic_link#POSIX_and_Unix-like_operating_systems">symbolic links</a>
+during search while <code class="highlighter-rouge">-r</code> won’t.</p>
+
+<p>When we are performing recursive search often 
+we want to exclude some directory from search e.g. 
+<code class="highlighter-rouge">.git</code> directory when we are searching inside GIT repository,
+<code class="highlighter-rouge">--exclude-dir</code> option allows us to do exactly that:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ # create git repository
+$ git init; git add *.txt; git commit -m 'foo';
+$ grep -r foo .
+./bar.txt:foobar
+./foo.txt:foo
+./foo.txt:foobar
+./foo.txt:xfoox
+./foo.txt:in the middle of the line foo is
+Binary file ./.git/index matches
+./.git/logs/refs/heads/master:00000000000...
+./.git/logs/HEAD:000000000000000000000000...
+./.git/COMMIT_EDITMSG:foo
+
+$ grep -r foo --exclude-dir=.git .
+./bar.txt:foobar
+./foo.txt:foo
+./foo.txt:foobar
+./foo.txt:xfoox
+./foo.txt:in the middle of the line foo is</code></pre></figure>
+
+<p>We may limit set of files that will be searched during recursive search using
+<code class="highlighter-rouge">--include</code>/<code class="highlighter-rouge">--exclude</code> options. Both of these options take 
+<a href="https://en.wikipedia.org/wiki/Glob_(programming)#Unix">shell GLOB</a> as an argument.
+<code class="highlighter-rouge">--include</code> will force <code class="highlighter-rouge">grep</code> to check only files that match GLOB.
+<code class="highlighter-rouge">--exclude</code> will force <code class="highlighter-rouge">grep</code> to skip any files that don’t match GLOB.
+For example to search for <code class="highlighter-rouge">foo</code> pattern only in <code class="highlighter-rouge">.txt</code> files we may use command:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep -r --include='*.txt' .
+bar.txt:bar
+bar.txt:Bar
+bar.txt:foobar
+foo.txt:foo
+(...)</code></pre></figure>
+
+<p>Another useful option when performing recursive searches is <code class="highlighter-rouge">-I</code>, it tells
+<code class="highlighter-rouge">grep</code> to skip binary files when looking for the pattern.</p>
+
+<h5 id="w---word-regexp">-w (--word-regexp)</h5>
+
+<p>Sometime we want to match only whole words e.g. when we search for <code class="highlighter-rouge">foo</code> we don’t
+want matches like <code class="highlighter-rouge">foobar</code> or <code class="highlighter-rouge">xfoox</code>. <code class="highlighter-rouge">-w</code> option will force <code class="highlighter-rouge">grep</code> to perform
+whole word search:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep foo foo.txt
+foo
+foobar
+xfoox
+in the middle of the line foo is
+
+$ grep -w foo foo.txt
+foo
+in the middle of the line foo is</code></pre></figure>
+
+<h5 id="c---count">-c (--count)</h5>
+<p><code class="highlighter-rouge">-c</code> option allow us to count number of occurrences of the pattern
+inside searched files:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep -c foo foo.txt
+4
+
+$ grep -c foo *.txt
+bar.txt:1
+foo.txt:4</code></pre></figure>
+
+<h5 id="n---line-number">-n (--line-number)</h5>
+
+<p><code class="highlighter-rouge">-n</code> option will force <code class="highlighter-rouge">grep</code> to prefix each found line with line number:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep -rn foo grep_exercises/
+grep_exercises/bar.txt:3:foobar
+grep_exercises/foo.txt:1:foo
+grep_exercises/foo.txt:3:foobar
+grep_exercises/foo.txt:4:xfoox
+grep_exercises/foo.txt:5:in the middle of the line foo is</code></pre></figure>
+
+<h5 id="l---files-with-matches--l---files-without-match">-l (--files-with-matches), -L (--files-without-match)</h5>
+
+<p><code class="highlighter-rouge">-l</code> option will force <code class="highlighter-rouge">grep</code> to print only filenames of files that contain given pattern
+instead of printing lines:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep -rl foo grep_exercises/
+grep_exercises/bar.txt
+grep_exercises/foo.txt</code></pre></figure>
+
+<p>The is also <code class="highlighter-rouge">-L</code> option that will print only filenames of files that 
+doesn’t contain specified pattern.</p>
+
+<h5 id="h---no-filename--h---with-filename">-h (--no-filename), -H (--with-filename)</h5>
+
+<p><code class="highlighter-rouge">-h</code> option will prevent printing of filenames when performing multifile search.
+Similarly <code class="highlighter-rouge">-H</code> option will force <code class="highlighter-rouge">grep</code> to always print filenames:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep -H foo foo.txt 
+foo.txt:foo
+foo.txt:foobar
+foo.txt:xfoox
+foo.txt:in the middle of the line foo is</code></pre></figure>
+
+<h5 id="a---after-context--b---before-context-and--c---context">-A (--after-context), -B (--before-context) and -C (--context)</h5>
+<p><code class="highlighter-rouge">-A</code>, <code class="highlighter-rouge">-B</code> and <code class="highlighter-rouge">-C</code> options allow us to print not only lines containing pattern
+but also specified number of lines after (A) and before (B) them. <code class="highlighter-rouge">-C</code> option is
+a shortcut to set both <code class="highlighter-rouge">-A</code> and <code class="highlighter-rouge">-B</code> to the same value:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep -B 1 -A 2 -w my /usr/share/dict/words
+muzzling
+my
+myna
+myna's</code></pre></figure>
+
+<h4 id="basic-regular-expressions-bre">Basic regular expressions (BRE)</h4>
+
+<p>By default <code class="highlighter-rouge">grep</code> interpret pattern as a basic regular expression (BRE).
+BREs are similar to shell GLOBs but are more powerful. Inside BRE we may use
+the following special characters:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Character/Expression</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">.</code></td>
+      <td>Matches any single character</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">*</code></td>
+      <td>Matches zero or more repetitions of previous character or group</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">[abc]</code></td>
+      <td>Bracket expression matches single character. <code class="highlighter-rouge">[abc]</code> matches any of the characters <code class="highlighter-rouge">a</code>, <code class="highlighter-rouge">b</code> or <code class="highlighter-rouge">c</code>. <code class="highlighter-rouge">[0-9]</code> matches any digit. <code class="highlighter-rouge">[^abc]</code> matches any character that is <em>not</em> <code class="highlighter-rouge">a</code>, <code class="highlighter-rouge">b</code> or <code class="highlighter-rouge">c</code>. <code class="highlighter-rouge">[0-9abcdef]</code> matches any lowercase hex digit. Finally we can use character classes inside bracket expressions e.g. <code class="highlighter-rouge">[[:digit:]]</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">^</code></td>
+      <td>Matches beginning of the line</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">$</code></td>
+      <td>Matches end of the line</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Any of the special characters used in BRE may be escaped by preceding 
+them with a backslash (<code class="highlighter-rouge">\</code>).</p>
+
+<p>OK, now let’s see BRE in action:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ # first we will find all words that ends with 'cat'
+$ grep 'cat$' /usr/share/dict/words
+Muscat
+bobcat
+cat
+(...)
+
+$ # now let's find all 5 letter words in which second letter is
+$ # a, e or i
+$ grep '^.[aei]...$' /usr/share/dict/words | head
+Aaron
+Aesop
+Aiken
+(...)
+
+$ # and let's finish by finding all hex numbers in the text
+$ # we will assume that hex numbers have format 0xaabbcc
+$ cat /proc/cpuinfo | grep '0x[0-9a-f]*'
+microcode   : 0x9
+microcode   : 0x9
+(...)</code></pre></figure>
+
+<p>BRE are even more powerful if we use grouping and more advanced operators.
+Let’s start with grouping, we may create groups by surrounding parts of the pattern
+with <code class="highlighter-rouge">\(...\)</code>, then we may apply e.g. <code class="highlighter-rouge">*</code> to the entire group. For example to find
+all words that have even number of characters we may write:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep '^\([a-z][a-z]\)*$' /usr/share/dict/words | head
+aardvark
+abacus
+abacuses
+(...)</code></pre></figure>
+
+<p>This works because we are telling <code class="highlighter-rouge">grep</code> that we want to find any
+number of repetitions of <em>pair of characters</em>.</p>
+
+<p>Sometime we search for pattern like phone number that have fixed number
+of digits in each part, we may use <code class="highlighter-rouge">\{...\}</code> operator to specify exact number
+of repetitions of previous character or group:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Expression</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">\{m\}</code></td>
+      <td>Matches <code class="highlighter-rouge">m</code> repetitions of previous character or group e.g. <code class="highlighter-rouge">a{3}</code> matches <code class="highlighter-rouge">aaa</code> but not <code class="highlighter-rouge">aa</code> or <code class="highlighter-rouge">abc</code>.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">\{m,\}</code></td>
+      <td>Matches at least <code class="highlighter-rouge">m</code> repetitions of previous character or group e.g. <code class="highlighter-rouge">a{2}</code> matches <code class="highlighter-rouge">aa</code>, <code class="highlighter-rouge">aaa</code> but not <code class="highlighter-rouge">a</code>.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">\{m,n\}</code></td>
+      <td>Matches at least <code class="highlighter-rouge">m</code> and at most <code class="highlighter-rouge">n</code> repetitions of of previous character or group.</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>For example to search for phone number in format <code class="highlighter-rouge">XXX-XX-XXXX</code> we will <code class="highlighter-rouge">grep</code>:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep '[0-9]\{3\}-[0-9]\{2\}-[0-9]\{4\}' file</code></pre></figure>
+
+<p>The last thing worth know about BRE is the possibility to use backreferences.
+For example let’s say that we search for all five letters palindromes, we may use
+<code class="highlighter-rouge">\1</code>, <code class="highlighter-rouge">\2</code>, etc. placeholders to tell <code class="highlighter-rouge">grep</code> that we expect text that was matched by first group,
+second group etc. in the place of placeholders:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep '^\(.\)\(.\).\2\1$' /usr/share/dict/words | head
+civic
+kayak
+level
+(...)</code></pre></figure>
+
+<p>NOTE: Sometimes we just want to search using old plain text pattern, we may disable BRE
+using <code class="highlighter-rouge">-F</code> grep option.</p>
+
+<p>I didn’t described all BRE features, if you are interested in details
+please <a href="http://pubs.opengroup.org/onlinepubs/009696899/basedefs/xbd_chap09.html#tag_09_03">check the standard</a>.
+IMHO BRE are ugly and cumbersome to use, in the next
+section I will quickly describe extended regular expressions that bring full power of
+regexes to <code class="highlighter-rouge">grep</code>.</p>
+
+<h4 id="extended-regular-expressions-ere">Extended regular expressions (ERE)</h4>
+
+<p>To enable extended regular expressions we must pass <code class="highlighter-rouge">-E</code> (<code class="highlighter-rouge">--extended-regexp</code>)
+option to <code class="highlighter-rouge">grep</code>. ERE are similar to BRE with the exception that we don’t need to
+precede operators such as grouping with backslashes. To create a group in ERE 
+we simply use <code class="highlighter-rouge">(foo)</code> pattern, and to specify number of matches for that group
+we use <code class="highlighter-rouge">(foo){3}</code> pattern.
+This looks <em>much</em> more cleaner compared to BRE <code class="highlighter-rouge">\(foo\)\{3\}</code>.</p>
+
+<p>If we want to match
+e.g. left parenthesis we need to escape it using backslash, for example to match <code class="highlighter-rouge">main()</code> text we
+could use <code class="highlighter-rouge">main\(\)</code> pattern (or we could use <code class="highlighter-rouge">-F</code> option to match text as it is).</p>
+
+<p>In ERE in addition to all special characters from BRE we may use:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Character/Expression</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">+</code></td>
+      <td>Matches one or more repetitions of previous character or group</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">?</code></td>
+      <td>Matches zero or one occurrences of previous character or group</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">|</code></td>
+      <td>Alternation - allows to match one of the specified patterns from set e.g. <code class="highlighter-rouge">0(x|X)</code> will match <code class="highlighter-rouge">0x</code> and <code class="highlighter-rouge">0X</code> texts</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Now let’s see some examples of ERE in action:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ # let's find all phone numbers in format XXXX-XX-XXX that may
+$ # be optionally prefixed by country code (+XX)
+$ grep -E '(\(\+[0-9]{2}\) )?[0-9]{4}-[0-9]{2}-[0-9]{3}' file
+
+$ # let's find all percent values in the text
+$ grep -E '[0-9]+%' file
+
+$ # let's find all email addresses, here we use -o option
+$ # to print only matched text
+$ grep -E -o '[A-Za-z0-9._]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}' file</code></pre></figure>
+
+<p>Most modern versions of <code class="highlighter-rouge">grep</code> support even more powerful versions of regular expressions
+that include shortcuts for character classes like <code class="highlighter-rouge">\d</code> for <code class="highlighter-rouge">[0-9]</code> and <code class="highlighter-rouge">\D</code> for <code class="highlighter-rouge">[^0-9]</code> and more
+advanced anchors like <code class="highlighter-rouge">\b</code> (matches word start or end).
+Check your local version of <code class="highlighter-rouge">grep</code> to find out what features are available.</p>
+
+<p>That’s all that I wanted to say about <code class="highlighter-rouge">grep</code> command. Happy grepping!</p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=How to use grep command&amp;url=https://marcin-chwedczuk.github.io/how-to-use-grep-command"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/how-to-use-grep-command"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/how-to-use-grep-command"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//how-to-use-grep-command';
+        this.page.identifier = '/how-to-use-grep-command';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover6.jpg)" href="/castle-windsor-most-popular-features">
+            <section class="post">
+                <h2>Castle Windsor most popular features</h2>
+                <p>In this post I will present the most popular [Castle Windsor](http://www.castleproject.org/projects/windsor/) features encountered in typical...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover2.jpg)" href="/iterative-algorithm-for-drawing-hilbert-curve">
+            <section class="post">
+                <h2>Iterative algorithm for drawing Hilbert curve</h2>
+                <p>In this post I will describe how to draw Hilbert curve iteratively. To avoid recursion...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

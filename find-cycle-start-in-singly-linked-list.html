@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Find cycle start in singly linked list</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover2.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Find cycle start in singly linked list</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2016-06-25">25 Jun 2016</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/algorithms'>Algorithms</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>In this post I will present solution to the following problem:</p>
+
+<blockquote>
+  <p>We have a non empty singly linked list with a cycle in it.<br />
+We must find first
+element of a cycle in a linear time.</p>
+</blockquote>
+
+<p>For example, given a singly linked list:
+<img src="assets/images/2016-06-25/llcycle1.svg" alt="List with cycle 1" />
+Algorithm should return node <code class="highlighter-rouge">N3</code> as it is the first node counting
+from head of a list that is part of cycle.</p>
+
+<h5 id="boundary-conditions">Boundary conditions</h5>
+
+<p>To better understand this problem let’s think about boundary conditions for
+our algorithm.</p>
+
+<p>One of the boundary conditions is that entire list forms single cycle:
+<img src="assets/images/2016-06-25/llcycle2.svg" alt="Entire list forms cycle" />
+In this case our algorithm should return first element of a list (<code class="highlighter-rouge">N1</code> node for a list
+presented on picture above).</p>
+
+<p>Another boundary condition is that only last element 
+of the list forms a cycle:
+<img src="assets/images/2016-06-25/llcycle3.svg" alt="Only last element of the list forms a cycle" />
+In this case algorithm should return last element of the list (<code class="highlighter-rouge">N4</code> node for
+a list presented on picture above).</p>
+
+<p>The last boundary condition is a list that consists of only one element:
+<img src="assets/images/2016-06-25/llcycle4.svg" alt="Single element list" />
+In this case algorithm should return that single element.</p>
+
+<p>For all except last described boundary conditions we should consider lists with odd and even number of elements.</p>
+
+<h5 id="create-test-suite">Create test suite</h5>
+
+<p>Let’s code these boundary conditions and a few of other generic cases as a set of unit tests.
+To represent list nodes we will use following Java class:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ListNode</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="n">value</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="n">ListNode</span> <span class="n">next</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="n">ListNode</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">(</span><span class="n">value</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span> <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">ListNode</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">,</span> <span class="n">ListNode</span> <span class="n">next</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">next</span> <span class="o">=</span> <span class="n">next</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">toString</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">"ListNode{"</span> <span class="o">+</span>
+                <span class="s">"value="</span> <span class="o">+</span> <span class="n">value</span> <span class="o">+</span>
+                <span class="sc">'}'</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Our algorithm will be represented by <code class="highlighter-rouge">CycleStart.find</code> method:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">CycleStart</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">CycleStart</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">ListNode</span> <span class="n">find</span><span class="o">(</span><span class="n">ListNode</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// TODO: Implement algorithm</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>To avoid code duplication we will use JUnit 4 parameterized unit tests.
+AssertJ will be used
+as an assertion library:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@RunWith</span><span class="o">(</span><span class="n">Parameterized</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CycleStartTest</span> <span class="o">{</span>
+
+    <span class="nd">@Parameterized</span><span class="o">.</span><span class="na">Parameters</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span>
+        <span class="s">"testcase {index}: CycleStart_find_works_with(listSize={0}, cycleSize={1})"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">[]&gt;</span> <span class="n">data</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="k">new</span> <span class="n">Object</span><span class="o">[][]</span> <span class="o">{</span>
+        <span class="cm">/* LIST_SIZE    CYCLE_SIZE */</span>
+
+        <span class="cm">/* single element list */</span>
+        <span class="o">{</span>  <span class="mi">1</span><span class="o">,</span>  <span class="mi">1</span> <span class="o">},</span>
+
+        <span class="cm">/* every element of list is part of cycle (odd and even list size cases) */</span>
+        <span class="o">{</span> <span class="mi">10</span><span class="o">,</span> <span class="mi">10</span> <span class="o">},</span>
+        <span class="o">{</span>  <span class="mi">9</span><span class="o">,</span>  <span class="mi">9</span> <span class="o">},</span>
+
+        <span class="cm">/* only last element of list is part of cycle */</span>
+        <span class="o">{</span> <span class="mi">10</span><span class="o">,</span>  <span class="mi">1</span> <span class="o">},</span>
+        <span class="o">{</span>  <span class="mi">9</span><span class="o">,</span>  <span class="mi">1</span> <span class="o">},</span>
+
+        <span class="cm">/* random number of elements are part of cycle (with odd/even variants) */</span>
+        <span class="o">{</span> <span class="mi">10</span><span class="o">,</span>  <span class="mi">5</span> <span class="o">},</span>
+        <span class="o">{</span> <span class="mi">9</span><span class="o">,</span>   <span class="mi">5</span> <span class="o">},</span>
+        <span class="o">{</span> <span class="mi">10</span><span class="o">,</span>  <span class="mi">6</span> <span class="o">},</span>
+        <span class="o">{</span> <span class="mi">9</span><span class="o">,</span>   <span class="mi">6</span> <span class="o">},</span>
+        <span class="o">{</span> <span class="mi">34</span><span class="o">,</span> <span class="mi">11</span> <span class="o">}</span>
+        <span class="o">});</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">listSize</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">cycleSize</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="n">CycleStartTest</span><span class="o">(</span><span class="kt">int</span> <span class="n">listSize</span><span class="o">,</span> <span class="kt">int</span> <span class="n">cycleSize</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">listSize</span> <span class="o">=</span> <span class="n">listSize</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">cycleSize</span> <span class="o">=</span> <span class="n">cycleSize</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Test</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">runTest</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">ListWithCycle</span> <span class="n">testData</span> <span class="o">=</span> <span class="n">ListWithCycle</span><span class="o">.</span><span class="na">having</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">listSize</span><span class="o">(</span><span class="n">listSize</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">cycleSize</span><span class="o">(</span><span class="n">cycleSize</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">create</span><span class="o">();</span>
+
+        <span class="n">ListNode</span> <span class="n">cycleStart</span> <span class="o">=</span> <span class="n">CycleStart</span><span class="o">.</span><span class="na">find</span><span class="o">(</span><span class="n">testData</span><span class="o">.</span><span class="na">list</span><span class="o">);</span>
+
+        <span class="n">assertThat</span><span class="o">(</span><span class="n">cycleStart</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">isNotNull</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">isEqualTo</span><span class="o">(</span><span class="n">testData</span><span class="o">.</span><span class="na">cycleStart</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Each of arrays returned by static <code class="highlighter-rouge">data()</code> method contains
+<code class="highlighter-rouge">CycleStartTest</code> constructor parameters. For each of these arrays JUnit will create
+<code class="highlighter-rouge">CycleStartTest</code> instance with parameters passed to class constructor. Then
+JUnit will call all methods annotated with <code class="highlighter-rouge">@Test</code> on that instance.
+In our case we have two parameters <code class="highlighter-rouge">listSize</code> and <code class="highlighter-rouge">cycleSize</code>, I think these
+are pretty self explanatory.</p>
+
+<p>The last missing piece is <code class="highlighter-rouge">ListWithCycle</code> helper that creates list of given size
+with cycle of given size:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">ListWithCycle</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">final</span> <span class="n">ListNode</span> <span class="n">list</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">final</span> <span class="n">ListNode</span> <span class="n">cycleStart</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="n">ListWithCycle</span><span class="o">(</span><span class="n">ListNode</span> <span class="n">listHead</span><span class="o">,</span> <span class="n">ListNode</span> <span class="n">cycleStart</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">list</span> <span class="o">=</span> <span class="n">listHead</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">cycleStart</span> <span class="o">=</span> <span class="n">cycleStart</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Builder</span> <span class="n">having</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">Builder</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Builder</span> <span class="o">{</span>
+        <span class="kd">private</span> <span class="kt">int</span> <span class="n">listSize</span><span class="o">;</span>
+        <span class="kd">private</span> <span class="kt">int</span> <span class="n">cycleSize</span><span class="o">;</span>
+
+        <span class="kd">public</span> <span class="n">Builder</span> <span class="n">listSize</span><span class="o">(</span><span class="kt">int</span> <span class="n">listSize</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">listSize</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">"listSize must be &gt;= 0"</span><span class="o">);</span>
+
+            <span class="k">this</span><span class="o">.</span><span class="na">listSize</span> <span class="o">=</span> <span class="n">listSize</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">cycleSize</span> <span class="o">=</span> <span class="n">listSize</span><span class="o">;</span>
+            <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="kd">public</span> <span class="n">Builder</span> <span class="n">cycleSize</span><span class="o">(</span><span class="kt">int</span> <span class="n">cycleSize</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">cycleSize</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">"cycleSize must be &gt; 0"</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">cycleSize</span> <span class="o">&gt;</span> <span class="n">listSize</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">"cycleSize must be &lt;= listSize"</span><span class="o">);</span>
+
+            <span class="k">this</span><span class="o">.</span><span class="na">cycleSize</span> <span class="o">=</span> <span class="n">cycleSize</span><span class="o">;</span>
+            <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="kd">public</span> <span class="n">ListWithCycle</span> <span class="n">create</span><span class="o">()</span> <span class="o">{</span>
+            <span class="n">List</span><span class="o">&lt;</span><span class="n">ListNode</span><span class="o">&gt;</span> <span class="n">nodes</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
+            <span class="n">ListNode</span> <span class="n">prev</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+            <span class="c1">// create list</span>
+            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">listSize</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+                <span class="n">ListNode</span> <span class="n">curr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ListNode</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">prev</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+                    <span class="n">prev</span><span class="o">.</span><span class="na">next</span> <span class="o">=</span> <span class="n">curr</span><span class="o">;</span>
+                <span class="n">prev</span> <span class="o">=</span> <span class="n">curr</span><span class="o">;</span>
+
+                <span class="n">nodes</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">curr</span><span class="o">);</span>
+            <span class="o">}</span>
+
+            <span class="c1">// create list cycle</span>
+            <span class="n">ListNode</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">prev</span><span class="o">;</span>
+            <span class="n">ListNode</span> <span class="n">cycleStart</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">nodes</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">-</span> <span class="n">cycleSize</span><span class="o">);</span>
+            <span class="n">tail</span><span class="o">.</span><span class="na">next</span> <span class="o">=</span> <span class="n">cycleStart</span><span class="o">;</span>
+
+            <span class="k">return</span> <span class="k">new</span> <span class="n">ListWithCycle</span><span class="o">(</span><span class="n">nodes</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="n">cycleStart</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Now with unit tests covering all normal and border cases we can
+start implementing our algorithm.</p>
+
+<h5 id="create-simple-implementation">Create simple implementation</h5>
+<p>Let’s start with simple implementation that works in <code class="highlighter-rouge">O(N)</code> time but uses <code class="highlighter-rouge">O(N)</code>
+additional memory. 
+The idea behind this algorithm is simple. We will be tracking all
+already visited nodes, when we visit some node N twice we will know that
+node N must be start of a cycle.</p>
+
+<p>This is implemented in Java as:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="n">ListNode</span> <span class="nf">find</span><span class="p">(</span><span class="n">ListNode</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">Map</span><span class="o">&lt;</span><span class="n">ListNode</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">visitedNodes</span> <span class="o">=</span>
+                    <span class="k">new</span> <span class="n">IdentityHashMap</span><span class="o">&lt;</span><span class="n">ListNode</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;();</span>
+
+    <span class="k">for</span> <span class="o">(</span><span class="n">ListNode</span> <span class="n">curr</span> <span class="o">=</span> <span class="n">list</span><span class="o">;</span> <span class="n">curr</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">;</span> <span class="n">curr</span> <span class="o">=</span> <span class="n">curr</span><span class="o">.</span><span class="na">next</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">visitedNodes</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">curr</span><span class="o">))</span> <span class="o">{</span>
+            <span class="c1">// curr was already visited so we visit it twice</span>
+            <span class="k">return</span> <span class="n">curr</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">else</span> <span class="o">{</span>
+            <span class="c1">// mark as visited</span>
+            <span class="n">visitedNodes</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">curr</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>We use <code class="highlighter-rouge">IdentityHashMap&lt;K,V&gt;</code> to track already visited nodes. 
+<code class="highlighter-rouge">IdentityHashMap&lt;K,V&gt;</code> is special purpose <code class="highlighter-rouge">Map&lt;K,V&gt;</code> 
+implementation that uses <em>references</em> to objects
+as a keys. 
+Internally it uses <code class="highlighter-rouge">==</code> instead of <code class="highlighter-rouge">Object.equals()</code> to compare keys for equality, and
+<code class="highlighter-rouge">System.identityHashCode()</code> instead of <code class="highlighter-rouge">Object.hashCode()</code> to compute hashes.</p>
+
+<p>This algorithm passes all unit tests but can’t we do any better?<br />
+In fact we can, there is a beautiful algorithm that runs in <code class="highlighter-rouge">O(N)</code> time and 
+uses <code class="highlighter-rouge">O(1)</code> memory.</p>
+
+<h5 id="create-efficient-implementation">Create efficient implementation</h5>
+<p>Let’s create a more efficient implementation.
+To understand how it works we must first familiarize ourselves with fast and slow pointer
+method. Main usage of fast and slow pointer method is cycle detection in singly
+linked lists. The main idea is to have two pointers that traverse the same list. One pointer
+“slow” moves only one element at time, other pointer “fast” moves two elements at time.
+Singly linked list contains cycle if both pointers met. 
+This can be implemented in Java as:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">boolean</span> <span class="nf">hasCycle</span><span class="p">(</span><span class="n">ListNode</span> <span class="n">head</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">ListNode</span> <span class="n">slow</span> <span class="o">=</span> <span class="n">head</span><span class="o">;</span>
+    <span class="n">ListNode</span> <span class="n">fast</span> <span class="o">=</span> <span class="n">head</span><span class="o">;</span>
+        
+    <span class="k">while</span> <span class="o">(</span><span class="n">fast</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">fast</span><span class="o">.</span><span class="na">next</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">slow</span> <span class="o">=</span> <span class="n">slow</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
+        <span class="n">fast</span> <span class="o">=</span> <span class="n">fast</span><span class="o">.</span><span class="na">next</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
+        
+        <span class="c1">// fast caught up to slow, so there is a loop</span>
+        <span class="k">if</span><span class="o">(</span><span class="n">slow</span> <span class="o">==</span> <span class="n">fast</span><span class="o">)</span>  
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="c1">// fast reached null, so the list terminates</span>
+    <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>  
+<span class="o">}</span></code></pre></figure>
+
+<p>In our algorithm we’ll use simple fact from fast/slow pointer method: when
+fast and slow pointers are inside cycle, fast pointer cannot “jump over” slow pointer.
+In other words situation like:
+<img src="assets/images/2016-06-25/proof1.svg" alt="FAST pointer cannot jump over SLOW pointer" />
+is not possible.</p>
+
+<p>PROOF: First we assume that slow pointer always moves first and that
+we stop algorithm when fast and slow pointer meet. (If entire list is one
+cycle we would not count first step - when fast and slow pointers point to the list head).
+Let’s assume that fast pointer jumped over slow pointer as depicted on image above.
+We know that slow pointer always moves first and it moves only one element at time,
+so before slow pointer moved it was at <code class="highlighter-rouge">N2</code> node. But that was the node that
+fast pointer was pointing to before it moved. In other words before slow and fast pointers
+moved they pointed to the same node so our algorithm should have stopped, but it didn’t.
+Here we have contradiction that completes the proof.</p>
+
+<p>Consequence of above proof is simple fact: let’s say slow and fast pointers are pointing
+at cycle first element and that cycle has C elements in total. After at most C slow pointer
+moves, pointers must meed again.</p>
+
+<p>Now let’s go back to our cycle start finding algorithm. 
+To help us reason we will introduce some variables:</p>
+
+<ul>
+  <li>N - number of nodes in list before cycle (<code class="highlighter-rouge">N = 3</code> in our example below)</li>
+  <li>C - number of nodes in cycle (<code class="highlighter-rouge">C = 4</code> in our example below)</li>
+  <li>K - position of slow pointer inside cycle 
+ (first element of cycle has <code class="highlighter-rouge">k: 0</code>, second <code class="highlighter-rouge">k: 1</code> etc.)</li>
+</ul>
+
+<p>Let’s consider following situation, we ran fast/slow pointer algorithm on 7 element list
+depicted below:
+<img src="assets/images/2016-06-25/proof2.svg" alt="SLOW pointer entering cycle" />
+After N iterations of algorithm slow pointer enters
+first element of the cycle and has position <code class="highlighter-rouge">K = 0</code>. Meanwhile fast
+pointer that moves 2 times faster has position <code class="highlighter-rouge">Kfast = N % C</code>.
+From this point every iteration of algorithm moves slow pointer from position <code class="highlighter-rouge">K</code> to <code class="highlighter-rouge">K+1</code>,
+and fast pointer from position <code class="highlighter-rouge">Kfast</code> to <code class="highlighter-rouge">Kfast+2</code>. In other words after <code class="highlighter-rouge">S</code> iterations
+of algorithm slow pointer has position <code class="highlighter-rouge">S % C</code> and fast pointer has position <code class="highlighter-rouge">(N+2*S) % C</code>.
+We know that fast pointer cannot jump over slow pointer, both pointers must met 
+in some <code class="highlighter-rouge">Smet</code> iteration (where <code class="highlighter-rouge">Smet &lt;= C</code>). When this happens we have:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">Smet % C = (N + 2*Smet) % C</code></pre></figure>
+
+<p>or in more mathematical notation:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">Smet = N + 2*Smet (mod C)</code></pre></figure>
+
+<p>We can transform this equation using modulo arithmetic into:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">0 = N + Smet (mod C)</code></pre></figure>
+
+<p>and finally into:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">-Smet = N (mod C)</code></pre></figure>
+
+<p>This last equation is very important, it tells us that after another <code class="highlighter-rouge">N</code> iterations of the
+algorithm slow pointer will point at cycle first element:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">slow_pointer_pos_after_another_N_iterations = 
+        Smet + N = Smet + (-Smet) = 0 (mod C)</code></pre></figure>
+
+<p>From this we can get main idea of our new algorithm. First run fast/slow pointer algorithm
+until pointers met. Then we know that after another N iterations slow pointer will point
+at cycle first element. But hey if we start moving from list head after N iterations we will
+point at first cycle element too! We don’t know N but if we start moving slow pointer
+one element at time and simultaneously we start moving another pointer from list head
+one element at time they must met at cycle first element:
+<img src="assets/images/2016-06-25/proof3.svg" alt="Final algorithm illustrated" /></p>
+
+<p>Above description of algorithm will work only when <code class="highlighter-rouge">C &gt; 1</code> and <code class="highlighter-rouge">N &gt; 1</code>. Case when <code class="highlighter-rouge">C = 1</code>
+is simple and I leave it as an exercise to reader.
+Case when <code class="highlighter-rouge">N = 0</code>: entire list forms a single cycle is easy too, we solve it now.
+Slow and fast pointers will met after <code class="highlighter-rouge">Smet</code> iterations, then:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">slow_pos = Smet % C
+fast_pos = Smet*2 % C
+
+Smet = Smet*2 (mod C)
+0 = Smet (mod C)</code></pre></figure>
+
+<p>In other words because <code class="highlighter-rouge">Smet &lt;= C</code> and <code class="highlighter-rouge">Smet = 0 (mod C)</code> 
+pointers can met only at the first element of the cycle (at position 0 or C).
+First element of the cycle is a list head, so in this case our algorithm will work too!</p>
+
+<p>Now let’s move to implementation:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="n">ListNode</span> <span class="nf">find</span><span class="p">(</span><span class="n">ListNode</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">ListNode</span> <span class="n">slow</span> <span class="o">=</span> <span class="n">list</span><span class="o">;</span>
+    <span class="n">ListNode</span> <span class="n">fast</span> <span class="o">=</span> <span class="n">list</span><span class="o">;</span>
+
+    <span class="c1">// find meeting point</span>
+    <span class="k">do</span> <span class="o">{</span>
+        <span class="n">slow</span> <span class="o">=</span> <span class="n">slow</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
+        <span class="n">fast</span> <span class="o">=</span> <span class="n">fast</span><span class="o">.</span><span class="na">next</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="k">while</span> <span class="o">(</span><span class="n">slow</span> <span class="o">!=</span> <span class="n">fast</span><span class="o">);</span>
+
+    <span class="c1">// find cycle start</span>
+    <span class="n">ListNode</span> <span class="n">k</span> <span class="o">=</span> <span class="n">slow</span><span class="o">;</span>
+    <span class="n">ListNode</span> <span class="n">head</span> <span class="o">=</span> <span class="n">list</span><span class="o">;</span>
+
+    <span class="k">while</span> <span class="o">(</span><span class="n">k</span> <span class="o">!=</span> <span class="n">head</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="n">head</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="k">return</span> <span class="n">head</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>All tests are green so we are done, yay!</p>
+
+<h5 id="references">References</h5>
+
+<ul>
+  <li><a href="http://stackoverflow.com/questions/2663115/how-to-detect-a-loop-in-a-linked-list">How to detect loop in linked list</a></li>
+  <li><a href="https://betterexplained.com/articles/fun-with-modular-arithmetic/">Fun with modulo arithmetic</a></li>
+</ul>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Find cycle start in singly linked list&amp;url=https://marcin-chwedczuk.github.io/find-cycle-start-in-singly-linked-list"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/find-cycle-start-in-singly-linked-list"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/find-cycle-start-in-singly-linked-list"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//find-cycle-start-in-singly-linked-list';
+        this.page.identifier = '/find-cycle-start-in-singly-linked-list';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover3.jpg)" href="/mapping-inheritance-in-hibernate">
+            <section class="post">
+                <h2>Mapping class inheritance in Hibernate 5</h2>
+                <p>In this post I want to present four basic strategies for mapping class inheritance in...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/cover5.jpg)" href="/hibernate-hello-world-app">
+            <section class="post">
+                <h2>Hibernate hello world application</h2>
+                <p>In this tutorial we’ll create minimal application that will allow us to start playing with...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

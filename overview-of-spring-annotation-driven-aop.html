@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Overview of Spring annotation driven AOP</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover6.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Overview of Spring annotation driven AOP</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2016-12-03">03 Dec 2016</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/java'>Java</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>In this post I will show you how to use Spring aspects.
+In contrast to AspectJ aspects that are implemented by either
+compile time or load time bytecode manipulation (process often called waving),
+Spring aspects are implemented using proxy classes.
+The main advantage of proxy aspect implementation is ease of use,
+the main disadvantage is reduced functionality of aspects
+(e.g. we cannot intercept calls to static methods).</p>
+
+<p>Diagram below illustrates how proxy classes are used to
+add functionality contained in <code class="highlighter-rouge">Aspect I</code> and <code class="highlighter-rouge">Aspect II</code> to 
+<code class="highlighter-rouge">MyComponentImpl</code> class:
+<img src="assets/images/2016-12-03/proxy2.svg" alt="Proxy based aspects in Spring" />
+When application asks Spring for <code class="highlighter-rouge">MyComponent</code>
+implementation Spring detects that there are aspects attached to
+<code class="highlighter-rouge">MyComponentImpl</code> class,
+so instead of returning <code class="highlighter-rouge">MyComponentImpl</code> instance
+Spring creates and returns a proxy.
+Proxy returned to client implements <code class="highlighter-rouge">MyComponent</code> interface
+and by default redirects all method calls to <code class="highlighter-rouge">MyComponentImpl</code> instance.
+In some situations like e.g. calling a <code class="highlighter-rouge">doStuff()</code> method
+proxy may execute code (called advice) from <code class="highlighter-rouge">Aspect I</code> and/or <code class="highlighter-rouge">Aspect II</code>,
+thus adding functionality to <code class="highlighter-rouge">MyComponentImpl</code> class.</p>
+
+<h4 id="application-setup">Application setup</h4>
+
+<p>Before we create our first aspect we need to setup our application.
+Let’s start with Maven dependencies. We will need <code class="highlighter-rouge">spring-aspects</code>
+and <code class="highlighter-rouge">aspectjweaver</code> libraries.
+You may be wondering why we need something from AspectJ which we
+don’t use. Spring Framework supports not only proxy based aspects
+but also full blown AspectJ aspects, to avoid code duplication
+designers of Spring decided to borrow annotation definitions like <code class="highlighter-rouge">@Aspect</code> 
+from AspectJ project.
+Thus <code class="highlighter-rouge">aspectjweaver</code> is only used as an annotation library and nothing more.</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-core<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>4.3.3.RELEASE<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+<span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-context<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>4.3.3.RELEASE<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+
+<span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>spring-aspects<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>3.2.0.RELEASE<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span>
+
+<span class="nt">&lt;dependency&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>org.aspectj<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>aspectjweaver<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;version&gt;</span>1.8.9<span class="nt">&lt;/version&gt;</span>
+<span class="nt">&lt;/dependency&gt;</span></code></pre></figure>
+
+<p>Next we need to create Spring configuration class and bootstrap
+Spring context:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">io</span><span class="o">.</span><span class="na">mc</span><span class="o">.</span><span class="na">springaspects</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.context.annotation.ComponentScan</span><span class="o">;</span>
+
+<span class="nd">@Configuration</span>
+<span class="nd">@ComponentScan</span><span class="o">(</span><span class="s">"io.mc.springaspects"</span><span class="o">)</span>
+<span class="nd">@EnableAspectJAutoProxy</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">SpringConfiguration</span> <span class="o">{</span> <span class="o">}</span></code></pre></figure>
+
+<p>NOTE: To enable proxy based aspects we need to add <code class="highlighter-rouge">@EnableAspectJAutoProxy</code>
+annotation to our configuration class.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">...</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+   <span class="n">AnnotationConfigApplicationContext</span> <span class="n">appContext</span> <span class="o">=</span> 
+      <span class="k">new</span> <span class="n">AnnotationConfigApplicationContext</span><span class="o">(</span>
+         <span class="n">SpringConfiguration</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+  <span class="c1">// context ready to use!!!</span>
+  <span class="n">appContext</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+<span class="o">}</span> </code></pre></figure>
+
+<h4 id="creating-aspects">Creating aspects</h4>
+
+<p>Before we start let’s introduce some terminology. Advice is 
+a piece of code that should be executed when certain event
+like calling a method takes place. A pointcut is a set of
+events, for example all calls to a method <code class="highlighter-rouge">foo()</code> contained in
+class <code class="highlighter-rouge">Bar</code>. A join point is a single event for example a
+particular invocation of method <code class="highlighter-rouge">foo()</code>
+on line 105 in class <code class="highlighter-rouge">Bar</code>.
+Aspect is a pointcut-advice pair, in other words aspect defines
+what should be done (advice) and when (pointcut).
+Spring borrowed this terminology from AspectJ, it takes a while
+to get used to it.</p>
+
+<p>We will start by crating <code class="highlighter-rouge">@Before</code> and <code class="highlighter-rouge">@After</code> aspects that
+as their names suggest are invoked before and after a method call.
+Our aspects will add functionality to the following component:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">io</span><span class="o">.</span><span class="na">mc</span><span class="o">.</span><span class="na">springaspects</span><span class="o">;</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DummyComponent</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">ConsoleLogger</span> <span class="n">consoleLogger</span><span class="o">;</span>
+    
+    <span class="nd">@Autowired</span>
+    <span class="kd">public</span> <span class="n">DummyComponent</span><span class="o">(</span><span class="n">ConsoleLogger</span> <span class="n">consoleLogger</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">consoleLogger</span> <span class="o">=</span> <span class="n">consoleLogger</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">doStuff</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">consoleLogger</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"DummyComponent::doStuff"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Let’s start with <code class="highlighter-rouge">@Before</code> aspect
+(here I use the same name for aspect and advice, but remember that they
+are two different things):</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Aspect</span>
+<span class="nd">@Component</span>
+<span class="nd">@Order</span><span class="o">(</span><span class="mi">100</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DummyAspect</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">ConsoleLogger</span> <span class="n">consoleLogger</span><span class="o">;</span>
+    
+    <span class="nd">@Autowired</span>
+    <span class="kd">public</span> <span class="n">DummyAspect</span><span class="o">(</span><span class="n">ConsoleLogger</span> <span class="n">consoleLogger</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">consoleLogger</span> <span class="o">=</span> <span class="n">consoleLogger</span><span class="o">;</span>
+    <span class="o">}</span>
+    
+    <span class="nd">@Pointcut</span><span class="o">(</span><span class="s">"execution(* io.mc.springaspects.DummyComponent.doStuff())"</span><span class="o">)</span>
+    <span class="kd">protected</span> <span class="kt">void</span> <span class="n">doStuff</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
+    
+    <span class="nd">@Before</span><span class="o">(</span><span class="s">"doStuff()"</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">beforeDoStuff</span><span class="o">(</span><span class="n">JoinPoint</span> <span class="n">joinPoint</span><span class="o">)</span> <span class="o">{</span>
+      <span class="c1">// ...</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>A few things to notice:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">DummyAspect</code> class will contain definitions of our aspects, we may define
+ many aspects inside a single class</li>
+  <li><code class="highlighter-rouge">DummyAspect</code> must be registered as a Spring component 
+ (here I used <code class="highlighter-rouge">@Component</code> annotation).
+ This also means that dependency injection works inside aspects</li>
+  <li>Class must be marked with <code class="highlighter-rouge">@Aspect</code> annotation otherwise Spring will ignore
+ our aspects</li>
+  <li>Optionally we may provide <code class="highlighter-rouge">@Order</code> annotation that specifies order of aspects
+ (e.g. when there is more than one aspect attached to a given method call).
+ The higher the order value the more close the aspect is to the original method
+ call, see the diagram below:</li>
+</ul>
+
+<p><img src="assets/images/2016-12-03/order.svg" alt="Aspects order" /></p>
+
+<p>Now let’s see how <code class="highlighter-rouge">@Before</code> aspects works.
+A pointcut defines a set of events (like calling a method) to which we want to
+attach advices.
+For example to create a pointcut that will “point” to every invocation of 
+<code class="highlighter-rouge">DummyComponent::doStuff</code> method, we may write:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Pointcut</span><span class="o">(</span><span class="s">"execution(* io.mc.springaspects.DummyComponent.doStuff())"</span><span class="o">)</span>
+<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doStuff</span><span class="p">(</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span></code></pre></figure>
+
+<p>This code creates named pointcut with <code class="highlighter-rouge">doStuff</code> name.
+Strange expressions passed to <code class="highlighter-rouge">@Pointcut</code> annotation is
+borrowed from AspectJ, it tells Spring that we want to
+select method calls <code class="highlighter-rouge">execution</code>, of methods that may return any
+type <code class="highlighter-rouge">*</code>, and are members of <code class="highlighter-rouge">io.mc.springaspects.DummyComponent</code> class,
+and are named <code class="highlighter-rouge">doStuff</code>, and doesn’t take any parameters <code class="highlighter-rouge">()</code>.</p>
+
+<p>Now let’s move to the advice:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Before</span><span class="o">(</span><span class="s">"doStuff()"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">beforeDoStuff</span><span class="p">(</span><span class="n">JoinPoint</span> <span class="n">joinPoint</span><span class="o">)</span> <span class="o">{</span>
+     <span class="n">consoleLogger</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"BEFORE CALL TO doStuff()"</span><span class="o">);</span>
+     
+     <span class="n">consoleLogger</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"ARGUMENTS:"</span><span class="o">);</span>
+     <span class="n">Arrays</span><span class="o">.</span><span class="na">stream</span><span class="o">(</span><span class="n">joinPoint</span><span class="o">.</span><span class="na">getArgs</span><span class="o">())</span>
+         <span class="o">.</span><span class="na">map</span><span class="o">(</span><span class="nl">Object:</span><span class="o">:</span><span class="n">toString</span><span class="o">)</span>
+         <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">arg</span> <span class="o">-&gt;</span> <span class="n">consoleLogger</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"\t%s"</span><span class="o">,</span> <span class="n">arg</span><span class="o">));</span>
+     
+     <span class="n">consoleLogger</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">""</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Advice is implemented as an instance method, first we
+declare that this is a <code class="highlighter-rouge">@Before</code> advice - so it will be called
+before target method. We also define where we want to use
+advice by passing pointcut name to <code class="highlighter-rouge">@Before</code> annotation.
+Advice method may optionally have a <code class="highlighter-rouge">JoinPoint</code> argument that
+represents particular invocation of <code class="highlighter-rouge">doStuff()</code> method.
+<code class="highlighter-rouge">JoinPoint</code> contains many useful informations
+like <code class="highlighter-rouge">doStuff()</code> method arguments, or value of <code class="highlighter-rouge">this</code> reference.</p>
+
+<p>Let’s check if our aspect works:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">DummyComponent</span> <span class="n">dummyComponent</span> <span class="o">=</span> 
+  <span class="n">appContext</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="n">DummyComponent</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="n">dummyComponent</span><span class="o">.</span><span class="na">doStuff</span><span class="o">();</span>
+<span class="c1">// Output:</span>
+<span class="c1">// BEFORE CALL TO doStuff()</span>
+<span class="c1">// ARGUMENTS:</span>
+<span class="c1">// </span>
+<span class="c1">// TestComponent::doStuff</span></code></pre></figure>
+
+<p>Yay! It is but since <code class="highlighter-rouge">doStuff</code> doesn’t have any parameters we
+can’t test arguments logging. We will fix that now, by adding 
+a single parameter of type <code class="highlighter-rouge">String</code> to <code class="highlighter-rouge">doStuff</code> method:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// DummyComponent:</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">doStuff</span><span class="p">(</span><span class="n">String</span> <span class="n">x</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">consoleLogger</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"TestComponent::doStuff(x), x = %s"</span><span class="o">,</span> <span class="n">x</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Since we changed method signature we must also change our pointcut definition:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Pointcut</span><span class="o">(</span><span class="s">"execution(* io.mc.springaspects.DummyComponent.doStuff(..))"</span><span class="o">)</span>
+<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doStuff</span><span class="p">(</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span></code></pre></figure>
+
+<p>We are using <code class="highlighter-rouge">..</code> to tell Spring that method may have any number of arguments.
+We may also specify exact number and types of arguments for example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Pointcut</span><span class="o">(</span><span class="s">"execution(* io.mc.springaspects.DummyComponent.doStuff(String))"</span><span class="o">)</span>
+<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doStuff</span><span class="p">(</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span></code></pre></figure>
+
+<p>With changed pointcut we now get:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">DummyComponent</span> <span class="n">dummyComponent</span> <span class="o">=</span> 
+  <span class="n">appContext</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="n">DummyComponent</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="n">dummyComponent</span><span class="o">.</span><span class="na">doStuff</span><span class="o">(</span><span class="s">"foo"</span><span class="o">);</span>
+<span class="c1">// Output</span>
+<span class="c1">// BEFORE CALL TO doStuff()</span>
+<span class="c1">// ARGUMENTS:</span>
+<span class="c1">//  foo</span>
+<span class="c1">//</span>
+<span class="c1">// TestComponent::doStuff(x), x = foo</span></code></pre></figure>
+
+<h5 id="extracting-arguments">Extracting arguments</h5>
+
+<p>Sometimes we want to extract method argument value, instead
+of manually extracting argument from <code class="highlighter-rouge">JoinPoint</code> we may ask Spring
+to do this for us.
+Let’s add another parameter to <code class="highlighter-rouge">doStuff</code>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">doStuff</span><span class="p">(</span><span class="n">String</span> <span class="n">x</span><span class="o">,</span> <span class="n">String</span> <span class="n">y</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">consoleLogger</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"TestComponent::doStuff(x, y), "</span> <span class="o">+</span>
+    <span class="s">"x = %s, y = %s"</span><span class="o">,</span> <span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Then let’s define another aspect:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Pointcut</span><span class="o">(</span><span class="s">"execution(void io.mc.springaspects.DummyComponent.doStuff(String,String))"</span> <span class="o">+</span>
+  <span class="s">"&amp;&amp; args(arg1,arg2)"</span><span class="o">)</span>
+<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doStuff2</span><span class="p">(</span><span class="n">String</span> <span class="n">arg1</span><span class="o">,</span> <span class="n">String</span> <span class="n">arg2</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+    
+<span class="nd">@Before</span><span class="o">(</span><span class="s">"doStuff2(arg1, arg2)"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">beforeDoStuff2</span><span class="p">(</span><span class="n">String</span> <span class="n">arg1</span><span class="o">,</span> <span class="n">String</span> <span class="n">arg2</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">consoleLogger</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"arg1 = %s, arg2 = %s"</span><span class="o">,</span> <span class="n">arg1</span><span class="o">,</span> <span class="n">arg2</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Here we use <code class="highlighter-rouge">args</code> expression to bound method arguments to <code class="highlighter-rouge">arg1</code> and <code class="highlighter-rouge">arg2</code>
+variables. Then we may use <code class="highlighter-rouge">arg1</code> and <code class="highlighter-rouge">arg2</code> as a parameters in aspect method.
+Don’t forget to add parameters to pointcut name in <code class="highlighter-rouge">@Before</code> annotation otherwise
+you will get nasty exception with strange and unhelpful message.</p>
+
+<h5 id="modifying-method-parameters">Modifying method parameters</h5>
+
+<p>Aspects allow us to easily change values of method arguments.
+For example given method:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">greetUser</span><span class="p">(</span><span class="n">String</span> <span class="n">userName</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">consoleLogger</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"Hello, %s"</span><span class="o">,</span> <span class="n">userName</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>We may create aspect <code class="highlighter-rouge">toUpperCase</code> that will uppercase user name
+before passing argument to target method.
+Unfortunately <code class="highlighter-rouge">@Before</code> aspect is not powerful enough to do this,
+we will need <code class="highlighter-rouge">@Around</code> aspect:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Pointcut</span><span class="o">(</span><span class="s">"execution(* io.mc.springaspects.DummyComponent.greetUser(String))"</span><span class="o">)</span>
+<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">greetUser</span><span class="p">(</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+
+<span class="nd">@Around</span><span class="o">(</span><span class="s">"greetUser()"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">toUpperCase</span><span class="p">(</span><span class="n">ProceedingJoinPoint</span> <span class="n">joinPoint</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Throwable</span> <span class="o">{</span>
+  <span class="n">Object</span><span class="o">[]</span> <span class="n">originalArguments</span> <span class="o">=</span> <span class="n">joinPoint</span><span class="o">.</span><span class="na">getArgs</span><span class="o">();</span>
+  
+  <span class="n">Object</span><span class="o">[]</span> <span class="n">newArguments</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span>
+  <span class="n">newArguments</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="o">((</span><span class="n">String</span><span class="o">)</span><span class="n">originalArguments</span><span class="o">[</span><span class="mi">0</span><span class="o">]).</span><span class="na">toUpperCase</span><span class="o">();</span>
+  
+  <span class="n">joinPoint</span><span class="o">.</span><span class="na">proceed</span><span class="o">(</span><span class="n">newArguments</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">@Around</code> advice has a single parameter of type <code class="highlighter-rouge">ProceedingJoinPoint</code> that
+represents pending target method invocation. This is very powerful feature since
+it allows us to change method parameters and return value, wrap
+thrown exceptions or even skip method call altogether.
+Here we simply invoke target method with changed arguments using <code class="highlighter-rouge">ProceedingJoinPoint::proceed</code> call.</p>
+
+<h5 id="modifying-return-value">Modifying return value</h5>
+
+<p>Aspects allow us to change return value of a method.
+For example let’s add method to our <code class="highlighter-rouge">DummyComponent</code> class:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">getNumbers</span><span class="o">(</span><span class="kt">int</span>  <span class="n">size</span><span class="o">)</span> <span class="o">{</span>
+   <span class="k">if</span> <span class="o">(</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
+      <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+
+   <span class="k">return</span> <span class="n">IntStream</span><span class="o">.</span><span class="na">range</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">size</span><span class="o">)</span>
+      <span class="o">.</span><span class="na">mapToObj</span><span class="o">(</span><span class="nl">Integer:</span><span class="o">:</span><span class="n">valueOf</span><span class="o">)</span>
+      <span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">toList</span><span class="o">());</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Notice that for <code class="highlighter-rouge">size</code> equal zero <code class="highlighter-rouge">getNumbers</code> returns <code class="highlighter-rouge">null</code>.
+Returning null instead of empty collection 
+isn’t good programming practice let’s change that
+behaviour using aspects.</p>
+
+<p>We will start with already familiar <code class="highlighter-rouge">@Around</code> advice:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Pointcut</span><span class="o">(</span><span class="s">"execution(* io.mc.springaspects.DummyComponent.getNumbers(int))"</span><span class="o">)</span>
+<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">getNumbers</span><span class="p">(</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+
+<span class="nd">@Around</span><span class="o">(</span><span class="s">"getNumbers()"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="n">Object</span> <span class="nf">aroundGetNumbers</span><span class="p">(</span><span class="n">ProceedingJoinPoint</span> <span class="n">joinPoint</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Throwable</span> <span class="o">{</span>
+  <span class="n">Object</span> <span class="n">result</span> <span class="o">=</span> <span class="n">joinPoint</span><span class="o">.</span><span class="na">proceed</span><span class="o">();</span>
+  
+  <span class="k">return</span> <span class="o">(</span><span class="n">result</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
+    <span class="o">?</span> <span class="n">Collections</span><span class="o">.</span><span class="na">emptyList</span><span class="o">()</span>
+    <span class="o">:</span> <span class="n">result</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>If <code class="highlighter-rouge">@Around</code> advice method returns value then that 
+value will be used as return value
+of the target method, this is exactly what we do here.</p>
+
+<p>If we only want to access return value we may also use 
+<code class="highlighter-rouge">@AfterReturning</code> advice:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Pointcut</span><span class="o">(</span><span class="s">"execution(* io.mc.springaspects.DummyComponent.getNumbers(int))"</span><span class="o">)</span>
+<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">getNumbers</span><span class="p">(</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+
+<span class="nd">@AfterReturning</span><span class="o">(</span><span class="n">pointcut</span><span class="o">=</span><span class="s">"getNumbers()"</span><span class="o">,</span> <span class="n">returning</span><span class="o">=</span><span class="s">"result"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">add111</span><span class="p">(</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
+    <span class="n">result</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">111</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Here we cannot change returned value itself but we may call methods on it,
+set properties etc.</p>
+
+<h5 id="intercepting-exceptions">Intercepting exceptions</h5>
+
+<p>We may use <code class="highlighter-rouge">@Around</code> advice to intercept, handle or wrap exceptions thrown
+by target method (just add ordinary <code class="highlighter-rouge">try..catch</code> statement around
+<code class="highlighter-rouge">proceed</code> call). Here we will concentrate on <code class="highlighter-rouge">@AfterThrowing</code> advice
+that allows us to inspect exceptions thrown by target method.</p>
+
+<p>In <code class="highlighter-rouge">DummyComponent</code> we must add method:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">doThrow</span><span class="p">(</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">throw</span> <span class="k">new</span> <span class="n">TestException</span><span class="o">(</span>
+    <span class="s">"TestException from TestComponent::doThrow"</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>We must also declare our exception class:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">io</span><span class="o">.</span><span class="na">mc</span><span class="o">.</span><span class="na">springaspects</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestException</span> <span class="kd">extends</span> <span class="n">RuntimeException</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">serialVersionUID</span> <span class="o">=</span> 
+        <span class="o">-</span><span class="mi">7335805942545920111L</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="n">TestException</span><span class="o">(</span><span class="n">String</span> <span class="n">message</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="n">message</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>And pointcut-advice pair:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Pointcut</span><span class="o">(</span><span class="s">"execution(* io.mc.springaspects.DummyComponent.doThrow())"</span><span class="o">)</span>
+<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">doThrow</span><span class="p">(</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+
+<span class="nd">@AfterThrowing</span><span class="o">(</span><span class="n">pointcut</span><span class="o">=</span><span class="s">"doThrow()"</span><span class="o">,</span> <span class="n">throwing</span><span class="o">=</span><span class="s">"ex"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">doThrowThrows</span><span class="p">(</span><span class="n">TestException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">consoleLogger</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"doThrow() THROWS EXCEPTION: %s"</span><span class="o">,</span>
+        <span class="n">ex</span><span class="o">.</span><span class="na">getClass</span><span class="o">().</span><span class="na">getSimpleName</span><span class="o">());</span>
+<span class="o">}</span></code></pre></figure>
+
+<h5 id="aspects-and-interface-methods">Aspects and interface methods</h5>
+
+<p>So far we only attached advices to concrete classes like <code class="highlighter-rouge">DummyComponent</code>,
+in real applications we often want to attach advices to all implementations
+of given interface.
+Fortunately for us Spring supports this scenario.
+We will start by declaring <code class="highlighter-rouge">DummyInterface</code> interface 
+and its two implementations:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">io</span><span class="o">.</span><span class="na">mc</span><span class="o">.</span><span class="na">springaspects</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">DummyInterface</span> <span class="o">{</span>
+    <span class="kt">void</span> <span class="n">dummyMethod</span><span class="o">();</span>
+<span class="o">}</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Component</span><span class="o">(</span><span class="s">"implA"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DummyInterfaceImplA</span> <span class="kd">implements</span> <span class="n">DummyInterface</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="n">ConsoleLogger</span> <span class="n">logger</span><span class="o">;</span>
+    <span class="nd">@Autowired</span>
+    <span class="kd">public</span> <span class="n">DummyInterfaceImplA</span><span class="o">(</span><span class="n">ConsoleLogger</span> <span class="n">logger</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">logger</span> <span class="o">=</span> <span class="n">logger</span><span class="o">;</span>
+    <span class="o">}</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">dummyMethod</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">logger</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"DummyInterface Implementation A"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Component</span><span class="o">(</span><span class="s">"implB"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">DummyInterfaceImplB</span> <span class="kd">implements</span> <span class="n">DummyInterface</span> <span class="o">{</span>
+    <span class="o">...</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Now we may attach our advice to <code class="highlighter-rouge">DummyInterface::dummyMethod</code>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Pointcut</span><span class="o">(</span><span class="s">"execution(void io.mc.springaspects.DummyInterface+.dummyMethod())"</span><span class="o">)</span>
+<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">dummyMethod</span><span class="p">(</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+
+<span class="nd">@Before</span><span class="o">(</span><span class="s">"dummyMethod()"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">beforeDummyMethod</span><span class="p">(</span><span class="n">JoinPoint</span> <span class="n">joinPoint</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">String</span> <span class="n">implementation</span> <span class="o">=</span>
+          <span class="n">joinPoint</span><span class="o">.</span><span class="na">getTarget</span><span class="o">().</span><span class="na">getClass</span><span class="o">().</span><span class="na">getSimpleName</span><span class="o">();</span>
+  
+  <span class="n">logger</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"Interface method called from class: %s"</span><span class="o">,</span> <span class="n">implementation</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>In pointcut expression I used <code class="highlighter-rouge">DummyInterface+</code> to select
+all classes that implement <code class="highlighter-rouge">DummyInterface</code>.
+In pointcut expression we are not limited to a single method, we may use
+<code class="highlighter-rouge">DummyInterface+.*(..)</code> expression to attach advice to all interface methods.</p>
+
+<p>Let’s check if our advice works:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">DummyInterface</span> <span class="n">dummyInterface</span> <span class="o">=</span> 
+    <span class="o">(</span><span class="n">DummyInterface</span><span class="o">)</span> <span class="n">appContext</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="s">"implB"</span><span class="o">);</span>
+<span class="n">dummyInterface</span><span class="o">.</span><span class="na">dummyMethod</span><span class="o">();</span>
+<span class="c1">// Output:</span>
+<span class="c1">// Interface method called from class: DummyInterfaceImplB</span>
+<span class="c1">// DummyInterface Implementation B</span></code></pre></figure>
+
+<h5 id="aspects-and-annotations">Aspects and annotations</h5>
+
+<p>Another common scenario in real life apps is to attach advices to
+methods marked with given annotation.
+Let’s start by creating custom annotation:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Target</span><span class="o">(</span><span class="n">METHOD</span><span class="o">)</span>
+<span class="nd">@Retention</span><span class="o">(</span><span class="n">RUNTIME</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nd">@interface</span> <span class="n">UseAdviceOnThisMethod</span> <span class="o">{</span>
+    <span class="n">String</span> <span class="n">value</span><span class="o">()</span> <span class="k">default</span> <span class="s">""</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Then we must create test method in <code class="highlighter-rouge">DummyComponent</code> and mark it with
+<code class="highlighter-rouge">@UseAdviceOnThisMethod</code> annotation:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@UseAdviceOnThisMethod</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">someMethod</span><span class="p">(</span><span class="o">)</span> <span class="o">{</span>
+   <span class="n">consoleLogger</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"Hello, world!"</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>And finally we must create pointcut-advice pair:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Pointcut</span><span class="o">(</span><span class="s">"execution(@io.mc.springaspects.UseAdviceOnThisMethod * *.*(..))"</span><span class="o">)</span>
+<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">useAdviceOnThisMethodAnnotation</span><span class="p">(</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>    
+
+<span class="nd">@Before</span><span class="o">(</span><span class="s">"useAdviceOnThisMethodAnnotation()"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">useAdviceBefore</span><span class="p">(</span><span class="n">JoinPoint</span> <span class="n">joinPoint</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">consoleLogger</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"[ASPECT] SOURCE LOCATION: %s"</span><span class="o">,</span>
+      <span class="n">joinPoint</span><span class="o">.</span><span class="na">getSourceLocation</span><span class="o">());</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>In pointcut expression we use <code class="highlighter-rouge">* *.*(..)</code> to signify that we want
+to consider methods with any return type, within any class, with any
+name and taking any number and types of arguments.
+But we also use <code class="highlighter-rouge">@io.mc.springaspects.UseAdviceOnThisMethod</code> expression
+to point only to these methods that are annotated with <code class="highlighter-rouge">@UseAdviceOnThisMethod</code>.</p>
+
+<p>Often in advice we want to access annotation to read some values from it.
+To access annotation we may modify our <code class="highlighter-rouge">@Before</code> advice to:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Pointcut</span><span class="o">(</span><span class="s">"execution(@io.mc.springaspects.UseAdviceOnThisMethod * *.*(..))"</span><span class="o">)</span>
+<span class="kd">protected</span> <span class="kt">void</span> <span class="nf">useAdviceOnThisMethodAnnotation</span><span class="p">(</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>    
+
+<span class="nd">@Before</span><span class="o">(</span><span class="s">"useAdviceOnThisMethodAnnotation() &amp;&amp; @annotation(useAdvice)"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">useAdviceBefore</span><span class="p">(</span><span class="n">JoinPoint</span> <span class="n">joinPoint</span><span class="o">,</span> 
+                            <span class="n">UseAdviceOnThisMethod</span> <span class="n">useAdvice</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">consoleLogger</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"VALUE: %s"</span><span class="o">,</span> <span class="n">useAdvice</span><span class="o">.</span><span class="na">value</span><span class="o">());</span>
+<span class="o">}</span></code></pre></figure>
+
+<h5 id="aspects-and-proxy-unwrapping">Aspects and proxy unwrapping</h5>
+
+<p>Since Spring aspects are implemented using proxy classes we may
+skip advice invocation by unwrapping Spring bean:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">DummyComponent</span> <span class="n">dummyComponent</span> <span class="o">=</span> <span class="n">appContext</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="n">DummyComponent</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+<span class="c1">// advice called</span>
+<span class="n">dummyComponent</span><span class="o">.</span><span class="na">someMethod</span><span class="o">();</span>
+<span class="c1">// unwrap target component - don't do this</span>
+<span class="c1">// in real apps</span>
+<span class="n">dummyComponent</span> <span class="o">=</span> <span class="o">(</span><span class="n">DummyComponent</span><span class="o">)</span> 
+    <span class="o">((</span><span class="n">Advised</span><span class="o">)</span><span class="n">dummyComponent</span><span class="o">).</span><span class="na">getTargetSource</span><span class="o">().</span><span class="na">getTarget</span><span class="o">();</span>
+<span class="c1">// advice NOT called</span>
+<span class="n">dummyComponent</span><span class="o">.</span><span class="na">someMethod</span><span class="o">();</span></code></pre></figure>
+
+<h5 id="the-end">The End</h5>
+
+<p>We only scratched the surface of what Spring aspects can do,
+and we only used basic expressions in pointcut definitions.
+Aspect oriented programming is a huge topic and requires time
+and practice to master. I hope that this blog post helped you to
+understand what apects are and how to use them in Spring.
+If you have any remarks how I can improve this post please leave a comment.</p>
+
+<p><a href="assets/data/2016-12-03/spring-aspects.zip">DOWNLOAD SOURCE CODE</a></p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Overview of Spring annotation driven AOP&amp;url=https://marcin-chwedczuk.github.io/overview-of-spring-annotation-driven-aop"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/overview-of-spring-annotation-driven-aop"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/overview-of-spring-annotation-driven-aop"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//overview-of-spring-annotation-driven-aop';
+        this.page.identifier = '/overview-of-spring-annotation-driven-aop';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover2.jpg)" href="/generics-in-java">
+            <section class="post">
+                <h2>Generics in Java</h2>
+                <p>Generics were introduced with Java 6 and quickly become indispensable tool of every Java programmer....</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/cover8.jpg)" href="/iterative-solution-to-towers-of-hanoi-problem">
+            <section class="post">
+                <h2>Iterative solution to Towers of Hanoi problem</h2>
+                <p>Towers of Hanoi is a simple programming riddle often used in programming courses to introduce...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

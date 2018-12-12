@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Introduction to Hibernate embeddable types</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover4.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Introduction to Hibernate embeddable types</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2016-07-16">16 Jul 2016</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/java'>Java</a>,
+                       
+                
+                    
+                       <a href='/tag/hibernate'>Hibernate</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <h4 id="entities-vs-value-types">Entities vs Value types</h4>
+
+<p>When we create domain model we must deal with two kinds of objects:
+entities and value types. Entities represents objects that have some notion of 
+identity like person or a vehicle. Person may change name or even sex but we still use
+<em>the same</em> object to represent that particular person, we only update object attributes
+(e.g. even if I change my name I’m still myself).
+Entities always have some kind of identifier that allows us to
+distinguish them, this may be a 
+<a href="https://en.wikipedia.org/wiki/Surrogate_key">surrogate key</a> like <code class="highlighter-rouge">Long id</code> or
+a <a href="https://en.wikipedia.org/wiki/Natural_key">natural key</a> 
+like national id/social security number in case of person.</p>
+
+<p>The other kind of objects that we encounter in domain model are value types.
+Value types represent things like addresses, phone numbers, money amounts, currencies etc.
+Value types are immutable and don’t need to have any identifier -
+two value types are equal if they contents are equal. If we need to update value type
+we just create a new instance of value type with updated attributes.</p>
+
+<p>What this have to do with embeddable types?
+In most cases embeddable types should be used to represent only value types
+of your domain model.<br />
+Now let’s see the code!</p>
+
+<h4 id="embeddable-in-hibernate">Embeddable in Hibernate</h4>
+
+<p>We will start by creating <code class="highlighter-rouge">User</code> entity that will have two embeddable value types
+<code class="highlighter-rouge">PhoneNumber</code> and <code class="highlighter-rouge">MoneyAmount</code>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="nd">@Table</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"users"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+    <span class="nd">@Id</span>
+    <span class="nd">@GeneratedValue</span>
+    <span class="kd">private</span> <span class="n">Long</span> <span class="n">id</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">username</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">PhoneNumber</span> <span class="n">contactPhoneNumber</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">MoneyAmount</span> <span class="n">availableFunds</span><span class="o">;</span>
+
+    <span class="c1">// constructors, getters, setters, methods etc.</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>We don’t need to use any additional annotations to map embeddable types,
+we just declare them like any other field. Later we will see that
+we may change embeddable type mappings when needed.</p>
+
+<p>Now let’s see how <code class="highlighter-rouge">PhoneNumber</code> value type looks like.
+Since it is our first value type I will present entire class:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Embeddable</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">PhoneNumber</span> <span class="kd">implements</span> <span class="n">Serializable</span> <span class="o">{</span>
+    <span class="nd">@Column</span><span class="o">(</span><span class="n">length</span> <span class="o">=</span> <span class="mi">16</span><span class="o">,</span> <span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">phoneNumber</span><span class="o">;</span>
+
+    <span class="kd">protected</span> <span class="n">PhoneNumber</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">PhoneNumber</span><span class="o">(</span><span class="n">String</span> <span class="n">phoneNumber</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// You can add validation here</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">phoneNumber</span> <span class="o">=</span> <span class="n">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">phoneNumber</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">getPhoneNumber</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">phoneNumber</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="n">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">o</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span> <span class="o">==</span> <span class="n">o</span><span class="o">)</span> <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">o</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="o">!(</span><span class="n">o</span> <span class="k">instanceof</span> <span class="n">PhoneNumber</span><span class="o">))</span> <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+
+        <span class="n">PhoneNumber</span> <span class="n">that</span> <span class="o">=</span> <span class="o">(</span><span class="n">PhoneNumber</span><span class="o">)</span> <span class="n">o</span><span class="o">;</span>
+        <span class="k">return</span> <span class="n">phoneNumber</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">that</span><span class="o">.</span><span class="na">phoneNumber</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="n">hashCode</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">phoneNumber</span><span class="o">.</span><span class="na">hashCode</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">toString</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">"phone: "</span> <span class="o">+</span> <span class="n">phoneNumber</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>First thing we should notice is that <code class="highlighter-rouge">PhoneNumber</code> instances are immutable.
+We can set <code class="highlighter-rouge">phoneNumber</code> using constructor,
+but we cannot change it.
+Notice also that we overriden <code class="highlighter-rouge">equals()</code> and <code class="highlighter-rouge">hashCode()</code> to
+provide value equality - two phone numbers are equal if they string
+representations are equal.
+To improve debugging experience we also overriden <code class="highlighter-rouge">toString()</code> method.</p>
+
+<p>The other class <code class="highlighter-rouge">MoneyAmount</code> looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Embeddable</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MoneyAmount</span> <span class="kd">implements</span> <span class="n">Serializable</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">BigDecimal</span> <span class="n">amount</span><span class="o">;</span>
+
+    <span class="nd">@Column</span><span class="o">(</span><span class="n">length</span> <span class="o">=</span> <span class="mi">3</span><span class="o">,</span> <span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">currency</span><span class="o">;</span>
+
+    <span class="c1">// constructor getters etc.</span>
+
+    <span class="kd">public</span> <span class="n">MoneyAmount</span> <span class="n">add</span><span class="o">(</span><span class="n">MoneyAmount</span> <span class="n">m</span><span class="o">)</span> <span class="o">{</span> <span class="cm">/* ... */</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="n">MoneyAmount</span> <span class="n">subtract</span><span class="o">(</span><span class="n">MoneyAmount</span> <span class="n">m</span><span class="o">)</span> <span class="o">{</span> <span class="cm">/* ... */</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="n">isLessThan</span><span class="o">(</span><span class="n">MoneyAmount</span> <span class="n">other</span><span class="o">)</span> <span class="o">{</span> <span class="cm">/* ... */</span> <span class="o">}</span>
+
+    <span class="c1">// equals, hashCode, toString </span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Notice that this class provides additional operations like <code class="highlighter-rouge">add()</code>. 
+Because value types are immutable we cannot change already
+exiting <code class="highlighter-rouge">MoneyAmount</code> instance, instead we return a new object that
+will represent result of the <code class="highlighter-rouge">add()</code> operation.</p>
+
+<p>Now let’s get to the Hibernate part.
+Embeddable types must be marked with 
+<code class="highlighter-rouge">@Embeddable</code> annotation,
+they can contain one or more fields and every 
+field may carry <code class="highlighter-rouge">@Column</code> mappings.
+Embeddable types may contain other embeddable types,
+but they cannot contain <code class="highlighter-rouge">@Id</code> field.</p>
+
+<p>When Hibernate stores embeddable types in database they are
+stored in table of the entity that contains them.
+For example for our <code class="highlighter-rouge">User</code> entity Hibernate will generate table:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">users</span>
+<span class="p">(</span>
+  <span class="n">id</span> <span class="n">bigint</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span> <span class="c1">-- User
+</span>
+  <span class="n">amount</span> <span class="n">numeric</span><span class="p">(</span><span class="mi">19</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="c1">-- MoneyAmount
+</span>  <span class="n">currency</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+
+  <span class="n">phonenumber</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span> 
+        <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span> <span class="c1">-- PhoneNumber
+</span>
+  <span class="n">username</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span> <span class="c1">-- User
+</span>  
+  <span class="k">CONSTRAINT</span> <span class="n">users_pkey</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="p">)</span></code></pre></figure>
+
+<p>Sometimes we want to change e.g. one of the column names of the embeddable type 
+but only in certain containing type. 
+For example let’s say that we want to map <code class="highlighter-rouge">PhoneNumber</code>
+in <code class="highlighter-rouge">User</code> to <code class="highlighter-rouge">phone_number</code> column. We may do this using <code class="highlighter-rouge">@AttributeOverride</code> annotation:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="nd">@AttributeOverrides</span><span class="o">({</span>
+        <span class="nd">@AttributeOverride</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"phoneNumber"</span><span class="o">,</span>
+                <span class="n">column</span> <span class="o">=</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"phone_number"</span><span class="o">,</span> <span class="n">length</span> <span class="o">=</span> <span class="mi">16</span><span class="o">,</span> <span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">))</span>
+    <span class="o">})</span>
+    <span class="kd">private</span> <span class="n">PhoneNumber</span> <span class="n">contactPhoneNumber</span><span class="o">;</span>
+
+    <span class="c1">// ...</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Unfortunately when we override column attributes we must redefine <em>all</em> of them, and
+syntax to do so it pretty verbose.</p>
+
+<p>Now it’s time to save some ickle embeddables to database:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">User</span> <span class="n">bob</span> <span class="o">=</span> <span class="k">new</span> <span class="n">User</span><span class="o">(</span>
+    <span class="s">"bob"</span><span class="o">,</span>
+    <span class="k">new</span> <span class="n">PhoneNumber</span><span class="o">(</span><span class="s">"111-222-333"</span><span class="o">),</span>
+    <span class="k">new</span> <span class="n">MoneyAmount</span><span class="o">(</span><span class="k">new</span> <span class="n">BigDecimal</span><span class="o">(</span><span class="mi">100</span><span class="o">),</span> <span class="s">"EUR"</span><span class="o">));</span>
+
+<span class="n">entityManager</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">bob</span><span class="o">);</span></code></pre></figure>
+
+<p>This operation will result in SQL:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">insert</span> <span class="k">into</span> <span class="n">users</span>
+    <span class="p">(</span><span class="n">amount</span><span class="p">,</span> <span class="n">currency</span><span class="p">,</span> <span class="n">phone_number</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">id</span><span class="p">)</span> 
+<span class="k">values</span>
+    <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="s1">'EUR'</span><span class="p">,</span> <span class="s1">'111-222-333'</span><span class="p">,</span> <span class="s1">'bob'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></code></pre></figure>
+
+<p>We may also update embeddable type by providing new instance:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+    <span class="c1">// ...</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">chargeUser</span><span class="o">(</span><span class="n">MoneyAmount</span> <span class="n">amount</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">availableFunds</span><span class="o">.</span><span class="na">isLessThan</span><span class="o">(</span><span class="n">amount</span><span class="o">))</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalStateException</span><span class="o">(</span>
+                    <span class="s">"User don't have enough money available."</span><span class="o">);</span>
+
+        <span class="n">availableFunds</span> <span class="o">=</span> <span class="n">availableFunds</span><span class="o">.</span><span class="na">subtract</span><span class="o">(</span><span class="n">amount</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="n">User</span> <span class="n">bob</span> <span class="o">=</span> <span class="n">entityManager</span><span class="o">.</span><span class="na">find</span><span class="o">(</span><span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+
+<span class="n">bob</span><span class="o">.</span><span class="na">chargeUser</span><span class="o">(</span>
+    <span class="k">new</span> <span class="n">MoneyAmount</span><span class="o">(</span><span class="k">new</span> <span class="n">BigDecimal</span><span class="o">(</span><span class="mi">10</span><span class="o">),</span> <span class="s">"EUR"</span><span class="o">)</span>
+    <span class="o">);</span></code></pre></figure>
+
+<p>This will generate <code class="highlighter-rouge">UPDATE</code>:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">update</span> <span class="n">users</span> 
+<span class="k">set</span>
+    <span class="n">amount</span><span class="o">=</span><span class="mi">90</span><span class="p">.</span><span class="mi">00</span><span class="p">,</span>
+    <span class="n">currency</span><span class="o">=</span><span class="s1">'EUR'</span><span class="p">,</span>
+    <span class="n">phone_number</span><span class="o">=</span><span class="s1">'111-222-333'</span><span class="p">,</span>
+    <span class="n">username</span><span class="o">=</span><span class="s1">'bob'</span> 
+<span class="k">where</span>
+    <span class="n">id</span><span class="o">=</span><span class="mi">1</span></code></pre></figure>
+
+<h5 id="embeddable-types-and-nullability">Embeddable types and nullability</h5>
+
+<p>Hibernate stores null embeddable type as <code class="highlighter-rouge">NULL</code> values in
+all embeddable type columns. You can save object with <code class="highlighter-rouge">null</code>
+embeddable type only if all embeddable type columns are nullable.
+When you try to do this with embeddable type that contains non-null 
+columns Hibernate will throw exception:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Dummy</span> <span class="n">d</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Dummy</span><span class="o">();</span>
+<span class="n">d</span><span class="o">.</span><span class="na">setPhoneNumber</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+<span class="n">entityManager</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
+
+<span class="c1">// at commit:</span>
+<span class="c1">// ERROR: null value in column "phonenumber" violates not-null constraint</span></code></pre></figure>
+
+<h5 id="sharing-embeddable-types-between-entities">Sharing embeddable types between entities</h5>
+
+<p>Embeddable types follow value semantics, this means when we save the same
+instance of embeddable type in two different entities and then read back
+these entities we will get two <em>instances</em> of embeddable type:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">PhoneNumber</span> <span class="n">phoneNumber</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PhoneNumber</span><span class="o">(</span><span class="s">"111-222-333"</span><span class="o">);</span>
+
+<span class="n">Dummy</span> <span class="n">d1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Dummy</span><span class="o">();</span>
+<span class="n">d1</span><span class="o">.</span><span class="na">setPhoneNumber</span><span class="o">(</span><span class="n">phoneNumber</span><span class="o">);</span>
+
+<span class="n">Dummy</span> <span class="n">d2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Dummy</span><span class="o">();</span>
+<span class="n">d2</span><span class="o">.</span><span class="na">setPhoneNumber</span><span class="o">(</span><span class="n">phoneNumber</span><span class="o">);</span>
+
+<span class="c1">// true</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">d1</span><span class="o">.</span><span class="na">getPhoneNumber</span><span class="o">()</span> <span class="o">==</span> <span class="n">d2</span><span class="o">.</span><span class="na">getPhoneNumber</span><span class="o">());</span>
+
+<span class="n">entityManager</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">d1</span><span class="o">);</span>
+<span class="n">entityManager</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">d2</span><span class="o">);</span>
+<span class="n">entityManager</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
+<span class="n">entityManager</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+
+<span class="n">d1</span> <span class="o">=</span> <span class="n">entityManager</span><span class="o">.</span><span class="na">find</span><span class="o">(</span><span class="n">Dummy</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">d1</span><span class="o">.</span><span class="na">getId</span><span class="o">());</span>
+<span class="n">d2</span> <span class="o">=</span> <span class="n">entityManager</span><span class="o">.</span><span class="na">find</span><span class="o">(</span><span class="n">Dummy</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">d2</span><span class="o">.</span><span class="na">getId</span><span class="o">());</span>
+
+<span class="c1">// false</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">d1</span><span class="o">.</span><span class="na">getPhoneNumber</span><span class="o">()</span> <span class="o">==</span> <span class="n">d2</span><span class="o">.</span><span class="na">getPhoneNumber</span><span class="o">());</span>
+
+<span class="c1">// true</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">d1</span><span class="o">.</span><span class="na">getPhoneNumber</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">d2</span><span class="o">.</span><span class="na">getPhoneNumber</span><span class="o">()));</span></code></pre></figure>
+
+<p>This is generally not a problem because we should compare value types
+using <code class="highlighter-rouge">equals()</code> anyway.</p>
+
+<h5 id="mapping-many-instances-of-embeddable-type-in-the-same-entity">Mapping many instances of embeddable type in the same entity</h5>
+
+<p>Let’s say we want to extend our <code class="highlighter-rouge">User</code> entity to allow users to provide
+second phone number. If we only add second <code class="highlighter-rouge">PhoneNumber</code> field to the <code class="highlighter-rouge">User</code> class,
+Hibernate will not know how to name columns of the second <code class="highlighter-rouge">PhoneNumber</code>. 
+This will result in the exception:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">org.hibernate.MappingException: 
+    Repeated column in mapping for entity: User column: phoneNumber </code></pre></figure>
+
+<p>We can easly fix this using <code class="highlighter-rouge">@AttributeOverride</code> annotation:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+    <span class="c1">// ...</span>
+    <span class="kd">private</span> <span class="n">PhoneNumber</span> <span class="n">contactPhoneNumber</span><span class="o">;</span>
+
+    <span class="nd">@AttributeOverrides</span><span class="o">({</span>
+            <span class="nd">@AttributeOverride</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"phoneNumber"</span><span class="o">,</span>
+                    <span class="n">column</span> <span class="o">=</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"backup_phone_number"</span><span class="o">,</span> <span class="n">length</span> <span class="o">=</span> <span class="mi">16</span><span class="o">,</span> <span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">))</span>
+    <span class="o">})</span>
+    <span class="kd">private</span> <span class="n">PhoneNumber</span> <span class="n">backupPhoneNumber</span><span class="o">;</span>
+
+    <span class="c1">// ...</span>
+<span class="o">}</span></code></pre></figure>
+
+<h4 id="collections-of-embeddable-types">Collections of embeddable types</h4>
+
+<p>Embeddable types may be used as collection elements. Let’s extend our <code class="highlighter-rouge">User</code> class
+so that user can have any number of phone numbers:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="nd">@ElementCollection</span>
+    <span class="nd">@CollectionTable</span><span class="o">(</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s">"user_phone_numbers"</span><span class="o">,</span>
+            <span class="n">joinColumns</span> <span class="o">=</span> <span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"user_id"</span><span class="o">))</span>
+    <span class="kd">private</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">PhoneNumber</span><span class="o">&gt;</span> <span class="n">phoneNumbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;&gt;();</span>
+
+    <span class="kd">public</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">PhoneNumber</span><span class="o">&gt;</span> <span class="n">getPhoneNumbers</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">unmodifiableCollection</span><span class="o">(</span><span class="n">phoneNumbers</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">addPhoneNumber</span><span class="o">(</span><span class="n">PhoneNumber</span> <span class="n">number</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">phoneNumbers</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">number</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">removePhoneNumber</span><span class="o">(</span><span class="n">PhoneNumber</span> <span class="n">number</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">phoneNumbers</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">number</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="c1">// ...</span></code></pre></figure>
+
+<p>In this case collection elements are owned by entity class, if entity is removed
+all collection elements are removed as well. 
+In database this will be represented by two tables:
+<img src="assets/images/2016-07-16/embeddable_collection.png" alt="How embeddable collections are stored in database" /></p>
+
+<p>Before you start using this method you must know 
+how Hibernate will perform inserts/updates. 
+Basically Hibernate first will remove all rows associated with given entity
+and then will perform many inserts (one insert per one collection element).
+This is horrible from performance point of view so use this mapping only with small collections.</p>
+
+<p>Here is a bit of code to illustrate the point:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">User</span> <span class="n">b</span> <span class="o">=</span> <span class="n">entityManager</span><span class="o">.</span><span class="na">find</span><span class="o">(</span><span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+<span class="c1">// user already have one phone number</span>
+<span class="n">b</span><span class="o">.</span><span class="na">addPhoneNumber</span><span class="o">(</span><span class="k">new</span> <span class="n">PhoneNumber</span><span class="o">(</span><span class="s">"333-555-666"</span><span class="o">));</span></code></pre></figure>
+
+<p>This will result in SQL:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">delete</span> <span class="k">from</span> <span class="n">user_phone_numbers</span> 
+<span class="k">where</span>
+    <span class="n">user_id</span><span class="o">=</span><span class="mi">1</span>
+
+<span class="k">insert</span> <span class="k">into</span> <span class="n">user_phone_numbers</span>
+    <span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">phoneNumber</span><span class="p">)</span> 
+<span class="k">values</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'333-555-666'</span><span class="p">)</span>
+
+<span class="k">insert</span> <span class="k">into</span> <span class="n">user_phone_numbers</span>
+    <span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">phoneNumber</span><span class="p">)</span> 
+<span class="k">values</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'111-222-333'</span><span class="p">)</span></code></pre></figure>
+
+<h5 id="allowing-duplicates-in-collection">Allowing duplicates in collection</h5>
+
+<p>If we want to allow duplicates in embeddable type collection we should map
+it as a bag:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@ElementCollection</span>
+<span class="nd">@CollectionTable</span><span class="o">(</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s">"user_phone_numbers"</span><span class="o">,</span>
+        <span class="n">joinColumns</span> <span class="o">=</span> <span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"user_id"</span><span class="o">))</span>
+<span class="nd">@org</span><span class="o">.</span><span class="na">hibernate</span><span class="o">.</span><span class="na">annotations</span><span class="o">.</span><span class="na">CollectionId</span><span class="o">(</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"phone_number_id"</span><span class="o">),</span>
+        <span class="n">type</span> <span class="o">=</span> <span class="nd">@org</span><span class="o">.</span><span class="na">hibernate</span><span class="o">.</span><span class="na">annotations</span><span class="o">.</span><span class="na">Type</span><span class="o">(</span><span class="n">type</span> <span class="o">=</span> <span class="s">"long"</span><span class="o">),</span>
+        <span class="n">generator</span> <span class="o">=</span> <span class="s">"sequence"</span>
+<span class="o">)</span>
+<span class="kd">private</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">PhoneNumber</span><span class="o">&gt;</span> <span class="n">phoneNumbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span></code></pre></figure>
+
+<p>This will result in database schema:
+<img src="assets/images/2016-07-16/embeddable_collection2.png" alt="How embeddable collections are stored in database" />
+Unfortunatelly this will not improve bad performance of embeddable type collections.</p>
+
+<p>You can improve performance a bit (mainly with inserts) using <code class="highlighter-rouge">@OrderColumn</code> annotation,
+more informations can be found in these articles:</p>
+
+<ul>
+  <li><a href="http://stackoverflow.com/questions/3742897/hibernate-elementcollection-strange-delete-insert-behavior">StackOverflow: strange delete/insert behaviour</a></li>
+  <li><a href="https://dzone.com/articles/how-optimize-hibernate">How to Optimize Hibernate ElementCollection Statements</a></li>
+</ul>
+
+<h4 id="the-end">The End</h4>
+
+<p>In this blog post I only scratched the surface of the embeddable types, 
+there is more to learn about them. If you want to dig deeper I advice reading
+great book: <a href="https://amzn.com/1617290459">Java Persistence with Hibernate 2nd</a>.</p>
+
+<p>Thats all for today, thanks for reading!</p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Introduction to Hibernate embeddable types&amp;url=https://marcin-chwedczuk.github.io/introduction-to-hibernate-embeddable-types"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/introduction-to-hibernate-embeddable-types"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/introduction-to-hibernate-embeddable-types"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//introduction-to-hibernate-embeddable-types';
+        this.page.identifier = '/introduction-to-hibernate-embeddable-types';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover3.jpg)" href="/how-to-use-find-command">
+            <section class="post">
+                <h2>How to use find command</h2>
+                <p>Linux `find` command may be used to find files and directories that meet specified conditions....</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover4.jpg)" href="/how-to-fix-vim-freezes">
+            <section class="post">
+                <h2>How to fix Vim freezes</h2>
+                <p>When I switched from Visual Studio to using Vim I often experienced Vim freezes. This...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

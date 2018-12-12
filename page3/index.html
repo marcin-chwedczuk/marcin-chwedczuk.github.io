@@ -62,7 +62,7 @@
 
 
 </head>
-<body class="home-template nav-closed">
+<body class="paged archive-template nav-closed">
 
     <div class="nav">
     <h3 class="nav-title">Menu</h3>
@@ -124,9 +124,13 @@
         
             <nav class="pagination" role="pagination">
     
-    <span class="page-number"> Page 1 of 11 </span>
+        
+            <a class="newer-posts" href="/page2/" title="Previous Page">&laquo; Newer Posts</a>
+      
+    
+    <span class="page-number"> Page 3 of 11 </span>
      
-        <a class="older-posts" href="/page2/" title="Next Page">Older Posts &raquo;</a>
+        <a class="older-posts" href="/page4/" title="Next Page">Older Posts &raquo;</a>
      
 </nav>
         
@@ -136,10 +140,10 @@
     
     <article class="post">
         <header class="post-header">
-            <h2 class="post-title"><a href="/inheritance-just-say-no">Inheritance? Just say no!</a></h2>
+            <h2 class="post-title"><a href="/how-to-check-if-a-number-is-a-power-of-two">How to check if a number is a power of two</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>Recently during a code review I have found the following piece of code: public class TemplateCache : ConcurrentDictionary&lt;TemplateName, Template&gt; { } Here the programmer broke one... <a class="read-more" href="/inheritance-just-say-no">&raquo;</a></p>
+            <p>In this blog post we will learn about two algorithms that allow us to quickly check that a given integer is a power of two. Both... <a class="read-more" href="/how-to-check-if-a-number-is-a-power-of-two">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
@@ -150,24 +154,20 @@
                 on 
                 
                     
-                       <a href='/tag/dotnet'>Dotnet</a>,
-                       
-                
-                    
-                       <a href='/tag/architecture'>Architecture</a>
+                       <a href='/tag/algorithms'>Algorithms</a>
                        
                 
             
-            <time class="post-date" datetime="2018-12-12">12 Dec 2018</time>
+            <time class="post-date" datetime="2017-12-16">16 Dec 2017</time>
         </footer>
     </article>
     
     <article class="post">
         <header class="post-header">
-            <h2 class="post-title"><a href="/abusing-local-functions-to-hide-design-problems">Abusing local functions to hide design problems</a></h2>
+            <h2 class="post-title"><a href="/a-closer-look-at-portable-executable-msdos-stub">A closer look at Portable Executable MS-DOS Stub</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>Recently I was browsing through a certain code base and I saw a code similar to this: public class EnterpriseNotificationSender { private readonly IUserManagementService _userManagementService; //... <a class="read-more" href="/abusing-local-functions-to-hide-design-problems">&raquo;</a></p>
+            <p>When we open native or .NET windows executables in a hex-editor we can notice that almost all of them contains strange “This program cannot be run... <a class="read-more" href="/a-closer-look-at-portable-executable-msdos-stub">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
@@ -178,24 +178,20 @@
                 on 
                 
                     
-                       <a href='/tag/dotnet'>Dotnet</a>,
-                       
-                
-                    
-                       <a href='/tag/architecture'>Architecture</a>
+                       <a href='/tag/low-level'>Low-level</a>
                        
                 
             
-            <time class="post-date" datetime="2018-10-08">08 Oct 2018</time>
+            <time class="post-date" datetime="2017-11-18">18 Nov 2017</time>
         </footer>
     </article>
     
     <article class="post">
         <header class="post-header">
-            <h2 class="post-title"><a href="/automatically-generate-new-oauth2-tokens-when-using-postman">Automatically generate new OAuth 2.0 access tokens when using Postman</a></h2>
+            <h2 class="post-title"><a href="/java-streams-best-practices">Java streams best practices</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>Did you ever try to use Postman with OAuth 2.0 protected API? It is pretty annoying. First you must select the correct authorization type, then you... <a class="read-more" href="/automatically-generate-new-oauth2-tokens-when-using-postman">&raquo;</a></p>
+            <p>In this short post I am going to present Java 8 streams best practices. Most of them either I figured out myself or learned from my... <a class="read-more" href="/java-streams-best-practices">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
@@ -206,24 +202,20 @@
                 on 
                 
                     
-                       <a href='/tag/tips'>Tips</a>,
-                       
-                
-                    
-                       <a href='/tag/postman'>Postman</a>
+                       <a href='/tag/java'>Java</a>
                        
                 
             
-            <time class="post-date" datetime="2018-09-29">29 Sep 2018</time>
+            <time class="post-date" datetime="2017-11-08">08 Nov 2017</time>
         </footer>
     </article>
     
     <article class="post">
         <header class="post-header">
-            <h2 class="post-title"><a href="/avoid-hidden-coupling-to-interface-implementation">Avoid hidden coupling to interface implementation</a></h2>
+            <h2 class="post-title"><a href="/dont-ask-me-about-singletons">Don't ask me about Singletons</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>A few days ago I was reviewing a pull request at work and one line of code catch my eye: var @event = new CupOfCoffeeReadyEvent(/* ...... <a class="read-more" href="/avoid-hidden-coupling-to-interface-implementation">&raquo;</a></p>
+            <p>Some time ago I attended a job interview for C# developer position in Warsaw. One of the tasks that I had to perform was to implement... <a class="read-more" href="/dont-ask-me-about-singletons">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
@@ -234,24 +226,20 @@
                 on 
                 
                     
-                       <a href='/tag/dotnet'>Dotnet</a>,
-                       
-                
-                    
-                       <a href='/tag/architecture'>Architecture</a>
+                       <a href='/tag/csharp'>Csharp</a>
                        
                 
             
-            <time class="post-date" datetime="2018-09-21">21 Sep 2018</time>
+            <time class="post-date" datetime="2017-09-30">30 Sep 2017</time>
         </footer>
     </article>
     
     <article class="post">
         <header class="post-header">
-            <h2 class="post-title"><a href="/fluent-validation-and-complex-dependencies-between-properties">Fluent Validation and complex dependencies between properties</a></h2>
+            <h2 class="post-title"><a href="/HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality">Hibernate HHH000179 warning&#58 Narrowing proxy to class this operation breaks ==</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>FluentValidation is one of the best validation libraries for .NET. I use it daily both at work and in my personal pet projects. Still from time... <a class="read-more" href="/fluent-validation-and-complex-dependencies-between-properties">&raquo;</a></p>
+            <p>In this post I will explain why Hibernate is generating the HHH000179 warning and when ignoring it may introduce bugs in your code. To understand what... <a class="read-more" href="/HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
@@ -262,15 +250,11 @@
                 on 
                 
                     
-                       <a href='/tag/dotnet'>Dotnet</a>,
-                       
-                
-                    
-                       <a href='/tag/unit-testing'>Unit-testing</a>
+                       <a href='/tag/java'>Java</a>
                        
                 
             
-            <time class="post-date" datetime="2018-09-18">18 Sep 2018</time>
+            <time class="post-date" datetime="2017-07-30">30 Jul 2017</time>
         </footer>
     </article>
     
@@ -279,9 +263,13 @@
     
         <nav class="pagination" role="pagination">
     
-    <span class="page-number"> Page 1 of 11 </span>
+        
+            <a class="newer-posts" href="/page2/" title="Previous Page">&laquo; Newer Posts</a>
+      
+    
+    <span class="page-number"> Page 3 of 11 </span>
      
-        <a class="older-posts" href="/page2/" title="Next Page">Older Posts &raquo;</a>
+        <a class="older-posts" href="/page4/" title="Next Page">Older Posts &raquo;</a>
      
 </nav>
     

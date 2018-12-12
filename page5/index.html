@@ -62,7 +62,7 @@
 
 
 </head>
-<body class="home-template nav-closed">
+<body class="paged archive-template nav-closed">
 
     <div class="nav">
     <h3 class="nav-title">Menu</h3>
@@ -124,9 +124,13 @@
         
             <nav class="pagination" role="pagination">
     
-    <span class="page-number"> Page 1 of 11 </span>
+        
+            <a class="newer-posts" href="/page4/" title="Previous Page">&laquo; Newer Posts</a>
+      
+    
+    <span class="page-number"> Page 5 of 11 </span>
      
-        <a class="older-posts" href="/page2/" title="Next Page">Older Posts &raquo;</a>
+        <a class="older-posts" href="/page6/" title="Next Page">Older Posts &raquo;</a>
      
 </nav>
         
@@ -136,10 +140,10 @@
     
     <article class="post">
         <header class="post-header">
-            <h2 class="post-title"><a href="/inheritance-just-say-no">Inheritance? Just say no!</a></h2>
+            <h2 class="post-title"><a href="/spring-transactional-cheat-sheet">Spring @Transactional cheat sheet</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>Recently during a code review I have found the following piece of code: public class TemplateCache : ConcurrentDictionary&lt;TemplateName, Template&gt; { } Here the programmer broke one... <a class="read-more" href="/inheritance-just-say-no">&raquo;</a></p>
+            <p>@Transactional(propagation=…) MANDATORY Method must run within transaction. If there is no currently active transaction going on an exception is thrown. REQUIRED Method must run within transaction.... <a class="read-more" href="/spring-transactional-cheat-sheet">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
@@ -150,24 +154,20 @@
                 on 
                 
                     
-                       <a href='/tag/dotnet'>Dotnet</a>,
-                       
-                
-                    
-                       <a href='/tag/architecture'>Architecture</a>
+                       <a href='/tag/java'>Java</a>
                        
                 
             
-            <time class="post-date" datetime="2018-12-12">12 Dec 2018</time>
+            <time class="post-date" datetime="2017-01-07">07 Jan 2017</time>
         </footer>
     </article>
     
     <article class="post">
         <header class="post-header">
-            <h2 class="post-title"><a href="/abusing-local-functions-to-hide-design-problems">Abusing local functions to hide design problems</a></h2>
+            <h2 class="post-title"><a href="/crudest-curd-using-spring">Crudest CRUD using Spring</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>Recently I was browsing through a certain code base and I saw a code similar to this: public class EnterpriseNotificationSender { private readonly IUserManagementService _userManagementService; //... <a class="read-more" href="/abusing-local-functions-to-hide-design-problems">&raquo;</a></p>
+            <p>EDIT: In this post I’ll use Spring XML configuration, in new applications you should definitely use Spring JavaConfig configuration (via annotations and Java classes). For more... <a class="read-more" href="/crudest-curd-using-spring">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
@@ -178,24 +178,20 @@
                 on 
                 
                     
-                       <a href='/tag/dotnet'>Dotnet</a>,
-                       
-                
-                    
-                       <a href='/tag/architecture'>Architecture</a>
+                       <a href='/tag/java'>Java</a>
                        
                 
             
-            <time class="post-date" datetime="2018-10-08">08 Oct 2018</time>
+            <time class="post-date" datetime="2016-12-27">27 Dec 2016</time>
         </footer>
     </article>
     
     <article class="post">
         <header class="post-header">
-            <h2 class="post-title"><a href="/automatically-generate-new-oauth2-tokens-when-using-postman">Automatically generate new OAuth 2.0 access tokens when using Postman</a></h2>
+            <h2 class="post-title"><a href="/generics-in-java">Generics in Java</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>Did you ever try to use Postman with OAuth 2.0 protected API? It is pretty annoying. First you must select the correct authorization type, then you... <a class="read-more" href="/automatically-generate-new-oauth2-tokens-when-using-postman">&raquo;</a></p>
+            <p>Generics were introduced with Java 6 and quickly become indispensable tool of every Java programmer. In this blog post I gathered the most important facts about... <a class="read-more" href="/generics-in-java">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
@@ -206,24 +202,20 @@
                 on 
                 
                     
-                       <a href='/tag/tips'>Tips</a>,
-                       
-                
-                    
-                       <a href='/tag/postman'>Postman</a>
+                       <a href='/tag/java'>Java</a>
                        
                 
             
-            <time class="post-date" datetime="2018-09-29">29 Sep 2018</time>
+            <time class="post-date" datetime="2016-12-27">27 Dec 2016</time>
         </footer>
     </article>
     
     <article class="post">
         <header class="post-header">
-            <h2 class="post-title"><a href="/avoid-hidden-coupling-to-interface-implementation">Avoid hidden coupling to interface implementation</a></h2>
+            <h2 class="post-title"><a href="/overview-of-spring-annotation-driven-aop">Overview of Spring annotation driven AOP</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>A few days ago I was reviewing a pull request at work and one line of code catch my eye: var @event = new CupOfCoffeeReadyEvent(/* ...... <a class="read-more" href="/avoid-hidden-coupling-to-interface-implementation">&raquo;</a></p>
+            <p>In this post I will show you how to use Spring aspects. In contrast to AspectJ aspects that are implemented by either compile time or load... <a class="read-more" href="/overview-of-spring-annotation-driven-aop">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
@@ -234,24 +226,20 @@
                 on 
                 
                     
-                       <a href='/tag/dotnet'>Dotnet</a>,
-                       
-                
-                    
-                       <a href='/tag/architecture'>Architecture</a>
+                       <a href='/tag/java'>Java</a>
                        
                 
             
-            <time class="post-date" datetime="2018-09-21">21 Sep 2018</time>
+            <time class="post-date" datetime="2016-12-03">03 Dec 2016</time>
         </footer>
     </article>
     
     <article class="post">
         <header class="post-header">
-            <h2 class="post-title"><a href="/fluent-validation-and-complex-dependencies-between-properties">Fluent Validation and complex dependencies between properties</a></h2>
+            <h2 class="post-title"><a href="/iterative-solution-to-towers-of-hanoi-problem">Iterative solution to Towers of Hanoi problem</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>FluentValidation is one of the best validation libraries for .NET. I use it daily both at work and in my personal pet projects. Still from time... <a class="read-more" href="/fluent-validation-and-complex-dependencies-between-properties">&raquo;</a></p>
+            <p>Towers of Hanoi is a simple programming riddle often used in programming courses to introduce recursion. Not many people are aware that Towers of Hanoi has... <a class="read-more" href="/iterative-solution-to-towers-of-hanoi-problem">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
@@ -262,15 +250,11 @@
                 on 
                 
                     
-                       <a href='/tag/dotnet'>Dotnet</a>,
-                       
-                
-                    
-                       <a href='/tag/unit-testing'>Unit-testing</a>
+                       <a href='/tag/algorithm'>Algorithm</a>
                        
                 
             
-            <time class="post-date" datetime="2018-09-18">18 Sep 2018</time>
+            <time class="post-date" datetime="2016-11-26">26 Nov 2016</time>
         </footer>
     </article>
     
@@ -279,9 +263,13 @@
     
         <nav class="pagination" role="pagination">
     
-    <span class="page-number"> Page 1 of 11 </span>
+        
+            <a class="newer-posts" href="/page4/" title="Previous Page">&laquo; Newer Posts</a>
+      
+    
+    <span class="page-number"> Page 5 of 11 </span>
      
-        <a class="older-posts" href="/page2/" title="Next Page">Older Posts &raquo;</a>
+        <a class="older-posts" href="/page6/" title="Next Page">Older Posts &raquo;</a>
      
 </nav>
     

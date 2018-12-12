@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Debugging OpenJDK 8 with NetBeans on Ubuntu</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover6.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Debugging OpenJDK 8 with NetBeans on Ubuntu</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2017-06-24">24 Jun 2017</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/java'>Java</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>In this post we will learn how to download, compile and debug OpenJDK 8
+using Ubuntu and NetBeans IDE.</p>
+
+<h4 id="downloading-and-compiling-openjdk-8">Downloading and compiling OpenJDK 8</h4>
+
+<p><a href="http://openjdk.java.net/">OpenJDK</a> project uses Mercurial for source
+code versioning. To get sources using Mercurial follow instructions described 
+<a href="https://stackoverflow.com/a/29845834/1779504">in this SO answer</a>.</p>
+
+<p>To get OpenJDK sources using Git, we need to clone OpenJDK repository mirror
+provided by <a href="https://adoptopenjdk.net/about.html">AdoptOpenJDK project</a>.
+To speed things up we will only clone <code class="highlighter-rouge">master</code> branch without commit history:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ git clone \
+	--depth 1 \
+	-b master \
+	git@github.com:AdoptOpenJDK/openjdk-jdk8u.git</code></pre></figure>
+
+<p>Now when we have sources, its time to compile OpenJDK.
+First we need to install all required dependencies:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ sudo apt install \
+        libx11-dev \
+        libxext-dev \
+        libxrender-dev \
+        libxtst-dev \
+        libxt-dev \
+        libcups2-dev \
+        libfreetype6-dev \
+        libasound2-dev</code></pre></figure>
+
+<p>Then we must run <code class="highlighter-rouge">configure</code> script:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cd openjdk-jdk8u/
+$ chmod +x ./configure
+$ ./configure \
+	--with-debug-level=slowdebug \
+	--with-target-bits=64</code></pre></figure>
+
+<p>We call <code class="highlighter-rouge">configure</code> with two options:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">--with-debug-level=slowdebug</code> - enables generating debug information
+ when compiling OpenJDK</li>
+  <li><code class="highlighter-rouge">--with-target-bits=64</code> - we will generate 64-bit binaries</li>
+</ul>
+
+<p>It may happen than <code class="highlighter-rouge">configure</code> will return error telling you that you need
+to install some additional tool/library. This is something to be expected,
+just follow instructions printed by <code class="highlighter-rouge">configure</code>.
+You may need to do this several times until you will 
+have all required dependencies installed on your system.</p>
+
+<p>Now it’s time to actually build OpenJDK:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ make</code></pre></figure>
+
+<p>This may take some time…</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">----- Build times -------
+Start 2017-06-24 17:45:26
+End   2017-06-24 17:48:53
+00:00:12 corba
+00:01:25 hotspot
+00:00:08 jaxp
+00:00:12 jaxws
+00:01:13 jdk
+00:00:17 langtools
+00:03:27 TOTAL
+-------------------------
+Finished building OpenJDK for target 'default'</code></pre></figure>
+
+<p>Now we may use our newly built <code class="highlighter-rouge">java</code> to run “Hello, world!” program:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ ./build/linux-x86_64-normal-server-slowdebug/jdk/bin/java \
+	-cp "/home/me/dev/java/helloWorld/" \
+	App
+Hello, world!</code></pre></figure>
+
+<h4 id="creating-project-for-openjdk-8-in-netbeans">Creating project for OpenJDK 8 in NetBeans</h4>
+
+<p>You need to <a href="https://netbeans.org/downloads/">download</a>
+and install NetBeans IDE. Since HotSpot is written in C++ we will need
+NetBeans with C/C++ support.</p>
+
+<p>Now it is time to create project for OpenJDK in NetBeans.
+Select File-&gt;New Project…-&gt;C/C++ Project with Existing Sources…
+<img src="assets/images/2017-06-24/new_proj.png" alt="New project dialog window." /></p>
+
+<p>Then select “Custom” configuration mode:
+<img src="assets/images/2017-06-24/new_proj2.png" alt="New project dialog window 2 step." /></p>
+
+<p>We must use the same <code class="highlighter-rouge">configure</code> arguments that we used on command line:
+<img src="assets/images/2017-06-24/new_proj3.png" alt="Configure options." /></p>
+
+<p>Now click “Next” a few more times and then click “Finish”.
+NetBeans should now run <code class="highlighter-rouge">configure</code> and build OpenJDK, you should
+see compiler output in Build tab:
+<img src="assets/images/2017-06-24/new_proj4.png" alt="Build window." /></p>
+
+<p>After build ends you should see output similar to:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">----- Build times -------
+Start 2017-06-24 18:07:15
+End   2017-06-24 18:11:17
+00:00:14 corba
+00:01:45 hotspot
+00:00:08 jaxp
+00:00:13 jaxws
+00:01:22 jdk
+00:00:20 langtools
+00:04:02 TOTAL
+-------------------------
+Finished building OpenJDK for target 'default'
+
+BUILD SUCCESSFUL (total time: 4m 2s)</code></pre></figure>
+
+<p>Now we should try to run our “Hello, World!” program from NetBeans.
+Click on project and then select “Properties”:
+<img src="assets/images/2017-06-24/run_1.png" alt="Run command." />
+Then go to “Run” category and click on “…” next to “Run command”, then
+write any command that you want to run. Assume that <code class="highlighter-rouge">"${OUTPUT_PATH}"</code>
+refers to <code class="highlighter-rouge">java</code> binary:
+<img src="assets/images/2017-06-24/run_2.png" alt="Run command step 2." /></p>
+
+<p>Now select Run-&gt;Run Project, NetBeans will ask you what binary you want to
+run, select <code class="highlighter-rouge">java</code>:
+<img src="assets/images/2017-06-24/run_3.png" alt="Run command step 3." /></p>
+
+<p>Now you should see “Hello, world!” written in Output window:
+<img src="assets/images/2017-06-24/run_4.png" alt="Run command step 4." /></p>
+
+<h4 id="debugging-with-netbeans">Debugging with NetBeans</h4>
+
+<p>Call to <code class="highlighter-rouge">System.out.println(...)</code> in Java will ultimately be handled
+by <code class="highlighter-rouge">writeBytes</code> function in <code class="highlighter-rouge">jdk/src/share/native/java/io/io_util.c</code> file
+(this is only valid for Linux builds of OpenJDK).</p>
+
+<p>Lets put a breakpoint inside that function and see what will happen when we
+try to debug Hello world program:
+<img src="assets/images/2017-06-24/debug_1.png" alt="Debug step 1." /></p>
+
+<p>Select Debug-&gt;Debug Main Project. After executing this command you
+may see window:
+<img src="assets/images/2017-06-24/debug_2.png" alt="Debug step 2." />
+JVM uses <code class="highlighter-rouge">SIGSEGV</code> for its internal purposes, from our point of view
+we may just ignore it (select “Don’t Catch this Singla Again” and 
+“Forward and Continue”). After a few seconds we should be able to
+catch a breakpoint and see what JVM is doing:
+<img src="assets/images/2017-06-24/debug_3.png" alt="Debug step 3." /></p>
+
+<p>And that’s it! 
+Now you will be able to check and understand how JVM is working under cover.</p>
+
+<h4 id="references">References</h4>
+
+<ul>
+  <li><a href="http://marcelinorc.com/2016/02/17/using-netbeans-to-hack-openjdk9-in-ubuntu/">http://marcelinorc.com/2016/02/17/using-netbeans-to-hack-openjdk9-in-ubuntu/</a></li>
+  <li><a href="https://neugens.wordpress.com/2015/02/26/debugging-the-jdk-with-gdb/">https://neugens.wordpress.com/2015/02/26/debugging-the-jdk-with-gdb/</a></li>
+  <li><a href="https://github.com/AdoptOpenJDK/openjdk-build">https://github.com/AdoptOpenJDK/openjdk-build</a></li>
+</ul>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Debugging OpenJDK 8 with NetBeans on Ubuntu&amp;url=https://marcin-chwedczuk.github.io/debugging-openjdk8-with-netbeans-on-ubuntu"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/debugging-openjdk8-with-netbeans-on-ubuntu"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/debugging-openjdk8-with-netbeans-on-ubuntu"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//debugging-openjdk8-with-netbeans-on-ubuntu';
+        this.page.identifier = '/debugging-openjdk8-with-netbeans-on-ubuntu';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover6.jpg)" href="/HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality">
+            <section class="post">
+                <h2>Hibernate HHH000179 warning&#58 Narrowing proxy to class this operation breaks ==</h2>
+                <p>In this post I will explain why Hibernate is generating the HHH000179 warning and when...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover2.jpg)" href="/lambda-expressions-in-kotlin">
+            <section class="post">
+                <h2>Lambda expressions in Kotlin</h2>
+                <p>In this blog post we will learn about Kotlin lambda expressions and how they are...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

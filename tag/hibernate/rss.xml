@@ -1,0 +1,1756 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+   
+      <title>marcin-chwedczuk.github.io/</title>
+   
+   <link>https://marcin-chwedczuk.github.io/</link>
+   <description>A place where I can share my thoughts about programming</description>
+   <language>en-uk</language>
+   <managingEditor> marcin-chwedczuk</managingEditor>
+   <atom:link href="rss" rel="self" type="application/rss+xml" />
+   
+	<item>
+	  <title>Introduction to Hibernate embeddable types</title>
+	  <link>//introduction-to-hibernate-embeddable-types</link>
+	  <author>marcin-chwedczuk</author>
+	  <pubDate>2016-07-16T02:00:00+02:00</pubDate>
+	  <guid>//introduction-to-hibernate-embeddable-types</guid>
+	  <description><![CDATA[
+	     <h4 id="entities-vs-value-types">Entities vs Value types</h4>
+
+<p>When we create domain model we must deal with two kinds of objects:
+entities and value types. Entities represents objects that have some notion of 
+identity like person or a vehicle. Person may change name or even sex but we still use
+<em>the same</em> object to represent that particular person, we only update object attributes
+(e.g. even if I change my name I’m still myself).
+Entities always have some kind of identifier that allows us to
+distinguish them, this may be a 
+<a href="https://en.wikipedia.org/wiki/Surrogate_key">surrogate key</a> like <code class="highlighter-rouge">Long id</code> or
+a <a href="https://en.wikipedia.org/wiki/Natural_key">natural key</a> 
+like national id/social security number in case of person.</p>
+
+<p>The other kind of objects that we encounter in domain model are value types.
+Value types represent things like addresses, phone numbers, money amounts, currencies etc.
+Value types are immutable and don’t need to have any identifier -
+two value types are equal if they contents are equal. If we need to update value type
+we just create a new instance of value type with updated attributes.</p>
+
+<p>What this have to do with embeddable types?
+In most cases embeddable types should be used to represent only value types
+of your domain model.<br />
+Now let’s see the code!</p>
+
+<h4 id="embeddable-in-hibernate">Embeddable in Hibernate</h4>
+
+<p>We will start by creating <code class="highlighter-rouge">User</code> entity that will have two embeddable value types
+<code class="highlighter-rouge">PhoneNumber</code> and <code class="highlighter-rouge">MoneyAmount</code>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="nd">@Table</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"users"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+    <span class="nd">@Id</span>
+    <span class="nd">@GeneratedValue</span>
+    <span class="kd">private</span> <span class="n">Long</span> <span class="n">id</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">username</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">PhoneNumber</span> <span class="n">contactPhoneNumber</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="n">MoneyAmount</span> <span class="n">availableFunds</span><span class="o">;</span>
+
+    <span class="c1">// constructors, getters, setters, methods etc.</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>We don’t need to use any additional annotations to map embeddable types,
+we just declare them like any other field. Later we will see that
+we may change embeddable type mappings when needed.</p>
+
+<p>Now let’s see how <code class="highlighter-rouge">PhoneNumber</code> value type looks like.
+Since it is our first value type I will present entire class:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Embeddable</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">PhoneNumber</span> <span class="kd">implements</span> <span class="n">Serializable</span> <span class="o">{</span>
+    <span class="nd">@Column</span><span class="o">(</span><span class="n">length</span> <span class="o">=</span> <span class="mi">16</span><span class="o">,</span> <span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">phoneNumber</span><span class="o">;</span>
+
+    <span class="kd">protected</span> <span class="n">PhoneNumber</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">PhoneNumber</span><span class="o">(</span><span class="n">String</span> <span class="n">phoneNumber</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// You can add validation here</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">phoneNumber</span> <span class="o">=</span> <span class="n">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">phoneNumber</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">getPhoneNumber</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">phoneNumber</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="n">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">o</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="k">this</span> <span class="o">==</span> <span class="n">o</span><span class="o">)</span> <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">o</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="o">!(</span><span class="n">o</span> <span class="k">instanceof</span> <span class="n">PhoneNumber</span><span class="o">))</span> <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+
+        <span class="n">PhoneNumber</span> <span class="n">that</span> <span class="o">=</span> <span class="o">(</span><span class="n">PhoneNumber</span><span class="o">)</span> <span class="n">o</span><span class="o">;</span>
+        <span class="k">return</span> <span class="n">phoneNumber</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">that</span><span class="o">.</span><span class="na">phoneNumber</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="n">hashCode</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">phoneNumber</span><span class="o">.</span><span class="na">hashCode</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">toString</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="s">"phone: "</span> <span class="o">+</span> <span class="n">phoneNumber</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>First thing we should notice is that <code class="highlighter-rouge">PhoneNumber</code> instances are immutable.
+We can set <code class="highlighter-rouge">phoneNumber</code> using constructor,
+but we cannot change it.
+Notice also that we overriden <code class="highlighter-rouge">equals()</code> and <code class="highlighter-rouge">hashCode()</code> to
+provide value equality - two phone numbers are equal if they string
+representations are equal.
+To improve debugging experience we also overriden <code class="highlighter-rouge">toString()</code> method.</p>
+
+<p>The other class <code class="highlighter-rouge">MoneyAmount</code> looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Embeddable</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">MoneyAmount</span> <span class="kd">implements</span> <span class="n">Serializable</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">BigDecimal</span> <span class="n">amount</span><span class="o">;</span>
+
+    <span class="nd">@Column</span><span class="o">(</span><span class="n">length</span> <span class="o">=</span> <span class="mi">3</span><span class="o">,</span> <span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">currency</span><span class="o">;</span>
+
+    <span class="c1">// constructor getters etc.</span>
+
+    <span class="kd">public</span> <span class="n">MoneyAmount</span> <span class="n">add</span><span class="o">(</span><span class="n">MoneyAmount</span> <span class="n">m</span><span class="o">)</span> <span class="o">{</span> <span class="cm">/* ... */</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="n">MoneyAmount</span> <span class="n">subtract</span><span class="o">(</span><span class="n">MoneyAmount</span> <span class="n">m</span><span class="o">)</span> <span class="o">{</span> <span class="cm">/* ... */</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="n">isLessThan</span><span class="o">(</span><span class="n">MoneyAmount</span> <span class="n">other</span><span class="o">)</span> <span class="o">{</span> <span class="cm">/* ... */</span> <span class="o">}</span>
+
+    <span class="c1">// equals, hashCode, toString </span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Notice that this class provides additional operations like <code class="highlighter-rouge">add()</code>. 
+Because value types are immutable we cannot change already
+exiting <code class="highlighter-rouge">MoneyAmount</code> instance, instead we return a new object that
+will represent result of the <code class="highlighter-rouge">add()</code> operation.</p>
+
+<p>Now let’s get to the Hibernate part.
+Embeddable types must be marked with 
+<code class="highlighter-rouge">@Embeddable</code> annotation,
+they can contain one or more fields and every 
+field may carry <code class="highlighter-rouge">@Column</code> mappings.
+Embeddable types may contain other embeddable types,
+but they cannot contain <code class="highlighter-rouge">@Id</code> field.</p>
+
+<p>When Hibernate stores embeddable types in database they are
+stored in table of the entity that contains them.
+For example for our <code class="highlighter-rouge">User</code> entity Hibernate will generate table:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">users</span>
+<span class="p">(</span>
+  <span class="n">id</span> <span class="n">bigint</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span> <span class="c1">-- User
+</span>
+  <span class="n">amount</span> <span class="n">numeric</span><span class="p">(</span><span class="mi">19</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="c1">-- MoneyAmount
+</span>  <span class="n">currency</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+
+  <span class="n">phonenumber</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span> 
+        <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span> <span class="c1">-- PhoneNumber
+</span>
+  <span class="n">username</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span> <span class="c1">-- User
+</span>  
+  <span class="k">CONSTRAINT</span> <span class="n">users_pkey</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="p">)</span></code></pre></figure>
+
+<p>Sometimes we want to change e.g. one of the column names of the embeddable type 
+but only in certain containing type. 
+For example let’s say that we want to map <code class="highlighter-rouge">PhoneNumber</code>
+in <code class="highlighter-rouge">User</code> to <code class="highlighter-rouge">phone_number</code> column. We may do this using <code class="highlighter-rouge">@AttributeOverride</code> annotation:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="nd">@AttributeOverrides</span><span class="o">({</span>
+        <span class="nd">@AttributeOverride</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"phoneNumber"</span><span class="o">,</span>
+                <span class="n">column</span> <span class="o">=</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"phone_number"</span><span class="o">,</span> <span class="n">length</span> <span class="o">=</span> <span class="mi">16</span><span class="o">,</span> <span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">))</span>
+    <span class="o">})</span>
+    <span class="kd">private</span> <span class="n">PhoneNumber</span> <span class="n">contactPhoneNumber</span><span class="o">;</span>
+
+    <span class="c1">// ...</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Unfortunately when we override column attributes we must redefine <em>all</em> of them, and
+syntax to do so it pretty verbose.</p>
+
+<p>Now it’s time to save some ickle embeddables to database:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">User</span> <span class="n">bob</span> <span class="o">=</span> <span class="k">new</span> <span class="n">User</span><span class="o">(</span>
+    <span class="s">"bob"</span><span class="o">,</span>
+    <span class="k">new</span> <span class="n">PhoneNumber</span><span class="o">(</span><span class="s">"111-222-333"</span><span class="o">),</span>
+    <span class="k">new</span> <span class="n">MoneyAmount</span><span class="o">(</span><span class="k">new</span> <span class="n">BigDecimal</span><span class="o">(</span><span class="mi">100</span><span class="o">),</span> <span class="s">"EUR"</span><span class="o">));</span>
+
+<span class="n">entityManager</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">bob</span><span class="o">);</span></code></pre></figure>
+
+<p>This operation will result in SQL:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">insert</span> <span class="k">into</span> <span class="n">users</span>
+    <span class="p">(</span><span class="n">amount</span><span class="p">,</span> <span class="n">currency</span><span class="p">,</span> <span class="n">phone_number</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">id</span><span class="p">)</span> 
+<span class="k">values</span>
+    <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="s1">'EUR'</span><span class="p">,</span> <span class="s1">'111-222-333'</span><span class="p">,</span> <span class="s1">'bob'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></code></pre></figure>
+
+<p>We may also update embeddable type by providing new instance:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+    <span class="c1">// ...</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">chargeUser</span><span class="o">(</span><span class="n">MoneyAmount</span> <span class="n">amount</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">availableFunds</span><span class="o">.</span><span class="na">isLessThan</span><span class="o">(</span><span class="n">amount</span><span class="o">))</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalStateException</span><span class="o">(</span>
+                    <span class="s">"User don't have enough money available."</span><span class="o">);</span>
+
+        <span class="n">availableFunds</span> <span class="o">=</span> <span class="n">availableFunds</span><span class="o">.</span><span class="na">subtract</span><span class="o">(</span><span class="n">amount</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="n">User</span> <span class="n">bob</span> <span class="o">=</span> <span class="n">entityManager</span><span class="o">.</span><span class="na">find</span><span class="o">(</span><span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+
+<span class="n">bob</span><span class="o">.</span><span class="na">chargeUser</span><span class="o">(</span>
+    <span class="k">new</span> <span class="n">MoneyAmount</span><span class="o">(</span><span class="k">new</span> <span class="n">BigDecimal</span><span class="o">(</span><span class="mi">10</span><span class="o">),</span> <span class="s">"EUR"</span><span class="o">)</span>
+    <span class="o">);</span></code></pre></figure>
+
+<p>This will generate <code class="highlighter-rouge">UPDATE</code>:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">update</span> <span class="n">users</span> 
+<span class="k">set</span>
+    <span class="n">amount</span><span class="o">=</span><span class="mi">90</span><span class="p">.</span><span class="mi">00</span><span class="p">,</span>
+    <span class="n">currency</span><span class="o">=</span><span class="s1">'EUR'</span><span class="p">,</span>
+    <span class="n">phone_number</span><span class="o">=</span><span class="s1">'111-222-333'</span><span class="p">,</span>
+    <span class="n">username</span><span class="o">=</span><span class="s1">'bob'</span> 
+<span class="k">where</span>
+    <span class="n">id</span><span class="o">=</span><span class="mi">1</span></code></pre></figure>
+
+<h5 id="embeddable-types-and-nullability">Embeddable types and nullability</h5>
+
+<p>Hibernate stores null embeddable type as <code class="highlighter-rouge">NULL</code> values in
+all embeddable type columns. You can save object with <code class="highlighter-rouge">null</code>
+embeddable type only if all embeddable type columns are nullable.
+When you try to do this with embeddable type that contains non-null 
+columns Hibernate will throw exception:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Dummy</span> <span class="n">d</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Dummy</span><span class="o">();</span>
+<span class="n">d</span><span class="o">.</span><span class="na">setPhoneNumber</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+<span class="n">entityManager</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">d</span><span class="o">);</span>
+
+<span class="c1">// at commit:</span>
+<span class="c1">// ERROR: null value in column "phonenumber" violates not-null constraint</span></code></pre></figure>
+
+<h5 id="sharing-embeddable-types-between-entities">Sharing embeddable types between entities</h5>
+
+<p>Embeddable types follow value semantics, this means when we save the same
+instance of embeddable type in two different entities and then read back
+these entities we will get two <em>instances</em> of embeddable type:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">PhoneNumber</span> <span class="n">phoneNumber</span> <span class="o">=</span> <span class="k">new</span> <span class="n">PhoneNumber</span><span class="o">(</span><span class="s">"111-222-333"</span><span class="o">);</span>
+
+<span class="n">Dummy</span> <span class="n">d1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Dummy</span><span class="o">();</span>
+<span class="n">d1</span><span class="o">.</span><span class="na">setPhoneNumber</span><span class="o">(</span><span class="n">phoneNumber</span><span class="o">);</span>
+
+<span class="n">Dummy</span> <span class="n">d2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Dummy</span><span class="o">();</span>
+<span class="n">d2</span><span class="o">.</span><span class="na">setPhoneNumber</span><span class="o">(</span><span class="n">phoneNumber</span><span class="o">);</span>
+
+<span class="c1">// true</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">d1</span><span class="o">.</span><span class="na">getPhoneNumber</span><span class="o">()</span> <span class="o">==</span> <span class="n">d2</span><span class="o">.</span><span class="na">getPhoneNumber</span><span class="o">());</span>
+
+<span class="n">entityManager</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">d1</span><span class="o">);</span>
+<span class="n">entityManager</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">d2</span><span class="o">);</span>
+<span class="n">entityManager</span><span class="o">.</span><span class="na">flush</span><span class="o">();</span>
+<span class="n">entityManager</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
+
+<span class="n">d1</span> <span class="o">=</span> <span class="n">entityManager</span><span class="o">.</span><span class="na">find</span><span class="o">(</span><span class="n">Dummy</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">d1</span><span class="o">.</span><span class="na">getId</span><span class="o">());</span>
+<span class="n">d2</span> <span class="o">=</span> <span class="n">entityManager</span><span class="o">.</span><span class="na">find</span><span class="o">(</span><span class="n">Dummy</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="n">d2</span><span class="o">.</span><span class="na">getId</span><span class="o">());</span>
+
+<span class="c1">// false</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">d1</span><span class="o">.</span><span class="na">getPhoneNumber</span><span class="o">()</span> <span class="o">==</span> <span class="n">d2</span><span class="o">.</span><span class="na">getPhoneNumber</span><span class="o">());</span>
+
+<span class="c1">// true</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">d1</span><span class="o">.</span><span class="na">getPhoneNumber</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">d2</span><span class="o">.</span><span class="na">getPhoneNumber</span><span class="o">()));</span></code></pre></figure>
+
+<p>This is generally not a problem because we should compare value types
+using <code class="highlighter-rouge">equals()</code> anyway.</p>
+
+<h5 id="mapping-many-instances-of-embeddable-type-in-the-same-entity">Mapping many instances of embeddable type in the same entity</h5>
+
+<p>Let’s say we want to extend our <code class="highlighter-rouge">User</code> entity to allow users to provide
+second phone number. If we only add second <code class="highlighter-rouge">PhoneNumber</code> field to the <code class="highlighter-rouge">User</code> class,
+Hibernate will not know how to name columns of the second <code class="highlighter-rouge">PhoneNumber</code>. 
+This will result in the exception:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">org.hibernate.MappingException: 
+    Repeated column in mapping for entity: User column: phoneNumber </code></pre></figure>
+
+<p>We can easly fix this using <code class="highlighter-rouge">@AttributeOverride</code> annotation:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+    <span class="c1">// ...</span>
+    <span class="kd">private</span> <span class="n">PhoneNumber</span> <span class="n">contactPhoneNumber</span><span class="o">;</span>
+
+    <span class="nd">@AttributeOverrides</span><span class="o">({</span>
+            <span class="nd">@AttributeOverride</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"phoneNumber"</span><span class="o">,</span>
+                    <span class="n">column</span> <span class="o">=</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"backup_phone_number"</span><span class="o">,</span> <span class="n">length</span> <span class="o">=</span> <span class="mi">16</span><span class="o">,</span> <span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">))</span>
+    <span class="o">})</span>
+    <span class="kd">private</span> <span class="n">PhoneNumber</span> <span class="n">backupPhoneNumber</span><span class="o">;</span>
+
+    <span class="c1">// ...</span>
+<span class="o">}</span></code></pre></figure>
+
+<h4 id="collections-of-embeddable-types">Collections of embeddable types</h4>
+
+<p>Embeddable types may be used as collection elements. Let’s extend our <code class="highlighter-rouge">User</code> class
+so that user can have any number of phone numbers:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
+    <span class="c1">// ...</span>
+
+    <span class="nd">@ElementCollection</span>
+    <span class="nd">@CollectionTable</span><span class="o">(</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="s">"user_phone_numbers"</span><span class="o">,</span>
+            <span class="n">joinColumns</span> <span class="o">=</span> <span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"user_id"</span><span class="o">))</span>
+    <span class="kd">private</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">PhoneNumber</span><span class="o">&gt;</span> <span class="n">phoneNumbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;&gt;();</span>
+
+    <span class="kd">public</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">PhoneNumber</span><span class="o">&gt;</span> <span class="n">getPhoneNumbers</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">unmodifiableCollection</span><span class="o">(</span><span class="n">phoneNumbers</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">addPhoneNumber</span><span class="o">(</span><span class="n">PhoneNumber</span> <span class="n">number</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">phoneNumbers</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">number</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">removePhoneNumber</span><span class="o">(</span><span class="n">PhoneNumber</span> <span class="n">number</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">phoneNumbers</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">number</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="c1">// ...</span></code></pre></figure>
+
+<p>In this case collection elements are owned by entity class, if entity is removed
+all collection elements are removed as well. 
+In database this will be represented by two tables:
+<img src="assets/images/2016-07-16/embeddable_collection.png" alt="How embeddable collections are stored in database" /></p>
+
+<p>Before you start using this method you must know 
+how Hibernate will perform inserts/updates. 
+Basically Hibernate first will remove all rows associated with given entity
+and then will perform many inserts (one insert per one collection element).
+This is horrible from performance point of view so use this mapping only with small collections.</p>
+
+<p>Here is a bit of code to illustrate the point:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">User</span> <span class="n">b</span> <span class="o">=</span> <span class="n">entityManager</span><span class="o">.</span><span class="na">find</span><span class="o">(</span><span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+<span class="c1">// user already have one phone number</span>
+<span class="n">b</span><span class="o">.</span><span class="na">addPhoneNumber</span><span class="o">(</span><span class="k">new</span> <span class="n">PhoneNumber</span><span class="o">(</span><span class="s">"333-555-666"</span><span class="o">));</span></code></pre></figure>
+
+<p>This will result in SQL:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">delete</span> <span class="k">from</span> <span class="n">user_phone_numbers</span> 
+<span class="k">where</span>
+    <span class="n">user_id</span><span class="o">=</span><span class="mi">1</span>
+
+<span class="k">insert</span> <span class="k">into</span> <span class="n">user_phone_numbers</span>
+    <span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">phoneNumber</span><span class="p">)</span> 
+<span class="k">values</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'333-555-666'</span><span class="p">)</span>
+
+<span class="k">insert</span> <span class="k">into</span> <span class="n">user_phone_numbers</span>
+    <span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">phoneNumber</span><span class="p">)</span> 
+<span class="k">values</span>
+    <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s1">'111-222-333'</span><span class="p">)</span></code></pre></figure>
+
+<h5 id="allowing-duplicates-in-collection">Allowing duplicates in collection</h5>
+
+<p>If we want to allow duplicates in embeddable type collection we should map
+it as a bag:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@ElementCollection</span>
+<span class="nd">@CollectionTable</span><span class="o">(</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="s">"user_phone_numbers"</span><span class="o">,</span>
+        <span class="n">joinColumns</span> <span class="o">=</span> <span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"user_id"</span><span class="o">))</span>
+<span class="nd">@org</span><span class="o">.</span><span class="na">hibernate</span><span class="o">.</span><span class="na">annotations</span><span class="o">.</span><span class="na">CollectionId</span><span class="o">(</span>
+        <span class="n">columns</span> <span class="o">=</span> <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"phone_number_id"</span><span class="o">),</span>
+        <span class="n">type</span> <span class="o">=</span> <span class="nd">@org</span><span class="o">.</span><span class="na">hibernate</span><span class="o">.</span><span class="na">annotations</span><span class="o">.</span><span class="na">Type</span><span class="o">(</span><span class="n">type</span> <span class="o">=</span> <span class="s">"long"</span><span class="o">),</span>
+        <span class="n">generator</span> <span class="o">=</span> <span class="s">"sequence"</span>
+<span class="o">)</span>
+<span class="kd">private</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">PhoneNumber</span><span class="o">&gt;</span> <span class="n">phoneNumbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span></code></pre></figure>
+
+<p>This will result in database schema:
+<img src="assets/images/2016-07-16/embeddable_collection2.png" alt="How embeddable collections are stored in database" />
+Unfortunatelly this will not improve bad performance of embeddable type collections.</p>
+
+<p>You can improve performance a bit (mainly with inserts) using <code class="highlighter-rouge">@OrderColumn</code> annotation,
+more informations can be found in these articles:</p>
+
+<ul>
+  <li><a href="http://stackoverflow.com/questions/3742897/hibernate-elementcollection-strange-delete-insert-behavior">StackOverflow: strange delete/insert behaviour</a></li>
+  <li><a href="https://dzone.com/articles/how-optimize-hibernate">How to Optimize Hibernate ElementCollection Statements</a></li>
+</ul>
+
+<h4 id="the-end">The End</h4>
+
+<p>In this blog post I only scratched the surface of the embeddable types, 
+there is more to learn about them. If you want to dig deeper I advice reading
+great book: <a href="https://amzn.com/1617290459">Java Persistence with Hibernate 2nd</a>.</p>
+
+<p>Thats all for today, thanks for reading!</p>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
+	  <title>Mapping class inheritance in Hibernate 5</title>
+	  <link>//mapping-inheritance-in-hibernate</link>
+	  <author>marcin-chwedczuk</author>
+	  <pubDate>2016-06-30T02:00:00+02:00</pubDate>
+	  <guid>//mapping-inheritance-in-hibernate</guid>
+	  <description><![CDATA[
+	     <p>In this post I want to present four basic strategies for mapping class inheritance
+in Hibernate:</p>
+
+<ol>
+  <li>No inheritance - just copy superclass properties to subclasses</li>
+  <li>Table per class hierarchy</li>
+  <li>Table per concrete class</li>
+  <li>Table per every class</li>
+</ol>
+
+<h4 id="no-inheritance">No inheritance</h4>
+
+<p>This strategy is used if we want to share Java code between entity classes.
+An example will show us how it works. 
+Let’s say we want to avoid declaring <code class="highlighter-rouge">id</code> and <code class="highlighter-rouge">version</code> fields in every entity
+class. 
+We can solve this by creating abstract superclass <code class="highlighter-rouge">BaseEntity</code> that will hold common code
+and annotating it with
+<code class="highlighter-rouge">@MappedSuperclass</code> to enable no inheritance strategy.
+Here is <code class="highlighter-rouge">BaseEntity</code> class code:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@MappedSuperclass</span>
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">BaseEntity</span> <span class="o">{</span>
+    <span class="nd">@Id</span>
+    <span class="nd">@GeneratedValue</span>
+    <span class="kd">private</span> <span class="n">Long</span> <span class="n">id</span><span class="o">;</span>
+
+    <span class="nd">@Version</span>
+    <span class="kd">private</span> <span class="kt">long</span> <span class="n">version</span><span class="o">;</span>
+
+    <span class="c1">// getters/setters etc.</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Now we may create two independent entity classes <code class="highlighter-rouge">User</code> and <code class="highlighter-rouge">Product</code> that
+will inherit <code class="highlighter-rouge">id</code> and <code class="highlighter-rouge">version</code> fields with mappings from <code class="highlighter-rouge">BaseEntity</code>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="nd">@Table</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"\"user\""</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="kd">extends</span> <span class="n">BaseEntity</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">username</span><span class="o">;</span>
+
+    <span class="nd">@org</span><span class="o">.</span><span class="na">hibernate</span><span class="o">.</span><span class="na">annotations</span><span class="o">.</span><span class="na">Type</span><span class="o">(</span><span class="n">type</span> <span class="o">=</span> <span class="s">"yes_no"</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">isAdmin</span><span class="o">;</span>
+
+    <span class="c1">// constructor/getters/setters etc.</span>
+<span class="o">}</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Product</span> <span class="kd">extends</span> <span class="n">BaseEntity</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="n">BigDecimal</span> <span class="n">price</span><span class="o">;</span>
+
+    <span class="c1">// constructor/getters/setters etc.</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>For given classes Hibernate will generate database schema:
+<img src="assets/images/2016-06-30/noinh_1.png" alt="DB Schema generated for User and Product" /></p>
+
+<p>Since this strategy is used to only share Java code we should not query database
+for <code class="highlighter-rouge">BaseEntity</code> instances. If we do Hibernate will execute many select statements -
+one for every class inheriting from <code class="highlighter-rouge">BaseEntity</code>.
+For example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">entityManager</span><span class="o">.</span><span class="na">unwrap</span><span class="o">(</span><span class="n">Session</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">createCriteria</span><span class="o">(</span><span class="n">BaseEntity</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">list</span><span class="o">();</span></code></pre></figure>
+
+<p>Will result in queries:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">select</span>
+    <span class="n">this_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id1_0_0_</span><span class="p">,</span>
+    <span class="n">this_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version2_0_0_</span><span class="p">,</span>
+    <span class="n">this_</span><span class="p">.</span><span class="n">name</span> <span class="k">as</span> <span class="n">name3_0_0_</span><span class="p">,</span>
+    <span class="n">this_</span><span class="p">.</span><span class="n">price</span> <span class="k">as</span> <span class="n">price4_0_0_</span> 
+<span class="k">from</span>
+    <span class="n">product</span> <span class="n">this_</span>
+
+<span class="k">select</span>
+    <span class="n">this_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id1_1_0_</span><span class="p">,</span>
+    <span class="n">this_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version2_1_0_</span><span class="p">,</span>
+    <span class="n">this_</span><span class="p">.</span><span class="n">isAdmin</span> <span class="k">as</span> <span class="n">isAdmin3_1_0_</span><span class="p">,</span>
+    <span class="n">this_</span><span class="p">.</span><span class="n">username</span> <span class="k">as</span> <span class="n">username4_1_0_</span> 
+<span class="k">from</span>
+    <span class="nv">"user"</span> <span class="n">this_</span></code></pre></figure>
+
+<p>NOTE: Querying for <code class="highlighter-rouge">BaseEntity</code> via JPA will throw exception with message
+<code class="highlighter-rouge">Not an entity: class BaseEntity</code>. We
+can query for <code class="highlighter-rouge">BaseEntity</code> only via Hibernate <code class="highlighter-rouge">Session</code> object.</p>
+
+<p>We will use our <code class="highlighter-rouge">BaseEntity</code> class in the example code of the remaining strategies to show that
+it can be mixed with “real” ORM inheritance.</p>
+
+<h4 id="table-per-class-hierarchy">Table per class hierarchy</h4>
+
+<p>In this strategy all subclasses data will be stored in single table.
+A special column called discriminator is added to that table
+to help Hibernate know which subclass is stored in given row.</p>
+
+<p>An example will show how it works. We start by creating a superclass called <code class="highlighter-rouge">Animal</code>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="nd">@Inheritance</span><span class="o">(</span><span class="n">strategy</span> <span class="o">=</span> <span class="n">InheritanceType</span><span class="o">.</span><span class="na">SINGLE_TABLE</span><span class="o">)</span>
+<span class="nd">@DiscriminatorColumn</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"animal_type"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Animal</span> <span class="kd">extends</span> <span class="n">BaseEntity</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">getName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>And two subclasses <code class="highlighter-rouge">Cat</code> and <code class="highlighter-rouge">Dog</code>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="nd">@DiscriminatorValue</span><span class="o">(</span><span class="s">"cat"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Cat</span> <span class="kd">extends</span> <span class="n">Animal</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">isPurring</span><span class="o">;</span>
+
+    <span class="c1">// getters/setter etc.</span>
+<span class="o">}</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="nd">@DiscriminatorValue</span><span class="o">(</span><span class="s">"dog"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Dog</span> <span class="kd">extends</span> <span class="n">Animal</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">isBarking</span><span class="o">;</span>
+
+    <span class="c1">// getters/setter etc.</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>To enable table per hierarchy strategy, superclass must be marked as <code class="highlighter-rouge">@Entity</code> and must have
+<code class="highlighter-rouge">@Inheritance(strategy = InheritanceType.SINGLE_TABLE)</code> annotation.
+We can choose discriminator column name and type using <code class="highlighter-rouge">@DiscriminatorColumn</code> annotation.
+Subclasses must be marked as <code class="highlighter-rouge">@Entity</code> and can provide values for 
+discriminator column via <code class="highlighter-rouge">@DiscriminatorValue</code> annotation (discriminator value defaults to class name).</p>
+
+<p>For this example Hibernate will generate schema:
+<img src="assets/images/2016-06-30/single_1.png" alt="Schema generated by Hibernate" /></p>
+
+<p>Let’s save some data:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Cat</span> <span class="n">cat</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Cat</span><span class="o">();</span>
+<span class="n">cat</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"kitty"</span><span class="o">);</span>
+<span class="n">cat</span><span class="o">.</span><span class="na">setPurring</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+<span class="n">entityManager</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">cat</span><span class="o">);</span>
+
+<span class="n">Dog</span> <span class="n">dog</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Dog</span><span class="o">();</span>
+<span class="n">dog</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"barky"</span><span class="o">);</span>
+<span class="n">dog</span><span class="o">.</span><span class="na">setBarking</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+<span class="n">entityManager</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">dog</span><span class="o">);</span></code></pre></figure>
+
+<p>And check how they are stored in database:
+<img src="assets/images/2016-06-30/single_2.png" alt="Data stored in database" /></p>
+
+<p>Saving was easy, now let’s check querying. We start
+by getting all <code class="highlighter-rouge">Animal</code> instances from database:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">"from Animal"</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">getResultList</span><span class="o">()</span>
+        <span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">a</span> <span class="o">-&gt;</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">a</span><span class="o">));</span></code></pre></figure>
+
+<p>This will result in SQL query:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">select</span>
+    <span class="n">animal0_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id2_0_</span><span class="p">,</span>
+    <span class="n">animal0_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version3_0_</span><span class="p">,</span>
+    <span class="n">animal0_</span><span class="p">.</span><span class="n">name</span> <span class="k">as</span> <span class="n">name4_0_</span><span class="p">,</span>
+    <span class="n">animal0_</span><span class="p">.</span><span class="n">isBarking</span> <span class="k">as</span> <span class="n">isBarkin5_0_</span><span class="p">,</span>
+    <span class="n">animal0_</span><span class="p">.</span><span class="n">isPurring</span> <span class="k">as</span> <span class="n">isPurrin6_0_</span><span class="p">,</span>
+    <span class="n">animal0_</span><span class="p">.</span><span class="n">animal_type</span> <span class="k">as</span> <span class="n">animal_t1_0_</span> 
+<span class="k">from</span>
+    <span class="n">Animal</span> <span class="n">animal0_</span></code></pre></figure>
+
+<p>With this strategy we may also query specific animal types e.g. cats:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span>
+    <span class="s">"select c from Cat c where c.isPurring = true"</span><span class="o">)</span></code></pre></figure>
+
+<p>This will result in the following SQL:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">select</span>
+    <span class="n">cat0_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id2_0_</span><span class="p">,</span>
+    <span class="n">cat0_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version3_0_</span><span class="p">,</span>
+    <span class="n">cat0_</span><span class="p">.</span><span class="n">name</span> <span class="k">as</span> <span class="n">name4_0_</span><span class="p">,</span>
+    <span class="n">cat0_</span><span class="p">.</span><span class="n">isPurring</span> <span class="k">as</span> <span class="n">isPurrin6_0_</span> 
+<span class="k">from</span>
+    <span class="n">Animal</span> <span class="n">cat0_</span> 
+<span class="k">where</span>
+    <span class="n">cat0_</span><span class="p">.</span><span class="n">animal_type</span><span class="o">=</span><span class="s1">'cat'</span> 
+    <span class="k">and</span> <span class="n">cat0_</span><span class="p">.</span><span class="n">isPurring</span><span class="o">=</span><span class="k">true</span></code></pre></figure>
+
+<p>We can see that Hibernate added test for discriminator column <code class="highlighter-rouge">animal_type='cat'</code> to
+limit returned animals to cats only.</p>
+
+<p>Before we move to next strategy let’s 
+see what are pros and cons of table per hierarchy strategy:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>pros</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Fast - no joins are needed to retrieve data</td>
+    </tr>
+    <tr>
+      <td>Simple - only single table is needed in database</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>cons</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Cannot create constrains in database - all columns representing subclass data must be nullable. This is serious drawback because without constrains data can be easily corrupted by application bug or by inattentive users</td>
+    </tr>
+    <tr>
+      <td>Wasted space - when subclasses have many fields shared table will contain many columns most of which will contain <code class="highlighter-rouge">NULL</code>s</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="table-per-concrete-class">Table per concrete class</h4>
+
+<p>This inheritance strategy will generate database table per each concrete class in 
+the hierarchy. Let’s demonstrate on example. 
+Given classes (abstract classes are in the blue boxes):
+<img src="assets/images/2016-06-30/tpcc_1.svg" alt="UML diagram of classes used in this example" />
+This strategy will generate tables for <code class="highlighter-rouge">Dog</code>, <code class="highlighter-rouge">GrumpyCat</code> and <code class="highlighter-rouge">Kitten</code> classes.</p>
+
+<p>Here is code for all classes used in this example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="nd">@Inheritance</span><span class="o">(</span><span class="n">strategy</span> <span class="o">=</span> <span class="n">InheritanceType</span><span class="o">.</span><span class="na">TABLE_PER_CLASS</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Animal</span> <span class="kd">extends</span> <span class="n">BaseEntity</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Dog</span> <span class="kd">extends</span> <span class="n">Animal</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">isBarking</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractCat</span> <span class="kd">extends</span> <span class="n">Animal</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">isPurring</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GrumpyCat</span> <span class="kd">extends</span> <span class="n">AbstractCat</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">grumpiness</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Kitten</span> <span class="kd">extends</span> <span class="n">AbstractCat</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="n">sweetness</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>To enable table per concrete class strategy, root of the inheritance hierarchy must
+be marked as <code class="highlighter-rouge">@Entity</code> and must have <code class="highlighter-rouge">@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)</code>
+annotation. All subclasses (even abstract ones) must be marked as <code class="highlighter-rouge">@Entity</code>. Abstract classes
+will not be represented in database.</p>
+
+<p>For our <code class="highlighter-rouge">Animal</code> example Hibernate will generate database schema:
+<img src="assets/images/2016-06-30/tpcc_2.png" alt="Schema generated by Hibernate for our animal example" /></p>
+
+<p>When we query for all instances of <code class="highlighter-rouge">Animal</code>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">"from Animal"</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">getResultList</span><span class="o">();</span></code></pre></figure>
+
+<p>Hibernate uses SQL subquery and <code class="highlighter-rouge">union all</code> operator to gather rows from
+all tables containing subclasses data. To differentiate between subclasses
+in the result set, Hibernate adds special column <code class="highlighter-rouge">clazz_</code> that will contain different numbers
+for different subclasses:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">select</span>
+        <span class="n">animal0_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id1_1_</span><span class="p">,</span> <span class="n">animal0_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version2_1_</span><span class="p">,</span> <span class="n">animal0_</span><span class="p">.</span><span class="n">name</span> <span class="k">as</span> <span class="n">name3_1_</span><span class="p">,</span> <span class="n">animal0_</span><span class="p">.</span><span class="n">isBarking</span> <span class="k">as</span> <span class="n">isBarkin1_2_</span><span class="p">,</span> <span class="n">animal0_</span><span class="p">.</span><span class="n">isPurring</span> <span class="k">as</span> <span class="n">isPurrin1_0_</span><span class="p">,</span> <span class="n">animal0_</span><span class="p">.</span><span class="n">grumpiness</span> <span class="k">as</span> <span class="n">grumpine1_3_</span><span class="p">,</span> <span class="n">animal0_</span><span class="p">.</span><span class="n">sweetness</span> <span class="k">as</span> <span class="n">sweetnes1_4_</span><span class="p">,</span> 
+        <span class="n">animal0_</span><span class="p">.</span><span class="n">clazz_</span> <span class="k">as</span> <span class="n">clazz_</span> 
+    <span class="k">from</span>
+        <span class="p">(</span> <span class="k">select</span>
+            <span class="n">id</span><span class="p">,</span> <span class="k">version</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">boolean</span> <span class="k">as</span> <span class="n">isBarking</span><span class="p">,</span> <span class="n">isPurring</span><span class="p">,</span> <span class="n">grumpiness</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">int4</span> <span class="k">as</span> <span class="n">sweetness</span><span class="p">,</span> 
+            <span class="mi">3</span> <span class="k">as</span> <span class="n">clazz_</span> 
+        <span class="k">from</span>
+            <span class="n">GrumpyCat</span> 
+
+        <span class="k">union</span> <span class="k">all</span> 
+        
+        <span class="k">select</span>
+            <span class="n">id</span><span class="p">,</span> <span class="k">version</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">boolean</span> <span class="k">as</span> <span class="n">isBarking</span><span class="p">,</span> <span class="n">isPurring</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">int4</span> <span class="k">as</span> <span class="n">grumpiness</span><span class="p">,</span> <span class="n">sweetness</span><span class="p">,</span> 
+            <span class="mi">4</span> <span class="k">as</span> <span class="n">clazz_</span> 
+        <span class="k">from</span>
+            <span class="n">Kitten</span>
+        
+        <span class="k">union</span> <span class="k">all</span> 
+
+        <span class="k">select</span>
+            <span class="n">id</span><span class="p">,</span> <span class="k">version</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">isBarking</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">boolean</span> <span class="k">as</span> <span class="n">isPurring</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">int4</span> <span class="k">as</span> <span class="n">grumpiness</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">int4</span> <span class="k">as</span> <span class="n">sweetness</span><span class="p">,</span> 
+            <span class="mi">1</span> <span class="k">as</span> <span class="n">clazz_</span> 
+        <span class="k">from</span>
+            <span class="n">Dog</span> 
+    <span class="p">)</span> <span class="n">animal0_</span></code></pre></figure>
+
+<p>When we query for one of the concrete subclasses Hibernate will directly query
+table containing that subclass data. For example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span>
+        <span class="s">"select gc from GrumpyCat gc where gc.grumpiness &gt; 0"</span>
+    <span class="o">).</span><span class="na">getResultList</span><span class="o">()</span></code></pre></figure>
+
+<p>Will generate SQL query:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">select</span>
+    <span class="n">grumpycat0_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id1_1_</span><span class="p">,</span>
+    <span class="n">grumpycat0_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version2_1_</span><span class="p">,</span>
+    <span class="n">grumpycat0_</span><span class="p">.</span><span class="n">name</span> <span class="k">as</span> <span class="n">name3_1_</span><span class="p">,</span>
+    <span class="n">grumpycat0_</span><span class="p">.</span><span class="n">isPurring</span> <span class="k">as</span> <span class="n">isPurrin1_0_</span><span class="p">,</span>
+    <span class="n">grumpycat0_</span><span class="p">.</span><span class="n">grumpiness</span> <span class="k">as</span> <span class="n">grumpine1_3_</span> 
+<span class="k">from</span>
+    <span class="n">GrumpyCat</span> <span class="n">grumpycat0_</span> 
+<span class="k">where</span>
+    <span class="n">grumpycat0_</span><span class="p">.</span><span class="n">grumpiness</span><span class="o">&gt;</span><span class="mi">0</span></code></pre></figure>
+
+<p>Before we move to the next strategy let’s consider one more example. Say
+we want to store photos of animals using <code class="highlighter-rouge">Photo</code> entity:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Photo</span> <span class="kd">extends</span> <span class="n">BaseEntity</span> <span class="o">{</span>
+    <span class="nd">@ManyToOne</span>
+    <span class="kd">private</span> <span class="n">Animal</span> <span class="n">animal</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">photoFilename</span><span class="o">;</span>
+
+    <span class="c1">// ...</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>For this class Hibernate will generate table:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">photo</span>
+<span class="p">(</span>
+  <span class="n">id</span> <span class="n">bigint</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="k">version</span> <span class="n">bigint</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">photofilename</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span>
+  <span class="n">animal_id</span> <span class="n">bigint</span><span class="p">,</span>
+
+  <span class="k">CONSTRAINT</span> <span class="n">photo_pkey</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
+<span class="p">)</span></code></pre></figure>
+
+<p>This time I used SQL instead of table picture to show an important fact.
+Do you see <code class="highlighter-rouge">animal_id</code> column in that table, it will be used to
+connect photos to animals. Unfortunately because various types of  animals are
+stored in different tables we cannot create foreign key constraint on
+that column, this is serious drawback of table per concrete class strategy.</p>
+
+<p>When we query for all photos with animals:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span>
+        <span class="s">"select p from Photo p join fetch p.animal"</span>
+    <span class="o">).</span><span class="na">getResultList</span><span class="o">()</span></code></pre></figure>
+
+<p>Hibernate will execute this monstrous query:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">select</span>
+    <span class="n">photo0_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id1_5_0_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id1_1_1_</span><span class="p">,</span> <span class="n">photo0_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version2_5_0_</span><span class="p">,</span> <span class="n">photo0_</span><span class="p">.</span><span class="n">animal_id</span> <span class="k">as</span> <span class="n">animal_i4_5_0_</span><span class="p">,</span> <span class="n">photo0_</span><span class="p">.</span><span class="n">photoFilename</span> <span class="k">as</span> <span class="n">photoFil3_5_0_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version2_1_1_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">name</span> <span class="k">as</span> <span class="n">name3_1_1_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">isBarking</span> <span class="k">as</span> <span class="n">isBarkin1_2_1_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">isPurring</span> <span class="k">as</span> <span class="n">isPurrin1_0_1_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">grumpiness</span> <span class="k">as</span> <span class="n">grumpine1_3_1_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">sweetness</span> <span class="k">as</span> <span class="n">sweetnes1_4_1_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">clazz_</span> <span class="k">as</span> <span class="n">clazz_1_</span> 
+<span class="k">from</span>
+    <span class="n">Photo</span> <span class="n">photo0_</span> 
+<span class="k">inner</span> <span class="k">join</span>
+    <span class="p">(</span>
+        <span class="k">select</span>
+            <span class="n">id</span><span class="p">,</span> <span class="k">version</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">boolean</span> <span class="k">as</span> <span class="n">isBarking</span><span class="p">,</span> <span class="n">isPurring</span><span class="p">,</span> <span class="n">grumpiness</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">int4</span> <span class="k">as</span> <span class="n">sweetness</span><span class="p">,</span> <span class="mi">3</span> <span class="k">as</span> <span class="n">clazz_</span> 
+        <span class="k">from</span>
+            <span class="n">GrumpyCat</span> 
+        <span class="k">union</span>
+        <span class="k">all</span> <span class="k">select</span>
+            <span class="n">id</span><span class="p">,</span> <span class="k">version</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">boolean</span> <span class="k">as</span> <span class="n">isBarking</span><span class="p">,</span> <span class="n">isPurring</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">int4</span> <span class="k">as</span> <span class="n">grumpiness</span><span class="p">,</span> <span class="n">sweetness</span><span class="p">,</span> <span class="mi">4</span> <span class="k">as</span> <span class="n">clazz_</span> 
+        <span class="k">from</span>
+            <span class="n">Kitten</span> 
+        <span class="k">union</span>
+        <span class="k">all</span> <span class="k">select</span>
+            <span class="n">id</span><span class="p">,</span> <span class="k">version</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">isBarking</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">boolean</span> <span class="k">as</span> <span class="n">isPurring</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">int4</span> <span class="k">as</span> <span class="n">grumpiness</span><span class="p">,</span> <span class="k">null</span><span class="p">::</span><span class="n">int4</span> <span class="k">as</span> <span class="n">sweetness</span><span class="p">,</span> <span class="mi">1</span> <span class="k">as</span> <span class="n">clazz_</span> 
+        <span class="k">from</span>
+            <span class="n">Dog</span> 
+    <span class="p">)</span> <span class="n">animal1_</span> 
+        <span class="k">on</span> <span class="n">photo0_</span><span class="p">.</span><span class="n">animal_id</span><span class="o">=</span><span class="n">animal1_</span><span class="p">.</span><span class="n">id</span></code></pre></figure>
+
+<p>I only add that complicated queries like this may cause serious performance problems.</p>
+
+<p>To sum up here are pros and cons of table per concrete class strategy:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>pros</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Constraint friendly - You can introduce separate database constrains for each concrete subclass</td>
+    </tr>
+    <tr>
+      <td>Fast when querying concrete subclasses (queries directly access subclass table)</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>cons</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>May be slow when you query/lazy load abstract superclasses (<code class="highlighter-rouge">union all</code> and subquery)</td>
+    </tr>
+    <tr>
+      <td>Cannot introduce foreign key constrains for superclasses references (like in <code class="highlighter-rouge">Photo</code> example)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>As you see when you are not using references to superclasses in your model this is
+strategy to go. When you have many references to superclasses it is better to use
+single table or table per every class strategies.</p>
+
+<h4 id="table-per-every-class">Table per every class</h4>
+
+<p>To demonstrate table per every class strategy we’ll use the same example
+that was used in the 
+description of table per concrete class strategy:
+<img src="assets/images/2016-06-30/tpcc_1.svg" alt="UML diagram of classes used in this example" /></p>
+
+<p>Here are Java classes annotated to use table per every class strategy:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="nd">@Inheritance</span><span class="o">(</span><span class="n">strategy</span> <span class="o">=</span> <span class="n">InheritanceType</span><span class="o">.</span><span class="na">JOINED</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Animal</span> <span class="kd">extends</span> <span class="n">BaseEntity</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="nd">@Entity</span>
+<span class="nd">@PrimaryKeyJoinColumn</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"cat_id"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">AbstractCat</span> <span class="kd">extends</span> <span class="n">Animal</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">isPurring</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GrumpyCat</span> <span class="kd">extends</span> <span class="n">AbstractCat</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">int</span> <span class="n">grumpiness</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Kitten</span> <span class="kd">extends</span> <span class="n">AbstractCat</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="n">sweetness</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span>
+
+<span class="nd">@Entity</span>
+<span class="nd">@PrimaryKeyJoinColumn</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"dog_id"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Dog</span> <span class="kd">extends</span> <span class="n">Animal</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">isBarking</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Notice that every class is marked as <code class="highlighter-rouge">@Entity</code> and root of inheritance hierarchy is
+annotated with <code class="highlighter-rouge">@Inheritance(strategy = InheritanceType.JOINED)</code>. By default
+primary keys in tables corresponding to mapped classes will be named <code class="highlighter-rouge">id</code>. Sometimes
+it is useful to change name of the primary key column, we can use
+<code class="highlighter-rouge">@PrimaryKeyJoinColumn(name = "primary_key_name")</code> to provide new primary key column name.</p>
+
+<p>For given example Hibernate will generate database schema:
+<img src="assets/images/2016-06-30/tpec_1.png" alt="DB Schema generated for table per every class strategy" />
+Notice that Hibernate generated table per every class in the hierarchy. Lines between tables
+represent foreign key constrains inside database.</p>
+
+<p>In table per every class strategy data from 
+superclasses will be stored in dedicated tables, SQL joins will be used
+to gather entity data from all superclasses. When we add new entity to database Hibernate will
+split it according to inheritance hierarchy and will execute many inserts.
+An example will help us understand how it works.</p>
+
+<p>First let’s try to insert some grumpy animals into database:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">GrumpyCat</span> <span class="n">cat</span> <span class="o">=</span> <span class="k">new</span> <span class="n">GrumpyCat</span><span class="o">();</span>
+<span class="n">cat</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"grumpy"</span><span class="o">);</span>
+<span class="n">cat</span><span class="o">.</span><span class="na">setPurring</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+<span class="n">cat</span><span class="o">.</span><span class="na">setGrumpiness</span><span class="o">(</span><span class="mi">130</span><span class="o">);</span>
+
+<span class="n">entityManager</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">cat</span><span class="o">);</span></code></pre></figure>
+
+<p>To save single <code class="highlighter-rouge">GrumpyCat</code> entity to database Hibernate must generate three inserts:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">insert</span> <span class="k">into</span>
+    <span class="n">Animal</span>
+    <span class="p">(</span><span class="k">version</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">id</span><span class="p">)</span> 
+<span class="k">values</span>
+    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s1">'grumpy'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="k">insert</span> <span class="k">into</span>
+    <span class="n">AbstractCat</span>
+    <span class="p">(</span><span class="n">isPurring</span><span class="p">,</span> <span class="n">cat_id</span><span class="p">)</span> 
+<span class="k">values</span>
+    <span class="p">(</span><span class="k">true</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="k">insert</span> <span class="k">into</span>
+    <span class="n">GrumpyCat</span>
+    <span class="p">(</span><span class="n">grumpiness</span><span class="p">,</span> <span class="n">cat_id</span><span class="p">)</span> 
+<span class="k">values</span>
+    <span class="p">(</span><span class="mi">130</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></code></pre></figure>
+
+<p>Let’s see what will happen when we try to load all <code class="highlighter-rouge">GrupyCat</code>s from database:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">entityManager</span>
+        <span class="o">.</span><span class="na">createQuery</span><span class="o">(</span><span class="s">"from GrumpyCat"</span><span class="o">)</span>
+        <span class="o">.</span><span class="na">getResultList</span><span class="o">()</span></code></pre></figure>
+
+<p>Hibernate will execute following SQL query:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">select</span>
+    <span class="n">grumpycat0_</span><span class="p">.</span><span class="n">cat_id</span> <span class="k">as</span> <span class="n">id1_1_</span><span class="p">,</span>
+    <span class="n">grumpycat0_2_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version2_1_</span><span class="p">,</span>
+    <span class="n">grumpycat0_2_</span><span class="p">.</span><span class="n">name</span> <span class="k">as</span> <span class="n">name3_1_</span><span class="p">,</span>
+    <span class="n">grumpycat0_1_</span><span class="p">.</span><span class="n">isPurring</span> <span class="k">as</span> <span class="n">isPurrin1_0_</span><span class="p">,</span>
+    <span class="n">grumpycat0_</span><span class="p">.</span><span class="n">grumpiness</span> <span class="k">as</span> <span class="n">grumpine1_3_</span> 
+<span class="k">from</span>
+    <span class="n">GrumpyCat</span> <span class="n">grumpycat0_</span> 
+<span class="k">inner</span> <span class="k">join</span>
+    <span class="n">AbstractCat</span> <span class="n">grumpycat0_1_</span> 
+        <span class="k">on</span> <span class="n">grumpycat0_</span><span class="p">.</span><span class="n">cat_id</span><span class="o">=</span><span class="n">grumpycat0_1_</span><span class="p">.</span><span class="n">cat_id</span> 
+<span class="k">inner</span> <span class="k">join</span>
+    <span class="n">Animal</span> <span class="n">grumpycat0_2_</span> 
+        <span class="k">on</span> <span class="n">grumpycat0_</span><span class="p">.</span><span class="n">cat_id</span><span class="o">=</span><span class="n">grumpycat0_2_</span><span class="p">.</span><span class="n">id</span></code></pre></figure>
+
+<p>As we can see Hibernate used <code class="highlighter-rouge">inner join</code>s to gather <code class="highlighter-rouge">GrumpyCat</code> data
+that was split into <code class="highlighter-rouge">GrumpyCat</code>, <code class="highlighter-rouge">AbstractCat</code> and <code class="highlighter-rouge">Animal</code> tables.
+If we would query for <code class="highlighter-rouge">Animal</code>s there would be ever more <code class="highlighter-rouge">join</code>s.</p>
+
+<p>Now let’s see how storing/retrieving animal photos changed in table
+per every class strategy. We will use the same <code class="highlighter-rouge">Photo</code> class as in previous example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Entity</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Photo</span> <span class="kd">extends</span> <span class="n">BaseEntity</span> <span class="o">{</span>
+    <span class="nd">@ManyToOne</span>
+    <span class="kd">private</span> <span class="n">Animal</span> <span class="n">animal</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">photoFilename</span><span class="o">;</span>
+    <span class="c1">// ...</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>First we must notice that <code class="highlighter-rouge">Photo</code> table now has a foreign key constrain to <code class="highlighter-rouge">Animal</code> table:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">photo</span>
+<span class="p">(</span>
+  <span class="n">id</span> <span class="n">bigint</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="k">version</span> <span class="n">bigint</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">photofilename</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span>
+  <span class="n">animal_id</span> <span class="n">bigint</span><span class="p">,</span>
+  <span class="k">CONSTRAINT</span> <span class="n">photo_pkey</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">),</span>
+
+  <span class="k">CONSTRAINT</span> <span class="n">fk6mbbc9717gifwpiqhd13t060r</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">animal_id</span><span class="p">)</span>
+      <span class="k">REFERENCES</span> <span class="n">animal</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span> <span class="k">MATCH</span> <span class="k">SIMPLE</span>
+<span class="p">)</span></code></pre></figure>
+
+<p>When we try to query database for all photos with animals:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">entityManager</span><span class="o">.</span><span class="na">createQuery</span><span class="o">(</span>
+        <span class="s">"select p from Photo p join fetch p.animal"</span>
+    <span class="o">).</span><span class="na">getResultList</span><span class="o">()</span></code></pre></figure>
+
+<p>Hibernate will execute query:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">select</span>
+    <span class="n">photo0_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id1_5_0_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">id1_1_1_</span><span class="p">,</span> <span class="n">photo0_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version2_5_0_</span><span class="p">,</span> <span class="n">photo0_</span><span class="p">.</span><span class="n">animal_id</span> <span class="k">as</span> <span class="n">animal_i4_5_0_</span><span class="p">,</span> <span class="n">photo0_</span><span class="p">.</span><span class="n">photoFilename</span> <span class="k">as</span> <span class="n">photoFil3_5_0_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="k">version</span> <span class="k">as</span> <span class="n">version2_1_1_</span><span class="p">,</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">name</span> <span class="k">as</span> <span class="n">name3_1_1_</span><span class="p">,</span> <span class="n">animal1_1_</span><span class="p">.</span><span class="n">isBarking</span> <span class="k">as</span> <span class="n">isBarkin1_2_1_</span><span class="p">,</span> <span class="n">animal1_2_</span><span class="p">.</span><span class="n">isPurring</span> <span class="k">as</span> <span class="n">isPurrin1_0_1_</span><span class="p">,</span> <span class="n">animal1_3_</span><span class="p">.</span><span class="n">grumpiness</span> <span class="k">as</span> <span class="n">grumpine1_3_1_</span><span class="p">,</span> <span class="n">animal1_4_</span><span class="p">.</span><span class="n">sweetness</span> <span class="k">as</span> <span class="n">sweetnes1_4_1_</span><span class="p">,</span>
+    <span class="k">case</span> 
+        <span class="k">when</span> <span class="n">animal1_3_</span><span class="p">.</span><span class="n">cat_id</span> <span class="k">is</span> <span class="k">not</span> <span class="k">null</span> <span class="k">then</span> <span class="mi">3</span> 
+        <span class="k">when</span> <span class="n">animal1_4_</span><span class="p">.</span><span class="n">cat_id</span> <span class="k">is</span> <span class="k">not</span> <span class="k">null</span> <span class="k">then</span> <span class="mi">4</span> 
+        <span class="k">when</span> <span class="n">animal1_1_</span><span class="p">.</span><span class="n">dog_id</span> <span class="k">is</span> <span class="k">not</span> <span class="k">null</span> <span class="k">then</span> <span class="mi">1</span> 
+        <span class="k">when</span> <span class="n">animal1_2_</span><span class="p">.</span><span class="n">cat_id</span> <span class="k">is</span> <span class="k">not</span> <span class="k">null</span> <span class="k">then</span> <span class="mi">2</span> 
+        <span class="k">when</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">id</span> <span class="k">is</span> <span class="k">not</span> <span class="k">null</span> <span class="k">then</span> <span class="mi">0</span> 
+    <span class="k">end</span> <span class="k">as</span> <span class="n">clazz_1_</span> 
+<span class="k">from</span>
+    <span class="n">Photo</span> <span class="n">photo0_</span> 
+<span class="k">inner</span> <span class="k">join</span>
+    <span class="n">Animal</span> <span class="n">animal1_</span> 
+        <span class="k">on</span> <span class="n">photo0_</span><span class="p">.</span><span class="n">animal_id</span><span class="o">=</span><span class="n">animal1_</span><span class="p">.</span><span class="n">id</span> 
+<span class="k">left</span> <span class="k">outer</span> <span class="k">join</span>
+    <span class="n">Dog</span> <span class="n">animal1_1_</span> 
+        <span class="k">on</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">id</span><span class="o">=</span><span class="n">animal1_1_</span><span class="p">.</span><span class="n">dog_id</span> 
+<span class="k">left</span> <span class="k">outer</span> <span class="k">join</span>
+    <span class="n">AbstractCat</span> <span class="n">animal1_2_</span> 
+        <span class="k">on</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">id</span><span class="o">=</span><span class="n">animal1_2_</span><span class="p">.</span><span class="n">cat_id</span> 
+<span class="k">left</span> <span class="k">outer</span> <span class="k">join</span>
+    <span class="n">GrumpyCat</span> <span class="n">animal1_3_</span> 
+        <span class="k">on</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">id</span><span class="o">=</span><span class="n">animal1_3_</span><span class="p">.</span><span class="n">cat_id</span> 
+<span class="k">left</span> <span class="k">outer</span> <span class="k">join</span>
+    <span class="n">Kitten</span> <span class="n">animal1_4_</span> 
+        <span class="k">on</span> <span class="n">animal1_</span><span class="p">.</span><span class="n">id</span><span class="o">=</span><span class="n">animal1_4_</span><span class="p">.</span><span class="n">cat_id</span></code></pre></figure>
+
+<p>This is really heavy query if plenty of <code class="highlighter-rouge">join</code>s, it may cause some performance problems.</p>
+
+<p>Let’s end by presenting pros and cons of table per every class strategy:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>pros</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Constraint friendly - we may easily add constrains to database. References to superclasses are guarded by foreign key constrains.</td>
+    </tr>
+  </tbody>
+</table>
+
+<table>
+  <thead>
+    <tr>
+      <th>cons</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Poor performance - simple operations like saving entity to database or reading entity from database often require many SQL statements or complicated SQL queries with joins</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Before using this strategy you should consider using simpler and faster 
+table per hierarchy strategy. Use this strategy only if you have many subclasses that define
+many fields that cannot by shared using superclass.</p>
+
+<h4 id="the-end">The End</h4>
+
+<p>That was really long post, I hope it help you understand various inheritance strategies
+that we can use in Hibernate. As always with ORM’s the key to master this material is
+to spend few hours creating dummy models with mappings and checking what queries Hibernate
+generate.
+<img src="assets/images/2016-06-30/grumpy.gif" alt="Party over meme" /></p>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
+	  <title>Hibernate hello world application</title>
+	  <link>//hibernate-hello-world-app</link>
+	  <author>marcin-chwedczuk</author>
+	  <pubDate>2016-06-22T02:00:00+02:00</pubDate>
+	  <guid>//hibernate-hello-world-app</guid>
+	  <description><![CDATA[
+	     <p>In this tutorial we’ll create minimal application that will allow us 
+to start playing with Hibernate ORM. I will present two hello world’s one for
+vanilla Hibernate and one for Hibernate via JPA <a href="http://stackoverflow.com/questions/9881611/whats-the-difference-between-jpa-and-hibernate">(Java Persistence API)</a>.<br />
+We will use:</p>
+
+<ul>
+  <li>Java 8 (with new <code class="highlighter-rouge">java.time</code> date time API)</li>
+  <li>Hibernate 5</li>
+  <li><a href="https://maven.apache.org/">Maven</a> as build tool</li>
+  <li><a href="https://logging.apache.org/log4j/1.2">Log4j</a> to log executed SQL queries</li>
+</ul>
+
+<p>There is one more thing before we start - we need to setup database. I assume 
+that you will be using PostgreSQL but you should have no trouble using
+this tutorial with other databases like MySQL. Here are PostgreSQL 
+installation instructions <a href="http://www.postgresqltutorial.com/install-postgresql/">for Windows</a> 
+and <a href="http://www.indjango.com/ubuntu-install-postgresql-and-pgadmin/">for Ubuntu</a>. 
+If you are Linux user and you feel adventureous you may try to
+<a href="https://github.com/sameersbn/docker-postgresql">run PostgreSQL inside Docker container</a>.</p>
+
+<p>One more thing if you decided to install PostgreSQL don’t forget to install
+<a href="https://www.pgadmin.org/download/">pgAdmin</a>, this is great tool that helps you
+manage your database:
+<img src="assets/images/2016-06-22/pgadmin_gui.png" alt="pgAdmin GUI" /></p>
+
+<h4 id="common-steps">Common steps</h4>
+
+<h5 id="prepare-maven-project">Prepare Maven Project</h5>
+
+<p>Let’s start with generating project structure using Maven:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cd where/to/put/my/project/code
+
+$ mvn archetype:generate -DgroupId=mc.hibernatetutorial \
+-DartifactId=hibernateTutorial \
+-DarchetypeArtifactId=maven-archetype-quickstart \
+-DinteractiveMode=false</code></pre></figure>
+
+<p>This will generate folder structure:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ tree hibernateTutorial/
+
+hibernateTutorial/
+|-- pom.xml
+`-- src
+    |-- main
+    |   `-- java
+    |       `-- mc
+    |           `-- hibernatetutorial
+    |               `-- App.java
+    `-- test
+        `-- java
+            `-- mc
+                `-- hibernatetutorial
+                    `-- AppTest.java</code></pre></figure>
+
+<p>Next we will need to create <code class="highlighter-rouge">resources</code> directory to hold Hibernate and Log4j configuration
+files:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ mkdir hibernateTutorial/src/main/resources</code></pre></figure>
+
+<p>Let’s check if everything is OK by compiling our project:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cd hibernateTutorial/
+$ mvn compile
+
+....
+[INFO] ------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------
+....</code></pre></figure>
+
+<p>Compilation was successful so it’s time to replace <code class="highlighter-rouge">pom.xml</code> file with:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0"?&gt;</span>
+<span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">"http://maven.apache.org/POM/4.0.0"</span> <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span> <span class="na">xsi:schemaLocation=</span><span class="s">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"</span><span class="nt">&gt;</span>
+
+  <span class="nt">&lt;modelVersion&gt;</span>4.0.0<span class="nt">&lt;/modelVersion&gt;</span>
+  <span class="nt">&lt;groupId&gt;</span>mc.hibernatetutorial<span class="nt">&lt;/groupId&gt;</span>
+  <span class="nt">&lt;artifactId&gt;</span>hibernateTutorial<span class="nt">&lt;/artifactId&gt;</span>
+  <span class="nt">&lt;packaging&gt;</span>jar<span class="nt">&lt;/packaging&gt;</span>
+  <span class="nt">&lt;version&gt;</span>1.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;name&gt;</span>hibernateTutorial<span class="nt">&lt;/name&gt;</span>
+  <span class="nt">&lt;url&gt;</span>http://maven.apache.org<span class="nt">&lt;/url&gt;</span>
+
+  <span class="nt">&lt;properties&gt;</span>
+    <span class="nt">&lt;project.build.sourceEncoding&gt;</span>
+        UTF-8
+    <span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
+  <span class="nt">&lt;/properties&gt;</span>
+
+  <span class="nt">&lt;build&gt;</span>
+    <span class="nt">&lt;plugins&gt;</span>
+      <span class="c">&lt;!-- enable Java 8 support --&gt;</span>
+      <span class="nt">&lt;plugin&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>org.apache.maven.plugins<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>maven-compiler-plugin<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>3.5.1<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;configuration&gt;</span>
+          <span class="nt">&lt;source&gt;</span>1.8<span class="nt">&lt;/source&gt;</span>
+          <span class="nt">&lt;target&gt;</span>1.8<span class="nt">&lt;/target&gt;</span>
+        <span class="nt">&lt;/configuration&gt;</span>
+      <span class="nt">&lt;/plugin&gt;</span>
+      <span class="c">&lt;!-- this plugin allows us to run 
+           project using simple command:
+           $ mvn exec:java --&gt;</span>
+      <span class="nt">&lt;plugin&gt;</span>
+        <span class="nt">&lt;groupId&gt;</span>org.codehaus.mojo<span class="nt">&lt;/groupId&gt;</span>
+        <span class="nt">&lt;artifactId&gt;</span>exec-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
+        <span class="nt">&lt;version&gt;</span>1.2.1<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;executions&gt;</span>
+          <span class="nt">&lt;execution&gt;</span>
+            <span class="nt">&lt;goals&gt;</span>
+              <span class="nt">&lt;goal&gt;</span>java<span class="nt">&lt;/goal&gt;</span>
+            <span class="nt">&lt;/goals&gt;</span>
+          <span class="nt">&lt;/execution&gt;</span>
+        <span class="nt">&lt;/executions&gt;</span>
+        <span class="nt">&lt;configuration&gt;</span>
+          <span class="nt">&lt;mainClass&gt;</span>mc.hibernatetutorial.App<span class="nt">&lt;/mainClass&gt;</span>
+          <span class="nt">&lt;arguments&gt;&lt;/arguments&gt;</span>
+        <span class="nt">&lt;/configuration&gt;</span>
+      <span class="nt">&lt;/plugin&gt;</span>
+    <span class="nt">&lt;/plugins&gt;</span>
+  <span class="nt">&lt;/build&gt;</span>
+
+  <span class="nt">&lt;dependencies&gt;</span>
+    <span class="c">&lt;!-- Hibernate library --&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>org.hibernate<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>hibernate-entitymanager<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;version&gt;</span>5.1.0.Final<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+
+    <span class="c">&lt;!-- needed if you want to use new java.time API --&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>org.hibernate<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>hibernate-java8<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;version&gt;</span>5.1.0.Final<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+
+    <span class="c">&lt;!-- needed if you want to use javax.validation --&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>org.hibernate<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>hibernate-validator<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;version&gt;</span>5.2.4.Final<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+
+    <span class="c">&lt;!-- needed if you want to use javax.validation --&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>javax.el<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>javax.el-api<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;version&gt;</span>2.2.4<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+
+    <span class="c">&lt;!-- PostgreSql driver, if you use another DB change
+             this dependency --&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>org.postgresql<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>postgresql<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;version&gt;</span>9.4.1208.jre7<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+
+    <span class="c">&lt;!-- Log4j library --&gt;</span>
+    <span class="nt">&lt;dependency&gt;</span>
+      <span class="nt">&lt;groupId&gt;</span>log4j<span class="nt">&lt;/groupId&gt;</span>
+      <span class="nt">&lt;artifactId&gt;</span>log4j<span class="nt">&lt;/artifactId&gt;</span>
+      <span class="nt">&lt;version&gt;</span>1.2.17<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;/dependency&gt;</span>
+  <span class="nt">&lt;/dependencies&gt;</span>
+<span class="nt">&lt;/project&gt;</span></code></pre></figure>
+
+<p>Let’s check again if everything works by issuing commands:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cd hibernateTutorial/
+$ mvn compile
+$ mvn exec:java</code></pre></figure>
+
+<p>You should see “Hello, World!” printed among pile of log messages (<code class="highlighter-rouge">-q</code> mvn option
+can be used suppress log messages).</p>
+
+<p>Next we need to add <code class="highlighter-rouge">log4j.xml</code> configuration file to <code class="highlighter-rouge">src/main/resources</code> directory:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span>
+<span class="cp">&lt;!DOCTYPE log4j:configuration SYSTEM "log4j.dtd"&gt;</span>
+<span class="nt">&lt;log4j:configuration</span> <span class="na">debug=</span><span class="s">"false"</span>
+     <span class="na">xmlns:log4j=</span><span class="s">'http://jakarta.apache.org/log4j/'</span><span class="nt">&gt;</span>
+
+    <span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">"file"</span> 
+                <span class="na">class=</span><span class="s">"org.apache.log4j.RollingFileAppender"</span><span class="nt">&gt;</span>
+        <span class="c">&lt;!-- name of log file: --&gt;</span>
+        <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"file"</span> <span class="na">value=</span><span class="s">"hibernate_tutorial.log"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;layout</span> <span class="na">class=</span><span class="s">"org.apache.log4j.PatternLayout"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"ConversionPattern"</span>
+                   <span class="na">value=</span><span class="s">"[%d{HH:mm:ss}] %m%n"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;/layout&gt;</span>
+    <span class="nt">&lt;/appender&gt;</span>
+
+    <span class="nt">&lt;appender</span> <span class="na">name=</span><span class="s">"console"</span> 
+                <span class="na">class=</span><span class="s">"org.apache.log4j.ConsoleAppender"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"Target"</span> <span class="na">value=</span><span class="s">"System.out"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;layout</span> <span class="na">class=</span><span class="s">"org.apache.log4j.PatternLayout"</span><span class="nt">&gt;</span>
+            <span class="nt">&lt;param</span> <span class="na">name=</span><span class="s">"ConversionPattern"</span> 
+                   <span class="na">value=</span><span class="s">"[%d{HH:mm:ss}] %m%n"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;/layout&gt;</span>
+    <span class="nt">&lt;/appender&gt;</span>
+
+    <span class="c">&lt;!-- change log level to DEBUG
+         if you want more detailed
+         logs from Hibernate --&gt;</span>
+    <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">"org.hibernate"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;level</span> <span class="na">value=</span><span class="s">"ERROR"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/logger&gt;</span>
+    
+    <span class="c">&lt;!-- log SQL queries executed by
+         Hibernate library --&gt;</span>
+    <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">"org.hibernate.SQL"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;level</span> <span class="na">value=</span><span class="s">"DEBUG"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/logger&gt;</span>
+
+    <span class="c">&lt;!-- log values of SQL queries parameters --&gt;</span>
+    <span class="nt">&lt;logger</span> <span class="na">name=</span><span class="s">"org.hibernate.type.descriptor.sql.BasicBinder"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;level</span> <span class="na">value=</span><span class="s">"TRACE"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/logger&gt;</span>
+
+    <span class="nt">&lt;root&gt;</span>
+        <span class="nt">&lt;level</span> <span class="na">value=</span><span class="s">"DEBUG"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;appender-ref</span> <span class="na">ref=</span><span class="s">"file"</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;appender-ref</span> <span class="na">ref=</span><span class="s">"console"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/root&gt;</span>
+
+<span class="nt">&lt;/log4j:configuration&gt;</span></code></pre></figure>
+
+<p>Now we can use Log4j logger in our application:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// src/main/java/mc/hibernatetutorial/App.java</span>
+<span class="kn">package</span> <span class="n">mc</span><span class="o">.</span><span class="na">hibernatetutorial</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.apache.log4j.Logger</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">App</span> 
+<span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> 
+                        <span class="n">Logger</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">App</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Hello, World!"</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>After <code class="highlighter-rouge">mvn compile</code> and <code class="highlighter-rouge">mvn exec:java -q</code> you should see message printed to
+terminal and to <code class="highlighter-rouge">hibernate_tutorial.log</code> file in the project directory.</p>
+
+<h5 id="prepare-database">Prepare database</h5>
+
+<p>Before we start playing with Hibernate we should create separate
+database user for our app. User account can be created from pgAdmin
+by executing following SQL:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">create</span> <span class="k">user</span> <span class="n">huser</span> <span class="k">with</span> <span class="n">password</span> <span class="nv">`hpass`</span><span class="p">;</span></code></pre></figure>
+
+<p>We will also create database dedicated for our app, named <code class="highlighter-rouge">tutorialdb</code>:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">create</span> <span class="k">database</span> <span class="n">tutorialdb</span><span class="p">;</span></code></pre></figure>
+
+<p>And allow <code class="highlighter-rouge">huser</code> to create/modify/drop tables in <code class="highlighter-rouge">tutorialdb</code>:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">grant</span> <span class="k">all</span> <span class="k">privileges</span> <span class="k">on</span> <span class="k">database</span> <span class="n">tutorialdb</span> <span class="k">to</span> <span class="n">huser</span><span class="p">;</span></code></pre></figure>
+
+<p>After executing these instructions you should be able to login as <code class="highlighter-rouge">huser</code>
+and create table inside <code class="highlighter-rouge">tutorialdb</code> database.</p>
+
+<p>INFO: When you try to connect to local PostgreSQL instance always specify
+name of server as an IP address e.g. <code class="highlighter-rouge">127.0.0.1</code>, otherwise you may not be able
+to login without tweaking PostgreSQL configuration 
+(more details <a href="http://stackoverflow.com/questions/18664074/getting-error-peer-authentication-failed-for-user-postgres-when-trying-to-ge">here</a>).</p>
+
+<h4 id="hello-world-in-vanilla-hibernate">Hello, World! in vanilla Hibernate</h4>
+
+<p>Finally we may start playing with Hibernate ORM.
+Let’s begin by creating Hibernate configuration file <code class="highlighter-rouge">hibernate_cfg.xml</code>
+inside <code class="highlighter-rouge">src/main/resources</code> directory:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span>
+<span class="nt">&lt;hibernate-configuration&gt;</span>
+  <span class="nt">&lt;session-factory&gt;</span>
+    <span class="c">&lt;!-- Database connection settings --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"hibernate.dialect"</span><span class="nt">&gt;</span>org.hibernate.dialect.PostgreSQL82Dialect<span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"hibernate.connection.driver_class"</span><span class="nt">&gt;</span>org.postgresql.Driver<span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"hibernate.connection.username"</span><span class="nt">&gt;</span>huser<span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"hibernate.connection.password"</span><span class="nt">&gt;</span>hpass<span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"hibernate.connection.url"</span><span class="nt">&gt;</span>jdbc:postgresql://127.0.0.1:5432/tutorialdb<span class="nt">&lt;/property&gt;</span>
+    <span class="c">&lt;!-- JDBC connection pool (use the built-in) --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"connection.pool_size"</span><span class="nt">&gt;</span>1<span class="nt">&lt;/property&gt;</span>
+    <span class="c">&lt;!-- Disable the second-level cache  --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"cache.provider_class"</span><span class="nt">&gt;</span>org.hibernate.cache.internal.NoCacheProvider<span class="nt">&lt;/property&gt;</span>
+    <span class="c">&lt;!-- Log SQL queries --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"format_sql"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/property&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"use_sql_comments"</span><span class="nt">&gt;</span>true<span class="nt">&lt;/property&gt;</span>
+    <span class="c">&lt;!-- Drop and re-create the database schema on startup --&gt;</span>
+    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"hbm2ddl.auto"</span><span class="nt">&gt;</span>create<span class="nt">&lt;/property&gt;</span>
+    <span class="c">&lt;!-- MAPPINGS --&gt;</span>
+    <span class="nt">&lt;mapping</span> <span class="na">class=</span><span class="s">"mc.hibernatetutorial.model.TestEntity"</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/session-factory&gt;</span>
+<span class="nt">&lt;/hibernate-configuration&gt;</span></code></pre></figure>
+
+<p>This file can be quite complex, it contains various settings used by ORM.
+The most important for us are:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">hibernate.connection.username</code> and <code class="highlighter-rouge">hibernate.connection.password</code> - these
+ properties contains credentials used to connect to database server</li>
+  <li><code class="highlighter-rouge">hibernate.connection.url</code> - address of database server.
+ The last part of url contains database name (in our case <code class="highlighter-rouge">tutorialdb</code>)</li>
+  <li><code class="highlighter-rouge">format_sql</code> and <code class="highlighter-rouge">use_sql_comments</code> properties -  when set to <code class="highlighter-rouge">true</code> will force
+ Hibernate to log SQL queries executed against database</li>
+  <li><code class="highlighter-rouge">hbm2ddl.auto</code> property - when set to <code class="highlighter-rouge">create</code> will drop and recreate all tables
+ in database at application start. This is useful when you are learning Hibernate
+ but can be frustrating because all changes made by you to database will be lost
+ when you run your application again. To disable this feature use <code class="highlighter-rouge">validate</code> as property
+ value, this will only check if database contains all required tables but will not drop them.</li>
+  <li><code class="highlighter-rouge">&lt;mapping /&gt;</code> elements - allow you to list all entity classes that you want
+ to use with Hibernate. For now we list only single class:
+ <code class="highlighter-rouge">mc.hibernatetutorial.model.TestEntity</code>.</li>
+</ul>
+
+<p>Next we must create our entity class <code class="highlighter-rouge">mc.hibernatetutorial.model.TestEntity</code>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// src/main/java/mc/hibernatetutorial/model/TestEntity.java</span>
+<span class="kn">package</span> <span class="n">mc</span><span class="o">.</span><span class="na">hibernatetutorial</span><span class="o">.</span><span class="na">model</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">javax.persistence.*</span><span class="o">;</span>
+
+<span class="nd">@Entity</span>
+<span class="nd">@Table</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"test"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestEntity</span> <span class="o">{</span>
+    <span class="nd">@Id</span>
+    <span class="nd">@GeneratedValue</span>
+    <span class="kd">private</span> <span class="n">Long</span> <span class="n">id</span><span class="o">;</span>
+
+    <span class="nd">@Column</span><span class="o">(</span><span class="n">unique</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="n">TestEntity</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">Long</span> <span class="n">getId</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">id</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">getName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">toString</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"User id: %d, name: %s"</span><span class="o">,</span> <span class="n">getId</span><span class="o">(),</span> <span class="n">getName</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The are two ways in which you may map entities using Hibernate: via annotations and via xml
+files (with <code class="highlighter-rouge">.hbm.xml</code> extension). Annotations are more popular these days and so 
+we will use them. First we mark our class as entity using <code class="highlighter-rouge">@Entity</code> annotation.
+Then we specify table name that will hold <code class="highlighter-rouge">TestEntity</code> data (by default table name
+is equal to class name) using <code class="highlighter-rouge">@Table</code> annotation. Every entity class must have
+a primary key, we use <code class="highlighter-rouge">@Id</code> to mark one of class fields as key. We also use <code class="highlighter-rouge">@GeneratedValue</code>
+annotation this will hint hibernate that we want database server to generate entity keys.
+The last annotation that we use is <code class="highlighter-rouge">@Column</code>, we can use it to change column name for given
+field or as in our example to set unique constrain.</p>
+
+<p>Finally we may write code to save our <code class="highlighter-rouge">TestEntity</code> to database:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// src/main/java/mc/hibernatetutorial/App.java</span>
+<span class="kn">package</span> <span class="n">mc</span><span class="o">.</span><span class="na">hibernatetutorial</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.apache.log4j.Logger</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.hibernate.Session</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.hibernate.SessionFactory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.hibernate.Transaction</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.hibernate.boot.MetadataSources</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.hibernate.boot.registry.StandardServiceRegistry</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.hibernate.boot.registry.StandardServiceRegistryBuilder</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">mc.hibernatetutorial.model.*</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">App</span> 
+<span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">App</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="c1">// read configuration and build session factory</span>
+        <span class="kd">final</span> <span class="n">StandardServiceRegistry</span> <span class="n">registry</span> <span class="o">=</span>
+                <span class="k">new</span> <span class="n">StandardServiceRegistryBuilder</span><span class="o">()</span>
+                        <span class="o">.</span><span class="na">configure</span><span class="o">(</span><span class="s">"hibernate_cfg.xml"</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+
+        <span class="n">SessionFactory</span> <span class="n">sessionFactory</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">sessionFactory</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MetadataSources</span><span class="o">(</span><span class="n">registry</span><span class="o">)</span>
+                    <span class="o">.</span><span class="na">buildMetadata</span><span class="o">()</span>
+                    <span class="o">.</span><span class="na">buildSessionFactory</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">StandardServiceRegistryBuilder</span><span class="o">.</span><span class="na">destroy</span><span class="o">(</span><span class="n">registry</span><span class="o">);</span>
+            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"cannot create sessionFactory"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="c1">// create session, open transaction and save test entity to db</span>
+        <span class="n">Session</span> <span class="n">session</span> <span class="o">=</span> <span class="n">sessionFactory</span><span class="o">.</span><span class="na">openSession</span><span class="o">();</span>
+        <span class="n">Transaction</span> <span class="n">tx</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="na">beginTransaction</span><span class="o">();</span>
+
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">TestEntity</span> <span class="n">testEntity</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TestEntity</span><span class="o">();</span>
+            <span class="n">testEntity</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"super foo"</span><span class="o">);</span>
+
+            <span class="n">session</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">testEntity</span><span class="o">);</span>
+            <span class="n">tx</span><span class="o">.</span><span class="na">commit</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">tx</span><span class="o">.</span><span class="na">rollback</span><span class="o">();</span>
+            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"cannot commit transaction"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">session</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="o">}</span>
+
+        <span class="c1">// clean up</span>
+        <span class="n">sessionFactory</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>We start by building <code class="highlighter-rouge">SessionFactory</code>, this is pretty boring stuff that needs to be done.
+Notice how we are loading settings from our <code class="highlighter-rouge">hibernate_cfg.xml</code> file:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">final</span> <span class="n">StandardServiceRegistry</span> <span class="n">registry</span> <span class="o">=</span>
+        <span class="k">new</span> <span class="n">StandardServiceRegistryBuilder</span><span class="o">()</span>
+                <span class="o">.</span><span class="na">configure</span><span class="o">(</span><span class="s">"hibernate_cfg.xml"</span><span class="o">)</span>
+                <span class="o">.</span><span class="na">build</span><span class="o">();</span></code></pre></figure>
+
+<p>Next we use <code class="highlighter-rouge">SessionFactory</code> to create new session (session may be treated as a implementation
+of <a href="http://martinfowler.com/eaaCatalog/unitOfWork.html">Unit of Work</a> pattern, generally you should create session per transaction).
+We use <code class="highlighter-rouge">beginTransaction()</code> to start new database transaction. Then we create our <code class="highlighter-rouge">TestEntity</code>
+object, we set some properties and we save it to database using <code class="highlighter-rouge">session.persist()</code> call.
+Next we commit transaction using <code class="highlighter-rouge">tx.commit()</code> and finally we are freeing session resources
+using <code class="highlighter-rouge">session.close()</code>.</p>
+
+<p>After <code class="highlighter-rouge">mvn compile</code> and <code class="highlighter-rouge">mvn exec:java</code> Hibernate should generated single table <code class="highlighter-rouge">test</code> in
+our <code class="highlighter-rouge">tutorialdb</code> database, and should insert single row representing our 
+<code class="highlighter-rouge">TestEntity</code> to that table.
+You may want to dig into log messages to see actual SQL statements used to create table
+and insert row. Here for example is generated SQL that inserted our <code class="highlighter-rouge">TestEntity</code> row:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="cm">/* insert mc.hibernatetutorial.model.TestEntity
+    */</span> <span class="k">insert</span> 
+    <span class="k">into</span>
+        <span class="n">test</span>
+        <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">id</span><span class="p">)</span> 
+    <span class="k">values</span>
+        <span class="p">(</span><span class="o">?</span><span class="p">,</span> <span class="o">?</span><span class="p">)</span>
+
+<span class="n">binding</span> <span class="k">parameter</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">as</span> <span class="p">[</span><span class="n">VARCHAR</span><span class="p">]</span> <span class="o">-</span> <span class="p">[</span><span class="n">super</span> <span class="n">foo</span><span class="p">]</span>
+<span class="n">binding</span> <span class="k">parameter</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">as</span> <span class="p">[</span><span class="n">BIGINT</span><span class="p">]</span> <span class="o">-</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span></code></pre></figure>
+
+<p>Now we can start exploring more advanced Hibernate topics like
+<a href="http://www.tutorialspoint.com/hibernate/hibernate_annotations.htm">mapping</a> or 
+<a href="http://www.tutorialspoint.com/hibernate/hibernate_query_language.htm">querying</a>.</p>
+
+<p>Code used in this tutorial: <a href="https://github.com/marcin-chwedczuk/java-hibernate-helloworld/tree/vanilla">https://github.com/marcin-chwedczuk/java-hibernate-helloworld/tree/vanilla</a></p>
+
+<h4 id="hello-world-using-jpa">Hello, World! using JPA</h4>
+
+<p>Now we may explore Hibernate ORM via Java Persistence API.
+Let’s begin by creating JPA configuration file <code class="highlighter-rouge">persistence.xml</code>
+inside <code class="highlighter-rouge">src/main/resources/META-INF</code> directory:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;persistence</span> <span class="na">xmlns=</span><span class="s">"http://xmlns.jcp.org/xml/ns/persistence"</span> <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span> <span class="na">version=</span><span class="s">"2.1"</span> <span class="na">xsi:schemaLocation=</span><span class="s">"http://xmlns.jcp.org/xml/ns/persistence                             http://xmlns.jcp.org/xml/ns/persistence_2_1.xsd"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;persistence-unit</span> <span class="na">name=</span><span class="s">"HelloWorldPU"</span> <span class="na">transaction-type=</span><span class="s">"RESOURCE_LOCAL"</span><span class="nt">&gt;</span>
+    <span class="c">&lt;!--
+        MAPPINGS
+    --&gt;</span>
+    <span class="nt">&lt;class&gt;</span>mc.hibernatetutorial.model.TestEntity<span class="nt">&lt;/class&gt;</span>
+    <span class="c">&lt;!-- Use only classes specified in MAPPINGS --&gt;</span>
+    <span class="nt">&lt;exclude-unlisted-classes&gt;</span>true<span class="nt">&lt;/exclude-unlisted-classes&gt;</span>
+    <span class="nt">&lt;properties&gt;</span>
+      <span class="c">&lt;!-- Configuring JDBC properties --&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"javax.persistence.jdbc.url"</span> <span class="na">value=</span><span class="s">"jdbc:postgresql://127.0.0.1:5432/tutorialdb"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"javax.persistence.jdbc.user"</span> <span class="na">value=</span><span class="s">"huser"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"javax.persistence.jdbc.password"</span> <span class="na">value=</span><span class="s">"hpass"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"javax.persistence.jdbc.driver"</span> <span class="na">value=</span><span class="s">"org.postgresql.Driver"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"hibernate.dialect"</span> <span class="na">value=</span><span class="s">"org.hibernate.dialect.PostgreSQL82Dialect"</span> <span class="nt">/&gt;</span>
+
+      <span class="c">&lt;!-- Log SQL queries --&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"hibernate.format_sql"</span> <span class="na">value=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"hibernate.use_sql_comments"</span> <span class="na">value=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+
+      <span class="c">&lt;!-- Drop and re-create the database schema on startup --&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"javax.persistence.schema-generation.database.action"</span> <span class="na">value=</span><span class="s">"drop-and-create"</span> <span class="nt">/&gt;</span>
+       <span class="c">&lt;!-- Use only classes specified in MAPPINGS --&gt;</span>
+      <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"hibernate.archive.autodetection"</span> <span class="na">value=</span><span class="s">"none"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/properties&gt;</span>
+  <span class="nt">&lt;/persistence-unit&gt;</span>
+<span class="nt">&lt;/persistence&gt;</span></code></pre></figure>
+
+<p>This file can be quite complex, it contains various settings used by ORM.
+The most important for us are:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">javax.persistence.jdbc.user</code> and <code class="highlighter-rouge">javax.persistence.jdbc.password</code> - these
+ properties contains credentials used to connect to database server</li>
+  <li><code class="highlighter-rouge">javax.persistence.jdbc.url</code> - address of database server.
+ The last part of url contains database name (in our case <code class="highlighter-rouge">tutorialdb</code>)</li>
+  <li><code class="highlighter-rouge">hibernate.format_sql</code> and <code class="highlighter-rouge">hibernate.use_sql_comments</code> properties -<br />
+ when set to <code class="highlighter-rouge">true</code> will force
+ Hibernate to log SQL queries executed against database</li>
+  <li><code class="highlighter-rouge">javax.persistence.schema-generation.database.action</code> property - 
+ when set to <code class="highlighter-rouge">drop-and-create</code> will drop and recreate all tables
+ in database at application start. This is useful when you are learning Hibernate
+ but can be frustrating because all changes made by you to database will be lost
+ when you run your application again. To disable this feature use <code class="highlighter-rouge">none</code> as property
+ value.</li>
+  <li><code class="highlighter-rouge">&lt;class /&gt;</code> elements - allow you to list all entity classes that you want
+ to use with Hibernate. For now we list only single class:
+ <code class="highlighter-rouge">mc.hibernatetutorial.model.TestEntity</code>.</li>
+</ul>
+
+<p>Next we must create our entity class <code class="highlighter-rouge">mc.hibernatetutorial.model.TestEntity</code>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// src/main/java/mc/hibernatetutorial/model/TestEntity.java</span>
+<span class="kn">package</span> <span class="n">mc</span><span class="o">.</span><span class="na">hibernatetutorial</span><span class="o">.</span><span class="na">model</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">javax.persistence.*</span><span class="o">;</span>
+
+<span class="nd">@Entity</span>
+<span class="nd">@Table</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"test"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestEntity</span> <span class="o">{</span>
+    <span class="nd">@Id</span>
+    <span class="nd">@GeneratedValue</span>
+    <span class="kd">private</span> <span class="n">Long</span> <span class="n">id</span><span class="o">;</span>
+
+    <span class="nd">@Column</span><span class="o">(</span><span class="n">unique</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="n">TestEntity</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">Long</span> <span class="n">getId</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">id</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">getName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kt">void</span> <span class="n">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="n">toString</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"User id: %d, name: %s"</span><span class="o">,</span> <span class="n">getId</span><span class="o">(),</span> <span class="n">getName</span><span class="o">());</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>JPA uses annotations to control how ORM maps classes to database tables and columns.
+We mark <code class="highlighter-rouge">TestEntity</code> class as entity using <code class="highlighter-rouge">@Entity</code> annotation.
+We specify table name that will hold <code class="highlighter-rouge">TestEntity</code> data (by default table name
+is equal to class name) using <code class="highlighter-rouge">@Table</code> annotation. Every entity class must have
+a primary key, we use <code class="highlighter-rouge">@Id</code> to mark one of class fields as key. We also use <code class="highlighter-rouge">@GeneratedValue</code>
+annotation to hint ORM that we want database server to generate entity keys.
+The last annotation that we use is <code class="highlighter-rouge">@Column</code>, we can use it to change column name for given
+field or as in our example to set unique constrain.</p>
+
+<p>Finally we may write code to save our <code class="highlighter-rouge">TestEntity</code> class to database:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// src/main/java/mc/hibernatetutorial/App.java</span>
+<span class="kn">package</span> <span class="n">mc</span><span class="o">.</span><span class="na">hibernatetutorial</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.apache.log4j.Logger</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.persistence.EntityManager</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.persistence.EntityManagerFactory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.persistence.EntityTransaction</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">javax.persistence.Persistence</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">mc.hibernatetutorial.model.*</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">App</span> 
+<span class="o">{</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">App</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
+    <span class="o">{</span>
+        <span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"starting application...."</span><span class="o">);</span>
+
+        <span class="kd">final</span> <span class="n">EntityManagerFactory</span> <span class="n">emf</span> <span class="o">=</span> 
+                <span class="n">Persistence</span><span class="o">.</span><span class="na">createEntityManagerFactory</span><span class="o">(</span><span class="s">"HelloWorldPU"</span><span class="o">);</span>
+
+        <span class="n">EntityManager</span> <span class="n">entityManager</span> <span class="o">=</span> <span class="n">emf</span><span class="o">.</span><span class="na">createEntityManager</span><span class="o">();</span>
+        <span class="n">EntityTransaction</span> <span class="n">tx</span> <span class="o">=</span> <span class="n">entityManager</span><span class="o">.</span><span class="na">getTransaction</span><span class="o">();</span>
+        <span class="n">tx</span><span class="o">.</span><span class="na">begin</span><span class="o">();</span>
+
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">TestEntity</span> <span class="n">testEntity</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TestEntity</span><span class="o">();</span>
+            <span class="n">testEntity</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="s">"super foo"</span><span class="o">);</span>    
+
+            <span class="n">entityManager</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">testEntity</span><span class="o">);</span>
+            <span class="n">tx</span><span class="o">.</span><span class="na">commit</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"cannot commit transaction"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="n">tx</span><span class="o">.</span><span class="na">rollback</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="k">finally</span> <span class="o">{</span>
+            <span class="n">entityManager</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+        <span class="o">}</span>
+        
+        <span class="n">emf</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>We start by building <code class="highlighter-rouge">EntityManagerFactory</code>, this will load our configuration
+from <code class="highlighter-rouge">persistence.xml</code>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">final</span> <span class="n">EntityManagerFactory</span> <span class="n">emf</span> <span class="o">=</span> 
+        <span class="n">Persistence</span><span class="o">.</span><span class="na">createEntityManagerFactory</span><span class="o">(</span><span class="s">"HelloWorldPU"</span><span class="o">);</span></code></pre></figure>
+
+<p>Notice that we use name <code class="highlighter-rouge">HelloWorldPU</code>, the same as used in <code class="highlighter-rouge">&lt;persistence-unit /&gt;</code> element
+in <code class="highlighter-rouge">persistence.xml</code>.</p>
+
+<p>Next we use <code class="highlighter-rouge">EntityManagerFactory</code> to create new <code class="highlighter-rouge">EntityManger</code>
+(entity manager may be treated as a implementation
+of <a href="http://martinfowler.com/eaaCatalog/unitOfWork.html">Unit of Work</a> pattern, 
+generally you should create one entity manager per transaction).
+Next we use <code class="highlighter-rouge">entityManager.getTransaction()</code> and <code class="highlighter-rouge">tx.begin()</code> to start new database transaction. 
+Then we create our <code class="highlighter-rouge">TestEntity</code>
+object, we set some properties and we save it to database using <code class="highlighter-rouge">entityManager.persist()</code> call.
+Next we commit transaction using <code class="highlighter-rouge">tx.commit()</code> and finally we are freeing resources
+using <code class="highlighter-rouge">entityManager.close()</code>.</p>
+
+<p>After <code class="highlighter-rouge">mvn compile</code> and <code class="highlighter-rouge">mvn exec:java</code> Hibernate should generated single table <code class="highlighter-rouge">test</code> in
+our <code class="highlighter-rouge">tutorialdb</code> database, and should insert single row representing our 
+<code class="highlighter-rouge">TestEntity</code> to that table.
+You may want to dig into log messages to see actual SQL statements used to create table
+and insert row. Here for example is generated SQL that inserted our <code class="highlighter-rouge">TestEntity</code> row:</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="cm">/* insert mc.hibernatetutorial.model.TestEntity
+    */</span> <span class="k">insert</span> 
+    <span class="k">into</span>
+        <span class="n">test</span>
+        <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">id</span><span class="p">)</span> 
+    <span class="k">values</span>
+        <span class="p">(</span><span class="o">?</span><span class="p">,</span> <span class="o">?</span><span class="p">)</span>
+
+<span class="n">binding</span> <span class="k">parameter</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">as</span> <span class="p">[</span><span class="n">VARCHAR</span><span class="p">]</span> <span class="o">-</span> <span class="p">[</span><span class="n">super</span> <span class="n">foo</span><span class="p">]</span>
+<span class="n">binding</span> <span class="k">parameter</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="k">as</span> <span class="p">[</span><span class="n">BIGINT</span><span class="p">]</span> <span class="o">-</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span></code></pre></figure>
+
+<p>Now we can start exploring more advanced Hibernate topics like
+<a href="http://www.tutorialspoint.com/hibernate/hibernate_annotations.htm">mapping</a> or 
+<a href="http://www.tutorialspoint.com/hibernate/hibernate_query_language.htm">querying</a>.</p>
+
+<p>Code used in this tutorial: <a href="https://github.com/marcin-chwedczuk/java-hibernate-helloworld/tree/jpa">https://github.com/marcin-chwedczuk/java-hibernate-helloworld/tree/jpa</a></p>
+
+
+	  ]]></description>
+	</item>
+
+
+</channel>
+</rss>

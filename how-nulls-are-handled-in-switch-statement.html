@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>How null's are handled in switch statement in C#, Java and JavaScript</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover1.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">How null's are handled in switch statement in C#, Java and JavaScript</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2016-07-09">09 Jul 2016</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/csharp'>Csharp</a>,
+                       
+                
+                    
+                       <a href='/tag/java'>Java</a>,
+                       
+                
+                    
+                       <a href='/tag/javascript'>Javascript</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>Let’s start with C#. In C# <code class="highlighter-rouge">null</code>s may show up in <code class="highlighter-rouge">switch</code> statement in two cases:</p>
+
+<ol>
+  <li>We <code class="highlighter-rouge">switch</code> on <code class="highlighter-rouge">string</code> type</li>
+  <li>We <code class="highlighter-rouge">switch</code> on nullable <code class="highlighter-rouge">char</code>, nullable integral type (<code class="highlighter-rouge">byte</code>, <code class="highlighter-rouge">short</code> etc.) 
+ or nullable enum</li>
+</ol>
+
+<p>Both cases are handled by compiler in the same way,
+we just declare <code class="highlighter-rouge">case null</code> label and it will work out of the box.</p>
+
+<p>This is illustrated by simple program:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Program</span>
+<span class="p">{</span>
+   <span class="k">public</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kt">int</span><span class="p">?</span> <span class="n">n</span> <span class="p">=</span> <span class="n">GetDefault</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">?&gt;();</span>
+ 
+        <span class="c1">// This will write null       
+</span>        <span class="k">switch</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="k">null</span><span class="p">:</span> <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"null"</span><span class="p">);</span>    <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="m">1</span><span class="p">:</span>    <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"value 1"</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
+            <span class="k">default</span><span class="p">:</span>   <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"default"</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+
+
+        <span class="kt">string</span> <span class="n">s</span> <span class="p">=</span> <span class="n">GetDefault</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
+ 
+        <span class="c1">// This will write null       
+</span>        <span class="k">switch</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="k">null</span><span class="p">:</span>   <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"null"</span><span class="p">);</span>    <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="s">"foo"</span><span class="p">:</span>  <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"foo"</span><span class="p">);</span>     <span class="k">break</span><span class="p">;</span>
+            <span class="k">default</span><span class="p">:</span>     <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"default"</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="c1">// GetDefault returns null for nullable and reference type T
+</span>    <span class="k">private</span> <span class="n">T</span> <span class="n">GetDefault</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">default</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>   
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<h5 id="java-switch-and-nulls">Java switch and null’s</h5>
+
+<p>In Java <code class="highlighter-rouge">null</code>’s may show up in <code class="highlighter-rouge">switch</code> statement when we <code class="highlighter-rouge">switch</code> 
+on primitive type wrappers like <code class="highlighter-rouge">Integer</code> or on <code class="highlighter-rouge">String</code> or on enum type.
+In that case Java will throw <code class="highlighter-rouge">NullPointerException</code> as is demonstrated by program:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Program</span> 
+<span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
+  <span class="o">{</span>
+    <span class="n">String</span> <span class="n">s</span> <span class="o">=</span> <span class="n">getNullString</span><span class="o">();</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="k">switch</span><span class="o">(</span><span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+          <span class="c1">// case null - doesn't compile:</span>
+          <span class="c1">// error: constant string expression required</span>
+          <span class="c1">// case null:  System.out.println("null"); break;</span>
+
+          <span class="k">case</span> <span class="s">"foo"</span><span class="o">:</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"foo"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+          <span class="k">default</span><span class="o">:</span>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"default"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">catch</span><span class="o">(</span><span class="n">NullPointerException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// exception stack trace points to `switch(s) {` line</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"null pointer exception"</span><span class="o">);</span>
+    <span class="o">}</span>
+    
+    <span class="n">FooEnum</span> <span class="n">e</span> <span class="o">=</span> <span class="n">getNullFooEnum</span><span class="o">();</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="k">switch</span><span class="o">(</span><span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+       <span class="c1">// case null doesn't compile</span>
+       <span class="c1">// error: an enum switch case label must be the unqualified name of an enumeration constant</span>
+       <span class="c1">// case null: System.out.println("null"); break;</span>
+        
+       <span class="k">case</span> <span class="nl">OPTION_1:</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"option 1"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+       <span class="k">default</span><span class="o">:</span>       <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"default"</span><span class="o">);</span>  <span class="k">break</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">catch</span><span class="o">(</span><span class="n">NullPointerException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// exception stack trace points to `switch(e) {` line</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"null pointer exception"</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  <span class="kd">private</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">getNullString</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span> 
+  <span class="o">}</span>
+  <span class="kd">private</span> <span class="kd">static</span> <span class="n">FooEnum</span> <span class="n">getNullFooEnum</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">enum</span> <span class="n">FooEnum</span> <span class="o">{</span>
+  <span class="n">OPTION_1</span><span class="o">,</span>
+  <span class="n">OPTION_2</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Program output:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">null pointer exception
+null pointer exception</code></pre></figure>
+
+<p>As we have seen it’s not even possible to declare <code class="highlighter-rouge">case null</code> label.</p>
+
+<p>In Java until you are 100% sure that value will not contain <code class="highlighter-rouge">null</code> you must
+explicitly check for <code class="highlighter-rouge">null</code> before switch as in:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">FooEnum</span> <span class="n">e</span> <span class="o">=</span> <span class="n">getNullFooEnum</span><span class="o">();</span>
+
+<span class="k">if</span> <span class="o">(</span><span class="n">e</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span> 
+  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"null"</span><span class="o">);</span> 
+<span class="o">}</span>
+<span class="k">else</span> <span class="o">{</span>
+  <span class="k">switch</span><span class="o">(</span><span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nl">OPTION_1:</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"option 1"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+    <span class="k">default</span><span class="o">:</span>       <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"default"</span><span class="o">);</span>  <span class="k">break</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Or use trick with default value:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Integer</span> <span class="n">n</span> <span class="o">=</span> <span class="n">getNullableInteger</span><span class="o">();</span>
+
+<span class="c1">// -1 is default here, but you may use Integer.MIN/MAX_VALUE or any</span>
+<span class="c1">// other value</span>
+<span class="k">switch</span><span class="o">((</span><span class="n">e</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">?</span> <span class="n">e</span> <span class="o">:</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="mi">1</span><span class="o">:</span>  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"1"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+  <span class="k">case</span> <span class="o">-</span><span class="mi">1</span><span class="o">:</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"null"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+  <span class="k">default</span><span class="o">:</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"default"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>WARNING: This Java behaviour may cause problems when we translate code from C# to Java.</p>
+
+<h4 id="javascript-switch-and-null">JavaScript switch and null</h4>
+
+<p>JavaScript <code class="highlighter-rouge">switch</code> statement is very flexible, each <code class="highlighter-rouge">case</code> label may contain
+an expression that will be evaluated at runtime. To compare <code class="highlighter-rouge">case</code> label values to
+<code class="highlighter-rouge">switch</code> value JavaScript uses <code class="highlighter-rouge">===</code> operator.</p>
+
+<p>In JavaScript there is no problem with using <code class="highlighter-rouge">null</code> and even <code class="highlighter-rouge">undefined</code> as <code class="highlighter-rouge">case</code>
+labels. Only tricky thing is with <code class="highlighter-rouge">NaN</code>s because <code class="highlighter-rouge">NaN === NaN</code> yields <code class="highlighter-rouge">false</code>
+in JavaScript. This is enforced by IEEE 754 standard that describes floating point
+numbers representation and behaviour. 
+In other words we can use <code class="highlighter-rouge">NaN</code> as a <code class="highlighter-rouge">case</code> label but
+program will never enter block of code associated with that label. As a side note
+it’s worth to mention that in JavaScript <code class="highlighter-rouge">NaN</code> is 
+the only value for which expression <code class="highlighter-rouge">x === x</code> yields
+<code class="highlighter-rouge">false</code>.</p>
+
+<p>Following program demonstrates flexibility of JavaScript <code class="highlighter-rouge">switch</code> statement:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">values</span> <span class="o">=</span> <span class="p">[</span><span class="kc">undefined</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">NaN</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'foo'</span><span class="p">,</span> <span class="p">{}];</span>
+
+<span class="nx">values</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="kc">undefined</span><span class="err">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'undefined'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+
+         <span class="k">case</span> <span class="kc">null</span><span class="err">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'null'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        
+        <span class="k">case</span> <span class="s1">''</span><span class="err">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'empty string'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        
+        <span class="k">case</span> <span class="mi">0</span><span class="err">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'zero'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        
+        <span class="k">case</span> <span class="kc">NaN</span><span class="err">:</span>
+            <span class="c1">// dead code here</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'nan'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        
+        <span class="k">case</span> <span class="mi">1</span><span class="err">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        
+        <span class="c1">// label with runtime expression here:</span>
+        <span class="k">case</span> <span class="s1">'f'</span><span class="o">+</span><span class="s1">'oo'</span><span class="err">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'foo'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+        
+        <span class="nl">default</span><span class="p">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'default'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">});</span></code></pre></figure>
+
+<p>This program will write:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">"undefined"
+"null"
+"empty string"
+"zero"
+"default"
+1
+"foo"
+"default"</code></pre></figure>
+
+<p>Notice that <code class="highlighter-rouge">"default"</code> was printed for <code class="highlighter-rouge">NaN</code> value.</p>
+
+<p>That’s all for today, I hope you learned something new from this article. <br />
+May the Force be with you.</p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=How null's are handled in switch statement in C#, Java and JavaScript&amp;url=https://marcin-chwedczuk.github.io/how-nulls-are-handled-in-switch-statement"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/how-nulls-are-handled-in-switch-statement"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/how-nulls-are-handled-in-switch-statement"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//how-nulls-are-handled-in-switch-statement';
+        this.page.identifier = '/how-nulls-are-handled-in-switch-statement';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover2.jpg)" href="/how-to-use-xargs">
+            <section class="post">
+                <h2>How to use xargs</h2>
+                <p>In this blog post I will show you how to use `xargs` command line utility....</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover3.jpg)" href="/mapping-inheritance-in-hibernate">
+            <section class="post">
+                <h2>Mapping class inheritance in Hibernate 5</h2>
+                <p>In this post I want to present four basic strategies for mapping class inheritance in...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>

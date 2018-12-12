@@ -1,28 +1,1343 @@
----
-layout: null
----
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>{{ site.name | xml_escape }} - Articles</title>
-    <description>{% if site.description %}{{ site.description | xml_escape }}{% endif %}</description>
+    <title>Programming is Magic - Articles</title>
+    <description>A place where I can share my thoughts about programming</description>
     <link>
-    {{ site.url }}</link>
-    {% for post in site.posts %}
-      {% unless post.link %}
+    https://marcin-chwedczuk.github.io/</link>
+    
+      
       <item>
-        <title>{{ post.title | xml_escape }}</title>
-        {% if post.excerpt %}
-          <description>{{ post.excerpt | xml_escape }}</description>
-        {% else %}
-          <description>{{ post.content | xml_escape }}</description>
-        {% endif %}
-        <pubDate>{{ post.date | date: "%a, %d %b %Y %H:%M:%S %z" }}</pubDate>
+        <title>Inheritance? Just say no!</title>
+        
+          <description>&lt;p&gt;Recently during a code review I have found the following piece
+of code:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;TemplateCache&lt;/span&gt; 
+    &lt;span class=&quot;p&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ConcurrentDictionary&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TemplateName&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Template&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Here the programmer broke one of the most fundamental principles
+of modern object oriented programming:&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Wed, 12 Dec 2018 01:00:00 +0100</pubDate>
         <link>
-        {{ site.url }}{{ post.url }}</link>
-        <guid isPermaLink="true">{{ site.url }}{{ post.url }}</guid>
+        https://marcin-chwedczuk.github.io//inheritance-just-say-no</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//inheritance-just-say-no</guid>
       </item>
-      {% endunless %}
-    {% endfor %}
+      
+    
+      
+      <item>
+        <title>Abusing local functions to hide design problems</title>
+        
+          <description>&lt;p&gt;Recently I was browsing through a certain code base
+and I saw a code similar to this:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;EnterpriseNotificationSender&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;readonly&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IUserManagementService&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_userManagementService&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// ctor and stuff...
+&lt;/span&gt;  
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SendNotificationsToUsers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;companyId&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;addresses&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;GetRecipientsAddresses&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;companyId&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;foreach&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;address&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;addresses&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;nf&quot;&gt;SendNotification&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;address&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  
+    &lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IEnumerable&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EmailAddress&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; 
+                     &lt;span class=&quot;nf&quot;&gt;GetRecipientsAddresses&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;companyId&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_userManagementService&lt;/span&gt;
+             &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;FindUsersBelongingToCompany&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;companyId&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+             &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Where&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;UserShouldReciveNotification&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+             &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Select&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EmailAddress&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+             &lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;ToList&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+  
+        &lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;UserShouldReciveNotification&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;User&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EmailAddress&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;null&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;IsRegistered&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;!&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;user&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;IsDisabled&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+  
+    &lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SendNotification&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EmailAddress&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;address&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// do stuff...
+&lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Especially &lt;code class=&quot;highlighter-rouge&quot;&gt;GetRecipientsAddresses&lt;/code&gt; method draw my attention.
+Someone extracted quite complicated lambda expression
+to a local function.
+At first I thought that this is indeed a very nice usage for local
+functions.
+LINQ query is much more readable
+with expressions like &lt;code class=&quot;highlighter-rouge&quot;&gt;Where(UserShouldReciveNotification)&lt;/code&gt;
+instead of long lambdas.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Mon, 08 Oct 2018 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//abusing-local-functions-to-hide-design-problems</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//abusing-local-functions-to-hide-design-problems</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Automatically generate new OAuth 2.0 access tokens when using Postman</title>
+        
+          <description>&lt;p&gt;Did you ever try to use &lt;a href=&quot;https://www.getpostman.com/&quot;&gt;Postman&lt;/a&gt;
+with OAuth 2.0 protected API? 
+It is pretty annoying. 
+First you must select the correct authorization type, 
+then you must open a popup to request a new access token,
+and only then you can send your HTTP request.
+And of course when the token expires or when for some reason you need a
+new one (e.g. because you want to switching from development to staging environment),
+you need to go through the process again.
+Fortunately for us this can be automated using Postman pre-request scripts.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 29 Sep 2018 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//automatically-generate-new-oauth2-tokens-when-using-postman</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//automatically-generate-new-oauth2-tokens-when-using-postman</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Avoid hidden coupling to interface implementation</title>
+        
+          <description>&lt;p&gt;A few days ago I was reviewing a pull request at work and
+one line of code catch my eye:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;@event&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;CupOfCoffeeReadyEvent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;cm&quot;&gt;/* ... */&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;_logger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;LogInformation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;Publishing cup of coffee event: {@Event}.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;@event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;== this one
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_mediator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Publish&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;@event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;At my workplace we are using standard &lt;code class=&quot;highlighter-rouge&quot;&gt;ILogger&lt;/code&gt; interface from 
+&lt;code class=&quot;highlighter-rouge&quot;&gt;Microsoft.Extensions.Logging.Abstractions&lt;/code&gt;
+package. Also logged variable name starts with &lt;code class=&quot;highlighter-rouge&quot;&gt;@&lt;/code&gt; (&lt;code class=&quot;highlighter-rouge&quot;&gt;@event&lt;/code&gt;). 
+And so I started to suspect that 
+the log statement contains an error and instead it should be written as:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// {@Event} -&amp;gt; {Event}
+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_logger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;LogInformation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;Publishing cup of coffee event: {Event}.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;@event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Without thinking any further I put a friendly comment, that 
+this logging statement should be fixed.
+After half an hour, instead of a fix I get the following response:&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Fri, 21 Sep 2018 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//avoid-hidden-coupling-to-interface-implementation</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//avoid-hidden-coupling-to-interface-implementation</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Fluent Validation and complex dependencies between properties</title>
+        
+          <description>&lt;p&gt;&lt;a href=&quot;https://fluentvalidation.net/&quot;&gt;FluentValidation&lt;/a&gt; is one of the
+best validation libraries for .NET. I use it daily both at work
+and in my personal pet projects. Still from time to time I
+encounter situations where it is not obvious how 
+I should use FluentValidation.
+In this blog post I describe one such situation that I have to
+deal with recently.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Tue, 18 Sep 2018 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//fluent-validation-and-complex-dependencies-between-properties</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//fluent-validation-and-complex-dependencies-between-properties</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>You can live without mocking frameworks</title>
+        
+          <description>&lt;p&gt;For a long time I have been fan of mocking frameworks like 
+&lt;a href=&quot;https://github.com/Moq/moq4/wiki/Quickstart&quot;&gt;Moq&lt;/a&gt;
+and &lt;a href=&quot;http://nsubstitute.github.io&quot;&gt;NSubstitute&lt;/a&gt;.
+These libraries seems indispensable while unit-testing.
+They allow us to easily generate subs and mocks and assert that
+certain interaction between components took place.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 08 Sep 2018 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//you-can-live-without-your-mocking-framework</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//you-can-live-without-your-mocking-framework</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>How NOT to use the repository pattern</title>
+        
+          <description>&lt;h3 id=&quot;generic-repository-pattern&quot;&gt;Generic repository pattern&lt;/h3&gt;
+
+</description>
+        
+        <pubDate>Sun, 08 Jul 2018 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//repository-pattern-my-way</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//repository-pattern-my-way</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Devoxx Poland 2018</title>
+        
+          <description>&lt;p&gt;[Photo above shows Mr. Jakub Nabrdalik during his presentation about TDD 
+in main conference room.]&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Mon, 25 Jun 2018 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//devoxx-poland-2018</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//devoxx-poland-2018</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Ray tracing a torus</title>
+        
+          <description>&lt;p&gt;In this blog post I will show you how to ray trace a torus.
+I will assume that you already know how to ray trace simple shapes
+like spheres and cubes. I will also assume some basic familiarity
+with shading and ray tracing in general.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sun, 06 May 2018 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//ray-tracing-torus</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//ray-tracing-torus</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>.NET Core, HttpClient, Proxy and localhost</title>
+        
+          <description>&lt;p&gt;Recently I wanted to spy network traffic between a &lt;code class=&quot;highlighter-rouge&quot;&gt;HttpClient&lt;/code&gt; and
+a REST service. This task turned out to be more difficult than I
+though.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Thu, 03 May 2018 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//dotnet-core-http-client-proxy-and-localhost</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//dotnet-core-http-client-proxy-and-localhost</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>How to check if a number is a power of two</title>
+        
+          <description>&lt;p&gt;In this blog post we will learn about two algorithms that
+allow us to quickly check that a given integer is
+a power of two. 
+Both of these algorithms use only bit operators - they are
+very efficient.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 16 Dec 2017 01:00:00 +0100</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//how-to-check-if-a-number-is-a-power-of-two</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//how-to-check-if-a-number-is-a-power-of-two</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>A closer look at Portable Executable MS-DOS Stub</title>
+        
+          <description>&lt;p&gt;When we open native or .NET windows executables in a hex-editor
+we can notice that almost all of them contains strange
+“This program cannot be run in DOS mode” text at the beginning of the file.
+The original purpose on this text and surrounding it small
+MS-DOS program, called MS-DOS stub is to print message to
+the user and then exit if the &lt;code class=&quot;highlighter-rouge&quot;&gt;.exe&lt;/code&gt; file is run from under MS-DOS.
+I in this blog post I will explain how it works and since
+currently I have only GNU/Linux boxes in my flat I will 
+investigate using only Linux.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 18 Nov 2017 01:00:00 +0100</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//a-closer-look-at-portable-executable-msdos-stub</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//a-closer-look-at-portable-executable-msdos-stub</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Java streams best practices</title>
+        
+          <description>&lt;p&gt;In this short post I am going to present Java 8 streams 
+best practices. Most of them either I figured out myself or
+learned from my colleagues.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Wed, 08 Nov 2017 01:00:00 +0100</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//java-streams-best-practices</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//java-streams-best-practices</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Don&#39;t ask me about Singletons</title>
+        
+          <description>&lt;p&gt;Some time ago I attended a job interview for C# developer position in Warsaw.
+One of the tasks that I had to perform was to implement a singleton pattern
+in C#. With a bit of help from my interviewer
+(I didn’t get a cup of coffee that morning) I arrived at a solution:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Singleton&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Singleton&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_instance&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;object&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_lock&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;object&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Singleton&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Instance&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_instance&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;lock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_lock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_instance&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                        &lt;span class=&quot;n&quot;&gt;_instance&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;    
+                    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+                &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_instance&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Singleton&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;WriteLine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Singleton()&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;   
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;DoJob&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;Console&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;WriteLine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Singleton::DoJob()&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;We both admitted that this was a good enough solution 
+and we moved to other questions.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 30 Sep 2017 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//dont-ask-me-about-singletons</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//dont-ask-me-about-singletons</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Hibernate HHH000179 warning&amp;#58 Narrowing proxy to class this operation breaks ==</title>
+        
+          <description>&lt;p&gt;In this post I will explain why Hibernate is generating the HHH000179
+warning and when ignoring it may introduce bugs in your code.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sun, 30 Jul 2017 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Debugging OpenJDK 8 with NetBeans on Ubuntu</title>
+        
+          <description>&lt;p&gt;In this post we will learn how to download, compile and debug OpenJDK 8
+using Ubuntu and NetBeans IDE.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 24 Jun 2017 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//debugging-openjdk8-with-netbeans-on-ubuntu</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//debugging-openjdk8-with-netbeans-on-ubuntu</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Lambda expressions in Kotlin</title>
+        
+          <description>&lt;p&gt;In this blog post we will learn about Kotlin lambda expressions
+and how they are compiled to JVM bytecode.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 10 Jun 2017 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//lambda-expressions-in-kotlin</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//lambda-expressions-in-kotlin</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Zen and the Art of Unit Testing</title>
+        
+          <description>&lt;p&gt;In this blog post we will concern ourselves with unit testing of
+classic 3-layer business applications. We will assume that
+all business logic lives in services and components,
+that these services operate on entities that are stored and retrieved
+from relational database, 
+and that these entities doesn’t contain any logic.
+Moreover we assume usage of 
+DTO (&lt;a href=&quot;https://en.wikipedia.org/wiki/Data_transfer_object&quot;&gt;Data Transfer Object&lt;/a&gt;)
+to pass data between GUI and application services.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sun, 19 Feb 2017 01:00:00 +0100</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//zen-and-the-art-of-unit-testing</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//zen-and-the-art-of-unit-testing</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Hello, Hibernate Validator</title>
+        
+          <description>&lt;p&gt;In every enterprise application there is a need for
+validation. You may want to validate data send by user to
+your REST service, messages coming to your application from some
+other system, or your own entities before saving them to database.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sun, 05 Feb 2017 01:00:00 +0100</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//hello-hibernate-validator</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//hello-hibernate-validator</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Comparing with nullsFirst and nullsLast</title>
+        
+          <description>&lt;p&gt;Sorting in Java is easy:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Data&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+ 
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getValue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+ 
+    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Data(%s)&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+ 
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;listOfData&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Arrays&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+          &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;foo&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+          &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;bar&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+          &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;nyu&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+ 
+   &lt;span class=&quot;n&quot;&gt;listOfData&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;comparing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;Data:&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getValue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+   &lt;span class=&quot;n&quot;&gt;listOfData&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;//OUTPUT:&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// Data(bar)&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// Data(foo)&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// Data(nyu)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;…unless we try to sort a collection containing null values:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;listOfData&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Arrays&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+       &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;foo&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+       &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+       &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;bar&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+       &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;nyu&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+ 
+&lt;span class=&quot;n&quot;&gt;listOfData&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;comparing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;Data:&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getValue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;listOfData&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;//OUTPUT:&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// Exception in thread &quot;main&quot; java.lang.NullPointerException&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;//    at java.util.Comparator.lambda$comparing$77a9974f$1(Comparator.java:469)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Fortunately there is easy solution to this problem. But first we must
+decide whenever we want &lt;code class=&quot;highlighter-rouge&quot;&gt;null&lt;/code&gt;s to be first or last in sorted collection.
+After we made our mind we may use nifty &lt;code class=&quot;highlighter-rouge&quot;&gt;nullsFirst&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;nullsLast&lt;/code&gt;
+decorators provided by &lt;code class=&quot;highlighter-rouge&quot;&gt;Comparator&lt;/code&gt; interface:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;util&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;Comparator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.*;&lt;/span&gt;
+ 
+&lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;listOfData&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Arrays&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+       &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;foo&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+       &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
+       &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;bar&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+       &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;nyu&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+ 
+&lt;span class=&quot;n&quot;&gt;listOfData&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nullsFirst&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;comparing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;Data:&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getValue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)));&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;listOfData&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;//OUTPUT:&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// null&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// Data(bar)&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// Data(foo)&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;// Data(nyu)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;nullsFirst&lt;/code&gt; is great example of decorator design pattern
+(it adds functionality but doesn’t change interface).
+&lt;code class=&quot;highlighter-rouge&quot;&gt;nullsFirst&lt;/code&gt; works by wrapping provided comparator in code similar to:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Comparator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nullsFirst&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Comparator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;comparator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+ 
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+      &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+ 
+    &lt;span class=&quot;c1&quot;&gt;// a and b are not null here&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;comparator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;compare&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+</description>
+        
+        <pubDate>Sat, 14 Jan 2017 01:00:00 +0100</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//comparing-with-nullsFirst-and-nullsLast</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//comparing-with-nullsFirst-and-nullsLast</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Spring @Transactional cheat sheet</title>
+        
+          <description>&lt;h4 id=&quot;transactionalpropagation&quot;&gt;@Transactional(propagation=…)&lt;/h4&gt;
+
+</description>
+        
+        <pubDate>Sat, 07 Jan 2017 01:00:00 +0100</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//spring-transactional-cheat-sheet</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//spring-transactional-cheat-sheet</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Crudest CRUD using Spring</title>
+        
+          <description>&lt;p&gt;EDIT: In this post I’ll use Spring XML configuration, in new
+applications you should definitely use Spring JavaConfig configuration (via
+annotations and Java classes).
+For more info see reddit comment discussion &lt;a href=&quot;https://www.reddit.com/r/springsource/comments/5mjwa2/100_crudest_crud_using_spring_and_jdbc/&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Tue, 27 Dec 2016 01:00:00 +0100</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//crudest-curd-using-spring</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//crudest-curd-using-spring</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Generics in Java</title>
+        
+          <description>&lt;p&gt;Generics were introduced with Java 6 and quickly
+become indispensable tool of every Java programmer.
+In this blog post I gathered the most important
+facts about generics in Java. After reading this post you
+you should be able to comfortable use generics in
+your code.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Tue, 27 Dec 2016 01:00:00 +0100</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//generics-in-java</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//generics-in-java</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Overview of Spring annotation driven AOP</title>
+        
+          <description>&lt;p&gt;In this post I will show you how to use Spring aspects.
+In contrast to AspectJ aspects that are implemented by either
+compile time or load time bytecode manipulation (process often called waving),
+Spring aspects are implemented using proxy classes.
+The main advantage of proxy aspect implementation is ease of use,
+the main disadvantage is reduced functionality of aspects
+(e.g. we cannot intercept calls to static methods).&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 03 Dec 2016 01:00:00 +0100</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//overview-of-spring-annotation-driven-aop</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//overview-of-spring-annotation-driven-aop</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Iterative solution to Towers of Hanoi problem</title>
+        
+          <description>&lt;p&gt;Towers of Hanoi is a simple programming riddle often used 
+in programming courses to
+introduce recursion.
+Not many people are aware that Towers of Hanoi has
+also a beautiful iterative solution.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 26 Nov 2016 01:00:00 +0100</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//iterative-solution-to-towers-of-hanoi-problem</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//iterative-solution-to-towers-of-hanoi-problem</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>JavaScript in and delete operators</title>
+        
+          <description>&lt;p&gt;In this post I will describe &lt;code class=&quot;highlighter-rouge&quot;&gt;in&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;delete&lt;/code&gt; JavaScript operators.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 12 Nov 2016 01:00:01 +0100</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//JavaScript-in-and-delete-operators</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//JavaScript-in-and-delete-operators</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Using method references in Java 8</title>
+        
+          <description>&lt;p&gt;Method references in Java 8 allows us to convert a call to a method
+or a constructor into instance of functional interface.
+For simple lambda expressions like &lt;code class=&quot;highlighter-rouge&quot;&gt;x -&amp;gt; x.foo()&lt;/code&gt; using method
+references results in expression &lt;code class=&quot;highlighter-rouge&quot;&gt;FooClass::foo&lt;/code&gt; that is more
+clear and readable (if this is your first encounter with method
+references you may feel that they are more complicated than
+lambdas - don’t worry most people go through this stage,
+after a while you get used to them and you will start to
+appreciate their beauty).&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 12 Nov 2016 01:00:00 +0100</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//method-references-in-java-8</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//method-references-in-java-8</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Using Tomcat 8.5 with Eclipse Neon on Ubuntu</title>
+        
+          <description>&lt;p&gt;When you start learning Spring MVC development configuring
+Tomcat server in Eclipse Neon IDE can be a difficult task.
+This tutorial will help you setup your development environment.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Mon, 31 Oct 2016 01:00:00 +0100</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//using-tomcat-8.5-with-eclipse-neon</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//using-tomcat-8.5-with-eclipse-neon</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Hoisting in JavaScript</title>
+        
+          <description>&lt;p&gt;In this post I will describe what is variable hoisting in JavaScript.
+But before we go into detailed explanations let’s look at
+a few code examples.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sun, 30 Oct 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//hoisting-in-javascript</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//hoisting-in-javascript</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Introduction to SpEL (Spring Expression Language)</title>
+        
+          <description>&lt;p&gt;When writing bean wiring configuration in Spring it happens
+from time to time that we need something more than just primitive
+values and references to other beans to setup our bean.
+For example we may want to set bean property to value of some class static
+field or maybe we need to initialize that property with result of some
+method call. Of course we could use bean &lt;code class=&quot;highlighter-rouge&quot;&gt;init-method&lt;/code&gt; and
+initialize these properties from Java code but doing this from configuration
+file would be more convenient and would keep our business logic separated
+from configuration. Fortunately Spring allows us to use simple expressions
+while wiring beans via SpEL - Spring Expression Language.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 22 Oct 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//introduction-to-spring-expression-language</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//introduction-to-spring-expression-language</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Notes on Spring XML configuration</title>
+        
+          <description>&lt;p&gt;This post is below my usual quality standards, it’s just
+bunch of notes that I made while reading “Spring in Action”.
+Still I publish it mostly for myself but I hope someone may
+find it helpful too.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sun, 16 Oct 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//notes-on-spring-xml-configuration</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//notes-on-spring-xml-configuration</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Java 8&amp;#58 How to write custom collector</title>
+        
+          <description>&lt;p&gt;In this post we will create custom collector that can be used
+with Java 8 Stream API.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sun, 09 Oct 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//java-8-how-to-write-custom-collector</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//java-8-how-to-write-custom-collector</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Grouping using Java 8 streams</title>
+        
+          <description>&lt;p&gt;In this post we will learn how to perform grouping using new Java 8 Stream API.
+We will be working with the following list of students:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;enum&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;POLAND&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;UK&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;GERMANY&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Student&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;age&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;score&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+        
+    &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        
+&lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;students&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Arrays&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;cm&quot;&gt;/*          NAME       AGE COUNTRY          SCORE */&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Jan&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;     &lt;span class=&quot;mi&quot;&gt;13&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;POLAND&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;92&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Anna&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;    &lt;span class=&quot;mi&quot;&gt;15&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;POLAND&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;95&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Helga&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;14&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;GERMANY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;93&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Leon&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;    &lt;span class=&quot;mi&quot;&gt;14&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;GERMANY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;97&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Michael&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;14&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;UK&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;      &lt;span class=&quot;mi&quot;&gt;90&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Tim&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;     &lt;span class=&quot;mi&quot;&gt;15&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;UK&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;      &lt;span class=&quot;mi&quot;&gt;91&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;George&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;14&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;UK&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;      &lt;span class=&quot;mi&quot;&gt;98&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+</description>
+        
+        <pubDate>Sun, 02 Oct 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//grouping-using-java-8-streams</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//grouping-using-java-8-streams</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>How to use Meld as git merge and diff tool</title>
+        
+          <description>&lt;p&gt;&lt;a href=&quot;http://meldmerge.org/&quot;&gt;Meld&lt;/a&gt; is a new open source merge tool written in Python, it has
+a nice and fresh looking GUI so I decided to give it a chance and replace my old good KDiff…&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Tue, 27 Sep 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//use-meld-as-git-merge-diff-tool</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//use-meld-as-git-merge-diff-tool</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Obfuscating windows batch files using undefined environmental variables</title>
+        
+          <description>&lt;p&gt;In this post I will present an old trick from mid 90s used by hackers to 
+&lt;a href=&quot;https://en.wikipedia.org/wiki/Obfuscation_(software)&quot;&gt;obfuscate&lt;/a&gt;
+code stored in Windows &lt;code class=&quot;highlighter-rouge&quot;&gt;.bat&lt;/code&gt; files. The trick is simple and works on all versions
+of Windows up to Windows 10.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Mon, 26 Sep 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//obfuscating-windows-batch-files</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//obfuscating-windows-batch-files</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Castle Windsor most popular features</title>
+        
+          <description>&lt;p&gt;In this post I will present the most popular 
+&lt;a href=&quot;http://www.castleproject.org/projects/windsor/&quot;&gt;Castle Windsor&lt;/a&gt; features
+encountered in typical enterprise applications.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sun, 11 Sep 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//castle-windsor-most-popular-features</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//castle-windsor-most-popular-features</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>How to use grep command</title>
+        
+          <description>&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;grep&lt;/code&gt; is a command line program that allows us to find all occurrences of given pattern
+in the text.
+We can use &lt;code class=&quot;highlighter-rouge&quot;&gt;grep&lt;/code&gt; to search command standard output, for example:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-no-highlight&quot; data-lang=&quot;no-highlight&quot;&gt;$ # grep will print lines containing &quot;eth0&quot; phrase
+$ ifconfig | grep eth0
+eth0      Link encap:Ethernet  HWaddr xx:xx:xx:xx:xx:xx
+        
+$ cat /usr/share/dict/words | grep nerd
+nerd
+nerd&#39;s
+nerdier
+(...)&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;We may also use &lt;code class=&quot;highlighter-rouge&quot;&gt;grep&lt;/code&gt; to find given pattern in the set of text files:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-no-highlight&quot; data-lang=&quot;no-highlight&quot;&gt;$ cat &amp;gt; foo.txt &amp;lt;&amp;lt;EOF
+foo
+FOO
+foobar
+xfoox
+in the middle of the line foo is
+EOF
+    
+$ # search for foo in foo.txt file
+$ grep foo foo.txt
+foo
+foobar
+(...)
+        
+$ cat &amp;gt; bar.txt &amp;lt;&amp;lt;EOF
+bar
+Bar
+foobar
+EOF
+    
+$ # search for foo in foo.txt and bar.txt 
+$ grep foo {foo,bar}.txt
+foo.txt:foo
+(...)
+bar.txt:foobar&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;NOTE: In the last example I used 
+&lt;a href=&quot;http://tldp.org/LDP/abs/html/here-docs.html&quot;&gt;heredoc’s&lt;/a&gt; to create &lt;code class=&quot;highlighter-rouge&quot;&gt;foo.txt&lt;/code&gt; and
+&lt;code class=&quot;highlighter-rouge&quot;&gt;bar.txt&lt;/code&gt; files. &lt;br /&gt;
+NOTE: &lt;code class=&quot;highlighter-rouge&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;foo,bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;.txt&lt;/span&gt;&lt;/code&gt; is expanded by bash into &lt;code class=&quot;highlighter-rouge&quot;&gt;foo.txt bar.txt&lt;/code&gt;, this is
+called &lt;a href=&quot;https://en.wikipedia.org/wiki/Bash_(Unix_shell)#Brace_expansion&quot;&gt;brace expansion&lt;/a&gt;.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 20 Aug 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//how-to-use-grep-command</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//how-to-use-grep-command</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Iterative algorithm for drawing Hilbert curve</title>
+        
+          <description>&lt;p&gt;In this post I will describe how to draw Hilbert curve iteratively.
+To avoid recursion we will use &lt;code class=&quot;highlighter-rouge&quot;&gt;hindex2xy&lt;/code&gt; algorithm that
+translates Hilbert curve node index to 
+Cartesian coordinates.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 06 Aug 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//iterative-algorithm-for-drawing-hilbert-curve</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//iterative-algorithm-for-drawing-hilbert-curve</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Indexes in PostgreSQL database</title>
+        
+          <description>&lt;p&gt;In this article I will present how to use indexes in PostgreSQL database.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 06 Aug 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//indexes-in-postgresql</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//indexes-in-postgresql</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>How to use find command</title>
+        
+          <description>&lt;p&gt;Linux &lt;code class=&quot;highlighter-rouge&quot;&gt;find&lt;/code&gt; command may be used to find files and directories
+that meet specified conditions. The most popular
+conditions test file size, filename and file type 
+(do we want regular files, directories or both).
+By default &lt;code class=&quot;highlighter-rouge&quot;&gt;find&lt;/code&gt; prints paths to found files and directories but it can 
+perform various operations on found files e.g. it may remove them.
+In this article I will present how to use &lt;code class=&quot;highlighter-rouge&quot;&gt;find&lt;/code&gt; and how to create complex
+search conditions, so let’s begin.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Tue, 26 Jul 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//how-to-use-find-command</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//how-to-use-find-command</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Introduction to Hibernate embeddable types</title>
+        
+          <description>&lt;h4 id=&quot;entities-vs-value-types&quot;&gt;Entities vs Value types&lt;/h4&gt;
+
+</description>
+        
+        <pubDate>Sat, 16 Jul 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//introduction-to-hibernate-embeddable-types</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//introduction-to-hibernate-embeddable-types</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>How to fix Vim freezes</title>
+        
+          <description>&lt;p&gt;When I switched from Visual Studio to using Vim I often experienced
+Vim freezes. This was really annoying. At the beginning I was thinking
+that maybe I installed too many plugins 
+(using &lt;a href=&quot;https://github.com/VundleVim/Vundle.vim&quot;&gt;Vundle&lt;/a&gt;) or that
+Vim is not as good as they say.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 16 Jul 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//how-to-fix-vim-freezes</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//how-to-fix-vim-freezes</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>PowerShell function declaration pitfall</title>
+        
+          <description>&lt;p&gt;Recently I had to write some scripts in PowerShell.
+Because I try to follow good software development practices I decided to split
+script logic into functions. First I defined a few functions
+that taken or returned single value:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;k&quot;&gt;function &lt;/span&gt;printArg&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;write-host&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;printArg: arg1=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$arg1&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    
+&lt;span class=&quot;k&quot;&gt;function &lt;/span&gt;transformArg&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$n&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$n&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$n&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Of course they worked brilliantly:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;printArg&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+printArg: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1
+    
+&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;printArg&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;foo&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+printArg: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;foo
+    
+&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;write-host&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;$(&lt;/span&gt;transformArg&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3&lt;span class=&quot;k&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+9&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;But then I needed to declare function that takes three arguments,
+I started with code:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;k&quot;&gt;function &lt;/span&gt;manyArgs&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$arg1&lt;/span&gt;, &lt;span class=&quot;nv&quot;&gt;$arg2&lt;/span&gt;, &lt;span class=&quot;nv&quot;&gt;$arg3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;write-host&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;manyArgs: arg1=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$arg1&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;, arg2=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$arg2&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;, arg3=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$arg3&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Unfortunatelly it didn’t work as expected:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;manyArgs&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1, 2, 3&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+manyArgs: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1 2 3, &lt;span class=&quot;nv&quot;&gt;arg2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;, &lt;span class=&quot;nv&quot;&gt;arg3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;After a bit of research
+it turned out that PowerShell &lt;strong&gt;&lt;em&gt;uses space as argument separator&lt;/em&gt;&lt;/strong&gt;.
+So to pass three arguments we need to write:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;manyArgs 1 2 3
+manyArgs: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1, &lt;span class=&quot;nv&quot;&gt;arg2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;2, &lt;span class=&quot;nv&quot;&gt;arg3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;3
+    
+&lt;span class=&quot;c1&quot;&gt;# or using more verbose syntax:&lt;/span&gt;
+&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;manyArgs -arg1 1 -arg2 2 -arg3 3
+manyArgs: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1, &lt;span class=&quot;nv&quot;&gt;arg2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;2, &lt;span class=&quot;nv&quot;&gt;arg3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;3&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This also works with single argument functions:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;printArg 1
+printArg: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1
+    
+&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;printArg -arg1 1
+printArg: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Before we end let’s find out what exactly is &lt;code class=&quot;highlighter-rouge&quot;&gt;(1, 2, 3)&lt;/code&gt; 
+and why calling &lt;code class=&quot;highlighter-rouge&quot;&gt;printArg(1)&lt;/code&gt; works. 
+It turns out that
+&lt;code class=&quot;highlighter-rouge&quot;&gt;(a, b, ..., z)&lt;/code&gt; expression represents array of objects in PowerShell:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1, 2, 3&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getType&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;.name
+&lt;span class=&quot;kt&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;And &lt;code class=&quot;highlighter-rouge&quot;&gt;(x)&lt;/code&gt; expression represents just &lt;code class=&quot;highlighter-rouge&quot;&gt;x&lt;/code&gt; value :&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getType&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;.name
+Int32&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;and thats explain outputs of &lt;code class=&quot;highlighter-rouge&quot;&gt;printArg(1)&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;manyArgs(1, 2, 3)&lt;/code&gt; command.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Fri, 15 Jul 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//powershell-function-declaration-pitfall</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//powershell-function-declaration-pitfall</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>How to use xargs</title>
+        
+          <description>&lt;p&gt;In this blog post I will show you how to use &lt;code class=&quot;highlighter-rouge&quot;&gt;xargs&lt;/code&gt; command line utility.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 09 Jul 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//how-to-use-xargs</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//how-to-use-xargs</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>How null&#39;s are handled in switch statement in C#, Java and JavaScript</title>
+        
+          <description>&lt;p&gt;Let’s start with C#. In C# &lt;code class=&quot;highlighter-rouge&quot;&gt;null&lt;/code&gt;s may show up in &lt;code class=&quot;highlighter-rouge&quot;&gt;switch&lt;/code&gt; statement in two cases:&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 09 Jul 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//how-nulls-are-handled-in-switch-statement</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//how-nulls-are-handled-in-switch-statement</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Mapping class inheritance in Hibernate 5</title>
+        
+          <description>&lt;p&gt;In this post I want to present four basic strategies for mapping class inheritance
+in Hibernate:&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Thu, 30 Jun 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//mapping-inheritance-in-hibernate</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//mapping-inheritance-in-hibernate</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Find cycle start in singly linked list</title>
+        
+          <description>&lt;p&gt;In this post I will present solution to the following problem:&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 25 Jun 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//find-cycle-start-in-singly-linked-list</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//find-cycle-start-in-singly-linked-list</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Hibernate hello world application</title>
+        
+          <description>&lt;p&gt;In this tutorial we’ll create minimal application that will allow us 
+to start playing with Hibernate ORM. I will present two hello world’s one for
+vanilla Hibernate and one for Hibernate via JPA &lt;a href=&quot;http://stackoverflow.com/questions/9881611/whats-the-difference-between-jpa-and-hibernate&quot;&gt;(Java Persistence API)&lt;/a&gt;.&lt;br /&gt;
+We will use:&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Wed, 22 Jun 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//hibernate-hello-world-app</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//hibernate-hello-world-app</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Get day of week from date</title>
+        
+          <description>&lt;p&gt;Today we will try to solve the following problem:&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Wed, 15 Jun 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//get-day-of-week-from-date</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//get-day-of-week-from-date</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Reading and writing files in Java</title>
+        
+          <description>&lt;h4 id=&quot;binary-vs-text-files&quot;&gt;Binary vs Text Files&lt;/h4&gt;
+&lt;p&gt;Java IO supports two distinct kinds of files: text files and binary files.
+To understand difference between these two let’s look at an example. Say
+we have text file encoded using UTF-8 that contains text: “Привет мир!” (“Hello
+world!” in Russian), 
+when written to disk this file consists of
+bytes:&lt;/p&gt;
+&lt;pre&gt;
+$ xxd -g1 hello_ru.txt 
+0000000: d0 9f d1 80 d0 b8 d0 b2 d0 b5 d1 82 20 d0 bc d0  ............ ...
+0000010: b8 d1 80 21 0a                                   ...!.
+&lt;/pre&gt;
+&lt;p&gt;Let’s say that we want to print contents of this file to standard output, we can read
+&lt;em&gt;bytes&lt;/em&gt; contained in the file using the following code:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;FileInputStream&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    
+    &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FileInputStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;hello_ru.txt&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;read&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%02x &quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;finally&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;input&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;When ran this program prints:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-no-highlight&quot; data-lang=&quot;no-highlight&quot;&gt;d0 9f d1 80 d0 b8 d0 b2 d0 b5 d1 82 20 d0 bc d0 b8 d1 80 21 0a&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;Pretty much the same output as returned by &lt;code class=&quot;highlighter-rouge&quot;&gt;xxd&lt;/code&gt;. This is because &lt;code class=&quot;highlighter-rouge&quot;&gt;FileInputStream&lt;/code&gt; is
+a byte stream - a stream that treads file contents as array of bytes. When we call &lt;code class=&quot;highlighter-rouge&quot;&gt;input.read()&lt;/code&gt; we
+told stream to read next single &lt;em&gt;byte&lt;/em&gt; from file. But wait our file contains text in Russian not
+some bytes. To read text we must use another kind of stream called character stream, here is next
+program that correctly prints “Привет мир!” to standard output:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;InputStreamReader&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;characterStream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+        
+    &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;FileInputStream&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;byteStream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 
+            &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FileInputStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;hello_ru.txt&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+                
+        &lt;span class=&quot;n&quot;&gt;characterStream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;InputStreamReader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;byteStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;UTF8&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        
+        &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;while&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;characterStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;read&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;())&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;c&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;finally&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;characterStream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;characterStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;close&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;This time we are using &lt;code class=&quot;highlighter-rouge&quot;&gt;InputStreamReader&lt;/code&gt; to read file contents. 
+When we call &lt;code class=&quot;highlighter-rouge&quot;&gt;characterStream.read()&lt;/code&gt;
+we get next &lt;em&gt;character&lt;/em&gt; from file (which may consists of one or more bytes). 
+Notice that &lt;code class=&quot;highlighter-rouge&quot;&gt;InputStreamReader&lt;/code&gt; to work must known encoding used to
+create file, in our case we pass &lt;code class=&quot;highlighter-rouge&quot;&gt;&quot;UTF8&quot;&lt;/code&gt; encoding as a 
+parameter to &lt;code class=&quot;highlighter-rouge&quot;&gt;InputStreamReader&lt;/code&gt; constructor.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Mon, 13 Jun 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//reading-and-writing-files-in-java</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//reading-and-writing-files-in-java</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Object and collection initializers in C#</title>
+        
+          <description>&lt;p&gt;In this post I want to present a nice C# syntax sugar: object and collection
+initializers.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sun, 12 Jun 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//object-and-collection-initializers-in-csharp</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//object-and-collection-initializers-in-csharp</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Augmenting JavaScript objects with toString and valueOf</title>
+        
+          <description>&lt;p&gt;Today I want to present two useful methods: &lt;code class=&quot;highlighter-rouge&quot;&gt;toString&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;valueOf&lt;/code&gt;. Both of these methods are 
+used by JavaScript interpreter when converting objects to primitive types.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Thu, 09 Jun 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//augmenting-JavaScript-objects-with-toString-and-valueOf</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//augmenting-JavaScript-objects-with-toString-and-valueOf</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Creating and using annotations in Java</title>
+        
+          <description>&lt;p&gt;Java annotations are simple data that we can attach to program elements like
+classes, fields or methods. True power of annotations lies in the fact that we
+are able to retrieve this information at runtime. To demonstrate that we will create
+simple annotation called &lt;code class=&quot;highlighter-rouge&quot;&gt;@RunAtStartup&lt;/code&gt;. This annotation will allow programmers
+to register classes that should be instantiated at program startup, programmers
+will be able to specify class priority (via &lt;code class=&quot;highlighter-rouge&quot;&gt;priority&lt;/code&gt; named element) and optionally
+specify name of method that should be run on class instance (via &lt;code class=&quot;highlighter-rouge&quot;&gt;method&lt;/code&gt; optional
+element).&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Mon, 06 Jun 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//creating-and-using-adnotations-in-java</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//creating-and-using-adnotations-in-java</guid>
+      </item>
+      
+    
+      
+      <item>
+        <title>Break out of block of code in Java and JavaScript</title>
+        
+          <description>&lt;p&gt;Java and JavaScript have a common feature that allows us to break out of
+nested loops, e.g. in Java we may write:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;nl&quot;&gt;OUTER_LOOP:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%d x %d = %d%n&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;OUTER_LOOP&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;As you can see first we label outer for loop with &lt;code class=&quot;highlighter-rouge&quot;&gt;OUTER_LOOP&lt;/code&gt; label, then we use
+&lt;code class=&quot;highlighter-rouge&quot;&gt;break label_name&lt;/code&gt; syntax to tell compiler which loop we want to break.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 04 Jun 2016 02:00:00 +0200</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//break-out-of-code-block-in-java-and-javascript</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//break-out-of-code-block-in-java-and-javascript</guid>
+      </item>
+      
+    
   </channel>
 </rss>

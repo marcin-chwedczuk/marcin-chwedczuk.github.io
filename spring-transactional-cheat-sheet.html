@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <!-- [[! Page Meta ]] -->
+    <title>Spring @Transactional cheat sheet</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming">
+
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico">
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic%7COpen+Sans:700,400">
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css">
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/">
+    <meta name="referrer" content="origin">
+    <link rel="next" href="/page2/">
+
+    <meta property="og:site_name" content="Programming is Magic">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Programming is Magic">
+    <meta property="og:description" content="A place where I can share my thoughts about programming">
+    <meta property="og:url" content="/">
+    <meta property="og:image" content="/assets/images/cover1.jpg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Programming is Magic">
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming">
+    <meta name="twitter:url" content="/">
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg">
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0">
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml">
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover9.jpeg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo"></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Spring @Transactional cheat sheet</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2017-01-07">07 Jan 2017</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href="/tag/java">Java</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <h4 id="transactionalpropagation">@Transactional(propagation=…)</h4>
+
+<dl>
+  <dt><code class="highlighter-rouge">MANDATORY</code></dt>
+  <dd>Method must run within transaction. If there is no
+currently active transaction going on an exception is thrown.</dd>
+  <dt><code class="highlighter-rouge">REQUIRED</code></dt>
+  <dd>Method must run within transaction. If there is already started
+transaction method will run within that transaction, otherwise
+new transaction will be started.</dd>
+  <dt><code class="highlighter-rouge">REQUIRES_NEW</code></dt>
+  <dd>Method must run within it’s own transaction. Spring will
+always create a new transaction for this method. If there is
+already started transaction going on, it will be suspended for
+duration of this method.</dd>
+  <dt><code class="highlighter-rouge">NESTED</code></dt>
+  <dd>Method will be run within nested transaction. If no transaction is
+present new transaction will be started, otherwise a nested transaction
+will be started.</dd>
+  <dt><code class="highlighter-rouge">NOT_SUPPORTED</code></dt>
+  <dd>Method should not run within transaction. If there is active transaction
+going on it will be suspended for duration of this method call.</dd>
+  <dt><code class="highlighter-rouge">NEVER</code></dt>
+  <dd>Method should not run within transaction.
+An exception will be thrown if method is called and
+there is active transaction going on.</dd>
+</dl>
+
+<h4 id="transactionalisolation">@Transactional(isolation=…)</h4>
+
+<table>
+  <thead>
+    <tr>
+      <th>Isolation Level</th>
+      <th style="text-align: center">Dirty Reads</th>
+      <th style="text-align: center">Nonrepeatable reads</th>
+      <th style="text-align: center">Phantom reads</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code class="highlighter-rouge">READ_UNCOMMITTED</code></td>
+      <td style="text-align: center"><img class="emoji" title=":x:" alt=":x:" src="https://assets.github.com/images/icons/emoji/unicode/274c.png" height="20" width="20" align="absmiddle"></td>
+      <td style="text-align: center"><img class="emoji" title=":x:" alt=":x:" src="https://assets.github.com/images/icons/emoji/unicode/274c.png" height="20" width="20" align="absmiddle"></td>
+      <td style="text-align: center"><img class="emoji" title=":x:" alt=":x:" src="https://assets.github.com/images/icons/emoji/unicode/274c.png" height="20" width="20" align="absmiddle"></td>
+    </tr>
+    <tr>
+      <td><code class="highlighter-rouge">READ_COMMITTED</code></td>
+      <td style="text-align: center"><img class="emoji" title=":heavy_check_mark:" alt=":heavy_check_mark:" src="https://assets.github.com/images/icons/emoji/unicode/2714.png" height="20" width="20" align="absmiddle"></td>
+      <td style="text-align: center"><img class="emoji" title=":x:" alt=":x:" src="https://assets.github.com/images/icons/emoji/unicode/274c.png" height="20" width="20" align="absmiddle"></td>
+      <td style="text-align: center"><img class="emoji" title=":x:" alt=":x:" src="https://assets.github.com/images/icons/emoji/unicode/274c.png" height="20" width="20" align="absmiddle"></td>
+    </tr>
+    <tr>
+      <td><code class="highlighter-rouge">REPEATABLE_READ</code></td>
+      <td style="text-align: center"><img class="emoji" title=":heavy_check_mark:" alt=":heavy_check_mark:" src="https://assets.github.com/images/icons/emoji/unicode/2714.png" height="20" width="20" align="absmiddle"></td>
+      <td style="text-align: center"><img class="emoji" title=":heavy_check_mark:" alt=":heavy_check_mark:" src="https://assets.github.com/images/icons/emoji/unicode/2714.png" height="20" width="20" align="absmiddle"></td>
+      <td style="text-align: center"><img class="emoji" title=":x:" alt=":x:" src="https://assets.github.com/images/icons/emoji/unicode/274c.png" height="20" width="20" align="absmiddle"></td>
+    </tr>
+    <tr>
+      <td><code class="highlighter-rouge">SERIALIZABLE</code></td>
+      <td style="text-align: center"><img class="emoji" title=":heavy_check_mark:" alt=":heavy_check_mark:" src="https://assets.github.com/images/icons/emoji/unicode/2714.png" height="20" width="20" align="absmiddle"></td>
+      <td style="text-align: center"><img class="emoji" title=":heavy_check_mark:" alt=":heavy_check_mark:" src="https://assets.github.com/images/icons/emoji/unicode/2714.png" height="20" width="20" align="absmiddle"></td>
+      <td style="text-align: center"><img class="emoji" title=":heavy_check_mark:" alt=":heavy_check_mark:" src="https://assets.github.com/images/icons/emoji/unicode/2714.png" height="20" width="20" align="absmiddle"></td>
+    </tr>
+  </tbody>
+</table>
+
+<p><code class="highlighter-rouge">DEFAULT</code> isolation level uses transaction isolation level provided
+by underlying implementation.</p>
+
+<dl>
+  <dt>Dirty Reads</dt>
+  <dd>Transaction may read data written
+but not yet committed by other transactions.</dd>
+  <dt>Nonrepeatable</dt>
+  <dt>reads</dt>
+  <dd>Performing the same query twice may return different data.
+Usually this happens because some other transaction
+updated data and was successfully committed after first
+but before second query.</dd>
+  <dt>Phantom reads</dt>
+  <dd>When we query for set of rows twice second query may return
+rows not present in result returned by first query.
+Usually this happens because some other transaction inserted rows
+to queried table and was successfully committed between our queries.</dd>
+</dl>
+
+<h4 id="transactionalrollbackfor-norollbackfor">@Transactional(rollbackFor=…, noRollbackFor=)</h4>
+
+<p>By default transaction are rolled back only 
+on uncaught runtime exceptions.
+<code class="highlighter-rouge">rollbackFor</code> and <code class="highlighter-rouge">noRollbackFor</code> properties allows us to
+set additional exceptions types for which transaction should
+or should not rolled back.</p>
+
+<h4 id="transactionalreadonly">@Transactional(readOnly=…)</h4>
+
+<p>Set <code class="highlighter-rouge">readOnly=true</code> when transaction doesn’t write back
+to database. This will allow underlying implementation to
+possibly optimize data access.</p>
+
+<p>This settings make sense only on methods that start new
+transaction (with propagation <code class="highlighter-rouge">REQUIRED</code>, <code class="highlighter-rouge">REQUIRES_NEW</code> and <code class="highlighter-rouge">NESTED</code>).</p>
+
+<h4 id="transactionaltimeout">@Transactional(timeout=…)</h4>
+
+<p>Transaction timeout in seconds.</p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Spring%20@Transactional%20cheat%20sheet&amp;url=https://marcin-chwedczuk.github.io/spring-transactional-cheat-sheet" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/spring-transactional-cheat-sheet" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/spring-transactional-cheat-sheet" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//spring-transactional-cheat-sheet';
+        this.page.identifier = '/spring-transactional-cheat-sheet';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a>
+</noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+        <a class="read-next-story " style="background-image: url(/assets/images/mc_cover9.jpeg)" href="/comparing-with-nullsFirst-and-nullsLast">
+            <section class="post">
+                <h2>Comparing with nullsFirst and nullsLast</h2>
+                <p>Sorting in Java is easy: {% highlight java %} public class Data { private final...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover9.jpeg)" href="/crudest-curd-using-spring">
+            <section class="post">
+                <h2>Crudest CRUD using Spring</h2>
+                <p>EDIT: In this post I’ll use Spring XML configuration, in new applications you should definitely...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> © 2018</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>
