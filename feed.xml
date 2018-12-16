@@ -8,6 +8,33 @@
     
       
       <item>
+        <title>NSubstitute and the search for perfect error messages</title>
+        
+          <description>&lt;p&gt;Those of us that practice TDD daily already know how important good
+error messages in tests are. After all writing a failing test that
+&lt;em&gt;clearly&lt;/em&gt; states what functionality the program 
+is missing is the first step in TDD cycle.
+The rest of us that either can’t or simply don’t want to practice TDD
+must put extra effort to ensure that tests always fail
+with meaningful error messages.
+Unfortunately, according to what I have learned from my personal experience, 
+the most devs either don’t have
+enough time or simply don’t bother to check if their tests fail with
+something meaningful. For average Joe developer writing tests and
+making them green is already a lot of work. 
+Things like good test names and proper error messages are often forgotten.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 15 Dec 2018 01:00:00 +0100</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//nsubstitute-and-the-search-for-perfect-error-messages</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//nsubstitute-and-the-search-for-perfect-error-messages</guid>
+      </item>
+      
+    
+      
+      <item>
         <title>Inheritance? Just say no!</title>
         
           <description>&lt;p&gt;Recently during a code review I have found the following piece
