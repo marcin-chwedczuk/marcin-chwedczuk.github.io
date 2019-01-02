@@ -18,11 +18,11 @@
 	  <pubDate>2016-08-20T02:00:00+02:00</pubDate>
 	  <guid>//how-to-use-grep-command</guid>
 	  <description><![CDATA[
-	     `grep` is a command line program that allows us to find all occurrences of given pattern
+	     <p><code class="highlighter-rouge">grep</code> is a command line program that allows us to find all occurrences of given pattern
 in the text.
-We can use `grep` to search command standard output, for example:
-{% highlight no-highlight %}
-$ # grep will print lines containing "eth0" phrase
+We can use <code class="highlighter-rouge">grep</code> to search command standard output, for example:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ # grep will print lines containing "eth0" phrase
 $ ifconfig | grep eth0
 eth0      Link encap:Ethernet  HWaddr xx:xx:xx:xx:xx:xx
         
@@ -30,11 +30,11 @@ $ cat /usr/share/dict/words | grep nerd
 nerd
 nerd's
 nerdier
-(...)
-{% endhighlight %}
-We may also use `grep` to find given pattern in the set of text files:
-{% highlight no-highlight %}
-$ cat > foo.txt <<EOF
+(...)</code></pre></figure>
+
+<p>We may also use <code class="highlighter-rouge">grep</code> to find given pattern in the set of text files:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cat &gt; foo.txt &lt;&lt;EOF
 foo
 FOO
 foobar
@@ -48,7 +48,7 @@ foo
 foobar
 (...)
         
-$ cat > bar.txt <<EOF
+$ cat &gt; bar.txt &lt;&lt;EOF
 bar
 Bar
 foobar
@@ -58,18 +58,18 @@ $ # search for foo in foo.txt and bar.txt
 $ grep foo {foo,bar}.txt
 foo.txt:foo
 (...)
-bar.txt:foobar
-{% endhighlight %}
-NOTE: In the last example I used 
-[heredoc's](http://tldp.org/LDP/abs/html/here-docs.html) to create `foo.txt` and
-`bar.txt` files.   
-NOTE: `{foo,bar}.txt` is expanded by bash into `foo.txt bar.txt`, this is
-called [brace expansion](https://en.wikipedia.org/wiki/Bash_(Unix_shell)#Brace_expansion).  
+bar.txt:foobar</code></pre></figure>
 
-We may also peform recursive searches using `-r` or `-R` options (`grep` will search in
-every file contained in the specified directory and it's subdirectories):
-{% highlight no-highlight %}
-$ tree grep_exercises/
+<p>NOTE: In the last example I used 
+<a href="http://tldp.org/LDP/abs/html/here-docs.html">heredoc’s</a> to create <code class="highlighter-rouge">foo.txt</code> and
+<code class="highlighter-rouge">bar.txt</code> files. <br />
+NOTE: <code class="highlighter-rouge"><span class="p">{</span><span class="err">foo,bar</span><span class="p">}</span><span class="err">.txt</span></code> is expanded by bash into <code class="highlighter-rouge">foo.txt bar.txt</code>, this is
+called <a href="https://en.wikipedia.org/wiki/Bash_(Unix_shell)#Brace_expansion">brace expansion</a>.</p>
+
+<p>We may also peform recursive searches using <code class="highlighter-rouge">-r</code> or <code class="highlighter-rouge">-R</code> options (<code class="highlighter-rouge">grep</code> will search in
+every file contained in the specified directory and it’s subdirectories):</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ tree grep_exercises/
 grep_exercises/
   |-- bar.txt
   `-- foo.txt
@@ -77,64 +77,61 @@ grep_exercises/
 $ grep -r foo grep_exercises/
 grep_exercises/bar.txt:foobar
 grep_exercises/foo.txt:foo
-(...)
-{% endhighlight %}
+(...)</code></pre></figure>
 
-#### grep command in details
+<h4 id="grep-command-in-details">grep command in details</h4>
 
-General `grep` invocation has form:
-{% highlight no-highlight %}
-$ grep [options] pattern [files|directories]
-{% endhighlight %}
-`grep` searches standard input when no files were given or
-specified files/directories for occurrences of the `pattern`.
-When `grep` finds a line that contains the `pattern` it prints it to
+<p>General <code class="highlighter-rouge">grep</code> invocation has form:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep [options] pattern [files|directories]</code></pre></figure>
+
+<p><code class="highlighter-rouge">grep</code> searches standard input when no files were given or
+specified files/directories for occurrences of the <code class="highlighter-rouge">pattern</code>.
+When <code class="highlighter-rouge">grep</code> finds a line that contains the <code class="highlighter-rouge">pattern</code> it prints it to
 the standard output.
 When we search multiple files each printed line
-is prefixed by a filename.
+is prefixed by a filename.</p>
 
-##### -i (-\-ignore-case)
-By default `grep` is case sensitive, so pattern `foo` doesn't match
-word `FOO`, we can perform case insensitive search using `-i` option:
-{% highlight no-highlight %}
-$ grep bar bar.txt
+<h5 id="i---ignore-case">-i (--ignore-case)</h5>
+<p>By default <code class="highlighter-rouge">grep</code> is case sensitive, so pattern <code class="highlighter-rouge">foo</code> doesn’t match
+word <code class="highlighter-rouge">FOO</code>, we can perform case insensitive search using <code class="highlighter-rouge">-i</code> option:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep bar bar.txt
 bar
 foobar
 
 $ grep -i bar bar.txt
 bar
 Bar
-foobar
-{% endhighlight %}
+foobar</code></pre></figure>
 
-##### -v (-\-invert-match)
+<h5 id="v---invert-match">-v (--invert-match)</h5>
 
-We can use `-v` option to negate search, that is to print
-all lines that don't contain given pattern:
-{% highlight no-highlight %}
-$ cat bar.txt 
+<p>We can use <code class="highlighter-rouge">-v</code> option to negate search, that is to print
+all lines that don’t contain given pattern:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cat bar.txt 
 bar
 Bar
 foobar
 
 $ grep -v foo bar.txt 
 bar
-Bar
-{% endhighlight %}
+Bar</code></pre></figure>
 
-##### -r and -R
+<h5 id="r-and--r">-r and -R</h5>
 
-Both options can be used to perform recursive searches, the only difference
-is that `-R` will follow 
-[symbolic links](https://en.wikipedia.org/wiki/Symbolic_link#POSIX_and_Unix-like_operating_systems)
-during search while `-r` won't.
+<p>Both options can be used to perform recursive searches, the only difference
+is that <code class="highlighter-rouge">-R</code> will follow 
+<a href="https://en.wikipedia.org/wiki/Symbolic_link#POSIX_and_Unix-like_operating_systems">symbolic links</a>
+during search while <code class="highlighter-rouge">-r</code> won’t.</p>
 
-When we are performing recursive search often 
+<p>When we are performing recursive search often 
 we want to exclude some directory from search e.g. 
-`.git` directory when we are searching inside GIT repository,
-`--exclude-dir` option allows us to do exactly that:
-{% highlight no-highlight %}
-$ # create git repository
+<code class="highlighter-rouge">.git</code> directory when we are searching inside GIT repository,
+<code class="highlighter-rouge">--exclude-dir</code> option allows us to do exactly that:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ # create git repository
 $ git init; git add *.txt; git commit -m 'foo';
 $ grep -r foo .
 ./bar.txt:foobar
@@ -152,34 +149,32 @@ $ grep -r foo --exclude-dir=.git .
 ./foo.txt:foo
 ./foo.txt:foobar
 ./foo.txt:xfoox
-./foo.txt:in the middle of the line foo is
-{% endhighlight %}
+./foo.txt:in the middle of the line foo is</code></pre></figure>
 
-We may limit set of files that will be searched during recursive search using
-`--include`/`--exclude` options. Both of these options take 
-[shell GLOB](https://en.wikipedia.org/wiki/Glob_(programming)#Unix) as an argument.
-`--include` will force `grep` to check only files that match GLOB.
-`--exclude` will force `grep` to skip any files that don't match GLOB.
-For example to search for `foo` pattern only in `.txt` files we may use command:
-{% highlight no-highlight %}
-$ grep -r --include='*.txt' .
+<p>We may limit set of files that will be searched during recursive search using
+<code class="highlighter-rouge">--include</code>/<code class="highlighter-rouge">--exclude</code> options. Both of these options take 
+<a href="https://en.wikipedia.org/wiki/Glob_(programming)#Unix">shell GLOB</a> as an argument.
+<code class="highlighter-rouge">--include</code> will force <code class="highlighter-rouge">grep</code> to check only files that match GLOB.
+<code class="highlighter-rouge">--exclude</code> will force <code class="highlighter-rouge">grep</code> to skip any files that don’t match GLOB.
+For example to search for <code class="highlighter-rouge">foo</code> pattern only in <code class="highlighter-rouge">.txt</code> files we may use command:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep -r --include='*.txt' .
 bar.txt:bar
 bar.txt:Bar
 bar.txt:foobar
 foo.txt:foo
-(...)
-{% endhighlight %}
+(...)</code></pre></figure>
 
-Another useful option when performing recursive searches is `-I`, it tells
-`grep` to skip binary files when looking for the pattern.
+<p>Another useful option when performing recursive searches is <code class="highlighter-rouge">-I</code>, it tells
+<code class="highlighter-rouge">grep</code> to skip binary files when looking for the pattern.</p>
 
-##### -w (-\-word-regexp)
+<h5 id="w---word-regexp">-w (--word-regexp)</h5>
 
-Sometime we want to match only whole words e.g. when we search for `foo` we don't
-want matches like `foobar` or `xfoox`. `-w` option will force `grep` to perform
-whole word search:
-{% highlight no-highlight %}
-$ grep foo foo.txt
+<p>Sometime we want to match only whole words e.g. when we search for <code class="highlighter-rouge">foo</code> we don’t
+want matches like <code class="highlighter-rouge">foobar</code> or <code class="highlighter-rouge">xfoox</code>. <code class="highlighter-rouge">-w</code> option will force <code class="highlighter-rouge">grep</code> to perform
+whole word search:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep foo foo.txt
 foo
 foobar
 xfoox
@@ -187,89 +182,107 @@ in the middle of the line foo is
 
 $ grep -w foo foo.txt
 foo
-in the middle of the line foo is
-{% endhighlight %}
+in the middle of the line foo is</code></pre></figure>
 
-##### -c (-\-count)
-`-c` option allow us to count number of occurrences of the pattern
-inside searched files:
-{% highlight no-highlight %}
-$ grep -c foo foo.txt
+<h5 id="c---count">-c (--count)</h5>
+<p><code class="highlighter-rouge">-c</code> option allow us to count number of occurrences of the pattern
+inside searched files:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep -c foo foo.txt
 4
 
 $ grep -c foo *.txt
 bar.txt:1
-foo.txt:4
-{% endhighlight %}
+foo.txt:4</code></pre></figure>
 
-##### -n (-\-line-number)
+<h5 id="n---line-number">-n (--line-number)</h5>
 
-`-n` option will force `grep` to prefix each found line with line number:
-{% highlight no-highlight %}
-$ grep -rn foo grep_exercises/
+<p><code class="highlighter-rouge">-n</code> option will force <code class="highlighter-rouge">grep</code> to prefix each found line with line number:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep -rn foo grep_exercises/
 grep_exercises/bar.txt:3:foobar
 grep_exercises/foo.txt:1:foo
 grep_exercises/foo.txt:3:foobar
 grep_exercises/foo.txt:4:xfoox
-grep_exercises/foo.txt:5:in the middle of the line foo is
-{% endhighlight %}
+grep_exercises/foo.txt:5:in the middle of the line foo is</code></pre></figure>
 
-##### -l (-\-files-with-matches), -L (-\-files-without-match)
+<h5 id="l---files-with-matches--l---files-without-match">-l (--files-with-matches), -L (--files-without-match)</h5>
 
-`-l` option will force `grep` to print only filenames of files that contain given pattern
-instead of printing lines:
-{% highlight no-highlight %}
-$ grep -rl foo grep_exercises/
+<p><code class="highlighter-rouge">-l</code> option will force <code class="highlighter-rouge">grep</code> to print only filenames of files that contain given pattern
+instead of printing lines:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep -rl foo grep_exercises/
 grep_exercises/bar.txt
-grep_exercises/foo.txt
-{% endhighlight %}
-The is also `-L` option that will print only filenames of files that 
-doesn't contain specified pattern.
+grep_exercises/foo.txt</code></pre></figure>
 
-##### -h (-\-no-filename), -H (-\-with-filename)
+<p>The is also <code class="highlighter-rouge">-L</code> option that will print only filenames of files that 
+doesn’t contain specified pattern.</p>
 
-`-h` option will prevent printing of filenames when performing multifile search.
-Similarly `-H` option will force `grep` to always print filenames:
-{% highlight no-highlight %}
-$ grep -H foo foo.txt 
+<h5 id="h---no-filename--h---with-filename">-h (--no-filename), -H (--with-filename)</h5>
+
+<p><code class="highlighter-rouge">-h</code> option will prevent printing of filenames when performing multifile search.
+Similarly <code class="highlighter-rouge">-H</code> option will force <code class="highlighter-rouge">grep</code> to always print filenames:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep -H foo foo.txt 
 foo.txt:foo
 foo.txt:foobar
 foo.txt:xfoox
-foo.txt:in the middle of the line foo is
-{% endhighlight %}
+foo.txt:in the middle of the line foo is</code></pre></figure>
 
-##### -A (-\-after-context), -B (-\-before-context) and -C (-\-context)
-`-A`, `-B` and `-C` options allow us to print not only lines containing pattern
-but also specified number of lines after (A) and before (B) them. `-C` option is
-a shortcut to set both `-A` and `-B` to the same value:
-{% highlight no-highlight %}
-$ grep -B 1 -A 2 -w my /usr/share/dict/words
+<h5 id="a---after-context--b---before-context-and--c---context">-A (--after-context), -B (--before-context) and -C (--context)</h5>
+<p><code class="highlighter-rouge">-A</code>, <code class="highlighter-rouge">-B</code> and <code class="highlighter-rouge">-C</code> options allow us to print not only lines containing pattern
+but also specified number of lines after (A) and before (B) them. <code class="highlighter-rouge">-C</code> option is
+a shortcut to set both <code class="highlighter-rouge">-A</code> and <code class="highlighter-rouge">-B</code> to the same value:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep -B 1 -A 2 -w my /usr/share/dict/words
 muzzling
 my
 myna
-myna's
-{% endhighlight %}
+myna's</code></pre></figure>
 
-#### Basic regular expressions (BRE)
+<h4 id="basic-regular-expressions-bre">Basic regular expressions (BRE)</h4>
 
-By default `grep` interpret pattern as a basic regular expression (BRE).
+<p>By default <code class="highlighter-rouge">grep</code> interpret pattern as a basic regular expression (BRE).
 BREs are similar to shell GLOBs but are more powerful. Inside BRE we may use
-the following special characters:
+the following special characters:</p>
 
-| Character/Expression | Meaning |
-|:-:|-|
-| `.` | Matches any single character |
-| `*` | Matches zero or more repetitions of previous character or group |
-| `[abc]` | Bracket expression matches single character. `[abc]` matches any of the characters `a`, `b` or `c`. `[0-9]` matches any digit. `[^abc]` matches any character that is *not* `a`, `b` or `c`. `[0-9abcdef]` matches any lowercase hex digit. Finally we can use character classes inside bracket expressions e.g. `[[:digit:]]` |
-| `^` | Matches beginning of the line |
-| `$` | Matches end of the line |
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Character/Expression</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">.</code></td>
+      <td>Matches any single character</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">*</code></td>
+      <td>Matches zero or more repetitions of previous character or group</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">[abc]</code></td>
+      <td>Bracket expression matches single character. <code class="highlighter-rouge">[abc]</code> matches any of the characters <code class="highlighter-rouge">a</code>, <code class="highlighter-rouge">b</code> or <code class="highlighter-rouge">c</code>. <code class="highlighter-rouge">[0-9]</code> matches any digit. <code class="highlighter-rouge">[^abc]</code> matches any character that is <em>not</em> <code class="highlighter-rouge">a</code>, <code class="highlighter-rouge">b</code> or <code class="highlighter-rouge">c</code>. <code class="highlighter-rouge">[0-9abcdef]</code> matches any lowercase hex digit. Finally we can use character classes inside bracket expressions e.g. <code class="highlighter-rouge">[[:digit:]]</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">^</code></td>
+      <td>Matches beginning of the line</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">$</code></td>
+      <td>Matches end of the line</td>
+    </tr>
+  </tbody>
+</table>
 
-Any of the special characters used in BRE may be escaped by preceding 
-them with a backslash (`\`).
+<p>Any of the special characters used in BRE may be escaped by preceding 
+them with a backslash (<code class="highlighter-rouge">\</code>).</p>
 
-OK, now let's see BRE in action:
-{% highlight no-highlight %}
-$ # first we will find all words that ends with 'cat'
+<p>OK, now let’s see BRE in action:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ # first we will find all words that ends with 'cat'
 $ grep 'cat$' /usr/share/dict/words
 Muscat
 bobcat
@@ -289,83 +302,114 @@ $ # we will assume that hex numbers have format 0xaabbcc
 $ cat /proc/cpuinfo | grep '0x[0-9a-f]*'
 microcode   : 0x9
 microcode   : 0x9
-(...)
-{% endhighlight %}
+(...)</code></pre></figure>
 
-BRE are even more powerful if we use grouping and more advanced operators.
-Let's start with grouping, we may create groups by surrounding parts of the pattern
-with `\(...\)`, then we may apply e.g. `*` to the entire group. For example to find
-all words that have even number of characters we may write:
-{% highlight no-highlight %}
-$ grep '^\([a-z][a-z]\)*$' /usr/share/dict/words | head
+<p>BRE are even more powerful if we use grouping and more advanced operators.
+Let’s start with grouping, we may create groups by surrounding parts of the pattern
+with <code class="highlighter-rouge">\(...\)</code>, then we may apply e.g. <code class="highlighter-rouge">*</code> to the entire group. For example to find
+all words that have even number of characters we may write:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep '^\([a-z][a-z]\)*$' /usr/share/dict/words | head
 aardvark
 abacus
 abacuses
-(...)
-{% endhighlight %}
-This works because we are telling `grep` that we want to find any
-number of repetitions of *pair of characters*.
+(...)</code></pre></figure>
 
-Sometime we search for pattern like phone number that have fixed number
-of digits in each part, we may use `\{...\}` operator to specify exact number
-of repetitions of previous character or group:
+<p>This works because we are telling <code class="highlighter-rouge">grep</code> that we want to find any
+number of repetitions of <em>pair of characters</em>.</p>
 
-| Expression | Meaning |
-|:-:|-|
-| `\{m\}` | Matches `m` repetitions of previous character or group e.g. `a{3}` matches `aaa` but not `aa` or `abc`. |
-| `\{m,\}` | Matches at least `m` repetitions of previous character or group e.g. `a{2}` matches `aa`, `aaa` but not `a`. |
-| `\{m,n\}` | Matches at least `m` and at most `n` repetitions of of previous character or group. |
+<p>Sometime we search for pattern like phone number that have fixed number
+of digits in each part, we may use <code class="highlighter-rouge">\{...\}</code> operator to specify exact number
+of repetitions of previous character or group:</p>
 
-For example to search for phone number in format `XXX-XX-XXXX` we will `grep`:
-{% highlight no-highlight %}
-$ grep '[0-9]\{3\}-[0-9]\{2\}-[0-9]\{4\}' file
-{% endhighlight %}
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Expression</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">\{m\}</code></td>
+      <td>Matches <code class="highlighter-rouge">m</code> repetitions of previous character or group e.g. <code class="highlighter-rouge">a{3}</code> matches <code class="highlighter-rouge">aaa</code> but not <code class="highlighter-rouge">aa</code> or <code class="highlighter-rouge">abc</code>.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">\{m,\}</code></td>
+      <td>Matches at least <code class="highlighter-rouge">m</code> repetitions of previous character or group e.g. <code class="highlighter-rouge">a{2}</code> matches <code class="highlighter-rouge">aa</code>, <code class="highlighter-rouge">aaa</code> but not <code class="highlighter-rouge">a</code>.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">\{m,n\}</code></td>
+      <td>Matches at least <code class="highlighter-rouge">m</code> and at most <code class="highlighter-rouge">n</code> repetitions of of previous character or group.</td>
+    </tr>
+  </tbody>
+</table>
 
-The last thing worth know about BRE is the possibility to use backreferences.
-For example let's say that we search for all five letters palindromes, we may use
-`\1`, `\2`, etc. placeholders to tell `grep` that we expect text that was matched by first group,
-second group etc. in the place of placeholders:
-{% highlight no-highlight %}
-$ grep '^\(.\)\(.\).\2\1$' /usr/share/dict/words | head
+<p>For example to search for phone number in format <code class="highlighter-rouge">XXX-XX-XXXX</code> we will <code class="highlighter-rouge">grep</code>:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep '[0-9]\{3\}-[0-9]\{2\}-[0-9]\{4\}' file</code></pre></figure>
+
+<p>The last thing worth know about BRE is the possibility to use backreferences.
+For example let’s say that we search for all five letters palindromes, we may use
+<code class="highlighter-rouge">\1</code>, <code class="highlighter-rouge">\2</code>, etc. placeholders to tell <code class="highlighter-rouge">grep</code> that we expect text that was matched by first group,
+second group etc. in the place of placeholders:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ grep '^\(.\)\(.\).\2\1$' /usr/share/dict/words | head
 civic
 kayak
 level
-(...)
-{% endhighlight %}
+(...)</code></pre></figure>
 
-NOTE: Sometimes we just want to search using old plain text pattern, we may disable BRE
-using `-F` grep option.
+<p>NOTE: Sometimes we just want to search using old plain text pattern, we may disable BRE
+using <code class="highlighter-rouge">-F</code> grep option.</p>
 
-I didn't described all BRE features, if you are interested in details
-please [check the standard](http://pubs.opengroup.org/onlinepubs/009696899/basedefs/xbd_chap09.html#tag_09_03).
+<p>I didn’t described all BRE features, if you are interested in details
+please <a href="http://pubs.opengroup.org/onlinepubs/009696899/basedefs/xbd_chap09.html#tag_09_03">check the standard</a>.
 IMHO BRE are ugly and cumbersome to use, in the next
 section I will quickly describe extended regular expressions that bring full power of
-regexes to `grep`.
+regexes to <code class="highlighter-rouge">grep</code>.</p>
 
-#### Extended regular expressions (ERE)
+<h4 id="extended-regular-expressions-ere">Extended regular expressions (ERE)</h4>
 
-To enable extended regular expressions we must pass `-E` (`--extended-regexp`)
-option to `grep`. ERE are similar to BRE with the exception that we don't need to
+<p>To enable extended regular expressions we must pass <code class="highlighter-rouge">-E</code> (<code class="highlighter-rouge">--extended-regexp</code>)
+option to <code class="highlighter-rouge">grep</code>. ERE are similar to BRE with the exception that we don’t need to
 precede operators such as grouping with backslashes. To create a group in ERE 
-we simply use `(foo)` pattern, and to specify number of matches for that group
-we use `(foo){3}` pattern.
-This looks *much* more cleaner compared to BRE `\(foo\)\{3\}`.
+we simply use <code class="highlighter-rouge">(foo)</code> pattern, and to specify number of matches for that group
+we use <code class="highlighter-rouge">(foo){3}</code> pattern.
+This looks <em>much</em> more cleaner compared to BRE <code class="highlighter-rouge">\(foo\)\{3\}</code>.</p>
 
-If we want to match
-e.g. left parenthesis we need to escape it using backslash, for example to match `main()` text we
-could use `main\(\)` pattern (or we could use `-F` option to match text as it is).
+<p>If we want to match
+e.g. left parenthesis we need to escape it using backslash, for example to match <code class="highlighter-rouge">main()</code> text we
+could use <code class="highlighter-rouge">main\(\)</code> pattern (or we could use <code class="highlighter-rouge">-F</code> option to match text as it is).</p>
 
-In ERE in addition to all special characters from BRE we may use:
+<p>In ERE in addition to all special characters from BRE we may use:</p>
 
-| Character/Expression | Meaning |
-|:-:|-|
-| `+` | Matches one or more repetitions of previous character or group |
-| `?` | Matches zero or one occurrences of previous character or group |
-| `|` | Alternation - allows to match one of the specified patterns from set e.g. `0(x|X)` will match `0x` and `0X` texts |
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Character/Expression</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">+</code></td>
+      <td>Matches one or more repetitions of previous character or group</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">?</code></td>
+      <td>Matches zero or one occurrences of previous character or group</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">|</code></td>
+      <td>Alternation - allows to match one of the specified patterns from set e.g. <code class="highlighter-rouge">0(x|X)</code> will match <code class="highlighter-rouge">0x</code> and <code class="highlighter-rouge">0X</code> texts</td>
+    </tr>
+  </tbody>
+</table>
 
-Now let's see some examples of ERE in action:
-{% highlight no-highlight %}
-$ # let's find all phone numbers in format XXXX-XX-XXX that may
+<p>Now let’s see some examples of ERE in action:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ # let's find all phone numbers in format XXXX-XX-XXX that may
 $ # be optionally prefixed by country code (+XX)
 $ grep -E '(\(\+[0-9]{2}\) )?[0-9]{4}-[0-9]{2}-[0-9]{3}' file
 
@@ -374,15 +418,14 @@ $ grep -E '[0-9]+%' file
 
 $ # let's find all email addresses, here we use -o option
 $ # to print only matched text
-$ grep -E -o '[A-Za-z0-9._]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}' file
-{% endhighlight %}
+$ grep -E -o '[A-Za-z0-9._]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}' file</code></pre></figure>
 
-Most modern versions of `grep` support even more powerful versions of regular expressions
-that include shortcuts for character classes like `\d` for `[0-9]` and `\D` for `[^0-9]` and more
-advanced anchors like `\b` (matches word start or end).
-Check your local version of `grep` to find out what features are available.
+<p>Most modern versions of <code class="highlighter-rouge">grep</code> support even more powerful versions of regular expressions
+that include shortcuts for character classes like <code class="highlighter-rouge">\d</code> for <code class="highlighter-rouge">[0-9]</code> and <code class="highlighter-rouge">\D</code> for <code class="highlighter-rouge">[^0-9]</code> and more
+advanced anchors like <code class="highlighter-rouge">\b</code> (matches word start or end).
+Check your local version of <code class="highlighter-rouge">grep</code> to find out what features are available.</p>
 
-That's all that I wanted to say about `grep` command. Happy grepping!
+<p>That’s all that I wanted to say about <code class="highlighter-rouge">grep</code> command. Happy grepping!</p>
 
 
 	  ]]></description>
@@ -395,194 +438,249 @@ That's all that I wanted to say about `grep` command. Happy grepping!
 	  <pubDate>2016-07-26T02:00:00+02:00</pubDate>
 	  <guid>//how-to-use-find-command</guid>
 	  <description><![CDATA[
-	     Linux `find` command may be used to find files and directories
+	     <p>Linux <code class="highlighter-rouge">find</code> command may be used to find files and directories
 that meet specified conditions. The most popular
 conditions test file size, filename and file type 
 (do we want regular files, directories or both).
-By default `find` prints paths to found files and directories but it can 
+By default <code class="highlighter-rouge">find</code> prints paths to found files and directories but it can 
 perform various operations on found files e.g. it may remove them.
-In this article I will present how to use `find` and how to create complex
-search conditions, so let's begin.
+In this article I will present how to use <code class="highlighter-rouge">find</code> and how to create complex
+search conditions, so let’s begin.</p>
 
-Generally `find` invocation looks like this:
-{% highlight no-highlight %}
-$ find startDirectory filterOrAction1 ... filterOrActionN
-{% endhighlight %}
-Here `startDirectory` is root of directories tree that we want to search.
-After `startDirectory` we pass zero or more filters and/or actions.
-Filters define conditions that given file/directory must meet, e.g. filter `-type f`
-tells `find` that it should only process regular files and skip other file system
+<p>Generally <code class="highlighter-rouge">find</code> invocation looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ find startDirectory filterOrAction1 ... filterOrActionN</code></pre></figure>
+
+<p>Here <code class="highlighter-rouge">startDirectory</code> is root of directories tree that we want to search.
+After <code class="highlighter-rouge">startDirectory</code> we pass zero or more filters and/or actions.
+Filters define conditions that given file/directory must meet, e.g. filter <code class="highlighter-rouge">-type f</code>
+tells <code class="highlighter-rouge">find</code> that it should only process regular files and skip other file system
 objects like directories or named pipes. Actions on the other hand define what
 should be done with found files/directories, we may for example print 
-their filenames using `-print` action or we may delete them via `-delete` action.
+their filenames using <code class="highlighter-rouge">-print</code> action or we may delete them via <code class="highlighter-rouge">-delete</code> action.</p>
 
-If you pass no arguments to `find` as in:
-{% highlight no-highlight %}
-$ find
-{% endhighlight %}
-it will assume that `startDirectory` is current directory and that you want to
+<p>If you pass no arguments to <code class="highlighter-rouge">find</code> as in:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ find</code></pre></figure>
+
+<p>it will assume that <code class="highlighter-rouge">startDirectory</code> is current directory and that you want to
 print filenames of all found files/directories. In other words it will be equivalent to
-invocation:
-{% highlight no-highlight %}
-$ find . -print
-{% endhighlight %}
+invocation:</p>
 
-`find` performs search by enumerating all files and directories contained in
-the `startDirectory`. For each file/directory `find` executes specified filters and
-actions, from left to right and stops on the first filter or action that returns `false`.
-Filters return `false` when filter condition is not met. Actions return `false` when
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ find . -print</code></pre></figure>
+
+<p><code class="highlighter-rouge">find</code> performs search by enumerating all files and directories contained in
+the <code class="highlighter-rouge">startDirectory</code>. For each file/directory <code class="highlighter-rouge">find</code> executes specified filters and
+actions, from left to right and stops on the first filter or action that returns <code class="highlighter-rouge">false</code>.
+Filters return <code class="highlighter-rouge">false</code> when filter condition is not met. Actions return <code class="highlighter-rouge">false</code> when
 action ends with an error
-e.g. user has insufficient permissions to remove file for `-delete` action.
+e.g. user has insufficient permissions to remove file for <code class="highlighter-rouge">-delete</code> action.</p>
 
-Image below presents how `find dir -type f -name '*.java' -print` works
-assuming that `dir` contains two files `foo.java` and `foo.cpp`:
-![Illustration how find works](assets/images/2016-07-26/find1_2.svg)
-To keep image size reasonable I skipped one more "file" that was checked by `find` in
-our example - the `dir` directory itself. 
+<p>Image below presents how <code class="highlighter-rouge">find dir -type f -name '*.java' -print</code> works
+assuming that <code class="highlighter-rouge">dir</code> contains two files <code class="highlighter-rouge">foo.java</code> and <code class="highlighter-rouge">foo.cpp</code>:
+<img src="assets/images/2016-07-26/find1_2.svg" alt="Illustration how find works" />
+To keep image size reasonable I skipped one more “file” that was checked by <code class="highlighter-rouge">find</code> in
+our example - the <code class="highlighter-rouge">dir</code> directory itself.</p>
 
-Before you proceed please answer the following questions 
-(use `dir` directory from previous example). 
-Verify your answers by running `find` and checking it's output:
+<p>Before you proceed please answer the following questions 
+(use <code class="highlighter-rouge">dir</code> directory from previous example). 
+Verify your answers by running <code class="highlighter-rouge">find</code> and checking it’s output:</p>
 
-* What will be printed by `find dir -print -print`?
-* What will be printed by `find dir -print -name '*.java' -print`?
-* What will happen when we specify no action like in `find dir -name 'foo*'`?
+<ul>
+  <li>What will be printed by <code class="highlighter-rouge">find dir -print -print</code>?</li>
+  <li>What will be printed by <code class="highlighter-rouge">find dir -print -name '*.java' -print</code>?</li>
+  <li>What will happen when we specify no action like in <code class="highlighter-rouge">find dir -name 'foo*'</code>?</li>
+</ul>
 
-#### Filters
+<h4 id="filters">Filters</h4>
 
-After reading previous section you should have firm understanding
-how `find` works. Now let's move to describing most usefull filters
-provided by `find`.
+<p>After reading previous section you should have firm understanding
+how <code class="highlighter-rouge">find</code> works. Now let’s move to describing most usefull filters
+provided by <code class="highlighter-rouge">find</code>.</p>
 
-##### Type filter
+<h5 id="type-filter">Type filter</h5>
 
-We will start with `-type` filter that allows us to find 
+<p>We will start with <code class="highlighter-rouge">-type</code> filter that allows us to find 
 filesystem objects that have specified type. 
 For example to find only directories
-we will use `-type d` and to find only regular files we will use `-type f`.
-`-type` filter takes single parameter that is one letter abbreviation of 
+we will use <code class="highlighter-rouge">-type d</code> and to find only regular files we will use <code class="highlighter-rouge">-type f</code>.
+<code class="highlighter-rouge">-type</code> filter takes single parameter that is one letter abbreviation of 
 filesystem object type.
-All available values are presented in table below:
+All available values are presented in table below:</p>
 
-|-|
-| Argument | Description |
-|:-:|
-| b | Block device e.g. `/dev/sda` on most modern systems |
-| c | Character device e.g. `/dev/tty0` |
-| d | Directory e.g. `/etc` |
-| p | Named pipe |
-| f | Regular file e.g. `/etc/profile` |
-| l | Symbolic link |
-| s | Socket |
-|-|
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Argument</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center">b</td>
+      <td>Block device e.g. <code class="highlighter-rouge">/dev/sda</code> on most modern systems</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">c</td>
+      <td>Character device e.g. <code class="highlighter-rouge">/dev/tty0</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: center">d</td>
+      <td>Directory e.g. <code class="highlighter-rouge">/etc</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: center">p</td>
+      <td>Named pipe</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">f</td>
+      <td>Regular file e.g. <code class="highlighter-rouge">/etc/profile</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: center">l</td>
+      <td>Symbolic link</td>
+    </tr>
+    <tr>
+      <td style="text-align: center">s</td>
+      <td>Socket</td>
+    </tr>
+  </tbody>
+</table>
 
-##### Name filter
+<h5 id="name-filter">Name filter</h5>
 
-`-name` filter allows us to find files/directories that have names
-that match specified pattern e.g. `*.java`. Only filename is checked 
+<p><code class="highlighter-rouge">-name</code> filter allows us to find files/directories that have names
+that match specified pattern e.g. <code class="highlighter-rouge">*.java</code>. Only filename is checked 
 against the pattern, rest
-of the file path is ignored e.g. `./usr/foo` file doesn't match `u*foo` pattern, but
-`./uberfoo` file does.
-`-name` filter performs *case sensitive* comparisons so `foo` doesn't match `FOO` pattern,
-to use case insensitive comparisons use `-iname` filter instead.
+of the file path is ignored e.g. <code class="highlighter-rouge">./usr/foo</code> file doesn’t match <code class="highlighter-rouge">u*foo</code> pattern, but
+<code class="highlighter-rouge">./uberfoo</code> file does.
+<code class="highlighter-rouge">-name</code> filter performs <em>case sensitive</em> comparisons so <code class="highlighter-rouge">foo</code> doesn’t match <code class="highlighter-rouge">FOO</code> pattern,
+to use case insensitive comparisons use <code class="highlighter-rouge">-iname</code> filter instead.</p>
 
-Inside name filter pattern some characters like `*` or expressions like `[abc]` have
-special meaning (see [glob expression](https://en.wikipedia.org/wiki/Glob_(programming))).
-Table below lists all special expressions that may be used inside patterns:
+<p>Inside name filter pattern some characters like <code class="highlighter-rouge">*</code> or expressions like <code class="highlighter-rouge">[abc]</code> have
+special meaning (see <a href="https://en.wikipedia.org/wiki/Glob_(programming)">glob expression</a>).
+Table below lists all special expressions that may be used inside patterns:</p>
 
-|-|-|-|
-| Special character / expression | Meaning |
-|:-:|-|-|
-| `*` | Matches zero or more characters |
-| `?` | Matches single character |
-| `[abc]` | Character set. Matches any character in set |
-| `[!abc]` | Inverted character set. Matches any character NOT in set |
-| `[a-z]` | Character range. Matches any character in range |
-| `[!a-z]` | Inverted character range. Matches any character NOT in range |
-|-|-|
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: center">Special character / expression</th>
+      <th>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">*</code></td>
+      <td>Matches zero or more characters</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">?</code></td>
+      <td>Matches single character</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">[abc]</code></td>
+      <td>Character set. Matches any character in set</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">[!abc]</code></td>
+      <td>Inverted character set. Matches any character NOT in set</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">[a-z]</code></td>
+      <td>Character range. Matches any character in range</td>
+    </tr>
+    <tr>
+      <td style="text-align: center"><code class="highlighter-rouge">[!a-z]</code></td>
+      <td>Inverted character range. Matches any character NOT in range</td>
+    </tr>
+  </tbody>
+</table>
 
-BE CAREFUL: It is always
-good idea to quote patterns using single quotes to prevent shell expansion of the pattern
+<p>BE CAREFUL: It is always
+good idea to quote patterns using single quotes to prevent shell expansion of the pattern</p>
 
-Examples:
+<p>Examples:</p>
 
-* To find all java files we can use `-name '*.java'` filter
-* To find all files that have three letter names we may use `-name '???'` filter
-* To find all files that have names starting with `a`, `b` or `c` we can use `-name '[abc]*'` filter
-* To find all files that have names that doesn't start with `1` we may use `-name '[!1]*'` filter
+<ul>
+  <li>To find all java files we can use <code class="highlighter-rouge">-name '*.java'</code> filter</li>
+  <li>To find all files that have three letter names we may use <code class="highlighter-rouge">-name '???'</code> filter</li>
+  <li>To find all files that have names starting with <code class="highlighter-rouge">a</code>, <code class="highlighter-rouge">b</code> or <code class="highlighter-rouge">c</code> we can use <code class="highlighter-rouge">-name '[abc]*'</code> filter</li>
+  <li>To find all files that have names that doesn’t start with <code class="highlighter-rouge">1</code> we may use <code class="highlighter-rouge">-name '[!1]*'</code> filter</li>
+</ul>
 
-##### Size filter
+<h5 id="size-filter">Size filter</h5>
 
-`-size` filter can be used to search for files of given size, for example `find dir -size 1M` will find
-all one megabyte files in `dir` directory. 
+<p><code class="highlighter-rouge">-size</code> filter can be used to search for files of given size, for example <code class="highlighter-rouge">find dir -size 1M</code> will find
+all one megabyte files in <code class="highlighter-rouge">dir</code> directory.</p>
 
-We may use `+` and `-` prefixes to
-signify that we want files bigger or smaller than specified size e.g. `find dir -size +64k` will
-find all files contained in `dir` directory that are bigger than 64 kilobytes.
-Conversely `find dir -size -64k` will find all files in `dir` directory that are smaller than 64 kilobytes.
+<p>We may use <code class="highlighter-rouge">+</code> and <code class="highlighter-rouge">-</code> prefixes to
+signify that we want files bigger or smaller than specified size e.g. <code class="highlighter-rouge">find dir -size +64k</code> will
+find all files contained in <code class="highlighter-rouge">dir</code> directory that are bigger than 64 kilobytes.
+Conversely <code class="highlighter-rouge">find dir -size -64k</code> will find all files in <code class="highlighter-rouge">dir</code> directory that are smaller than 64 kilobytes.</p>
 
-We may use popular `k`, `M`, `G` suffixes to signify kilo-, mega- and gigabytes, `c` suffix can be used to
-specify file size in bytes.
+<p>We may use popular <code class="highlighter-rouge">k</code>, <code class="highlighter-rouge">M</code>, <code class="highlighter-rouge">G</code> suffixes to signify kilo-, mega- and gigabytes, <code class="highlighter-rouge">c</code> suffix can be used to
+specify file size in bytes.</p>
 
-##### Time filter
+<h5 id="time-filter">Time filter</h5>
 
-For every file filesystem tracks up to three times:
+<p>For every file filesystem tracks up to three times:</p>
 
-* `atime` or Access time - time when give file was last read
-* `mtime` or Modification time - last time when contents of file changed
-* `ctime` or Change time - last time when contents or attributes of file changed. 
- Here attributes refers to file metadata like filename or file permissions
+<ul>
+  <li><code class="highlighter-rouge">atime</code> or Access time - time when give file was last read</li>
+  <li><code class="highlighter-rouge">mtime</code> or Modification time - last time when contents of file changed</li>
+  <li><code class="highlighter-rouge">ctime</code> or Change time - last time when contents or attributes of file changed. 
+ Here attributes refers to file metadata like filename or file permissions</li>
+</ul>
 
-To find all files that were modified exactly one day ago we may use `-mtime 1` filter.
-And to find all files that were accessed exactly one minute ago we may use `-amin 1` filter.
+<p>To find all files that were modified exactly one day ago we may use <code class="highlighter-rouge">-mtime 1</code> filter.
+And to find all files that were accessed exactly one minute ago we may use <code class="highlighter-rouge">-amin 1</code> filter.</p>
 
-First letter of these filters (`a`, `m` or `c`) signifies on what file time filter should operate,
-next word (`time` or `min`) signifies in what time unit will be passed argument - we may use only
-days or minutes.
+<p>First letter of these filters (<code class="highlighter-rouge">a</code>, <code class="highlighter-rouge">m</code> or <code class="highlighter-rouge">c</code>) signifies on what file time filter should operate,
+next word (<code class="highlighter-rouge">time</code> or <code class="highlighter-rouge">min</code>) signifies in what time unit will be passed argument - we may use only
+days or minutes.</p>
 
-As with size filter we may use `+` and `-` prefixes to signify that we want to find files
-that were modified at most one day ago (`-mtime -1`) or at least one day ago (`-mtime +1`).
+<p>As with size filter we may use <code class="highlighter-rouge">+</code> and <code class="highlighter-rouge">-</code> prefixes to signify that we want to find files
+that were modified at most one day ago (<code class="highlighter-rouge">-mtime -1</code>) or at least one day ago (<code class="highlighter-rouge">-mtime +1</code>).</p>
 
-##### Permissions filter
+<h5 id="permissions-filter">Permissions filter</h5>
 
-`-perm` filter can be used to find files/dirs that have specific permissions set.
+<p><code class="highlighter-rouge">-perm</code> filter can be used to find files/dirs that have specific permissions set.</p>
 
-In the examples I will use octal notation for permissions e.g. `-perm 644` but `-perm` filter
-also supports symbolic notation e.g. `-perm u=rw`.  
+<p>In the examples I will use octal notation for permissions e.g. <code class="highlighter-rouge">-perm 644</code> but <code class="highlighter-rouge">-perm</code> filter
+also supports symbolic notation e.g. <code class="highlighter-rouge">-perm u=rw</code>.<br />
 Here is quick remainder of the octal
-notation:
-{% highlight no-highlight %}
-    owner  |  group  |  others
+notation:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">    owner  |  group  |  others
     r w x  |  r w x  |  r w x
-    4 2 1  |  4 2 1  |  4 2 1
-{% endhighlight %}
+    4 2 1  |  4 2 1  |  4 2 1</code></pre></figure>
 
-To find all files/dirs that have permissions set 
-exactly to `644` we may use `find dir -perm 644`, this will find
-all files/dirs that are readable/writable for file owner and readable for everyone else.
+<p>To find all files/dirs that have permissions set 
+exactly to <code class="highlighter-rouge">644</code> we may use <code class="highlighter-rouge">find dir -perm 644</code>, this will find
+all files/dirs that are readable/writable for file owner and readable for everyone else.</p>
 
-Often we want to find files that have *at least* specified permissions, to do so 
-we must prefix permissions with minus sign (`-`) e.g. `-perm -644`.
-Filter `-perm -644` will
+<p>Often we want to find files that have <em>at least</em> specified permissions, to do so 
+we must prefix permissions with minus sign (<code class="highlighter-rouge">-</code>) e.g. <code class="highlighter-rouge">-perm -644</code>.
+Filter <code class="highlighter-rouge">-perm -644</code> will
 find all files that are at least readable/writable for file owner and readable for everybody
-else e.g. files with permissions `666`, `655` and `777` will be included.
+else e.g. files with permissions <code class="highlighter-rouge">666</code>, <code class="highlighter-rouge">655</code> and <code class="highlighter-rouge">777</code> will be included.</p>
 
-Sometimes we want to find files that have a common permission bit with specified permission, 
+<p>Sometimes we want to find files that have a common permission bit with specified permission, 
 to do this
-we should prefix permissions with `/` character. For example to find files that have
-*any* permission for others set we may use `find dir -perm /007`.
+we should prefix permissions with <code class="highlighter-rouge">/</code> character. For example to find files that have
+<em>any</em> permission for others set we may use <code class="highlighter-rouge">find dir -perm /007</code>.</p>
 
-#### Actions
+<h4 id="actions">Actions</h4>
 
-No let's see what we can do with found files. In this section I will describe most
-popular actions used with `find`.
+<p>No let’s see what we can do with found files. In this section I will describe most
+popular actions used with <code class="highlighter-rouge">find</code>.</p>
 
-##### print and print0 actions
+<h5 id="print-and-print0-actions">print and print0 actions</h5>
 
-`-print` and `-print0` actions print on `stdout` path to found files.
-Printed path is **relative** to `startDirectory` so:
-{% highlight no-highlight %}
-$ find dir -print
+<p><code class="highlighter-rouge">-print</code> and <code class="highlighter-rouge">-print0</code> actions print on <code class="highlighter-rouge">stdout</code> path to found files.
+Printed path is <strong>relative</strong> to <code class="highlighter-rouge">startDirectory</code> so:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ find dir -print
 dir
 dir/foo.java
 dir/foo.cpp
@@ -598,53 +696,52 @@ $ readlink -f dir
 $ find $(readlink -f dir) -print
 /home/user/dir
 /home/user/dir/foo.java
-/home/user/dir/foo.cpp
-{% endhighlight %}
-In the last example I used `readlink` command to get absolute path to `dir` directory.
+/home/user/dir/foo.cpp</code></pre></figure>
 
-When we pipe `find` output to other programs like `xargs` we should definitely use `-print0`
-action. The main difference between `-print` and `-print0` is that the last one
-uses `NUL` character (`\0`) instead of new line to separate paths. 
+<p>In the last example I used <code class="highlighter-rouge">readlink</code> command to get absolute path to <code class="highlighter-rouge">dir</code> directory.</p>
+
+<p>When we pipe <code class="highlighter-rouge">find</code> output to other programs like <code class="highlighter-rouge">xargs</code> we should definitely use <code class="highlighter-rouge">-print0</code>
+action. The main difference between <code class="highlighter-rouge">-print</code> and <code class="highlighter-rouge">-print0</code> is that the last one
+uses <code class="highlighter-rouge">NUL</code> character (<code class="highlighter-rouge">\0</code>) instead of new line to separate paths. 
 This allows other tools to process
 paths that contains spaces including new lines without problems. 
-Here's how we use it with `xargs`:
-{% highlight no-highlight %}
-find dir -print0 | xargs -0 -n 1 echo
-{% endhighlight %}
-The important part is to pass `-0` or `--null` option to `xargs` so it will know that
-we will separate paths using `NUL` character.
+Here’s how we use it with <code class="highlighter-rouge">xargs</code>:</p>
 
-##### delete action
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">find dir -print0 | xargs -0 -n 1 echo</code></pre></figure>
 
-This action is pretty self-explanatory, you may use it to remove files.
+<p>The important part is to pass <code class="highlighter-rouge">-0</code> or <code class="highlighter-rouge">--null</code> option to <code class="highlighter-rouge">xargs</code> so it will know that
+we will separate paths using <code class="highlighter-rouge">NUL</code> character.</p>
 
-WARNING: Please remember that `find` processes filters and actions from left to right so
-if you you put `-delete` action first `find` will try to delete all found files and
-directories before trying other filters/actions.
+<h5 id="delete-action">delete action</h5>
 
-If the delete operation fail `-delete` will return `false`, otherwise it will
-return `true`.
+<p>This action is pretty self-explanatory, you may use it to remove files.</p>
 
-Example usage:
-{% highlight no-highlight %}
-$ find dir -name '*foo*' -delete
-{% endhighlight %}
+<p>WARNING: Please remember that <code class="highlighter-rouge">find</code> processes filters and actions from left to right so
+if you you put <code class="highlighter-rouge">-delete</code> action first <code class="highlighter-rouge">find</code> will try to delete all found files and
+directories before trying other filters/actions.</p>
 
-##### exec action
+<p>If the delete operation fail <code class="highlighter-rouge">-delete</code> will return <code class="highlighter-rouge">false</code>, otherwise it will
+return <code class="highlighter-rouge">true</code>.</p>
 
-`-exec` is the most useful action that you can use with `find`. It allows you
+<p>Example usage:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ find dir -name '*foo*' -delete</code></pre></figure>
+
+<h5 id="exec-action">exec action</h5>
+
+<p><code class="highlighter-rouge">-exec</code> is the most useful action that you can use with <code class="highlighter-rouge">find</code>. It allows you
 to execute arbitrary command for each found file. 
-You must pass command to execute after `-exec` argument and you must end it with
-`;` character. 
-Since semicolon has special meaning in the shell you must escape it using `\;` or `';'`.
-Inside command you may use `{}` placeholder that will be replaced by the path to 
+You must pass command to execute after <code class="highlighter-rouge">-exec</code> argument and you must end it with
+<code class="highlighter-rouge">;</code> character. 
+Since semicolon has special meaning in the shell you must escape it using <code class="highlighter-rouge">\;</code> or <code class="highlighter-rouge">';'</code>.
+Inside command you may use <code class="highlighter-rouge"><span class="p">{}</span></code> placeholder that will be replaced by the path to 
 the found file before command execution.
-`-exec` action returns `true` if executed command returned `0` exit code, otherwise
-it will return `false`.
+<code class="highlighter-rouge">-exec</code> action returns <code class="highlighter-rouge">true</code> if executed command returned <code class="highlighter-rouge">0</code> exit code, otherwise
+it will return <code class="highlighter-rouge">false</code>.</p>
 
-Let's see some examples:
-{% highlight no-highlight %}
-$ find dir -name 'foo*' -exec echo "found file: {}" ';'
+<p>Let’s see some examples:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ find dir -name 'foo*' -exec echo "found file: {}" ';'
 found file: dir/foo.java
 found file: dir/foo.cpp
 
@@ -657,38 +754,36 @@ $ find dir -name 'foo*' -exec chmod o+w {} \;
 
 $ ls -l dir/*
 -rw-rw-rw- 1 user user 0 lip 30 11:22 dir/foo.cpp
--rw-rw-rw- 1 user user 0 lip 30 11:22 dir/foo.java
-{% endhighlight %}
+-rw-rw-rw- 1 user user 0 lip 30 11:22 dir/foo.java</code></pre></figure>
 
-##### ok action
+<h5 id="ok-action">ok action</h5>
 
-`-ok` is like `-exec` action with the exception that `find` will ask you
-for confirmation before executing command:
-{% highlight no-highlight %}
-$ find dir -ok chmod o+w {} \;
-< chmod ... dir > ? y
-< chmod ... dir/foo.java > ? n
-< chmod ... dir/a > ? n
-< chmod ... dir/foo.cpp > ? y
-< chmod ... dir/c > ? y
-< chmod ... dir/b > ? n
-< chmod ... dir/d > ? n
-{% endhighlight %}
+<p><code class="highlighter-rouge">-ok</code> is like <code class="highlighter-rouge">-exec</code> action with the exception that <code class="highlighter-rouge">find</code> will ask you
+for confirmation before executing command:</p>
 
-#### Advanced expressions
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ find dir -ok chmod o+w {} \;
+&lt; chmod ... dir &gt; ? y
+&lt; chmod ... dir/foo.java &gt; ? n
+&lt; chmod ... dir/a &gt; ? n
+&lt; chmod ... dir/foo.cpp &gt; ? y
+&lt; chmod ... dir/c &gt; ? y
+&lt; chmod ... dir/b &gt; ? n
+&lt; chmod ... dir/d &gt; ? n</code></pre></figure>
 
-As we have seen `find` command is very versatile. We already know how to
+<h4 id="advanced-expressions">Advanced expressions</h4>
+
+<p>As we have seen <code class="highlighter-rouge">find</code> command is very versatile. We already know how to
 create complex search conditions and how to execute actions for found files.
-Yet we still don't know full power of `find`, now it's time to change that.
+Yet we still don’t know full power of <code class="highlighter-rouge">find</code>, now it’s time to change that.</p>
 
-Let's start with simple example: we want to find all files in `dir` directory
-that have names that  *doesn't* end with `.java`. 
-It's impossible to do so with `-name` filter that we know. 
+<p>Let’s start with simple example: we want to find all files in <code class="highlighter-rouge">dir</code> directory
+that have names that  <em>doesn’t</em> end with <code class="highlighter-rouge">.java</code>. 
+It’s impossible to do so with <code class="highlighter-rouge">-name</code> filter that we know. 
 But if there was a way to negate a filter it would be simple, right?
-In fact there is, just precede a filter with `!`
-character to negate it (since `!` is special shell character we need to escape it e.g. `\!`). 
-{% highlight no-highlight %}
-$ tree dir
+In fact there is, just precede a filter with <code class="highlighter-rouge">!</code>
+character to negate it (since <code class="highlighter-rouge">!</code> is special shell character we need to escape it e.g. <code class="highlighter-rouge">\!</code>).</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ tree dir
  dir
  |-- foo.cpp
  |-- foo.java
@@ -696,23 +791,22 @@ $ tree dir
 
 $ find dir \! -name '*.java' -type f
 dir/foo.py
-dir/foo.cpp
-{% endhighlight %}
+dir/foo.cpp</code></pre></figure>
 
-Beside negation `find` also provides two other boolean operators: AND (`-a`) and OR (`-o`).
+<p>Beside negation <code class="highlighter-rouge">find</code> also provides two other boolean operators: AND (<code class="highlighter-rouge">-a</code>) and OR (<code class="highlighter-rouge">-o</code>).
 We may also use parentheses to group filters/actions into subexpressions
 (as you probably guessed parentheses have special meaning in the shell and we must 
-escape them e.g. `\(` or `')'`).
+escape them e.g. <code class="highlighter-rouge">\(</code> or <code class="highlighter-rouge">')'</code>).</p>
 
-When `find` evaluates complex expressions it tries to 
-[short-circuit](https://en.wikipedia.org/wiki/Short-circuit_evaluation) AND and OR
+<p>When <code class="highlighter-rouge">find</code> evaluates complex expressions it tries to 
+<a href="https://en.wikipedia.org/wiki/Short-circuit_evaluation">short-circuit</a> AND and OR
 operators. Short-circuiting means that if the left 
 operand of the AND is false right operand is not evaluated,
 and if the left operand of OR is true the right operand is not evaluated. This is very
 important when we mix filters with actions.
-Let's see some examples that show us AND and OR operators in action:
-{% highlight no-highlight %}
-$ # find files ending with .cpp or .py
+Let’s see some examples that show us AND and OR operators in action:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ # find files ending with .cpp or .py
 $ find dir \( -name '*.cpp' -o -name '*.py' \)
 dir/foo.py
 dir/foo.cpp
@@ -728,18 +822,17 @@ dir/foo.cpp
 $ # this one is tricky, we remove all NON-DIRECTORIES
 $ # e.g. files, pipes, sockets etc.
 $ # here we use fact that OR operator short-circuit's
-$ find dir -type d -o -delete
-{% endhighlight %}
+$ find dir -type d -o -delete</code></pre></figure>
 
-The last think to remember is that `\( filter1 -a filter2 -a filter3 \)` expression is 
-equivalent to `\( filter1 filter2 filter3 \)`.
+<p>The last think to remember is that <code class="highlighter-rouge">\( filter1 -a filter2 -a filter3 \)</code> expression is 
+equivalent to <code class="highlighter-rouge">\( filter1 filter2 filter3 \)</code>.</p>
 
-#### Other
+<h4 id="other">Other</h4>
 
-Before we end I want to mention two handy options `-mindepth` and `-maxdepth` that
-allow us to limit search depth to a specific range. Here's how to use them:
-{% highlight no-highlight %}
-$ mkdir -p dir/dir1/dir2/dir3/dir4
+<p>Before we end I want to mention two handy options <code class="highlighter-rouge">-mindepth</code> and <code class="highlighter-rouge">-maxdepth</code> that
+allow us to limit search depth to a specific range. Here’s how to use them:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ mkdir -p dir/dir1/dir2/dir3/dir4
 
 $ tree dir
  dir
@@ -758,19 +851,18 @@ dir
 dir/dir1
 dir/dir1/dir2
 dir/dir1/dir2/dir3
-dir/dir1/dir2/dir3/dir4
+dir/dir1/dir2/dir3/dir4</code></pre></figure>
 
-{% endhighlight %}
-Intuitively `mindepth`/`maxdepth` tells us how many `/` characters we want to have in file path.
+<p>Intuitively <code class="highlighter-rouge">mindepth</code>/<code class="highlighter-rouge">maxdepth</code> tells us how many <code class="highlighter-rouge">/</code> characters we want to have in file path.</p>
 
-#### `findform` application 
+<h4 id="findform-application"><code class="highlighter-rouge">findform</code> application</h4>
 
-To help you quickly recall all most useful `find` options I created simple interactive
-app that provides GUI for `find`, you may add it as a bookmark if you find it useful.
+<p>To help you quickly recall all most useful <code class="highlighter-rouge">find</code> options I created simple interactive
+app that provides GUI for <code class="highlighter-rouge">find</code>, you may add it as a bookmark if you find it useful.</p>
 
-<a href="/assets/apps/findform/">Open FindFORM app</a>
+<p><a href="/assets/apps/findform/">Open FindFORM app</a></p>
 
-That's all for today, thanks for reading!
+<p>That’s all for today, thanks for reading!</p>
 
 	  ]]></description>
 	</item>
@@ -782,24 +874,24 @@ That's all for today, thanks for reading!
 	  <pubDate>2016-07-09T02:00:00+02:00</pubDate>
 	  <guid>//how-to-use-xargs</guid>
 	  <description><![CDATA[
-	     In this blog post I will show you how to use `xargs` command line utility.
+	     <p>In this blog post I will show you how to use <code class="highlighter-rouge">xargs</code> command line utility.</p>
 
-We will start by creating simple bash script `showargs` that prints all arguments
-passed to it on command line:
-{% highlight bash %}
-#!/usr/bin/env bash
+<p>We will start by creating simple bash script <code class="highlighter-rouge">showargs</code> that prints all arguments
+passed to it on command line:</p>
 
-# echo -n option prints text without new line
-echo -n "[ "
-for arg in "$@"; do
-    echo -n "{$arg} "
-done
-echo "]"
-{% endhighlight %}
-We must make this script executable by running `chmod +x showargs`.
-Now we can check how it works:
-{% highlight no-highlight %}
-$ ./showargs 
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c">#!/usr/bin/env bash</span>
+
+<span class="c"># echo -n option prints text without new line</span>
+<span class="nb">echo</span> -n <span class="s2">"[ "</span>
+<span class="k">for </span>arg <span class="k">in</span> <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span>; <span class="k">do
+    </span><span class="nb">echo</span> -n <span class="s2">"{</span><span class="nv">$arg</span><span class="s2">} "</span>
+<span class="k">done
+</span><span class="nb">echo</span> <span class="s2">"]"</span></code></pre></figure>
+
+<p>We must make this script executable by running <code class="highlighter-rouge">chmod +x showargs</code>.
+Now we can check how it works:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ ./showargs 
 [ ]
 
 $ ./showargs a b c
@@ -809,27 +901,27 @@ $ ./showargs "foo bar" '#$%'
 [ {foo bar} {#$%} ]
 
 $ ./showargs 1 "foo bar" '()' blah
-[ {1} {foo bar} {()} {blah} ]
-{% endhighlight %}
-As you can see invocation of `showargs` prints single line that starts with `[` and
-ends with `]` character 
-and contains all parameters passed to script surrounded by `{` and `}`
+[ {1} {foo bar} {()} {blah} ]</code></pre></figure>
+
+<p>As you can see invocation of <code class="highlighter-rouge">showargs</code> prints single line that starts with <code class="highlighter-rouge">[</code> and
+ends with <code class="highlighter-rouge">]</code> character 
+and contains all parameters passed to script surrounded by <code class="highlighter-rouge"><span class="p">{</span></code> and <code class="highlighter-rouge">}</code>
 braces. This will help us to see if arguments with spaces are properly passed 
-to our script.
+to our script.</p>
 
-#### How xargs work
+<h4 id="how-xargs-work">How xargs work</h4>
 
-When we run `xargs cmd` in the terminal, `xargs` first reads all
+<p>When we run <code class="highlighter-rouge">xargs cmd</code> in the terminal, <code class="highlighter-rouge">xargs</code> first reads all
 lines from standard input, then concatenates them using space character, then
-it appends that concatenated input to `cmd` and finally it executes this
+it appends that concatenated input to <code class="highlighter-rouge">cmd</code> and finally it executes this
 extended command in the shell. It may sound a bit complicated but it is
 really a simple process:
-![How xargs works](assets/images/2016-07-09/xargs_lines.svg)
+<img src="assets/images/2016-07-09/xargs_lines.svg" alt="How xargs works" /></p>
 
-Let's play a bit with `xargs` in the terminal.
-We'll use `showargs` script to snoop arguments passed by `xargs` to the command.
-{% highlight no-highlight %}
-$ echo a b c d | xargs ./showargs
+<p>Let’s play a bit with <code class="highlighter-rouge">xargs</code> in the terminal.
+We’ll use <code class="highlighter-rouge">showargs</code> script to snoop arguments passed by <code class="highlighter-rouge">xargs</code> to the command.</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ echo a b c d | xargs ./showargs
 [ {a} {b} {c} {d} ]
 
 $ cat example
@@ -837,43 +929,42 @@ a b c
 d
 e f
 $ cat example | xargs ./showargs 
-[ {a} {b} {c} {d} {e} {f} ]
-{% endhighlight %}
-As we can see it doesn't matter for `xargs` if arguments are on single line or in
+[ {a} {b} {c} {d} {e} {f} ]</code></pre></figure>
+
+<p>As we can see it doesn’t matter for <code class="highlighter-rouge">xargs</code> if arguments are on single line or in
 many lines of input.
-It also doesn't matter if arguments are separated by space, newline or tabs:
-{% highlight no-highlight %}
-$ echo -e "foo\nbar\n\n\t\tnyu"
+It also doesn’t matter if arguments are separated by space, newline or tabs:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ echo -e "foo\nbar\n\n\t\tnyu"
 foo
 bar
 
                 nyu
 
 $ echo -e "foo\nbar\n\n\t\tnyu" | xargs ./showargs 
-[ {foo} {bar} {nyu} ]
-{% endhighlight %}
+[ {foo} {bar} {nyu} ]</code></pre></figure>
 
-We must also know that `xargs` properly escapes special shell characters like `|` or `>`
-when it builds command arguments:
-{% highlight no-highlight %}
-$ echo a '>' '|' d
-a > | d
+<p>We must also know that <code class="highlighter-rouge">xargs</code> properly escapes special shell characters like <code class="highlighter-rouge">|</code> or <code class="highlighter-rouge">&gt;</code>
+when it builds command arguments:</p>
 
-$ echo a '>' '|' d | xargs ./showargs 
-[ {a} {>} {|} {d} ]
-{% endhighlight %}
-NOTE: Here I used single quotes to escape special characters in echo command, 
-but you may also use backslash e.g. `\>`.
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ echo a '&gt;' '|' d
+a &gt; | d
 
-##### Custom argument separator (delimiter)
+$ echo a '&gt;' '|' d | xargs ./showargs 
+[ {a} {&gt;} {|} {d} ]</code></pre></figure>
 
-Sometimes it happens that arguments to the program are not separated by spaces but
-e.g. by commas. By default `xargs` treats 
-[whitespace](https://en.wikipedia.org/wiki/Whitespace_character) 
+<p>NOTE: Here I used single quotes to escape special characters in echo command, 
+but you may also use backslash e.g. <code class="highlighter-rouge">\&gt;</code>.</p>
+
+<h5 id="custom-argument-separator-delimiter">Custom argument separator (delimiter)</h5>
+
+<p>Sometimes it happens that arguments to the program are not separated by spaces but
+e.g. by commas. By default <code class="highlighter-rouge">xargs</code> treats 
+<a href="https://en.wikipedia.org/wiki/Whitespace_character">whitespace</a> 
 as argument separators but this can
-be changed by using `-d` option:
-{% highlight no-highlight %}
-$ echo foo,bar,nyu | xargs ./showargs 
+be changed by using <code class="highlighter-rouge">-d</code> option:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ echo foo,bar,nyu | xargs ./showargs 
 [ {foo,bar,nyu} ]
 
 $ echo foo,bar,nyu | xargs -d, ./showargs 
@@ -887,48 +978,47 @@ $ echo foo,bar,nyu | head -c -1 | xargs -d, ./showargs
 [ {foo} {bar} {nyu} ]
 
 $ echo foo,bar,,nyu | head -c -1 | xargs -d, ./showargs 
-[ {foo} {bar} {} {nyu} ]
-{% endhighlight %}
-Now `xargs` splits arguments on `,` character but we have encountered another problem.
-When we split arguments on `,` the last newline is treated as part of the last argument.
-We can fix this by preventing `echo` from printing newline with `-n` option, but this can
+[ {foo} {bar} {} {nyu} ]</code></pre></figure>
+
+<p>Now <code class="highlighter-rouge">xargs</code> splits arguments on <code class="highlighter-rouge">,</code> character but we have encountered another problem.
+When we split arguments on <code class="highlighter-rouge">,</code> the last newline is treated as part of the last argument.
+We can fix this by preventing <code class="highlighter-rouge">echo</code> from printing newline with <code class="highlighter-rouge">-n</code> option, but this can
 be a problem when we get input from a file. If we are sure that file always ends
-with a newline we may truncate it using `head -c -1` command, that will print
-all characters of standard input except last.
+with a newline we may truncate it using <code class="highlighter-rouge">head -c -1</code> command, that will print
+all characters of standard input except last.</p>
 
-It's worth to notice that when we use nonstandard separators arguments can contain spaces:
-{% highlight no-highlight %}
-$ echo -n foo,bar a la baz,nya | xargs -d, ./showargs 
-[ {foo} {bar a la baz} {nya} ]
-{% endhighlight %}
+<p>It’s worth to notice that when we use nonstandard separators arguments can contain spaces:</p>
 
-Often we want to pass entire line from file as a single argument, we may easily
-achive this with `xargs` by using newline as argument separator:
-{% highlight no-highlight %}
-$ cat example 
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ echo -n foo,bar a la baz,nya | xargs -d, ./showargs 
+[ {foo} {bar a la baz} {nya} ]</code></pre></figure>
+
+<p>Often we want to pass entire line from file as a single argument, we may easily
+achive this with <code class="highlighter-rouge">xargs</code> by using newline as argument separator:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cat example 
 /foo/bar/file with space
 /other-file
 /dir with space/file
 
 $ cat example | xargs -d\\n ./showargs 
-[ {/foo/bar/file with space} {/other-file} {/dir with space/file} ]
-{% endhighlight %}
-NOTE: Here we used `\\` to escape `\` character in the shell, we may also use single quotes
-as in `-d'\n'`
+[ {/foo/bar/file with space} {/other-file} {/dir with space/file} ]</code></pre></figure>
 
-WARNING: Filenames in Unix can contain newline characters. Use this trick
-only when you are sure that filenames in input file will not contain newlines.
+<p>NOTE: Here we used <code class="highlighter-rouge">\\</code> to escape <code class="highlighter-rouge">\</code> character in the shell, we may also use single quotes
+as in <code class="highlighter-rouge">-d'\n'</code></p>
 
-##### Executing command per argument or per line of input
+<p>WARNING: Filenames in Unix can contain newline characters. Use this trick
+only when you are sure that filenames in input file will not contain newlines.</p>
 
-`xargs` have two modes of operation. We already know one of them: gather all arguments
+<h5 id="executing-command-per-argument-or-per-line-of-input">Executing command per argument or per line of input</h5>
+
+<p><code class="highlighter-rouge">xargs</code> have two modes of operation. We already know one of them: gather all arguments
 and execute command. The other is to execute command per argument of per line of input,
 as illustrated below:
-![xargs 2nd mode of operation](assets/images/2016-07-09/xargs_many.svg)
+<img src="assets/images/2016-07-09/xargs_many.svg" alt="xargs 2nd mode of operation" /></p>
 
-We may execute command per fixed number of arguments by using `-n` option:
-{% highlight no-highlight %}
-$ echo a b c d | xargs -n1 ./showargs 
+<p>We may execute command per fixed number of arguments by using <code class="highlighter-rouge">-n</code> option:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ echo a b c d | xargs -n1 ./showargs 
 [ {a} ]
 [ {b} ]
 [ {c} ]
@@ -940,16 +1030,16 @@ $ echo a b c d | xargs -n2 ./showargs
 
 $ echo a b c d | xargs -n3 ./showargs 
 [ {a} {b} {c} ]
-[ {d} ]
-{% endhighlight %}
-As we can see we may specify number of arguments that are needed by command.
+[ {d} ]</code></pre></figure>
 
-WARNING: There may be not enough arguments for the
-last command but `xargs` executes it anyway.
+<p>As we can see we may specify number of arguments that are needed by command.</p>
 
-We may also execute command per fixed number of lines of input using `-L` option:
-{% highlight no-highlight %}
-$ cat example 
+<p>WARNING: There may be not enough arguments for the
+last command but <code class="highlighter-rouge">xargs</code> executes it anyway.</p>
+
+<p>We may also execute command per fixed number of lines of input using <code class="highlighter-rouge">-L</code> option:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cat example 
 arg1 arg2 arg3
 arg4
 arg5 arg6
@@ -961,15 +1051,15 @@ $ cat example | xargs -L1 ./showargs
 
 $ cat example | xargs -L2 ./showargs 
 [ {arg1} {arg2} {arg3} {arg4} ]
-[ {arg5} {arg6} ]
-{% endhighlight %}
-As with `-n` option we must be careful when we execute command per more than one line 
-of input because last command may not get
-all needed arguments.
+[ {arg5} {arg6} ]</code></pre></figure>
 
-I personally find `-L1` option very useful but it doesn't work well with `-d` option.
-{% highlight no-highlight %}
-$ cat example 
+<p>As with <code class="highlighter-rouge">-n</code> option we must be careful when we execute command per more than one line 
+of input because last command may not get
+all needed arguments.</p>
+
+<p>I personally find <code class="highlighter-rouge">-L1</code> option very useful but it doesn’t work well with <code class="highlighter-rouge">-d</code> option.</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cat example 
 arg1,"arg2 bar",arg3
 arg4
 arg5,arg6,arg7
@@ -987,30 +1077,30 @@ arg5} ]
 $ cat example | tr ',' ' ' |  xargs -L1 ./showargs 
 [ {arg1} {arg2 bar} {arg3} ]
 [ {arg4} ]
-[ {arg5} {arg6} {arg7} ]
-{% endhighlight %}
-Here we used `tr` utility to convert `,` into spaces so we can avoid using `-d,` option.
-As we can see `xargs` preserved spaces in arguments surrounded by double quotes (this
-works with single quotes too).
+[ {arg5} {arg6} {arg7} ]</code></pre></figure>
 
-##### Passing additional argument to the command
+<p>Here we used <code class="highlighter-rouge">tr</code> utility to convert <code class="highlighter-rouge">,</code> into spaces so we can avoid using <code class="highlighter-rouge">-d,</code> option.
+As we can see <code class="highlighter-rouge">xargs</code> preserved spaces in arguments surrounded by double quotes (this
+works with single quotes too).</p>
 
-Sometimes we need to provide additional arguments to `xargs` command, we may do this
-in a very simple way:
-{% highlight no-highlight %}
-$ echo a b c d | xargs ./showargs 
+<h5 id="passing-additional-argument-to-the-command">Passing additional argument to the command</h5>
+
+<p>Sometimes we need to provide additional arguments to <code class="highlighter-rouge">xargs</code> command, we may do this
+in a very simple way:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ echo a b c d | xargs ./showargs 
 [ {a} {b} {c} {d} ]
 
 $ echo a b c d | xargs ./showargs --long-arg -s
-[ {--long-arg} {-s} {a} {b} {c} {d} ]
-{% endhighlight %}
-But what if our command expects arguments in format:
-{% highlight no-highlight %}
-some-command --input input-file --output output-file
-{% endhighlight %}
-To work with command like that we must use `xargs` `-I` option:
-{% highlight no-highlight %}
-$ cat example
+[ {--long-arg} {-s} {a} {b} {c} {d} ]</code></pre></figure>
+
+<p>But what if our command expects arguments in format:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">some-command --input input-file --output output-file</code></pre></figure>
+
+<p>To work with command like that we must use <code class="highlighter-rouge">xargs</code> <code class="highlighter-rouge">-I</code> option:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cat example
 /file1
 /file with spaces
 /file3
@@ -1018,23 +1108,22 @@ $ cat example
 $ cat example | xargs -I{} ./showargs --input {} --output {}.processed
 [ {--input} {/file1} {--output} {/file1.processed} ]
 [ {--input} {/file with spaces} {--output} {/file with spaces.processed} ]
-[ {--input} {/file3} {--output} {/file3.processed} ]
-{% endhighlight %}
-After `-I` we must provide placeholder string that will be replaced by actual
-command arguments. People usually use `{}` but we may use any string:
-{% highlight no-highlight %}
-$ cat example | xargs -Ifoo ./showargs --input foo --output foo.processed
-{% endhighlight %}
+[ {--input} {/file3} {--output} {/file3.processed} ]</code></pre></figure>
 
-`-I` option is really useful but it doesn't work with `-n` option, so if you plan to use
-`-I` you must process input line by line.
+<p>After <code class="highlighter-rouge">-I</code> we must provide placeholder string that will be replaced by actual
+command arguments. People usually use <code class="highlighter-rouge"><span class="p">{}</span></code> but we may use any string:</p>
 
-##### Other useful options
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cat example | xargs -Ifoo ./showargs --input foo --output foo.processed</code></pre></figure>
 
-With `-p` option `xargs` will prompt for user approval
-before executing command:
-{% highlight no-highlight %}
-$ touch file{1..3}
+<p><code class="highlighter-rouge">-I</code> option is really useful but it doesn’t work with <code class="highlighter-rouge">-n</code> option, so if you plan to use
+<code class="highlighter-rouge">-I</code> you must process input line by line.</p>
+
+<h5 id="other-useful-options">Other useful options</h5>
+
+<p>With <code class="highlighter-rouge">-p</code> option <code class="highlighter-rouge">xargs</code> will prompt for user approval
+before executing command:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ touch file{1..3}
 
 $ echo file{1..3}
 file1 file2 file3
@@ -1045,14 +1134,13 @@ rm file2 ?...n
 rm file3 ?...y
         
 $ ls file*
-file2
-{% endhighlight %}
+file2</code></pre></figure>
 
-`-0` or `--null` option is often used with `find` command to avoid problems
+<p><code class="highlighter-rouge">-0</code> or <code class="highlighter-rouge">--null</code> option is often used with <code class="highlighter-rouge">find</code> command to avoid problems
 with filenames that contain spaces or other non alphanumeric characters.
-`-0` option tells `xargs` that `\0` character will be used to separate arguments:
-{% highlight no-highlight %}
-$ touch file\ with\ space
+<code class="highlighter-rouge">-0</code> option tells <code class="highlighter-rouge">xargs</code> that <code class="highlighter-rouge">\0</code> character will be used to separate arguments:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ touch file\ with\ space
 
 $ ls file*
 file with space
@@ -1064,28 +1152,28 @@ $ find -type f -name '*with*' | xargs ./showargs
 [ {./file} {with} {space} ]
 
 $ find -type f -name '*with*' -print0 | xargs -0 ./showargs 
-[ {./file with space} ]
-{% endhighlight %}
-TIP: Always use `-print0` and `-0` options when working with `find`.
+[ {./file with space} ]</code></pre></figure>
 
-The last option that can be really useful is `-P`. This can be used to
-execute commands in parallel:
-{% highlight no-highlight %}
-$ echo {1..9} | tr '[:digit:]' '1'
+<p>TIP: Always use <code class="highlighter-rouge">-print0</code> and <code class="highlighter-rouge">-0</code> options when working with <code class="highlighter-rouge">find</code>.</p>
+
+<p>The last option that can be really useful is <code class="highlighter-rouge">-P</code>. This can be used to
+execute commands in parallel:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ echo {1..9} | tr '[:digit:]' '1'
 1 1 1 1 1 1 1 1 1
 
 # takes 9 seconds
 $ echo {1..9} | tr '[:digit:]' '1' | xargs -n1 sleep
 
 # takes 3 seconds
-$ echo {1..9} | tr '[:digit:]' '1' | xargs -n1 -P4 sleep
-{% endhighlight %}
-By default commands are executed sequentially (`-P1`).
+$ echo {1..9} | tr '[:digit:]' '1' | xargs -n1 -P4 sleep</code></pre></figure>
 
-I wasn't able to describe all `xargs` options, 
-as usually you can find all of them on `xargs` manual page.
+<p>By default commands are executed sequentially (<code class="highlighter-rouge">-P1</code>).</p>
 
-Thanks for reading!
+<p>I wasn’t able to describe all <code class="highlighter-rouge">xargs</code> options, 
+as usually you can find all of them on <code class="highlighter-rouge">xargs</code> manual page.</p>
+
+<p>Thanks for reading!</p>
 
 	  ]]></description>
 	</item>

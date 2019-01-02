@@ -8,6 +8,27 @@
     
       
       <item>
+        <title>Random thoughts on Maybe</title>
+        
+          <description>&lt;p&gt;With functional programming on the rise nowadays, 
+more and more people start using functional 
+patterns in their code.
+One of the simplest patterns is &lt;code class=&quot;highlighter-rouge&quot;&gt;Maybe&amp;lt;T&amp;gt;&lt;/code&gt; monad
+also called &lt;code class=&quot;highlighter-rouge&quot;&gt;Option&amp;lt;T&amp;gt;&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;Optional&amp;lt;T&amp;gt;&lt;/code&gt;.
+&lt;code class=&quot;highlighter-rouge&quot;&gt;Maybe&amp;lt;T&amp;gt;&lt;/code&gt;’s primary use case is to represent a possibly
+missing value.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Tue, 01 Jan 2019 01:00:00 +0100</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//random-thoughts-on-maybe</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//random-thoughts-on-maybe</guid>
+      </item>
+      
+    
+      
+      <item>
         <title>NSubstitute and the search for perfect error messages</title>
         
           <description>&lt;p&gt;Those of us that practice TDD daily already know how important good

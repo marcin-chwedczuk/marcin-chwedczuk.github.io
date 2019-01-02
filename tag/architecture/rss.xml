@@ -12,6 +12,576 @@
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
+	  <title>Random thoughts on Maybe</title>
+	  <link>//random-thoughts-on-maybe</link>
+	  <author>marcin-chwedczuk</author>
+	  <pubDate>2019-01-01T01:00:00+01:00</pubDate>
+	  <guid>//random-thoughts-on-maybe</guid>
+	  <description><![CDATA[
+	     <p>With functional programming on the rise nowadays, 
+more and more people start using functional 
+patterns in their code.
+One of the simplest patterns is <code class="highlighter-rouge">Maybe&lt;T&gt;</code> monad
+also called <code class="highlighter-rouge">Option&lt;T&gt;</code> or <code class="highlighter-rouge">Optional&lt;T&gt;</code>.
+<code class="highlighter-rouge">Maybe&lt;T&gt;</code>’s primary use case is to represent a possibly
+missing value.</p>
+
+<p>I have already use <code class="highlighter-rouge">Maybe&lt;T&gt;</code> a few times in real
+codebases and in this post I want to gather my thoughts
+on <code class="highlighter-rouge">Maybe&lt;T&gt;</code> and how, I think, it should be used.</p>
+
+<h4 id="why-we-use-maybet">Why we use <code class="highlighter-rouge">Maybe&lt;T&gt;</code>?</h4>
+
+<p>Most people that use <code class="highlighter-rouge">Maybe&lt;T&gt;</code> generally fall into
+one of the two categories.</p>
+
+<h5 id="category-1-wants-to-eliminate-nullreferenceexception">Category 1: Wants to eliminate <code class="highlighter-rouge">NullReferenceException</code></h5>
+
+<p>For a long time before <code class="highlighter-rouge">Maybe&lt;T&gt;</code> programmers tried to
+clearly state to the clients of their API that a given
+method may return <code class="highlighter-rouge">null</code> instead of an object.
+Some of them used special naming conventions or 
+comments, for example:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// Naming convention and XML documentation
+// comments in action.
+</span><span class="k">public</span> <span class="k">interface</span> <span class="n">IUserRepository</span> <span class="p">{</span>
+    <span class="c1">/// &lt;returns&gt;
+</span>    <span class="c1">/// Returns &lt;c&gt;null&lt;/c&gt; if user is not found.
+</span>    <span class="c1">/// &lt;/returns&gt;
+</span>    <span class="n">User</span> <span class="nf">FindById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
+
+    <span class="c1">/// &lt;exception cref="EntityNotFound"&gt;
+</span>    <span class="c1">/// If user is not found.
+</span>    <span class="c1">/// &lt;/exception&gt;
+</span>    <span class="n">User</span> <span class="nf">FindRequiredById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Others resorted to using special marking attributes and
+static code analysis tools. 
+A good example of this category is 
+<a href="https://www.nuget.org/packages/JetBrains.Annotations">JetBrains.Annotations</a> package, that can be used together with ReSharper
+to detect missing null checks:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IUserRepository</span> <span class="p">{</span>
+    <span class="p">[</span><span class="n">CanBeNull</span><span class="p">]</span>
+    <span class="n">User</span> <span class="nf">FindById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">interface</span> <span class="n">IUserService</span> <span class="p">{</span>
+    <span class="k">void</span> <span class="nf">ActivateUser</span><span class="p">([</span><span class="n">NotNull</span><span class="p">]</span> <span class="n">User</span> <span class="n">user</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Yet another solution to this problem were 
+<a href="https://www.infoq.com/articles/code-contracts-csharp">Code Contracts</a>
+developed by Microsoft.</p>
+
+<p>None of those solutions is perfect and <code class="highlighter-rouge">Maybe&lt;T&gt;</code> seems
+to offer a better alternative. 
+Why? Because it is checked by the compiler,
+does not require additional tools and does not slow
+down compilation.
+But remember there is 
+<a href="https://en.wikipedia.org/wiki/No_Silver_Bullet">no silver bullet</a>,
+and <code class="highlighter-rouge">Maybe&lt;T&gt;</code> is not perfect either.</p>
+
+<p>We can use <code class="highlighter-rouge">Maybe&lt;T&gt;</code> like this:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IUserRepository</span> <span class="p">{</span>
+    <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="nf">FindById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">// and usage:
+</span><span class="n">var</span> <span class="n">user</span> <span class="p">=</span> <span class="n">usersRepository</span><span class="p">.</span><span class="nf">FindById</span><span class="p">(</span><span class="n">userId</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">user</span><span class="p">.</span><span class="n">HasValue</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nf">Ok</span><span class="p">(</span><span class="n">user</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nf">NotFound</span><span class="p">();</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>If you find yourself in this category of programmers, 
+you would definitely
+want to use a lightweight library that
+does not force you to embrace a more functional style.
+One good library that I can recommend is: 
+<a href="https://github.com/vkhorikov/CSharpFunctionalExtensions">CSharpFunctionalExtensions</a>.</p>
+
+<p>If you choose a different library, please make sure to check
+that <code class="highlighter-rouge">Maybe&lt;T&gt;</code> is implemented using <code class="highlighter-rouge">struct</code>, otherwise you
+may be surprised:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="nf">GetUserAgent</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">null</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>One small downside of using a <code class="highlighter-rouge">struct</code> is
+possibility of declaration of a nullable <code class="highlighter-rouge">Maybe&lt;T&gt;</code> type:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// Don't do this:
+</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;?</span> <span class="n">bad</span><span class="p">;</span></code></pre></figure>
+
+<p>When I was writing this article I tried to gather some
+best practices of using <code class="highlighter-rouge">Maybe&lt;T&gt;</code>. 
+Unfortunately it was very difficult to provide a comprehensive
+list. There is not much material on this on the web (I mean using 
+<code class="highlighter-rouge">Maybe&lt;T&gt;</code> <em>not</em> in the FP fashion) and the available
+material is often contradictory. 
+And so instead of providing you with a list of best practices, 
+I will only give you some hints where you can look for advice.</p>
+
+<p>We should start our search by looking at
+Java 8, which was published in 2014 and introduced 
+<code class="highlighter-rouge">java.util.Optional&lt;T&gt;</code> class. 
+The purpose of this class is to be a nullability marker
+for method results just like our <code class="highlighter-rouge">Maybe&lt;T&gt;</code>. 
+There are a lot of articles about how <code class="highlighter-rouge">Optional&lt;T&gt;</code> should
+and should not be used. 
+A good starting point will be 
+<a href="https://stackoverflow.com/questions/26327957/should-java-8-getters-return-optional-type">this SO question</a>
+with the first two answers. 
+From this question alone we may learn e.g. to never wrap
+a collection into <code class="highlighter-rouge">Maybe&lt;T&gt;</code>, 
+instead of we should return a possibly empty collection.</p>
+
+<p>The downside of reading Java’s best practices is that some
+of them do not apply to C#. For example let’s look at the
+advice given in <a href="https://stackoverflow.com/a/39005452/1779504">this SO answer</a>:</p>
+
+<blockquote>
+  <p>When a method can accept optional parameters, 
+it’s preferable to adopt the well-proven approach 
+and design such case using method overloading.</p>
+</blockquote>
+
+<p>In other words author suggest to change:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// this ctor:
+</span><span class="k">public</span> <span class="nf">SystemMessage</span><span class="p">(</span>
+    <span class="kt">string</span> <span class="n">title</span><span class="p">,</span>
+    <span class="kt">string</span> <span class="n">body</span><span class="p">,</span>
+    <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">Attachment</span><span class="p">&gt;</span> <span class="n">attachment</span><span class="p">);</span>
+
+<span class="c1">// into two ctor's:
+</span><span class="k">public</span> <span class="nf">SystemMessage</span><span class="p">(</span>
+    <span class="kt">string</span> <span class="n">title</span><span class="p">,</span>
+    <span class="kt">string</span> <span class="n">body</span><span class="p">,</span>
+    <span class="n">Attachment</span> <span class="n">attachment</span><span class="p">);</span>
+
+<span class="k">public</span> <span class="nf">SystemMessage</span><span class="p">(</span>
+    <span class="kt">string</span> <span class="n">title</span><span class="p">,</span>
+    <span class="kt">string</span> <span class="n">body</span><span class="p">);</span>
+
+<span class="c1">// Because using these ctor's would be easier for
+// the clients. Consider:
+</span><span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">Attachment</span><span class="p">&gt;.</span><span class="n">None</span><span class="p">)</span>
+<span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> 
+    <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">Attachment</span><span class="p">&gt;.</span><span class="nf">From</span><span class="p">(</span><span class="n">attachment</span><span class="p">))</span>
+<span class="c1">// vs
+</span><span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">);</span>
+<span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> <span class="n">attachment</span><span class="p">);</span></code></pre></figure>
+
+<p>But this argument does not applies to C#, where we can
+use implicit conversion operator with default parameters
+to achieve exactly the same effect without using overloads:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">struct</span> <span class="nc">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="p">{</span> 
+    <span class="k">private</span> <span class="n">T</span> <span class="n">_value</span><span class="p">;</span>
+    <span class="k">private</span> <span class="kt">bool</span> <span class="n">_present</span><span class="p">;</span>
+    
+    <span class="k">public</span> <span class="nf">Maybe</span><span class="p">(</span><span class="n">T</span> <span class="k">value</span><span class="p">)</span> <span class="p">{</span> 
+        <span class="n">_value</span> <span class="p">=</span> <span class="k">value</span><span class="p">;</span>
+        <span class="n">_present</span> <span class="p">=</span> <span class="p">(</span><span class="k">value</span> <span class="p">!=</span> <span class="k">null</span><span class="p">);</span>
+    <span class="p">}</span>
+    
+    <span class="k">public</span> <span class="k">static</span> <span class="k">implicit</span> <span class="k">operator</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">T</span> <span class="k">value</span><span class="p">)</span>
+        <span class="p">=&gt;</span> <span class="k">value</span> <span class="p">==</span> <span class="k">null</span> <span class="p">?</span> <span class="k">new</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;()</span> <span class="p">:</span> <span class="k">new</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="k">value</span><span class="p">);</span> 
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Attachment</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">SystemMessage</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="nf">SystemMessage</span><span class="p">(</span>
+        <span class="kt">string</span> <span class="n">title</span><span class="p">,</span> <span class="kt">string</span> <span class="n">body</span><span class="p">,</span> 
+        <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">Attachment</span><span class="p">&gt;</span> <span class="n">attachment</span> <span class="p">=</span> <span class="k">default</span><span class="p">(</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="n">Attachment</span><span class="p">&gt;))</span> <span class="p">{</span> 
+    <span class="p">}</span>
+<span class="p">}</span>   
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Program</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">()</span> <span class="p">{</span> 
+        <span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">);</span>
+        <span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> <span class="k">new</span> <span class="nf">Attachment</span><span class="p">());</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>As we can see every Java’ish advice must be taken with 
+a grain of salt.</p>
+
+<p>Fortunately for us there is more and more C# posts about
+using <code class="highlighter-rouge">Maybe&lt;T&gt;</code>. For example <a href="https://enterprisecraftsmanship.com/2015/03/13/functional-c-non-nullable-reference-types/">this one</a>
+from the author of CSharpFunctionalExtensions library.</p>
+
+<p>Although I cannot provide you with a list of best practices,
+I think I have gathered enough experience to provide
+you with a list of <code class="highlighter-rouge">Maybe&lt;T&gt;</code> code smells:</p>
+
+<ul>
+  <li>Nested <code class="highlighter-rouge">Maybe</code>s are wrong, for example <code class="highlighter-rouge">Maybe&lt;Maybe&lt;string&gt;&gt;</code>.
+ Usually this is a sign that you should replace one of
+ <code class="highlighter-rouge">Map</code> calls by a <code class="highlighter-rouge">FlatMap</code> (alternatively a <code class="highlighter-rouge">Select</code> by a <code class="highlighter-rouge">SelectMany</code> call).</li>
+  <li><code class="highlighter-rouge">Maybe</code>s that wrap collections are wrong, for example <code class="highlighter-rouge">Maybe&lt;List&lt;User&gt;&gt;</code>.
+ Instead return a non-empty or empty collection.</li>
+  <li><code class="highlighter-rouge">Maybe</code>s wrapping nullable types are wrong, for example <code class="highlighter-rouge">Maybe&lt;int?&gt;</code>.
+ Instead convert nullable type <code class="highlighter-rouge">T?</code> to <code class="highlighter-rouge">Maybe&lt;T&gt;</code>. 
+ Even if you chosen library does not support such conversion out of 
+ the box, you may write an extension method that provides this functionality
+ yourself:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">static</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">ToMaybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="k">this</span> <span class="n">T</span><span class="p">?</span> <span class="k">value</span><span class="p">)</span>
+        <span class="n">where</span> <span class="n">T</span><span class="p">:</span> <span class="k">struct</span>
+    <span class="err">=&gt;</span> <span class="nc">value</span><span class="p">.</span><span class="n">HasValue</span> <span class="p">?</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;.</span><span class="nf">From</span><span class="p">(</span><span class="k">value</span><span class="p">.</span><span class="n">Value</span><span class="p">)</span> <span class="p">:</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;.</span><span class="n">None</span><span class="p">;</span></code></pre></figure>
+
+<ul>
+  <li>Nested callbacks when using <code class="highlighter-rouge">Maybe&lt;T&gt;</code> fluent interface are wrong.
+ For example:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// BAD Fluent interface spaghetti
+</span><span class="n">var</span> <span class="n">cultureBad</span> <span class="p">=</span> <span class="n">user</span><span class="p">.</span><span class="nf">Select</span><span class="p">(</span>
+    <span class="n">u</span> <span class="p">=&gt;</span> <span class="nf">LoadPreferences</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">Select</span><span class="p">(</span><span class="n">prefs</span> <span class="p">=&gt;</span> <span class="n">prefs</span><span class="p">.</span><span class="n">Culture</span><span class="p">));</span>
+
+<span class="c1">// GOOD, only one operation per Select method call
+</span><span class="n">var</span> <span class="n">cultureGood</span> <span class="p">=</span> <span class="n">user</span>
+    <span class="p">.</span><span class="nf">Select</span><span class="p">(</span><span class="n">u</span> <span class="p">=&gt;</span> <span class="nf">LoadPreferences</span><span class="p">(</span><span class="n">u</span><span class="p">))</span>
+    <span class="p">.</span><span class="nf">Select</span><span class="p">(</span><span class="n">prefs</span> <span class="p">=&gt;</span> <span class="n">prefs</span><span class="p">.</span><span class="n">Culture</span><span class="p">);</span></code></pre></figure>
+
+<p>Also be mindful when using <code class="highlighter-rouge">Maybe&lt;T&gt;</code> with properties.
+A declaration like:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">Culture</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span></code></pre></figure>
+
+<p>Means that you may both get and set an optional value.
+In other words assignment of <code class="highlighter-rouge">None</code> value to this 
+property should be valid:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">foo</span><span class="p">.</span><span class="n">Culture</span> <span class="p">=</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;.</span><span class="n">None</span><span class="p">;</span></code></pre></figure>
+
+<p>A property that can return <code class="highlighter-rouge">None</code> but must be
+set to some value should be split into a getter and a method:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// AVOID:
+</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">Culture</span> <span class="p">{</span>
+    <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;.</span><span class="nf">From</span><span class="p">(</span><span class="n">_culture</span><span class="p">);</span> <span class="p">}</span>
+    <span class="k">set</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">value</span><span class="p">.</span><span class="n">HasNoValue</span><span class="p">)</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentException</span><span class="p">(</span><span class="s">"Culture cannot be empty."</span><span class="p">);</span>
+        <span class="n">_culture</span> <span class="p">=</span> <span class="k">value</span><span class="p">.</span><span class="n">Value</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// PREFER:
+</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">Culture</span>
+    <span class="p">=&gt;</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;.</span><span class="nf">From</span><span class="p">(</span><span class="n">_culture</span><span class="p">);</span>
+
+<span class="k">void</span> <span class="nf">SetCulture</span><span class="p">(</span><span class="kt">string</span> <span class="n">culture</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">culture</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentException</span><span class="p">(</span><span class="s">"Culture cannot be empty."</span><span class="p">);</span>
+    <span class="n">_culture</span> <span class="p">=</span> <span class="n">culture</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>As you probably heard C# 8.0 is going to introduce a nullable reference types (NRT).
+Will NRT replace <code class="highlighter-rouge">Maybe&lt;T&gt;</code>?
+For “Category 1” programmers, NRTs offer a better
+alternative to <code class="highlighter-rouge">Maybe&lt;T&gt;</code>. On the other hand a lot of people
+that start in “Category 1”, slowly begin to embrace more FP approach.
+Usually people start by using <code class="highlighter-rouge">Maybe&lt;T&gt;</code> fluent interface to transform
+one <code class="highlighter-rouge">Maybe&lt;T&gt;</code> value into another. After some time they take a leap and
+switch to writing in a more functional fashion.</p>
+
+<p>We may also take a look at <a href="https://kotlinlang.org/">Kotlin</a>,
+a language created by JetBrains that from the very beginning 
+<a href="https://kotlinlang.org/docs/reference/null-safety.html">offered nullable reference types</a>. 
+And yet the most popular Kotlin functional library
+<a href="https://github.com/MarioAriasC/funKTionale">funKTionale</a> 
+still offers an <code class="highlighter-rouge">Option</code> type. 
+So it looks like NRT or not, <code class="highlighter-rouge">Maybe&lt;T&gt;</code> is going to stay with us for sure.</p>
+
+<h5 id="category-2-wants-to-embrace-fp-paradigm">Category 2: Wants to embrace FP paradigm</h5>
+
+<p>Programmers belonging to this category embraced FP. They
+often think about using F# at work and are a bit disappointed
+by poor C# pattern matching facilities.</p>
+
+<p>Code written in FP fashion will never use <code class="highlighter-rouge">if</code> to check
+if <code class="highlighter-rouge">Maybe&lt;T&gt;</code> contains some value, instead a fluent interface
+will be used to transform <code class="highlighter-rouge">Maybe&lt;T&gt;</code>s into some other values, for example:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">private</span> <span class="n">UserRepository</span> <span class="n">_userRepository</span><span class="p">;</span>
+
+<span class="c1">// NOTICE: No if's in code
+</span><span class="k">public</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="nf">GetUserCulture</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span>
+    <span class="p">=&gt;</span> <span class="n">_userRepository</span><span class="p">.</span><span class="nf">FindById</span><span class="p">(</span><span class="n">userId</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">BiMap</span><span class="p">(</span>
+            <span class="n">Some</span><span class="p">:</span> <span class="n">user</span> <span class="p">=&gt;</span> <span class="nf">GetUserCulture</span><span class="p">(</span><span class="n">user</span><span class="p">),</span>
+            <span class="n">None</span><span class="p">:</span> <span class="n">_</span> <span class="p">=&gt;</span> <span class="k">null</span><span class="p">);</span>
+
+<span class="k">public</span> <span class="k">static</span> <span class="kt">string</span> <span class="nf">GetUserCulture</span><span class="p">(</span><span class="n">User</span> <span class="n">user</span><span class="p">)</span>
+    <span class="p">=&gt;</span> <span class="n">user</span><span class="p">.</span><span class="n">Preferences</span>    
+            <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">prefs</span> <span class="p">=&gt;</span> <span class="n">prefs</span><span class="p">.</span><span class="n">Culture</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">IfNone</span><span class="p">(</span><span class="s">"en-US"</span><span class="p">);</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">UserRepository</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="n">_users</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="p">{</span>
+        <span class="k">new</span> <span class="nf">User</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="k">null</span><span class="p">),</span>
+        <span class="k">new</span> <span class="nf">User</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="k">new</span> <span class="n">UserPreferences</span> <span class="p">{</span>
+            <span class="n">Culture</span> <span class="p">=</span> <span class="s">"pl-PL"</span>
+        <span class="p">})</span>
+    <span class="p">};</span>
+
+    <span class="c1">// NOTICE: Extra extension methods for IEnumerable&lt;T&gt;
+</span>    <span class="c1">// that return Option&lt;T&gt; instead of null's.
+</span>    <span class="k">public</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="nf">FindById</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">_users</span><span class="p">.</span><span class="nf">Find</span><span class="p">(</span><span class="n">u</span> <span class="p">=&gt;</span> <span class="n">u</span><span class="p">.</span><span class="n">UserId</span> <span class="p">==</span> <span class="n">userId</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">User</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">UserId</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+
+    <span class="k">private</span> <span class="n">UserPreferences</span> <span class="n">_preferences</span><span class="p">;</span>
+    <span class="k">public</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">UserPreferences</span><span class="p">&gt;</span> <span class="n">Preferences</span>
+        <span class="p">=&gt;</span> <span class="nf">Optional</span><span class="p">(</span><span class="n">_preferences</span><span class="p">);</span>
+
+    <span class="k">public</span> <span class="nf">User</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">,</span> <span class="n">UserPreferences</span> <span class="n">preferences</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">UserId</span> <span class="p">=</span> <span class="n">userId</span><span class="p">;</span>
+        <span class="n">_preferences</span> <span class="p">=</span> <span class="n">preferences</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">UserPreferences</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Culture</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Alternatively we may change our previous method to:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">static</span> <span class="kt">string</span> <span class="nf">GetUserCulture2</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span>
+    <span class="p">=&gt;</span> <span class="n">_userRepository</span><span class="p">.</span><span class="nf">FindById</span><span class="p">(</span><span class="n">userId</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">Bind</span><span class="p">(</span><span class="n">user</span> <span class="p">=&gt;</span> <span class="n">user</span><span class="p">.</span><span class="n">Preferences</span><span class="p">)</span> <span class="c1">// FlatMap
+</span>        <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">prefs</span> <span class="p">=&gt;</span> <span class="n">prefs</span><span class="p">.</span><span class="n">Culture</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">IfNone</span><span class="p">(</span><span class="s">"en-US"</span><span class="p">);</span> <span class="p">//</span> <span class="k">default</span> <span class="n">culture</span></code></pre></figure>
+
+<p>The only difference between these two methods
+is the value returned for users not present in the repository.
+<code class="highlighter-rouge">GetUserCulture</code> returns for them <code class="highlighter-rouge">None()</code> but <code class="highlighter-rouge">GetUserCulture2</code>
+returns a default culture (<code class="highlighter-rouge">Some("en-US")</code>).</p>
+
+<p>Another sign of a functional design, is that monads like <code class="highlighter-rouge">Maybe&lt;T&gt;</code>
+will be unpacked only on the outskirts of the application.
+For example in a typical RESTful service, <code class="highlighter-rouge">Maybe&lt;T&gt;</code> value will 
+be unpacked only in the controller:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// GET /user/{userId}/culture
+</span><span class="k">public</span> <span class="n">IActionResult</span> <span class="nf">Get</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// WARNING: In real apps do not return bare strings 
+</span>    <span class="c1">// from the REST api. 
+</span>    <span class="c1">// Always wrap them in DTOs / ViewModels / QueryResponses.
+</span>    <span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">culture</span> <span class="p">=</span> <span class="nf">GetUserCulture</span><span class="p">();</span>
+    <span class="k">return</span> <span class="nf">Maybe</span><span class="p">(</span><span class="n">culture</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Presumably in the base controller
+</span><span class="k">public</span> <span class="n">IActionResult</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">m</span><span class="p">)</span>
+    <span class="p">=&gt;</span> <span class="n">m</span><span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="k">value</span> <span class="p">=&gt;</span> <span class="nf">Ok</span><span class="p">(</span><span class="k">value</span><span class="p">))</span>
+        <span class="p">.</span><span class="nf">IfNone</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nf">NotFound</span><span class="p">());</span></code></pre></figure>
+
+<p>In this category of programmers there is also a small group
+of zealots, that in my opinion go a little bit to far in their cult of monads. 
+They propose to use LINQ query syntax to transform monads.
+Let my explain this using an example:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// We want to sum three Option&lt;int&gt; values.
+</span><span class="k">private</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="p">=&gt;</span> <span class="m">3</span><span class="p">;</span>
+
+<span class="c1">// Using fluent interface:
+</span><span class="n">var</span> <span class="n">sum</span> <span class="p">=</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="p">.</span><span class="nf">SelectMany</span><span class="p">(</span><span class="n">_</span> <span class="p">=&gt;</span> <span class="nf">GetOptionalInt</span><span class="p">(),</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">a</span><span class="p">+</span><span class="n">b</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">SelectMany</span><span class="p">(</span><span class="n">_</span> <span class="p">=&gt;</span> <span class="nf">GetOptionalInt</span><span class="p">(),</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">a</span><span class="p">+</span><span class="n">b</span><span class="p">);</span>
+
+<span class="c1">// Using LINQ query:
+</span><span class="n">var</span> <span class="n">sum2</span> <span class="p">=</span>  <span class="n">from</span> <span class="n">n1</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+            <span class="n">from</span> <span class="n">n2</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+            <span class="n">from</span> <span class="n">n3</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+            <span class="n">select</span> <span class="n">n1</span><span class="p">+</span><span class="n">n2</span><span class="p">+</span><span class="n">n3</span><span class="p">;</span></code></pre></figure>
+
+<p>I must admin that LINQ query offers some advantages like
+ability to use <code class="highlighter-rouge">let</code> and <code class="highlighter-rouge">where</code> keywords. Also some transformations
+may be easier to express using LINQ query syntax, for example:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">sum2</span> <span class="p">=</span>  
+    <span class="n">from</span> <span class="n">n1</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="n">from</span> <span class="n">n2</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="n">from</span> <span class="n">n3</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="n">let</span> <span class="n">max</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
+    <span class="n">let</span> <span class="n">min</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
+    <span class="n">where</span> <span class="n">min</span> <span class="p">!=</span> <span class="m">0</span>
+    <span class="n">select</span> <span class="n">max</span> <span class="p">/</span> <span class="n">min</span><span class="p">;</span></code></pre></figure>
+
+<p>Yet in my opinion fluent interface is in 90% of cases 
+a more readable and understandable way 
+to transform <code class="highlighter-rouge">Maybe&lt;T&gt;</code>s and other monads.
+For example we may rewrite the last code snippet to:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">res</span> <span class="p">=</span> <span class="nf">Combine</span><span class="p">(</span>
+        <span class="nf">GetOptionalInt</span><span class="p">(),</span>
+        <span class="nf">GetOptionalInt</span><span class="p">(),</span>
+        <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">nnn</span> <span class="p">=&gt;</span> <span class="p">{</span>
+        <span class="p">(</span><span class="n">var</span> <span class="n">n1</span><span class="p">,</span> <span class="n">var</span> <span class="n">n2</span><span class="p">,</span> <span class="n">var</span> <span class="n">n3</span><span class="p">)</span> <span class="p">=</span> <span class="n">nnn</span><span class="p">;</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="p">{</span> 
+            <span class="n">Max</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">)),</span>
+            <span class="n">Min</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
+        <span class="p">};</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="nf">Filter</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="n">m</span><span class="p">.</span><span class="n">Min</span> <span class="p">!=</span> <span class="m">0</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="n">m</span><span class="p">.</span><span class="n">Max</span> <span class="p">/</span> <span class="n">m</span><span class="p">.</span><span class="n">Min</span><span class="p">);</span>
+
+<span class="c1">// We need a few utils
+</span><span class="k">private</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;(</span><span class="n">T</span><span class="p">,</span><span class="n">T</span><span class="p">)&gt;</span> <span class="n">Combine</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">Option</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">a</span><span class="p">,</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">b</span><span class="p">)</span>
+    <span class="p">=&gt;</span> <span class="n">a</span><span class="p">.</span><span class="nf">SelectMany</span><span class="p">(</span>
+            <span class="n">_</span> <span class="p">=&gt;</span> <span class="n">b</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">aValue</span><span class="p">,</span> <span class="n">bValue</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">(</span><span class="n">aValue</span><span class="p">,</span> <span class="n">bValue</span><span class="p">));</span>
+
+<span class="k">private</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;(</span><span class="n">T</span><span class="p">,</span><span class="n">T</span><span class="p">,</span><span class="n">T</span><span class="p">)&gt;</span> <span class="n">Combine</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">Option</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">a</span><span class="p">,</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">b</span><span class="p">,</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">c</span><span class="p">)</span>
+    <span class="p">=&gt;</span> <span class="nf">Combine</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">SelectMany</span><span class="p">(</span>
+            <span class="n">_</span> <span class="p">=&gt;</span> <span class="n">c</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">cValue</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">(</span><span class="n">tt</span><span class="p">.</span><span class="n">Item1</span><span class="p">,</span> <span class="n">tt</span><span class="p">.</span><span class="n">Item2</span><span class="p">,</span> <span class="n">cValue</span><span class="p">));</span></code></pre></figure>
+
+<p>Not as pretty as LINQ query but still readable.</p>
+
+<p>At the end of the day consistency is what matters on real
+projects. Choose one style and follow it consistently.</p>
+
+<p>In this category we find libraries like 
+<a href="https://github.com/louthy/language-ext">LanguageExt</a>.
+This library has many flaws but still it is the best 
+functional library on the market. 
+My biggest disappointment with LanguageExt is poor documentation,
+which basically consists of just a list of functions without any guidelines how
+this library should be used and how it affects overall architecture.
+Compare this with <a href="https://www.vavr.io/vavr-docs/">Vavr</a>
+(the most popular FP library for JVM) and you can clearly
+see the difference.</p>
+
+<p>If you decided that you want to use FP in you code, you
+should definitively check awesome
+<a href="https://fsharpforfunandprofit.com/rop/">Railway oriented programming</a>
+talk.</p>
+
+<p><code class="highlighter-rouge">Maybe&lt;T&gt;</code> is not the only monad that is popular, other
+frequently used one is <code class="highlighter-rouge">Either&lt;L,R&gt;</code>. 
+<code class="highlighter-rouge">Either&lt;L,R&gt;</code> is used to represent either a result of computation or an error.
+You may think of <code class="highlighter-rouge">Either&lt;L,R&gt;</code> as a functional response to exceptions.
+If you want to use <code class="highlighter-rouge">Maybe&lt;T&gt;</code> efficiently, you must learn 
+how it can be transformed it into other monads, in particular into <code class="highlighter-rouge">Either&lt;L,R&gt;</code>.
+E.g. we may make our last example more robust if we provide
+information to the user why the computation failed:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">result</span> <span class="p">=</span> <span class="nf">Combine</span><span class="p">(</span>
+    <span class="nf">GetOptionalInt</span><span class="p">(),</span>
+    <span class="nf">GetOptionalInt</span><span class="p">(),</span>
+    <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">ttt</span> <span class="p">=&gt;</span> <span class="p">{</span>
+        <span class="p">(</span><span class="n">var</span> <span class="n">n1</span><span class="p">,</span> <span class="n">var</span> <span class="n">n2</span><span class="p">,</span> <span class="n">var</span> <span class="n">n3</span><span class="p">)</span> <span class="p">=</span> <span class="n">ttt</span><span class="p">;</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="p">{</span> 
+            <span class="n">Max</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">)),</span>
+            <span class="n">Min</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
+        <span class="p">};</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="nf">ToEither</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nf">Error</span><span class="p">(</span><span class="s">"Not all values are available."</span><span class="p">))</span>
+    <span class="p">.</span><span class="nf">Bind</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="nf">Divide</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">Max</span><span class="p">,</span> <span class="n">m</span><span class="p">.</span><span class="n">Min</span><span class="p">));</span> <span class="c1">// FlatMap
+</span>
+<span class="n">Either</span><span class="p">&lt;</span><span class="n">Error</span><span class="p">,</span> <span class="kt">int</span><span class="p">&gt;</span> <span class="nf">Divide</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">b</span> <span class="p">==</span> <span class="m">0</span><span class="p">)</span> <span class="k">return</span> <span class="nf">Left</span><span class="p">(</span><span class="nf">Error</span><span class="p">(</span><span class="s">"Cannot divide by zero"</span><span class="p">));</span>
+    <span class="k">return</span> <span class="nf">Right</span><span class="p">(</span><span class="n">a</span> <span class="p">/</span> <span class="n">b</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Helper classes:
+</span><span class="k">public</span> <span class="k">class</span> <span class="nc">Error</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Message</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+
+    <span class="k">public</span> <span class="nf">Error</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">Message</span> <span class="p">=</span> <span class="n">message</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="nf">ToString</span><span class="p">()</span>
+        <span class="p">=&gt;</span> <span class="err">$</span><span class="s">"Error({Message})"</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">ErrorHelpers</span> <span class="p">{</span>
+    <span class="c1">// For `using static` import...
+</span>    <span class="k">public</span> <span class="k">static</span> <span class="n">Error</span> <span class="nf">Error</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">)</span>
+        <span class="p">=&gt;</span> <span class="k">new</span> <span class="nf">Error</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Since FP is on the rise, you will find a lot of books, blogs, podcasts
+and MOOC’s about using FP in C#. Also .NET has amazing F# community
+that is very welcoming to the beginners.
+One of the best blogs about FP in C# is in my opinion
+<a href="http://blog.ploeh.dk/archive/">Mark Seemann blog</a>.</p>
+
+<h4 id="what-to-do-with-none">What to do with None?</h4>
+
+<p>How much value you will be able to extract from <code class="highlighter-rouge">Maybe&lt;T&gt;</code> depends on
+your attitude towards <code class="highlighter-rouge">None</code>s. 
+Every time when you have to handle <code class="highlighter-rouge">None</code>, you must decide if it is 
+the result of 
+<a href="https://www.quora.com/What-are-essential-and-accidental-complexity">the accidental complexity</a>
+e.g. someone passed a wrong id to the REST API) 
+or if you just discovered a new edge case in your domain.</p>
+
+<p>To better understand the problem let’s follow an imaginary example.
+Joe must write a simple function that will
+send an email message to all users whose subscriptions will end in the next month.
+During implementation Joe notices that <code class="highlighter-rouge">EmailAddress</code> field in <code class="highlighter-rouge">User</code> entity 
+is declared as <code class="highlighter-rouge">Option&lt;Email&gt;</code>:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">User</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">Email</span><span class="p">&gt;</span> <span class="n">EmailAddress</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+    <span class="c1">// ...
+</span><span class="p">}</span></code></pre></figure>
+
+<p>Now Joe knows that for some strange reason not all users have email addresses.
+Joe logs into production DB to confirm that some email addresses are missing 
+and indeed they are. Looks like Joe just discovered a new edge case.
+Joe goes to Mark a business analyst to describe the problem. Mark is a long
+timer in the company and knows that for a short period of time users
+were able to log into the platform using their phone numbers instead of emails.
+A new solution is created. Users that have no email address will receive 
+a text message instead of an email. Also users without email will be asked to
+enter their email address next time they log into the platform. Success!</p>
+
+<p>On the other hand consider what will happen if Joe just
+dig out the email address from <code class="highlighter-rouge">Maybe&lt;T&gt;</code> by accessing <code class="highlighter-rouge">Value</code> or if he just
+log a warning about missing email address 
+without telling anyone from the business side?</p>
+
+<h5 id="end-of-the-part-i">End of the part I</h5>
+
+<p>Soon I will write a follow up to this post in which 
+we will try to implement a perfect <code class="highlighter-rouge">Maybe&lt;T&gt;</code> type on our own and we will see
+that it is not an easy task in C#.</p>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
 	  <title>NSubstitute and the search for perfect error messages</title>
 	  <link>//nsubstitute-and-the-search-for-perfect-error-messages</link>
 	  <author>marcin-chwedczuk</author>
@@ -387,112 +957,116 @@ the solution presented in <code class="highlighter-rouge">Catching_argument_and_
 	  <pubDate>2018-12-12T01:00:00+01:00</pubDate>
 	  <guid>//inheritance-just-say-no</guid>
 	  <description><![CDATA[
-	     Recently during a code review I have found the following piece
-of code:
-{% highlight csharp %}
-public class TemplateCache 
-    : ConcurrentDictionary<TemplateName, Template> { }
-{% endhighlight %}
-Here the programmer broke one of the most fundamental principles
-of modern object oriented programming:
+	     <p>Recently during a code review I have found the following piece
+of code:</p>
 
-> Prefer composition over inheritance
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">TemplateCache</span> 
+    <span class="p">:</span> <span class="n">ConcurrentDictionary</span><span class="p">&lt;</span><span class="n">TemplateName</span><span class="p">,</span> <span class="n">Template</span><span class="p">&gt;</span> <span class="p">{</span> <span class="p">}</span></code></pre></figure>
 
-Why inheritance is bad in most of the cases? Here are the reasons:
+<p>Here the programmer broke one of the most fundamental principles
+of modern object oriented programming:</p>
 
-###### Watered down component API
+<blockquote>
+  <p>Prefer composition over inheritance</p>
+</blockquote>
 
-What methods would you expect on a cache? Something that gets
+<p>Why inheritance is bad in most of the cases? Here are the reasons:</p>
+
+<h6 id="watered-down-component-api">Watered down component API</h6>
+
+<p>What methods would you expect on a cache? Something that gets
 values from the cache if they are already there. Let us call 
-this operation `TryGetValue(cacheKey, out value)`. 
+this operation <code class="highlighter-rouge">TryGetValue(cacheKey, out value)</code>. 
 And of course a method to
-add a new or overwrite an existing cache entry, let's call it
-`SetValue(cacheKey, value)`. Do we need more methods on a cache
+add a new or overwrite an existing cache entry, let’s call it
+<code class="highlighter-rouge">SetValue(cacheKey, value)</code>. Do we need more methods on a cache
 from the client point of view? Maybe in the future we will want to
-extend `SetValue` operation to allow client to specify for how
+extend <code class="highlighter-rouge">SetValue</code> operation to allow client to specify for how
 long items added to the cache should be stored? Who knows. 
-But still we would end up with only two operations. 
+But still we would end up with only two operations.</p>
 
-> NOTE A truly generic and reusable cache 
-> is usually slightly more complicated - instead of two
-> we have three methods! For example please see
-> [IMemoryCache](https://github.com/aspnet/Caching/blob/master/src/Microsoft.Extensions.Caching.Abstractions/IMemoryCache.cs) interface.
+<blockquote>
+  <p>NOTE A truly generic and reusable cache 
+is usually slightly more complicated - instead of two
+we have three methods! For example please see
+<a href="https://github.com/aspnet/Caching/blob/master/src/Microsoft.Extensions.Caching.Abstractions/IMemoryCache.cs">IMemoryCache</a> interface.</p>
+</blockquote>
 
-On the other hand if we use inheritance we end up with something 
+<p>On the other hand if we use inheritance we end up with something 
 like this:
-![Cache API when we use inheritance](assets/images/2018-12-12/cache_api.png)
+<img src="assets/images/2018-12-12/cache_api.png" alt="Cache API when we use inheritance" />
 This is much more than we asked for. We actually get operations
-that make no sense for a cache like `IsEmpty`. I mean either an item
+that make no sense for a cache like <code class="highlighter-rouge">IsEmpty</code>. I mean either an item
 that we are looking for is in the cache or it is not - who cares
-if the cache is empty itself? 
+if the cache is empty itself?</p>
 
-I hope that I managed to persuade you that a good component
+<p>I hope that I managed to persuade you that a good component
 API should be small, focused and easy to use. We get none of these 
-if we use inheritance.
+if we use inheritance.</p>
 
-###### Broken encapsulation
+<h6 id="broken-encapsulation">Broken encapsulation</h6>
 
-By using inheritance we are making it clear to the clients of
-our component that it is implemented using `ConcurrentDictionary` class.
+<p>By using inheritance we are making it clear to the clients of
+our component that it is implemented using <code class="highlighter-rouge">ConcurrentDictionary</code> class.
 If we wait long enough we will notice that some of them 
 will start relaying on that knowledge in their code. 
-For example they may use `ContainsKey` method for checking if
+For example they may use <code class="highlighter-rouge">ContainsKey</code> method for checking if
 the cache contains a given entry. 
 What will happen later, when we decide that we want to change 
 the cache implementation and use for example 
-[IMemoryCache](https://dotnetcoretutorials.com/2017/03/05/using-inmemory-cache-net-core/) instead?
+<a href="https://dotnetcoretutorials.com/2017/03/05/using-inmemory-cache-net-core/">IMemoryCache</a> instead?
 Clients of our component will get angry, because
-our new version of the cache  
-introduced a breaking change into their code.
+our new version of the cache<br />
+introduced a breaking change into their code.</p>
 
-Just to sum up: Inheritance both exposes implementation
-details of components and makes evolution of their APIs more difficult.
+<p>Just to sum up: Inheritance both exposes implementation
+details of components and makes evolution of their APIs more difficult.</p>
 
-###### Liskov substitution principle is violated 
+<h6 id="liskov-substitution-principle-is-violated">Liskov substitution principle is violated</h6>
 
-In short some operations that make sense for a dictionary
+<p>In short some operations that make sense for a dictionary
 may not make sense for a cache. For example it makes no
 sense to cache a template that does not exists, yet with
-inheritance we may write:
+inheritance we may write:</p>
 
-{% highlight csharp %}
-var foo = new TemplateName("foo");
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">foo</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">TemplateName</span><span class="p">(</span><span class="s">"foo"</span><span class="p">);</span>
 
-ConcurrentDictionary<TemplateName, Template> dict 
-   = new TemplateCache();
+<span class="n">ConcurrentDictionary</span><span class="p">&lt;</span><span class="n">TemplateName</span><span class="p">,</span> <span class="n">Template</span><span class="p">&gt;</span> <span class="n">dict</span> 
+   <span class="p">=</span> <span class="k">new</span> <span class="nf">TemplateCache</span><span class="p">();</span>
 
-dict.GetOrAdd(foo, (Template)null);
+<span class="n">dict</span><span class="p">.</span><span class="nf">GetOrAdd</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="p">(</span><span class="n">Template</span><span class="p">)</span><span class="k">null</span><span class="p">);</span>
 
-// Ops we have a null template here...
-Console.WriteLine("value is: " + 
-   dict.GetOrAdd(foo, (Template)null));
-{% endhighlight %}
+<span class="c1">// Ops we have a null template here...
+</span><span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"value is: "</span> <span class="p">+</span> 
+   <span class="n">dict</span><span class="p">.</span><span class="nf">GetOrAdd</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="p">(</span><span class="n">Template</span><span class="p">)</span><span class="k">null</span><span class="p">));</span></code></pre></figure>
 
-When we use inheritance we are telling the type system that
-`TemplateCache` *is a* `ConcurrentDictionary`. 
+<p>When we use inheritance we are telling the type system that
+<code class="highlighter-rouge">TemplateCache</code> <em>is a</em> <code class="highlighter-rouge">ConcurrentDictionary</code>. 
 From logical point of view this makes no sense. They are two
 different components that have two different purposes and also
 different usage patterns. 
-They should have nothing in common.
+They should have nothing in common.</p>
 
-> BTW You should avoid putting `null`s into collection classes of any sort.
+<blockquote>
+  <p>BTW You should avoid putting <code class="highlighter-rouge">null</code>s into collection classes of any sort.</p>
+</blockquote>
 
-Let's finish this post by seeing how composition can be used
-to improve our `TemplateCache` component:
-{% highlight csharp %}
-public class TemplateCache {
-  private readonly ConcurrentDictionary<TemplateName, Template> _cache 
-      = new ConcurrentDictionary<TemplateName, Template>();
+<p>Let’s finish this post by seeing how composition can be used
+to improve our <code class="highlighter-rouge">TemplateCache</code> component:</p>
 
-  public bool TryGetTemplate(TemplateName name, out Template template)
-      => _cache.TryGetValue(name, out template);
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">TemplateCache</span> <span class="p">{</span>
+  <span class="k">private</span> <span class="k">readonly</span> <span class="n">ConcurrentDictionary</span><span class="p">&lt;</span><span class="n">TemplateName</span><span class="p">,</span> <span class="n">Template</span><span class="p">&gt;</span> <span class="n">_cache</span> 
+      <span class="p">=</span> <span class="k">new</span> <span class="n">ConcurrentDictionary</span><span class="p">&lt;</span><span class="n">TemplateName</span><span class="p">,</span> <span class="n">Template</span><span class="p">&gt;();</span>
 
-  public void AddTemplate(Template template)
-      => _cache.AddOrUpdate(
-          template.Name, template, (name, existing) => template);
-}
-{% endhighlight %}
-Yep, simple, clean and easy to use!
+  <span class="k">public</span> <span class="kt">bool</span> <span class="nf">TryGetTemplate</span><span class="p">(</span><span class="n">TemplateName</span> <span class="n">name</span><span class="p">,</span> <span class="k">out</span> <span class="n">Template</span> <span class="n">template</span><span class="p">)</span>
+      <span class="p">=&gt;</span> <span class="n">_cache</span><span class="p">.</span><span class="nf">TryGetValue</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="k">out</span> <span class="n">template</span><span class="p">);</span>
+
+  <span class="k">public</span> <span class="k">void</span> <span class="nf">AddTemplate</span><span class="p">(</span><span class="n">Template</span> <span class="n">template</span><span class="p">)</span>
+      <span class="p">=&gt;</span> <span class="n">_cache</span><span class="p">.</span><span class="nf">AddOrUpdate</span><span class="p">(</span>
+          <span class="n">template</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">existing</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">template</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Yep, simple, clean and easy to use!</p>
 
 
 	  ]]></description>
@@ -505,105 +1079,102 @@ Yep, simple, clean and easy to use!
 	  <pubDate>2018-10-08T02:00:00+02:00</pubDate>
 	  <guid>//abusing-local-functions-to-hide-design-problems</guid>
 	  <description><![CDATA[
-	     Recently I was browsing through a certain code base
-and I saw a code similar to this:
-{% highlight csharp %}
-public class EnterpriseNotificationSender {
-    private readonly IUserManagementService _userManagementService;
-    // ctor and stuff...
+	     <p>Recently I was browsing through a certain code base
+and I saw a code similar to this:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">EnterpriseNotificationSender</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">IUserManagementService</span> <span class="n">_userManagementService</span><span class="p">;</span>
+    <span class="c1">// ctor and stuff...
+</span>  
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">SendNotificationsToUsers</span><span class="p">(</span><span class="kt">string</span> <span class="n">companyId</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">var</span> <span class="n">addresses</span> <span class="p">=</span> <span class="nf">GetRecipientsAddresses</span><span class="p">(</span><span class="n">companyId</span><span class="p">);</span>
+        <span class="k">foreach</span><span class="p">(</span><span class="n">var</span> <span class="n">address</span> <span class="k">in</span> <span class="n">addresses</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nf">SendNotification</span><span class="p">(</span><span class="n">address</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
   
-    public void SendNotificationsToUsers(string companyId) {
-        var addresses = GetRecipientsAddresses(companyId);
-        foreach(var address in addresses) {
-            SendNotification(address);
-        }
-    }
+    <span class="k">private</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">EmailAddress</span><span class="p">&gt;</span> 
+                     <span class="nf">GetRecipientsAddresses</span><span class="p">(</span><span class="kt">string</span> <span class="n">companyId</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">_userManagementService</span>
+             <span class="p">.</span><span class="nf">FindUsersBelongingToCompany</span><span class="p">(</span><span class="n">companyId</span><span class="p">)</span>
+             <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">UserShouldReciveNotification</span><span class="p">)</span>
+             <span class="p">.</span><span class="nf">Select</span><span class="p">(</span><span class="n">user</span> <span class="p">=&gt;</span> <span class="n">user</span><span class="p">.</span><span class="n">EmailAddress</span><span class="p">)</span>
+             <span class="p">.</span><span class="nf">ToList</span><span class="p">();</span>
   
-    private IEnumerable<EmailAddress> 
-                     GetRecipientsAddresses(string companyId) {
-        return _userManagementService
-             .FindUsersBelongingToCompany(companyId)
-             .Where(UserShouldReciveNotification)
-             .Select(user => user.EmailAddress)
-             .ToList();
+        <span class="kt">bool</span> <span class="nf">UserShouldReciveNotification</span><span class="p">(</span><span class="n">User</span> <span class="n">user</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">user</span><span class="p">.</span><span class="n">EmailAddress</span> <span class="p">!=</span> <span class="k">null</span>
+                <span class="p">&amp;&amp;</span> <span class="n">user</span><span class="p">.</span><span class="n">IsRegistered</span>
+                <span class="p">&amp;&amp;</span> <span class="p">!</span><span class="n">user</span><span class="p">.</span><span class="n">IsDisabled</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
   
-        bool UserShouldReciveNotification(User user) {
-            return user.EmailAddress != null
-                && user.IsRegistered
-                && !user.IsDisabled;
-        }
-    }
-  
-    private void SendNotification(EmailAddress address) {
-        // do stuff...
-    }
-}
-{% endhighlight %}
-Especially `GetRecipientsAddresses` method draw my attention.
+    <span class="k">private</span> <span class="k">void</span> <span class="nf">SendNotification</span><span class="p">(</span><span class="n">EmailAddress</span> <span class="n">address</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// do stuff...
+</span>    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Especially <code class="highlighter-rouge">GetRecipientsAddresses</code> method draw my attention.
 Someone extracted quite complicated lambda expression
 to a local function.
 At first I thought that this is indeed a very nice usage for local
 functions.
 LINQ query is much more readable
-with expressions like `Where(UserShouldReciveNotification)`
-instead of long lambdas.
+with expressions like <code class="highlighter-rouge">Where(UserShouldReciveNotification)</code>
+instead of long lambdas.</p>
 
-It took me a while to realize that the local function
+<p>It took me a while to realize that the local function
 in the code above, was used to hide design problems.
-Let's take a closer look at the condition encapsulated by
-`UserShouldReciveNotification` function:
-{% highlight csharp %}
-return user.EmailAddress != null
-    && user.IsRegistered
-    && !user.IsDisabled;
-{% endhighlight %}
-We should deal with the simplest to fix problems first:
+Let’s take a closer look at the condition encapsulated by
+<code class="highlighter-rouge">UserShouldReciveNotification</code> function:</p>
 
-**Bad naming:** We should always format predicates in "a positive way".
-For examples we should prefer `IsOpen` and `IsAvailable` to `IsClose`
-and `IsUnavailable`. Here `IsDisabled` should be named `IsEnabled`.
-As a first step in refactoring we may add `IsEnabled` property
-to the `User` class:
-{% highlight csharp %}
-public bool IsEnabled => !IsDisabled;
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">return</span> <span class="n">user</span><span class="p">.</span><span class="n">EmailAddress</span> <span class="p">!=</span> <span class="k">null</span>
+    <span class="p">&amp;&amp;</span> <span class="n">user</span><span class="p">.</span><span class="n">IsRegistered</span>
+    <span class="p">&amp;&amp;</span> <span class="p">!</span><span class="n">user</span><span class="p">.</span><span class="n">IsDisabled</span><span class="p">;</span></code></pre></figure>
 
-**Unreadable condition:** If a user has optional email then we may expect
-that our codebase is littered with little `user.EmailAddres != null` checks.
-To increase readability we should encapsulate this check into a separate property:
-{% highlight csharp %}
-public bool HasEmailAddress => (EmailAddress != null);
-{% endhighlight %}
+<p>We should deal with the simplest to fix problems first:</p>
 
-**Missing entity attributes:** When I looked closely at the condition
-`user.IsRegistered && !user.IsDisabled` I found out that it occurs
+<p><strong>Bad naming:</strong> We should always format predicates in “a positive way”.
+For examples we should prefer <code class="highlighter-rouge">IsOpen</code> and <code class="highlighter-rouge">IsAvailable</code> to <code class="highlighter-rouge">IsClose</code>
+and <code class="highlighter-rouge">IsUnavailable</code>. Here <code class="highlighter-rouge">IsDisabled</code> should be named <code class="highlighter-rouge">IsEnabled</code>.
+As a first step in refactoring we may add <code class="highlighter-rouge">IsEnabled</code> property
+to the <code class="highlighter-rouge">User</code> class:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="kt">bool</span> <span class="n">IsEnabled</span> <span class="p">=&gt;</span> <span class="p">!</span><span class="n">IsDisabled</span><span class="p">;</span></code></pre></figure>
+
+<p><strong>Unreadable condition:</strong> If a user has optional email then we may expect
+that our codebase is littered with little <code class="highlighter-rouge">user.EmailAddres != null</code> checks.
+To increase readability we should encapsulate this check into a separate property:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="kt">bool</span> <span class="n">HasEmailAddress</span> <span class="p">=&gt;</span> <span class="p">(</span><span class="n">EmailAddress</span> <span class="p">!=</span> <span class="k">null</span><span class="p">);</span></code></pre></figure>
+
+<p><strong>Missing entity attributes:</strong> When I looked closely at the condition
+<code class="highlighter-rouge">user.IsRegistered &amp;&amp; !user.IsDisabled</code> I found out that it occurs
 in many places in that codebase. For some reason the system was creating
 users before they actually registered. A user that not registered yet was basically
 a stub not a real user. Users could also be disabled by admins (registered or not),
 this is what the second part of the condition was responsible for.
-Clearly `User` entity is missing an attribute that could tell us whatever
-a user is active, so let's add one:
-{% highlight csharp %}
-public bool IsActive
-    => IsRegistered && IsEnabled;
-{% endhighlight %}
+Clearly <code class="highlighter-rouge">User</code> entity is missing an attribute that could tell us whatever
+a user is active, so let’s add one:</p>
 
-After all these refactorings we may finally rewrite our LINQ query:
-{% highlight csharp %}
-return _userManagementService
-    .FindUsersBelongingToCompany(companyId)
-    .Where(user => user.IsActive)
-    .Where(user => user.HasEmailAddress)
-    .Select(user => user.EmailAddress)
-    .ToList();
-{% endhighlight %}
-This version is as readable as version with the local function,
-but does not attempt to hide code smells.
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="kt">bool</span> <span class="n">IsActive</span>
+    <span class="p">=&gt;</span> <span class="n">IsRegistered</span> <span class="p">&amp;&amp;</span> <span class="n">IsEnabled</span><span class="p">;</span></code></pre></figure>
 
-Conclusion: Every time when you have a too long or too complicated
+<p>After all these refactorings we may finally rewrite our LINQ query:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">return</span> <span class="n">_userManagementService</span>
+    <span class="p">.</span><span class="nf">FindUsersBelongingToCompany</span><span class="p">(</span><span class="n">companyId</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">user</span> <span class="p">=&gt;</span> <span class="n">user</span><span class="p">.</span><span class="n">IsActive</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">user</span> <span class="p">=&gt;</span> <span class="n">user</span><span class="p">.</span><span class="n">HasEmailAddress</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">Select</span><span class="p">(</span><span class="n">user</span> <span class="p">=&gt;</span> <span class="n">user</span><span class="p">.</span><span class="n">EmailAddress</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">ToList</span><span class="p">();</span></code></pre></figure>
+
+<p>This version is as readable as version with the local function,
+but does not attempt to hide code smells.</p>
+
+<p>Conclusion: Every time when you have a too long or too complicated
 lambda expression, that you what to extract to a local function,
 think if you can simplify that lambda by extracting conditions and checks
-into new methods and properties on processed objects.
+into new methods and properties on processed objects.</p>
 
 
 	  ]]></description>
@@ -616,130 +1187,129 @@ into new methods and properties on processed objects.
 	  <pubDate>2018-09-21T02:00:00+02:00</pubDate>
 	  <guid>//avoid-hidden-coupling-to-interface-implementation</guid>
 	  <description><![CDATA[
-	     A few days ago I was reviewing a pull request at work and
-one line of code catch my eye:
-{% highlight csharp %}
-var @event = new CupOfCoffeeReadyEvent(/* ... */);
-_logger.LogInformation(
-    "Publishing cup of coffee event: {@Event}.", @event); // <== this one
-_mediator.Publish(@event);
-{% endhighlight %}
-At my workplace we are using standard `ILogger` interface from 
-`Microsoft.Extensions.Logging.Abstractions`
-package. Also logged variable name starts with `@` (`@event`). 
+	     <p>A few days ago I was reviewing a pull request at work and
+one line of code catch my eye:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">@event</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">CupOfCoffeeReadyEvent</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">);</span>
+<span class="n">_logger</span><span class="p">.</span><span class="nf">LogInformation</span><span class="p">(</span>
+    <span class="s">"Publishing cup of coffee event: {@Event}."</span><span class="p">,</span> <span class="n">@event</span><span class="p">);</span> <span class="c1">// &lt;== this one
+</span><span class="n">_mediator</span><span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="n">@event</span><span class="p">);</span></code></pre></figure>
+
+<p>At my workplace we are using standard <code class="highlighter-rouge">ILogger</code> interface from 
+<code class="highlighter-rouge">Microsoft.Extensions.Logging.Abstractions</code>
+package. Also logged variable name starts with <code class="highlighter-rouge">@</code> (<code class="highlighter-rouge">@event</code>). 
 And so I started to suspect that 
-the log statement contains an error and instead it should be written as:
-{% highlight csharp %}
-// {@Event} -> {Event}
-_logger.LogInformation(
-    "Publishing cup of coffee event: {Event}.", @event);
-{% endhighlight %}
-Without thinking any further I put a friendly comment, that 
+the log statement contains an error and instead it should be written as:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// {@Event} -&gt; {Event}
+</span><span class="n">_logger</span><span class="p">.</span><span class="nf">LogInformation</span><span class="p">(</span>
+    <span class="s">"Publishing cup of coffee event: {Event}."</span><span class="p">,</span> <span class="n">@event</span><span class="p">);</span></code></pre></figure>
+
+<p>Without thinking any further I put a friendly comment, that 
 this logging statement should be fixed.
-After half an hour, instead of a fix I get the following response:
+After half an hour, instead of a fix I get the following response:</p>
 
-> In this microservice we are using Serilog as third-party logging provider.
->
-> In Serilog `@` is used as destructuring operator,
-> please see: 
-> https://github.com/serilog/serilog/wiki/Structured-Data#preserving-object-structure
->
-> Basically this means that the argument will be logged in JSON form.
+<blockquote>
+  <p>In this microservice we are using Serilog as third-party logging provider.</p>
 
-So `@` character was put there on purpose. OK, fine.
+  <p>In Serilog <code class="highlighter-rouge">@</code> is used as destructuring operator,
+please see: 
+https://github.com/serilog/serilog/wiki/Structured-Data#preserving-object-structure</p>
+
+  <p>Basically this means that the argument will be logged in JSON form.</p>
+</blockquote>
+
+<p>So <code class="highlighter-rouge">@</code> character was put there on purpose. OK, fine.
 But there still was something fishy about this code. 
-On the one hand we are using `ILogger` from 
-`Microsoft.Extensions.Logging.Abstractions` to decouple ourselves 
+On the one hand we are using <code class="highlighter-rouge">ILogger</code> from 
+<code class="highlighter-rouge">Microsoft.Extensions.Logging.Abstractions</code> to decouple ourselves 
 from any specific logging provider,
 on the other hand we are using Serilog specific extensions.
 This results in a false sense of security. 
 We may think that since we are
-using standard `ILogger`, changing logging provider to e.g.
-Azure Web App Diagnostics would be as simple as changing `Startup` 
+using standard <code class="highlighter-rouge">ILogger</code>, changing logging provider to e.g.
+Azure Web App Diagnostics would be as simple as changing <code class="highlighter-rouge">Startup</code> 
 class of our application.
 Unfortunately since we coupled ourselves with Serilog 
 (by Serilog specific extensions to the log message template),
-some of our log statements may not work with the new logging provider.
+some of our log statements may not work with the new logging provider.</p>
 
-So what is the solution to this problem? We must choose whatever we
+<p>So what is the solution to this problem? We must choose whatever we
 want to use Serilog specific features. If we want to use them, then 
 we should not hide the fact that we are using Serilog. Fortunately for
-us Serilog provides it's own, ready to use `ILogger` interface.
+us Serilog provides it’s own, ready to use <code class="highlighter-rouge">ILogger</code> interface.
 And we should use that interface instead of standard one accross
-the entire application.
+the entire application.</p>
 
-On the other hand, if we expect that we may need to change logging
+<p>On the other hand, if we expect that we may need to change logging
 provider in the future, we should stick with 
-`Microsoft.Extensions.Logging.Abstractions` `ILogger` and we should
+<code class="highlighter-rouge">Microsoft.Extensions.Logging.Abstractions</code> <code class="highlighter-rouge">ILogger</code> and we should
 use only the features that are described in 
-[the official documentation](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-2.1). 
+<a href="https://docs.microsoft.com/en-us/aspnet/core/fundamentals/logging/?view=aspnetcore-2.1">the official documentation</a>. 
 If our needs are not fully covered
-by the standard `ILogger` 
+by the standard <code class="highlighter-rouge">ILogger</code> 
 e.g. we must log objects as JSON, then we must implement them
-ourselves by e.g. creating wrappers around parameters:
-{% highlight csharp %}
-_logger.LogInformation(
-    "Publishing cup of coffee {Event}.", new LogAsJson(@event));
-{% endhighlight %}
+ourselves by e.g. creating wrappers around parameters:</p>
 
-It is really interesting that a similar coupling happens when using
-`IEnumerable<T>` interface as the return type of a method.
-How many times have you seen a code similar to:
-{% highlight csharp %}
-public void SomeMethod() {
-    // IEnumerable<User>
-    var users = userService.FindAllUsers();
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">_logger</span><span class="p">.</span><span class="nf">LogInformation</span><span class="p">(</span>
+    <span class="s">"Publishing cup of coffee {Event}."</span><span class="p">,</span> <span class="k">new</span> <span class="nf">LogAsJson</span><span class="p">(</span><span class="n">@event</span><span class="p">));</span></code></pre></figure>
+
+<p>It is really interesting that a similar coupling happens when using
+<code class="highlighter-rouge">IEnumerable&lt;T&gt;</code> interface as the return type of a method.
+How many times have you seen a code similar to:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">void</span> <span class="nf">SomeMethod</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// IEnumerable&lt;User&gt;
+</span>    <span class="n">var</span> <span class="n">users</span> <span class="p">=</span> <span class="n">userService</span><span class="p">.</span><span class="nf">FindAllUsers</span><span class="p">();</span>
     
-    users
-        .ToList()
-        .ForEach(user => user.IsActive = false);
+    <span class="n">users</span>
+        <span class="p">.</span><span class="nf">ToList</span><span class="p">()</span>
+        <span class="p">.</span><span class="nf">ForEach</span><span class="p">(</span><span class="n">user</span> <span class="p">=&gt;</span> <span class="n">user</span><span class="p">.</span><span class="n">IsActive</span> <span class="p">=</span> <span class="k">false</span><span class="p">);</span>
     
-    userService.SaveAll(users.ToArray());
-}
-class UserSerivce {
-    public IEnumerable<User> FindAllUsers() {
-        return new List<User> {
-            new User { IsActive = true },
-            new User { IsActive = false }
-        };
-    }
-    public void SaveAll(params User[] users) {
-        foreach (var user in users) {
-            Console.WriteLine(user.IsActive);
-        }
-    }
-}
-public class User {
-    public bool IsActive { get; set; }
-}
-{% endhighlight %}
-Again we have here a bad case of hidden coupling to the interface implementation.
-We are using `IEnumerable<T>`
+    <span class="n">userService</span><span class="p">.</span><span class="nf">SaveAll</span><span class="p">(</span><span class="n">users</span><span class="p">.</span><span class="nf">ToArray</span><span class="p">());</span>
+<span class="p">}</span>
+<span class="k">class</span> <span class="nc">UserSerivce</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="nf">FindAllUsers</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="p">{</span>
+            <span class="k">new</span> <span class="n">User</span> <span class="p">{</span> <span class="n">IsActive</span> <span class="p">=</span> <span class="k">true</span> <span class="p">},</span>
+            <span class="k">new</span> <span class="n">User</span> <span class="p">{</span> <span class="n">IsActive</span> <span class="p">=</span> <span class="k">false</span> <span class="p">}</span>
+        <span class="p">};</span>
+    <span class="p">}</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">SaveAll</span><span class="p">(</span><span class="k">params</span> <span class="n">User</span><span class="p">[]</span> <span class="n">users</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">foreach</span> <span class="p">(</span><span class="n">var</span> <span class="n">user</span> <span class="k">in</span> <span class="n">users</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="n">user</span><span class="p">.</span><span class="n">IsActive</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">User</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">bool</span> <span class="n">IsActive</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Again we have here a bad case of hidden coupling to the interface implementation.
+We are using <code class="highlighter-rouge">IEnumerable&lt;T&gt;</code>
 interface but we are assuming that it is backed by
 a collection for which multiple enumerations always
 return the same elements. 
 Our code will break 
-when someone will change `FindAllUsers` implementation to
-e.g.:
-{% highlight csharp %}
-public IEnumerable<User> FindAllUsers() {
-    yield return new User { IsActive = true };
-    yield return new User { IsActive = false };
-}
-{% endhighlight %}
+when someone will change <code class="highlighter-rouge">FindAllUsers</code> implementation to
+e.g.:</p>
 
-The solution to this problem is honesty. If you have
-a value of type `IEnumerable<T>`, tread it as 
-a value of type `IEnumerable<T>`. Nothing more, nothing less.
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="nf">FindAllUsers</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">yield</span> <span class="k">return</span> <span class="k">new</span> <span class="n">User</span> <span class="p">{</span> <span class="n">IsActive</span> <span class="p">=</span> <span class="k">true</span> <span class="p">};</span>
+    <span class="k">yield</span> <span class="k">return</span> <span class="k">new</span> <span class="n">User</span> <span class="p">{</span> <span class="n">IsActive</span> <span class="p">=</span> <span class="k">false</span> <span class="p">};</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>The solution to this problem is honesty. If you have
+a value of type <code class="highlighter-rouge">IEnumerable&lt;T&gt;</code>, tread it as 
+a value of type <code class="highlighter-rouge">IEnumerable&lt;T&gt;</code>. Nothing more, nothing less.
 Do not assume that multiple enumerations
 will return the same elements. 
-This is not guaranteed by that interface.
+This is not guaranteed by that interface.</p>
 
-If you want to return a sequence of elements from a method with
+<p>If you want to return a sequence of elements from a method with
 this additional guarantee, then please use a more specific 
-interface like `ICollection<T>` or `IReadOnlyList<T>` or 
-maybe even something from `System.Collections.Immutable` package.
-
+interface like <code class="highlighter-rouge">ICollection&lt;T&gt;</code> or <code class="highlighter-rouge">IReadOnlyList&lt;T&gt;</code> or 
+maybe even something from <code class="highlighter-rouge">System.Collections.Immutable</code> package.</p>
 
 
 	  ]]></description>
@@ -752,315 +1322,315 @@ maybe even something from `System.Collections.Immutable` package.
 	  <pubDate>2018-07-08T02:00:00+02:00</pubDate>
 	  <guid>//repository-pattern-my-way</guid>
 	  <description><![CDATA[
-	     ### Generic repository pattern
+	     <h3 id="generic-repository-pattern">Generic repository pattern</h3>
 
-First, to avoid misunderstandings, let me explain what I understand
-by generic repository. Have your ever seen an interface like this:
-{% highlight csharp %}
-public interface IGenericRepository<TEntity> 
-    where TEntity : class 
-{
-    IEnumerable<TEntity> Get(
-        Expression<Func<TEntity, bool>> filter = null,
-        Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
-        string includeProperties = "");
-    TEntity GetById(object id);
+<p>First, to avoid misunderstandings, let me explain what I understand
+by generic repository. Have your ever seen an interface like this:</p>
 
-    void Insert(TEntity entity);
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IGenericRepository</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> 
+    <span class="n">where</span> <span class="n">TEntity</span> <span class="p">:</span> <span class="k">class</span> 
+<span class="err">{</span>
+    <span class="nc">IEnumerable</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="nf">Get</span><span class="p">(</span>
+        <span class="n">Expression</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">,</span> <span class="kt">bool</span><span class="p">&gt;&gt;</span> <span class="n">filter</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
+        <span class="n">Func</span><span class="p">&lt;</span><span class="n">IQueryable</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;,</span> <span class="n">IOrderedQueryable</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;&gt;</span> <span class="n">orderBy</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
+        <span class="kt">string</span> <span class="n">includeProperties</span> <span class="p">=</span> <span class="s">""</span><span class="p">);</span>
+    <span class="n">TEntity</span> <span class="nf">GetById</span><span class="p">(</span><span class="kt">object</span> <span class="n">id</span><span class="p">);</span>
 
-    void Update(TEntity entityToUpdate);
+    <span class="k">void</span> <span class="nf">Insert</span><span class="p">(</span><span class="n">TEntity</span> <span class="n">entity</span><span class="p">);</span>
 
-    void Delete(object id);
-    void Delete(TEntity entityToDelete);
-}
-{% endhighlight %}
-Or maybe you saw it's twin brother that have a slightly 
-different variant of `Get` method:
-{% highlight csharp %}
-IQueryable<TEntity> GetAll();
-{% endhighlight %}
+    <span class="k">void</span> <span class="nf">Update</span><span class="p">(</span><span class="n">TEntity</span> <span class="n">entityToUpdate</span><span class="p">);</span>
 
-Inspiration for the first of these examples comes from 
-[official Microsoft documentation for ASP.NET MVC 4](https://docs.microsoft.com/en-us/aspnet/mvc/overview/older-versions/getting-started-with-ef-5-using-mvc-4/implementing-the-repository-and-unit-of-work-patterns-in-an-asp-net-mvc-application#implement-a-generic-repository-and-a-unit-of-work-class).
+    <span class="k">void</span> <span class="nf">Delete</span><span class="p">(</span><span class="kt">object</span> <span class="n">id</span><span class="p">);</span>
+    <span class="k">void</span> <span class="nf">Delete</span><span class="p">(</span><span class="n">TEntity</span> <span class="n">entityToDelete</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Or maybe you saw it’s twin brother that have a slightly 
+different variant of <code class="highlighter-rouge">Get</code> method:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">IQueryable</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="nf">GetAll</span><span class="p">();</span></code></pre></figure>
+
+<p>Inspiration for the first of these examples comes from 
+<a href="https://docs.microsoft.com/en-us/aspnet/mvc/overview/older-versions/getting-started-with-ef-5-using-mvc-4/implementing-the-repository-and-unit-of-work-patterns-in-an-asp-net-mvc-application#implement-a-generic-repository-and-a-unit-of-work-class">official Microsoft documentation for ASP.NET MVC 4</a>.
 As for the second example you can find countless number of blogs that
 describe this variant of the repository pattern e.g.
-[here](http://www.tugberkugurlu.com/archive/generic-repository-pattern-entity-framework-asp-net-mvc-and-unit-testing-triangle),
-[and here](https://deviq.com/repository-pattern/),
-[and also here](https://www.codeproject.com/Articles/814768/CRUD-Operations-Using-the-Generic-Repository-Patte)
-sometimes with slight variantions like returning `IEnumerable<TEntity>` instead of
-`IQueryable<TEntity>`. 
+<a href="http://www.tugberkugurlu.com/archive/generic-repository-pattern-entity-framework-asp-net-mvc-and-unit-testing-triangle">here</a>,
+<a href="https://deviq.com/repository-pattern/">and here</a>,
+<a href="https://www.codeproject.com/Articles/814768/CRUD-Operations-Using-the-Generic-Repository-Patte">and also here</a>
+sometimes with slight variantions like returning <code class="highlighter-rouge">IEnumerable&lt;TEntity&gt;</code> instead of
+<code class="highlighter-rouge">IQueryable&lt;TEntity&gt;</code>. 
 And in the later case often with an additional method for generating
-queries like:
-{% highlight csharp %}
-IEnumerable<T> FindAll(Expression<Func<T, bool>> predicate);
-{% endhighlight %}
+queries like:</p>
 
-So what is wrong with them you may ask? So far almost nothing,
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="nf">FindAll</span><span class="p">(</span><span class="n">Expression</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="kt">bool</span><span class="p">&gt;&gt;</span> <span class="n">predicate</span><span class="p">);</span></code></pre></figure>
+
+<p>So what is wrong with them you may ask? So far almost nothing,
 not counting of course badly naming of the methods from Microsoft example(
-they should be called `Find` and `FindAll` not `Get` and `GetAll`).
+they should be called <code class="highlighter-rouge">Find</code> and <code class="highlighter-rouge">FindAll</code> not <code class="highlighter-rouge">Get</code> and <code class="highlighter-rouge">GetAll</code>).</p>
 
-But "almost nothing" does not equal "nothing". One problem that I find with
+<p>But “almost nothing” does not equal “nothing”. One problem that I find with
 these interfaces is that they violate Interface Segregation Principle.
 They expose full set of CRUD operations even for entities for which 
 e.g. deleting does not make sense (for example when you deactivate users
 instead of deleting them from DB;
-also see [Udi Dahan post about deleting data](http://udidahan.com/2009/09/01/dont-delete-just-dont/)).
+also see <a href="http://udidahan.com/2009/09/01/dont-delete-just-dont/">Udi Dahan post about deleting data</a>).
 But this problem can be easily solved by splitting this interface into three -
-one for reading, one for updating and one for deleting entities.
+one for reading, one for updating and one for deleting entities.</p>
 
-The real problem that I have with these interfaces comes from their *improper*
+<p>The real problem that I have with these interfaces comes from their <em>improper</em>
 usage. The original idea behind them is that they should be used as a base
-interfaces for your custom repository interfaces, just like this:
-{% highlight csharp %}
-public interface IFooRepository : IGenericRepository<Foo> {
-    Foo FindNewest();
-    IEnumerable<Foo> FindAllOutdated();
-}
-{% endhighlight %}
-And that your command handlers and services 
+interfaces for your custom repository interfaces, just like this:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IFooRepository</span> <span class="p">:</span> <span class="n">IGenericRepository</span><span class="p">&lt;</span><span class="n">Foo</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="n">Foo</span> <span class="nf">FindNewest</span><span class="p">();</span>
+    <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Foo</span><span class="p">&gt;</span> <span class="nf">FindAllOutdated</span><span class="p">();</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>And that your command handlers and services 
 (in other words clients of your custom repositories) 
 should decide what methods are
-needed and should be put on your custom repository interfaces.
+needed and should be put on your custom repository interfaces.</p>
 
-That is the theory. Unfortunately what I already saw a few times in my career 
-instead is this:
-{% highlight csharp %}
-// notice: this is NOT an abstract class
-public class GenericRepostiory<TEntity> : IGenericRepository<TEntity> {
-    // implementation details skiped
+<p>That is the theory. Unfortunately what I already saw a few times in my career 
+instead is this:</p>
 
-    public IQueryable<TEntity> GetAll() { /* code */ }
-    public TEntity GetById(object id) { /* code */ }
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// notice: this is NOT an abstract class
+</span><span class="k">public</span> <span class="k">class</span> <span class="nc">GenericRepostiory</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IGenericRepository</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="c1">// implementation details skiped
+</span>
+    <span class="k">public</span> <span class="n">IQueryable</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="nf">GetAll</span><span class="p">()</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="n">TEntity</span> <span class="nf">GetById</span><span class="p">(</span><span class="kt">object</span> <span class="n">id</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
 
-    public void Insert(TEntity entity) { /* code */ }
-    public void Update(TEntity entityToUpdate) { /* code */ }
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Insert</span><span class="p">(</span><span class="n">TEntity</span> <span class="n">entity</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Update</span><span class="p">(</span><span class="n">TEntity</span> <span class="n">entityToUpdate</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
 
-    public void Delete(object id) { /* code */ }
-    public void Delete(TEntity entityToDelete) { /* code */ }
-}
-{% endhighlight %}
-Someone has created a working implementation of `IGenericRepostory` interface.
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Delete</span><span class="p">(</span><span class="kt">object</span> <span class="n">id</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Delete</span><span class="p">(</span><span class="n">TEntity</span> <span class="n">entityToDelete</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Someone has created a working implementation of <code class="highlighter-rouge">IGenericRepostory</code> interface.
 What is worse this implementation is almost always registered in IoC container and
 can be injected into your command handlers and
-services like any other dependency:
-{% highlight csharp %}
-public class OrderService {
-    private readonly IGenericRepository<Order> _orderRepository;
+services like any other dependency:</p>
 
-    // ctor and other stuff...
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">OrderService</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">IGenericRepository</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="n">_orderRepository</span><span class="p">;</span>
 
-    public NewestOrderDto FindNewestOrderForCurrentUser() {
-        var newestOrders = _orderRepository.GetAll()
-            .Where(order => order.AssignedTo.Id == _currentUser.Id)
-            .Where(order => order.State != OrderState.Closed)
-            .OrderByDescending(order => order.CreationDate)
-            .Take(10)
-            .ToList();
+    <span class="c1">// ctor and other stuff...
+</span>
+    <span class="k">public</span> <span class="n">NewestOrderDto</span> <span class="nf">FindNewestOrderForCurrentUser</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">var</span> <span class="n">newestOrders</span> <span class="p">=</span> <span class="n">_orderRepository</span><span class="p">.</span><span class="nf">GetAll</span><span class="p">()</span>
+            <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">AssignedTo</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">_currentUser</span><span class="p">.</span><span class="n">Id</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Closed</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">OrderByDescending</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">CreationDate</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">Take</span><span class="p">(</span><span class="m">10</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">ToList</span><span class="p">();</span>
 
-        return _mapper.MapTo<NewestOrderDto>(newestOrders);
-    }
-}
-{% endhighlight %}
+        <span class="k">return</span> <span class="n">_mapper</span><span class="p">.</span><span class="n">MapTo</span><span class="p">&lt;</span><span class="n">NewestOrderDto</span><span class="p">&gt;(</span><span class="n">newestOrders</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
 
-This *looks* nice and clean but is not. I will tell you more about why
-this is wrong later. Now I want to deal with one "solution" to the
-`GenericRepository<T>` misinterpretation that 
+<p>This <em>looks</em> nice and clean but is not. I will tell you more about why
+this is wrong later. Now I want to deal with one “solution” to the
+<code class="highlighter-rouge">GenericRepository&lt;T&gt;</code> misinterpretation that 
 I often hear from other developers. 
-This solution sounds like this (dialog during code-review):
+This solution sounds like this (dialog during code-review):</p>
 
-JIM SENIOR: Have you ever heard that
-NHibernate `ISession` or Entity Framework `DbSet` *is a* repository?
+<p>JIM SENIOR: Have you ever heard that
+NHibernate <code class="highlighter-rouge">ISession</code> or Entity Framework <code class="highlighter-rouge">DbSet</code> <em>is a</em> repository?
 Indeed what you just created is a tin wrapper over either 
-`ISession` or `DbSet`.
-Actually we can replace this `GenericRepository<T>` by e.g.
-`DbSet` and get pretty must the same results.
-The only service that `IGenericRepository<T>` provides is that it hides
-most of the thirty methods that `DbSet` has. 
+<code class="highlighter-rouge">ISession</code> or <code class="highlighter-rouge">DbSet</code>.
+Actually we can replace this <code class="highlighter-rouge">GenericRepository&lt;T&gt;</code> by e.g.
+<code class="highlighter-rouge">DbSet</code> and get pretty must the same results.
+The only service that <code class="highlighter-rouge">IGenericRepository&lt;T&gt;</code> provides is that it hides
+most of the thirty methods that <code class="highlighter-rouge">DbSet</code> has. 
 JONNY JUNIOR: Oh, indeed what you just said make sense.
 I guess using generic repository
-pattern here was a bit of overengineering. (Happily gets back to coding...)
+pattern here was a bit of overengineering. (Happily gets back to coding…)</p>
 
-For me using either `GenericRepository<T>` or raw `DbSet` is wrong most of the
+<p>For me using either <code class="highlighter-rouge">GenericRepository&lt;T&gt;</code> or raw <code class="highlighter-rouge">DbSet</code> is wrong most of the
 time (one exception that I can accept is when you write 
-the most CRUDest application ever, then don't bother
-and use `DbSet` in your services). And why? Due to the following reasons:
+the most CRUDest application ever, then don’t bother
+and use <code class="highlighter-rouge">DbSet</code> in your services). And why? Due to the following reasons:</p>
 
-- The only option to make sure that your LINQ queries will be properly translated
- to SQL is to test them against **the same** kind of database that you use 
+<ul>
+  <li>The only option to make sure that your LINQ queries will be properly translated
+ to SQL is to test them against <strong>the same</strong> kind of database that you use 
  in production environment. But when your queries are scattered over methods 
  of your services it may be hard to create integration tests for them.
- For example look at the code:
+ For example look at the code:</li>
+</ul>
 
-{% highlight csharp %}
-if (/* some complicated condition */) {
-	if (/* some other complicated condition */) {
-		 var result = _orderRepository.GetAll()
-			  .Where(order => order.AssignedTo.Id == _currentUser.Id)
-			  .Where(order => order.State != OrderState.Closed)
-			  .OrderByDescending(order => order.CreationDate)
-			  .Take(10)
-			  .ToList(); 
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">if</span> <span class="p">(</span><span class="cm">/* some complicated condition */</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="cm">/* some other complicated condition */</span><span class="p">)</span> <span class="p">{</span>
+		 <span class="n">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">_orderRepository</span><span class="p">.</span><span class="nf">GetAll</span><span class="p">()</span>
+			  <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">AssignedTo</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">_currentUser</span><span class="p">.</span><span class="n">Id</span><span class="p">)</span>
+			  <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Closed</span><span class="p">)</span>
+			  <span class="p">.</span><span class="nf">OrderByDescending</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">CreationDate</span><span class="p">)</span>
+			  <span class="p">.</span><span class="nf">Take</span><span class="p">(</span><span class="m">10</span><span class="p">)</span>
+			  <span class="p">.</span><span class="nf">ToList</span><span class="p">();</span> 
 
-		 return _mapper.MapTo<NewestOrderDto>(newestOrders);
-	}
-	// some code here
-}
-// more code here
-{% endhighlight %}
+		 <span class="k">return</span> <span class="n">_mapper</span><span class="p">.</span><span class="n">MapTo</span><span class="p">&lt;</span><span class="n">NewestOrderDto</span><span class="p">&gt;(</span><span class="n">newestOrders</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="c1">// some code here
+</span><span class="p">}</span>
+<span class="p">//</span> <span class="n">more</span> <span class="n">code</span> <span class="n">here</span></code></pre></figure>
 
-To execute above query you must fulfill two if's conditions. This will make
+<p>To execute above query you must fulfill two if’s conditions. This will make
 an integration test for the above query less readable and more fragile. 
 Instead imagine that this query is encapsulated by a repository method.
 In integration test you would just call that repo method and check the 
-results - simple isn't it?
+results - simple isn’t it?</p>
 
-- I am sure that you agree with me 
+<ul>
+  <li>
+    <p>I am sure that you agree with me 
  that inline LINQ queries inside services 
  are not reusable and that they have a nasty tendency to
  duplicate themselves over the codebase. Even when a programmer decides to
- extract query to it's own method, it will usually be a private method on 
+ extract query to it’s own method, it will usually be a private method on 
  a particular service. Moving queries to repository 
  methods makes them automatically reusable
- across entire application. 
-
-- Inline LINQ queries are not named. Usually the only clue what a particular
- query does (without going deep it's logic) is the name of the variable that
+ across entire application.</p>
+  </li>
+  <li>
+    <p>Inline LINQ queries are not named. Usually the only clue what a particular
+ query does (without going deep it’s logic) is the name of the variable that
  holds query result. Unfortunately for us inventing a good variable names is a skill
  that only comes with the experience and since we have a lot of junior devs in our 
- industry we are faced with names like `result`, `ordersToProcess` or just `orders`.
+ industry we are faced with names like <code class="highlighter-rouge">result</code>, <code class="highlighter-rouge">ordersToProcess</code> or just <code class="highlighter-rouge">orders</code>.
  Wrapping the query inside a repo method will automatically give it a name. 
  Even if this name is not perfect we can refactor it later and all places 
- that call this method will benefit from our refactoring automatically!
-
-- Sometimes for performance reasons we are forced to use raw SQL to get our
+ that call this method will benefit from our refactoring automatically!</p>
+  </li>
+  <li>
+    <p>Sometimes for performance reasons we are forced to use raw SQL to get our
  data from DB. Do you really want to litter your business logic with low
- level technical stuff like `DbConnection`s, query parameters and `SqlException`s?
- Let's hide this low level stuff inside a repository and let our business code 
+ level technical stuff like <code class="highlighter-rouge">DbConnection</code>s, query parameters and <code class="highlighter-rouge">SqlException</code>s?
+ Let’s hide this low level stuff inside a repository and let our business code 
  concentrate on business logic. Also see 
- [Single level of abstraction principle](http://principles-wiki.net/principles:single_level_of_abstraction).
+ <a href="http://principles-wiki.net/principles:single_level_of_abstraction">Single level of abstraction principle</a>.</p>
+  </li>
+</ul>
 
-So what is the solution you may ask? Get ready...
+<p>So what is the solution you may ask? Get ready…</p>
 
-### What we need is the "specific" repository pattern
+<h3 id="what-we-need-is-the-specific-repository-pattern">What we need is the “specific” repository pattern</h3>
 
-We should start repository design by specifying it's interface. 
+<p>We should start repository design by specifying it’s interface. 
 The interface should contain only methods required by clients of 
 the repository. In other words if nobody needs to delete entities of a given type
 or it does not make sense from business point of view
-we will not add `Delete` method to the interface.
+we will not add <code class="highlighter-rouge">Delete</code> method to the interface.</p>
 
-If you are afraid that you will end up with different names for
-basic CRUD operations like `Delete` on one repo and `Remove` on the other
-you may create helper interfaces like `ICanDeleteEntity<TEntity>`,
-`ICanUpdateEntity<TEntity>` etc. that will contain only methods for
+<p>If you are afraid that you will end up with different names for
+basic CRUD operations like <code class="highlighter-rouge">Delete</code> on one repo and <code class="highlighter-rouge">Remove</code> on the other
+you may create helper interfaces like <code class="highlighter-rouge">ICanDeleteEntity&lt;TEntity&gt;</code>,
+<code class="highlighter-rouge">ICanUpdateEntity&lt;TEntity&gt;</code> etc. that will contain only methods for
 specific usage like deleting, updating etc. 
 Then the repository interface can inherit 
-appropriate subset of them.
+appropriate subset of them.</p>
 
-None of the methods on the repository interface should return `IQueryable<T>`
+<p>None of the methods on the repository interface should return <code class="highlighter-rouge">IQueryable&lt;T&gt;</code>
 type.
 Also make sure that the repository implementation does not 
-return `IQueryable<T>` value hidden as `IEnumerable<T>` one. 
-Always call `ToList()`
-or `ToArray()` to materialize query results before returning them 
-to the client.
+return <code class="highlighter-rouge">IQueryable&lt;T&gt;</code> value hidden as <code class="highlighter-rouge">IEnumerable&lt;T&gt;</code> one. 
+Always call <code class="highlighter-rouge">ToList()</code>
+or <code class="highlighter-rouge">ToArray()</code> to materialize query results before returning them 
+to the client.</p>
 
-When it comes to the repository implementation, the implementation is free
-to inherit from *abstract* `GenericRepository<TEntity>` base class. 
-Alternatively it may use `ISession` or `DbSet` directly if it is more convenient. 
-No matter what approach you choose remember that "excessive" methods
-like `Delete`
+<p>When it comes to the repository implementation, the implementation is free
+to inherit from <em>abstract</em> <code class="highlighter-rouge">GenericRepository&lt;TEntity&gt;</code> base class. 
+Alternatively it may use <code class="highlighter-rouge">ISession</code> or <code class="highlighter-rouge">DbSet</code> directly if it is more convenient. 
+No matter what approach you choose remember that “excessive” methods
+like <code class="highlighter-rouge">Delete</code>
 inherited from base class
-may be hidden by the repository interface.
+may be hidden by the repository interface.</p>
 
-Please remember that your repository is NOT responsible for managing
+<p>Please remember that your repository is NOT responsible for managing
 database transactions. This concern is best managed using 
-[Unit of Work pattern](https://martinfowler.com/eaaCatalog/unitOfWork.html).
-This pattern is already implemented by both `ISession` and `DatabaseContext`
+<a href="https://martinfowler.com/eaaCatalog/unitOfWork.html">Unit of Work pattern</a>.
+This pattern is already implemented by both <code class="highlighter-rouge">ISession</code> and <code class="highlighter-rouge">DatabaseContext</code>
 (think change tracking and dirty checking),
-we only need a better interface over them:
-{% highlight csharp %}
-public interface IUnitOfWork {
-    // or just Begin()
-    void BeginTransaction();
+we only need a better interface over them:</p>
 
-    void Commit();
-    void Rollback();
-}
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IUnitOfWork</span> <span class="p">{</span>
+    <span class="c1">// or just Begin()
+</span>    <span class="k">void</span> <span class="nf">BeginTransaction</span><span class="p">();</span>
 
-For the most web applications it is enough to start transaction using `IUnitOfWork`
-at the beginning of the HTTP request and either `Commit` or `Rollback` at
+    <span class="k">void</span> <span class="nf">Commit</span><span class="p">();</span>
+    <span class="k">void</span> <span class="nf">Rollback</span><span class="p">();</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>For the most web applications it is enough to start transaction using <code class="highlighter-rouge">IUnitOfWork</code>
+at the beginning of the HTTP request and either <code class="highlighter-rouge">Commit</code> or <code class="highlighter-rouge">Rollback</code> at
 the end of the request. This can be done by using either an action filter
-or a decorator around command handlers and/or services. 
+or a decorator around command handlers and/or services.</p>
 
-Example repository created using the above guidelines:
-{% highlight csharp %}
-public interface IOrderRepository {
-	// We do not need FindById so we do not included it
-	IEnumerable<Order> FindActiveOrdersAssignedToUser(UserId id); 
-}
+<p>Example repository created using the above guidelines:</p>
 
-public class OrderRepository : GenericRepository<Order>, IOrderRepository {
-    public IEnumerable<Order> FindActiveOrdersAssignedToUser(UserId id) {
-        return base.FindAll()
-                .Where(order => order.AssignedTo.Id == id.Value)
-                .Where(order => order.State != OrderState.Closed)
-                .ToList();
-    }
-}
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IOrderRepository</span> <span class="p">{</span>
+	<span class="c1">// We do not need FindById so we do not included it
+</span>	<span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="nf">FindActiveOrdersAssignedToUser</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span> 
+<span class="p">}</span>
 
-This should be obvious by now, but let's not take chances.
+<span class="k">public</span> <span class="k">class</span> <span class="nc">OrderRepository</span> <span class="p">:</span> <span class="n">GenericRepository</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;,</span> <span class="n">IOrderRepository</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="nf">FindActiveOrdersAssignedToUser</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">base</span><span class="p">.</span><span class="nf">FindAll</span><span class="p">()</span>
+                <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">AssignedTo</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">id</span><span class="p">.</span><span class="n">Value</span><span class="p">)</span>
+                <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Closed</span><span class="p">)</span>
+                <span class="p">.</span><span class="nf">ToList</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>This should be obvious by now, but let’s not take chances.
 Every method of our repositories should be covered by one or more
 integration tests, which should use the same kind of DB that we use 
-in production environment. Remember always use *integration* tests to
-test your repositories.
+in production environment. Remember always use <em>integration</em> tests to
+test your repositories.</p>
 
-### Turbocharging the repository pattern
+<h3 id="turbocharging-the-repository-pattern">Turbocharging the repository pattern</h3>
 
-There is no rose without thorns and presented above approach also has some
+<p>There is no rose without thorns and presented above approach also has some
 serious drawbacks. Some of them can be fixed by using a different
 architecture than classic 3-layer arch.
-Most common problems with "specific" repositories are as follows:
+Most common problems with “specific” repositories are as follows:</p>
 
-- Repositories can over long periods of time accumulate 
- dozens and dozens of `Find*` methods. Often these methods will be very similar
+<ul>
+  <li>Repositories can over long periods of time accumulate 
+ dozens and dozens of <code class="highlighter-rouge">Find*</code> methods. Often these methods will be very similar
  to each other. There are two ways to combat this unwanted grow. One is to use 
- a query object pattern. Basically you group several of these `Find*` methods together
- into one more general `Find` method. That method should accept an object that will
- represent a query criteria. For example:
+ a query object pattern. Basically you group several of these <code class="highlighter-rouge">Find*</code> methods together
+ into one more general <code class="highlighter-rouge">Find</code> method. That method should accept an object that will
+ represent a query criteria. For example:</li>
+</ul>
 
-{% highlight csharp %}
-var ordersToCancel = _orderRepository.FindAllMatching(
-	// Alternatively you may use the builder pattern
-	// to create a criteria object.
-	new OrderCriteria {
-		StatusIsIn = new[] { OrderStatus.New, OrderStatus.InProgres },
-		OrderedItemsContainAll = new[] { searchedItem },
-		CustomerIs = GetCurrentCustomer()
-	});
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">ordersToCancel</span> <span class="p">=</span> <span class="n">_orderRepository</span><span class="p">.</span><span class="nf">FindAllMatching</span><span class="p">(</span>
+	<span class="c1">// Alternatively you may use the builder pattern
+</span>	<span class="c1">// to create a criteria object.
+</span>	<span class="k">new</span> <span class="n">OrderCriteria</span> <span class="p">{</span>
+		<span class="n">StatusIsIn</span> <span class="p">=</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="n">OrderStatus</span><span class="p">.</span><span class="n">New</span><span class="p">,</span> <span class="n">OrderStatus</span><span class="p">.</span><span class="n">InProgres</span> <span class="p">},</span>
+		<span class="n">OrderedItemsContainAll</span> <span class="p">=</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="n">searchedItem</span> <span class="p">},</span>
+		<span class="n">CustomerIs</span> <span class="p">=</span> <span class="nf">GetCurrentCustomer</span><span class="p">()</span>
+	<span class="p">});</span></code></pre></figure>
 
-To create a query from the criteria object we examine each search criteria and
-build query step-by-step:
-{% highlight csharp %}
-IQueryable<Order> q = base.FindAll();
+<p>To create a query from the criteria object we examine each search criteria and
+build query step-by-step:</p>
 
-if (criteria.StatusIsIn != null) {
-	q = q.Where(o => criteria.StatusIsIn.Contains(o.Status));
-}
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">IQueryable</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="n">q</span> <span class="p">=</span> <span class="k">base</span><span class="p">.</span><span class="nf">FindAll</span><span class="p">();</span>
 
-// A long list of other conditions here..
+<span class="k">if</span> <span class="p">(</span><span class="n">criteria</span><span class="p">.</span><span class="n">StatusIsIn</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">q</span> <span class="p">=</span> <span class="n">q</span><span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">o</span> <span class="p">=&gt;</span> <span class="n">criteria</span><span class="p">.</span><span class="n">StatusIsIn</span><span class="p">.</span><span class="nf">Contains</span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="n">Status</span><span class="p">));</span>
+<span class="p">}</span>
 
-return q.ToList();
-{% endhighlight %}
+<span class="c1">// A long list of other conditions here..
+</span>
+<span class="k">return</span> <span class="n">q</span><span class="p">.</span><span class="nf">ToList</span><span class="p">();</span></code></pre></figure>
 
-A closely related yet different aproach is to use the query object pattern (see 
-[this](https://martinfowler.com/eaaCatalog/queryObject.html) and
-[this](https://lostechies.com/jimmybogard/2012/10/08/favor-query-objects-over-repositories)).
+<p>A closely related yet different aproach is to use the query object pattern (see 
+<a href="https://martinfowler.com/eaaCatalog/queryObject.html">this</a> and
+<a href="https://lostechies.com/jimmybogard/2012/10/08/favor-query-objects-over-repositories">this</a>).</p>
 
-The second solution to this problem is more robust and reliable.
+<p>The second solution to this problem is more robust and reliable.
 Usually too big repositories are accompanied by huge services and 
 overgrown entities. You can slim down both your repos and services 
 by using something that I call CQRS-light. It differs from full-blown
@@ -1068,70 +1638,75 @@ CQRS by using exactly the same database tables for both reads and writes.
 When doing CQRS-light we can use the same ORM framework for both reading and
 writing data and slowly migrate to real CQRS only in these parts of our
 application that really need it (do recall this 80+ columns searchable grid that
-generates 20+ inner join query that halts your DB server? - real CQRS can help here).
+generates 20+ inner join query that halts your DB server? - real CQRS can help here).</p>
 
-The diagram below presents typical architecture of CQRS-light application:
-![CQRS-light architecture](assets/images/2018-07-08/cqrs-light.svg)
+<p>The diagram below presents typical architecture of CQRS-light application:
+<img src="assets/images/2018-07-08/cqrs-light.svg" alt="CQRS-light architecture" /></p>
 
-The key principles of CQRS-light are:
+<p>The key principles of CQRS-light are:</p>
 
-- Split all user actions into two categories. In the first put all actions that
+<ul>
+  <li>
+    <p>Split all user actions into two categories. In the first put all actions that
  can modify the state of the system like e.g. creating a new order in an e-commerce app.
- In the second  
+ In the second<br />
  category put all actions that do not modify state of the system e.g. 
  viewing an order details. First category represents commands (writes), the second one
- queries (reads). Only commands can change state of the system.
-
-- Query handlers do NOT use repositories to access data. They access DB 
+ queries (reads). Only commands can change state of the system.</p>
+  </li>
+  <li>
+    <p>Query handlers do NOT use repositories to access data. They access DB 
  using whatever technology they want.
  Usual configurations include a single ORM on both read and write sides, 
  ORM for writes and micro-ORM like Dapper for reads or 
- using ORM for writes and raw SQL for reads.
-
-- Command handlers can only use repositories to access and modify data. 
+ using ORM for writes and raw SQL for reads.</p>
+  </li>
+  <li>
+    <p>Command handlers can only use repositories to access and modify data. 
  Command handlers 
  should not call query handlers to fetch data from database. 
  If a command handler needs to execute 
  a complex query and this query can be answered by a query handler
  you should duplicate this query logic and put it
  in both query handler and in a repository method
- (read and write sides must be separated).
-
-- Query handlers are tested only using integration tests.
+ (read and write sides must be separated).</p>
+  </li>
+  <li>
+    <p>Query handlers are tested only using integration tests.
  For command handlers you will have unit and optionally integration tests.
- Repositories will be tested using integration tests.
+ Repositories will be tested using integration tests.</p>
+  </li>
+</ul>
 
-CQRS even in the "light" version is a huge topic and deserves a blog post of it's own.
-[MediatR](https://github.com/jbogard/MediatR) library is a good starting point
-if you want to find out more about CQRS-light approach.
+<p>CQRS even in the “light” version is a huge topic and deserves a blog post of it’s own.
+<a href="https://github.com/jbogard/MediatR">MediatR</a> library is a good starting point
+if you want to find out more about CQRS-light approach.</p>
 
-Let us return to the subject of the "specific" repository pattern drawbacks. 
+<p>Let us return to the subject of the “specific” repository pattern drawbacks. 
 The second drawback that I want to mention is unwanted migration of the business
-logic into query definitions. For example even this simple query:
-{% highlight csharp %}
-public IEnumerable<Order> FindActiveOrders() {
-  return base.FindAll()
-          .Where(order => order.State != OrderState.Closed 
-                       && order.State != OrderState.Canceled)
-          .ToList();
-}
-{% endhighlight %}
-contains a piece of business logic that describes what 
+logic into query definitions. For example even this simple query:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="nf">FindActiveOrders</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">base</span><span class="p">.</span><span class="nf">FindAll</span><span class="p">()</span>
+          <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Closed</span> 
+                       <span class="p">&amp;&amp;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Canceled</span><span class="p">)</span>
+          <span class="p">.</span><span class="nf">ToList</span><span class="p">();</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>contains a piece of business logic that describes what 
 it means for an order to be active.
-Usually ORM's prevent us from encapsulating such pieces of logic
-into a separate properties like `IsActive`.
+Usually ORM’s prevent us from encapsulating such pieces of logic
+into a separate properties like <code class="highlighter-rouge">IsActive</code>.</p>
 
-What we need here is the specification pattern.
+<p>What we need here is the specification pattern.
 You can find pretty decent overview of the specification pattern
-[here](https://enterprisecraftsmanship.com/2016/02/08/specification-pattern-c-implementation/).
-Our query method when we use the specification pattern should look similar to:
-{% highlight csharp %}
-public IEnumerable<Order> FindActiveOrders() {
-  return base.FindBySpec(new ActiveOrders())
-          .ToList();
-}
-{% endhighlight %}
+<a href="https://enterprisecraftsmanship.com/2016/02/08/specification-pattern-c-implementation/">here</a>.
+Our query method when we use the specification pattern should look similar to:</p>
 
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="nf">FindActiveOrders</span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="k">base</span><span class="p">.</span><span class="nf">FindBySpec</span><span class="p">(</span><span class="k">new</span> <span class="nf">ActiveOrders</span><span class="p">())</span>
+          <span class="p">.</span><span class="nf">ToList</span><span class="p">();</span>
+<span class="p">}</span></code></pre></figure>
 
 
 	  ]]></description>

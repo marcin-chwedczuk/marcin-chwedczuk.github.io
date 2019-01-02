@@ -62,7 +62,7 @@
 
 
 </head>
-<body class="tag-template nav-closed">
+<body class="paged archive-template nav-closed">
 
     <div class="nav">
     <h3 class="nav-title">Menu</h3>
@@ -70,7 +70,7 @@
         <span class="hidden">Close</span>
     </a>
     <ul>
-        <li class="nav-home " role="presentation">
+        <li class="nav-home  nav-current" role="presentation">
             <a href="/">Home</a>
         </li>
         
@@ -94,14 +94,12 @@
     <div class="site-wrapper">
 
         <!-- [[! Everything else gets inserted here ]] -->
-        <!-- < dynamically overriding backgrounds for tags as well as descriptions -->
-
-
-<!-- < default}} -->
+        <!-- < default -->
 <!-- The tag above means - insert everything in this file into the [body] of the default.hbs template -->
 
-<!-- If we have a tag cover, display that - else blog cover - else nothing -->
-<header class="main-header tag-head " style="background-image: url(/assets/images/tag_cover.jpg) ">
+<!-- The big featured header  -->
+<header class="main-header "
+        style="background-image: url(/assets/images/start2.jpg) ">
     <nav class="main-nav overlay clearfix">
         <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
         
@@ -110,14 +108,11 @@
     </nav>
     <div class="vertical">
         <div class="main-header-content inner">
-            <h1 class="page-title">Unit-testing</h1>
-            <h2 class="page-description">
-            
-			    A 2-post collection
-            
-            </h2>
+            <h1 class="page-title">Programming is Magic</h1>
+            <h2 class="page-description">A place where I can share my thoughts about programming</h2>
         </div>
     </div>
+    <a class="scroll-down icon-arrow-left" href="#content" data-offset="-45"><span class="hidden">Scroll Down</span></a>
 </header>
 
 <!-- The main content area on the homepage -->
@@ -129,7 +124,11 @@
         
             <nav class="pagination" role="pagination">
     
-    <span class="page-number"> Page 1 of 1 </span>
+        
+            <a class="newer-posts" href="/page11/" title="Previous Page">&laquo; Newer Posts</a>
+      
+    
+    <span class="page-number"> Page 12 of 12 </span>
      
 </nav>
         
@@ -139,10 +138,10 @@
     
     <article class="post">
         <header class="post-header">
-            <h2 class="post-title"><a href="/fluent-validation-and-complex-dependencies-between-properties">Fluent Validation and complex dependencies between properties</a></h2>
+            <h2 class="post-title"><a href="/break-out-of-code-block-in-java-and-javascript">Break out of block of code in Java and JavaScript</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>FluentValidation is one of the best validation libraries for .NET. I use it daily both at work and in my personal pet projects. Still from time... <a class="read-more" href="/fluent-validation-and-complex-dependencies-between-properties">&raquo;</a></p>
+            <p>Java and JavaScript have a common feature that allows us to break out of nested loops, e.g. in Java we may write: OUTER_LOOP: for (int i... <a class="read-more" href="/break-out-of-code-block-in-java-and-javascript">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
@@ -153,43 +152,15 @@
                 on 
                 
                     
-                       <a href='/tag/dotnet'>Dotnet</a>,
+                       <a href='/tag/javascript'>Javascript</a>,
                        
                 
                     
-                       <a href='/tag/unit-testing'>Unit-testing</a>
+                       <a href='/tag/java'>Java</a>
                        
                 
             
-            <time class="post-date" datetime="2018-09-18">18 Sep 2018</time>
-        </footer>
-    </article>
-    
-    <article class="post">
-        <header class="post-header">
-            <h2 class="post-title"><a href="/you-can-live-without-your-mocking-framework">You can live without mocking frameworks</a></h2>
-        </header>
-        <section class="post-excerpt">
-            <p>For a long time I have been fan of mocking frameworks like Moq and NSubstitute. These libraries seems indispensable while unit-testing. They allow us to easily... <a class="read-more" href="/you-can-live-without-your-mocking-framework">&raquo;</a></p>
-        </section>
-        <footer class="post-meta">
-            <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
-            <!-- author -->
-            <a href='/author/mc'>marcin-chwedczuk</a>
-            <!-- [[tags prefix=" on "]] -->
-             
-                on 
-                
-                    
-                       <a href='/tag/dotnet'>Dotnet</a>,
-                       
-                
-                    
-                       <a href='/tag/unit-testing'>Unit-testing</a>
-                       
-                
-            
-            <time class="post-date" datetime="2018-09-08">08 Sep 2018</time>
+            <time class="post-date" datetime="2016-06-04">04 Jun 2016</time>
         </footer>
     </article>
     
@@ -198,7 +169,11 @@
     
         <nav class="pagination" role="pagination">
     
-    <span class="page-number"> Page 1 of 1 </span>
+        
+            <a class="newer-posts" href="/page11/" title="Previous Page">&laquo; Newer Posts</a>
+      
+    
+    <span class="page-number"> Page 12 of 12 </span>
      
 </nav>
     

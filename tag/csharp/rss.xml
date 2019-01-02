@@ -18,172 +18,174 @@
 	  <pubDate>2017-09-30T02:00:00+02:00</pubDate>
 	  <guid>//dont-ask-me-about-singletons</guid>
 	  <description><![CDATA[
-	     Some time ago I attended a job interview for C# developer position in Warsaw.
+	     <p>Some time ago I attended a job interview for C# developer position in Warsaw.
 One of the tasks that I had to perform was to implement a singleton pattern
 in C#. With a bit of help from my interviewer
-(I didn't get a cup of coffee that morning) I arrived at a solution:
-{% highlight csharp %}
-public class Singleton {
-    private static Singleton _instance = null;
-    private static object _lock = new object();
-    
-    public static Singleton Instance {
-        get {
-            if (_instance == null) {
-                lock(_lock) {
-                    if (_instance == null) {
-                        _instance = new Singleton();    
-                    }
-                }
-            }
-            return _instance;
-        }
-    }
-    
-    private Singleton() {
-        Console.WriteLine("Singleton()");   
-    }
-    public void DoJob() {
-        Console.WriteLine("Singleton::DoJob()");
-    }
-}
-{% endhighlight %}
-We both admitted that this was a good enough solution 
-and we moved to other questions.
+(I didn’t get a cup of coffee that morning) I arrived at a solution:</p>
 
-Later the same day I had some spare time
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">Singleton</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">static</span> <span class="n">Singleton</span> <span class="n">_instance</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+    <span class="k">private</span> <span class="k">static</span> <span class="kt">object</span> <span class="n">_lock</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">object</span><span class="p">();</span>
+    
+    <span class="k">public</span> <span class="k">static</span> <span class="n">Singleton</span> <span class="n">Instance</span> <span class="p">{</span>
+        <span class="k">get</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">_instance</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
+                <span class="k">lock</span><span class="p">(</span><span class="n">_lock</span><span class="p">)</span> <span class="p">{</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">_instance</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
+                        <span class="n">_instance</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Singleton</span><span class="p">();</span>    
+                    <span class="p">}</span>
+                <span class="p">}</span>
+            <span class="p">}</span>
+            <span class="k">return</span> <span class="n">_instance</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    
+    <span class="k">private</span> <span class="nf">Singleton</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"Singleton()"</span><span class="p">);</span>   
+    <span class="p">}</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">DoJob</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"Singleton::DoJob()"</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>We both admitted that this was a good enough solution 
+and we moved to other questions.</p>
+
+<p>Later the same day I had some spare time
 at launch break so I started to think about my solution again.
 Is it really the best way to create singletons in C#, I asked myself.
 As it happens answer to my question was contained on
-"C# in Depth" book 
-[accompanying website](http://csharpindepth.com/Articles/General/Singleton.aspx#dcl).
-There Jon Skeet commented on above solution:
+“C# in Depth” book 
+<a href="http://csharpindepth.com/Articles/General/Singleton.aspx#dcl">accompanying website</a>.
+There Jon Skeet commented on above solution:</p>
 
->Without any memory barriers, it's broken in the ECMA CLI specification too. It's possible that under the .NET 2.0 memory model (which is stronger than the ECMA spec) it's safe, but I'd rather not rely on those stronger semantics, especially if there's any doubt as to the safety. Making the instance variable volatile can make it work, as would explicit memory barrier calls, although in the latter case even experts can't agree exactly which barriers are required. I tend to try to avoid situations where experts don't agree what's right and what's wrong!
->
-> -- Jon Skeet
+<blockquote>
+  <p>Without any memory barriers, it’s broken in the ECMA CLI specification too. It’s possible that under the .NET 2.0 memory model (which is stronger than the ECMA spec) it’s safe, but I’d rather not rely on those stronger semantics, especially if there’s any doubt as to the safety. Making the instance variable volatile can make it work, as would explicit memory barrier calls, although in the latter case even experts can’t agree exactly which barriers are required. I tend to try to avoid situations where experts don’t agree what’s right and what’s wrong!</p>
 
-In practice this means that it is not strictly required by .NET specification
+  <p>– Jon Skeet</p>
+</blockquote>
+
+<p>In practice this means that it is not strictly required by .NET specification
 that this implementation should work. Currently it works on .NET standard,
 and I guess Microsoft folks will also make sure that it 
-works on .NET Core - but we cannot be 100% sure.
+works on .NET Core - but we cannot be 100% sure.</p>
 
-In the same article Jon Skeet proposes a better pattern:
-{% highlight csharp %}
-public sealed class Singleton
-{
-    public static Singleton Instance { 
-        get { return Nested.instance; } }
+<p>In the same article Jon Skeet proposes a better pattern:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">sealed</span> <span class="k">class</span> <span class="nc">Singleton</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="n">Singleton</span> <span class="n">Instance</span> <span class="p">{</span> 
+        <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">Nested</span><span class="p">.</span><span class="n">instance</span><span class="p">;</span> <span class="p">}</span> <span class="p">}</span>
         
-    private class Nested
-    {
-        // Explicit static constructor to tell C# compiler
-        // not to mark type as beforefieldinit
-        static Nested() { }
+    <span class="k">private</span> <span class="k">class</span> <span class="nc">Nested</span>
+    <span class="p">{</span>
+        <span class="c1">// Explicit static constructor to tell C# compiler
+</span>        <span class="c1">// not to mark type as beforefieldinit
+</span>        <span class="k">static</span> <span class="nf">Nested</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
 
-        internal static readonly SingletonC instance 
-            = new Singleton();
-    }
+        <span class="k">internal</span> <span class="k">static</span> <span class="k">readonly</span> <span class="n">SingletonC</span> <span class="n">instance</span> 
+            <span class="p">=</span> <span class="k">new</span> <span class="nf">Singleton</span><span class="p">();</span>
+    <span class="p">}</span>
 
-    private Singleton()
-    {
-        Console.WriteLine("Singleton()");
-    }
-}
-{% endhighlight %}
-This works because if a type provides a static constructor, C# will
+    <span class="k">private</span> <span class="nf">Singleton</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"Singleton()"</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>This works because if a type provides a static constructor, C# will
 run static initializers lazily (on a first call to any method, including
 constructors or access to any field). Without static constructor
 runtime may invoke static initializers at any point in time prior to
 the first access to any type member. In practice it means that our
-singleton without empty static constructor in `Nested` class is no longer lazy.
+singleton without empty static constructor in <code class="highlighter-rouge">Nested</code> class is no longer lazy.</p>
 
-So it looks like the cure is worse than the disease. Now we require that
+<p>So it looks like the cure is worse than the disease. Now we require that
 any person that implements singletons in our codebase knows about
-`beforefieldinit` attribute, which 
+<code class="highlighter-rouge">beforefieldinit</code> attribute, which 
 unfortunately is clearly visible only in CIL bytecode and is responsible
-for the above behaviour:
-{% highlight csharp %}
-// without static constructor Nested class is declared in CIL
+for the above behaviour:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// without static constructor Nested class is declared in CIL
 // as follows:
-.class nested private auto ansi beforefieldinit Nested
-        extends [mscorlib]System.Object
-    { ... }
+</span><span class="p">.</span><span class="k">class</span> <span class="nc">nested</span> <span class="k">private</span> <span class="n">auto</span> <span class="n">ansi</span> <span class="n">beforefieldinit</span> <span class="n">Nested</span>
+        <span class="n">extends</span> <span class="p">[</span><span class="n">mscorlib</span><span class="p">]</span><span class="n">System</span><span class="p">.</span><span class="n">Object</span>
+    <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
 
-// and with static constructor we get:
-.class nested private auto ansi Nested
-        extends [mscorlib]System.Object
-    { ... }
-{% endhighlight %}
+<span class="c1">// and with static constructor we get:
+</span><span class="p">.</span><span class="k">class</span> <span class="nc">nested</span> <span class="k">private</span> <span class="n">auto</span> <span class="n">ansi</span> <span class="n">Nested</span>
+        <span class="n">extends</span> <span class="p">[</span><span class="n">mscorlib</span><span class="p">]</span><span class="n">System</span><span class="p">.</span><span class="n">Object</span>
+    <span class="p">{</span> <span class="p">...</span> <span class="p">}</span></code></pre></figure>
 
-Also our version 2.0 doesn't protect us 
-from forming cyclic dependency between singletons:
-{% highlight csharp %}
-public sealed class SingletonC
-{
-    // singleton stuff...
+<p>Also our version 2.0 doesn’t protect us 
+from forming cyclic dependency between singletons:</p>
 
-    private SingletonC()
-    {
-        Console.WriteLine("SingletonC()");
-        Console.WriteLine("D: " + SingletonD.Instance);
-    }
-}
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">sealed</span> <span class="k">class</span> <span class="nc">SingletonC</span>
+<span class="p">{</span>
+    <span class="c1">// singleton stuff...
+</span>
+    <span class="k">private</span> <span class="nf">SingletonC</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"SingletonC()"</span><span class="p">);</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"D: "</span> <span class="p">+</span> <span class="n">SingletonD</span><span class="p">.</span><span class="n">Instance</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 
-public sealed class SingletonD
-{
-    // singleton stuff...
+<span class="k">public</span> <span class="k">sealed</span> <span class="k">class</span> <span class="nc">SingletonD</span>
+<span class="p">{</span>
+    <span class="c1">// singleton stuff...
+</span>
+    <span class="k">private</span> <span class="nf">SingletonD</span><span class="p">()</span>
+    <span class="p">{</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"SingletonD()"</span><span class="p">);</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"C: "</span> <span class="p">+</span> <span class="n">SingletonC</span><span class="p">.</span><span class="n">Instance</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 
-    private SingletonD()
-    {
-        Console.WriteLine("SingletonD()");
-        Console.WriteLine("C: " + SingletonC.Instance);
-    }
-}
-
-public static void Main()
-{
-    Console.WriteLine("Main()");
-    var tmp = SingletonC.Instance;
-}
-// Program output:
+<span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"Main()"</span><span class="p">);</span>
+    <span class="n">var</span> <span class="n">tmp</span> <span class="p">=</span> <span class="n">SingletonC</span><span class="p">.</span><span class="n">Instance</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c1">// Program output:
 // Main()
 // SingletonC()
 // SingletonD()
 // C: (null)
-// D: SingletonD
-{% endhighlight %}
-As we can see `SingletonC.Intance` inside `SingletonD` constructor
-returned `null`. If we tried to create cyclic dependency with our
-first solution we would get a `StackOverflowException`. So at least
-we would know that something is wrong.
-Anyway looks like creating a singleton requires some skills...
+</span><span class="p">//</span> <span class="n">D</span><span class="p">:</span> <span class="n">SingletonD</span></code></pre></figure>
 
-And since we are talking about singletons already, its also worth to
+<p>As we can see <code class="highlighter-rouge">SingletonC.Intance</code> inside <code class="highlighter-rouge">SingletonD</code> constructor
+returned <code class="highlighter-rouge">null</code>. If we tried to create cyclic dependency with our
+first solution we would get a <code class="highlighter-rouge">StackOverflowException</code>. So at least
+we would know that something is wrong.
+Anyway looks like creating a singleton requires some skills…</p>
+
+<p>And since we are talking about singletons already, its also worth to
 know that .NET allows us to create an instance of type without invoking
 constructor (useful when implementing e.g. JSON serialization library).
-Objects created this way will be of course incomplete but still:
-{% highlight csharp %}
-FormatterServices.GetUninitializedObject(typeof(SingletonC));
-{% endhighlight %}
-And of course we don't even talk about reflection API that we may use to
-destroy even most foolproof singletons.
+Objects created this way will be of course incomplete but still:</p>
 
-So I guess now its a summary time! If you want to use singletons in
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">FormatterServices</span><span class="p">.</span><span class="nf">GetUninitializedObject</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">SingletonC</span><span class="p">));</span></code></pre></figure>
+
+<p>And of course we don’t even talk about reflection API that we may use to
+destroy even most foolproof singletons.</p>
+
+<p>So I guess now its a summary time! If you want to use singletons in
 your code that badly, please read carefully Jon Skeet articles
-from reference section. For the rest of us: let's forget about 
+from reference section. For the rest of us: let’s forget about 
 handcrafted singletons
-and start using Dependency Injection!
+and start using Dependency Injection!</p>
 
-PS. Also be careful when asking questions about Singletons 
+<p>PS. Also be careful when asking questions about Singletons 
 at job interviews unless
-you want to hear discussion about `beforefieldinit` ;)
+you want to hear discussion about <code class="highlighter-rouge">beforefieldinit</code> ;)</p>
 
-References:
+<p>References:</p>
 
-* [http://csharpindepth.com/Articles/General/Singleton.aspx](http://csharpindepth.com/Articles/General/Singleton.aspx)
-* [http://csharpindepth.com/Articles/General/Beforefieldinit.aspx](http://csharpindepth.com/Articles/General/Beforefieldinit.aspx)
-
+<ul>
+  <li><a href="http://csharpindepth.com/Articles/General/Singleton.aspx">http://csharpindepth.com/Articles/General/Singleton.aspx</a></li>
+  <li><a href="http://csharpindepth.com/Articles/General/Beforefieldinit.aspx">http://csharpindepth.com/Articles/General/Beforefieldinit.aspx</a></li>
+</ul>
 
 
 	  ]]></description>
@@ -196,214 +198,214 @@ References:
 	  <pubDate>2016-07-09T02:00:00+02:00</pubDate>
 	  <guid>//how-nulls-are-handled-in-switch-statement</guid>
 	  <description><![CDATA[
-	     Let's start with C#. In C# `null`s may show up in `switch` statement in two cases:
+	     <p>Let’s start with C#. In C# <code class="highlighter-rouge">null</code>s may show up in <code class="highlighter-rouge">switch</code> statement in two cases:</p>
 
-1. We `switch` on `string` type
-2. We `switch` on nullable `char`, nullable integral type (`byte`, `short` etc.) 
- or nullable enum
+<ol>
+  <li>We <code class="highlighter-rouge">switch</code> on <code class="highlighter-rouge">string</code> type</li>
+  <li>We <code class="highlighter-rouge">switch</code> on nullable <code class="highlighter-rouge">char</code>, nullable integral type (<code class="highlighter-rouge">byte</code>, <code class="highlighter-rouge">short</code> etc.) 
+ or nullable enum</li>
+</ol>
 
-Both cases are handled by compiler in the same way,
-we just declare `case null` label and it will work out of the box.
+<p>Both cases are handled by compiler in the same way,
+we just declare <code class="highlighter-rouge">case null</code> label and it will work out of the box.</p>
 
-This is illustrated by simple program:
-{% highlight csharp %}
-using System;
+<p>This is illustrated by simple program:</p>
 
-public class Program
-{
-   public void Main() {
-        int? n = GetDefault<int?>();
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Program</span>
+<span class="p">{</span>
+   <span class="k">public</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kt">int</span><span class="p">?</span> <span class="n">n</span> <span class="p">=</span> <span class="n">GetDefault</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">?&gt;();</span>
  
-        // This will write null       
-        switch(n) {
-            case null: Console.WriteLine("null");    break;
-            case 1:    Console.WriteLine("value 1"); break;
-            default:   Console.WriteLine("default"); break;
-        }
+        <span class="c1">// This will write null       
+</span>        <span class="k">switch</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="k">null</span><span class="p">:</span> <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"null"</span><span class="p">);</span>    <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="m">1</span><span class="p">:</span>    <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"value 1"</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
+            <span class="k">default</span><span class="p">:</span>   <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"default"</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
 
 
-        string s = GetDefault<string>();
+        <span class="kt">string</span> <span class="n">s</span> <span class="p">=</span> <span class="n">GetDefault</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
  
-        // This will write null       
-        switch(s) {
-            case null:   Console.WriteLine("null");    break;
-            case "foo":  Console.WriteLine("foo");     break;
-            default:     Console.WriteLine("default"); break;
-        }
-    }
+        <span class="c1">// This will write null       
+</span>        <span class="k">switch</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="k">null</span><span class="p">:</span>   <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"null"</span><span class="p">);</span>    <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="s">"foo"</span><span class="p">:</span>  <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"foo"</span><span class="p">);</span>     <span class="k">break</span><span class="p">;</span>
+            <span class="k">default</span><span class="p">:</span>     <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"default"</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
     
-    // GetDefault returns null for nullable and reference type T
-    private T GetDefault<T>() {
-        return default(T);   
-    }
-}
-{% endhighlight %}
+    <span class="c1">// GetDefault returns null for nullable and reference type T
+</span>    <span class="k">private</span> <span class="n">T</span> <span class="n">GetDefault</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">default</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>   
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
 
-##### Java switch and null's
+<h5 id="java-switch-and-nulls">Java switch and null’s</h5>
 
-In Java `null`'s may show up in `switch` statement when we `switch` 
-on primitive type wrappers like `Integer` or on `String` or on enum type.
-In that case Java will throw `NullPointerException` as is demonstrated by program:
-{% highlight java %}
-public class Program 
-{
-  public static void main(String[] args)
-  {
-    String s = getNullString();
-    try {
-      switch(s) {
-          // case null - doesn't compile:
-          // error: constant string expression required
-          // case null:  System.out.println("null"); break;
+<p>In Java <code class="highlighter-rouge">null</code>’s may show up in <code class="highlighter-rouge">switch</code> statement when we <code class="highlighter-rouge">switch</code> 
+on primitive type wrappers like <code class="highlighter-rouge">Integer</code> or on <code class="highlighter-rouge">String</code> or on enum type.
+In that case Java will throw <code class="highlighter-rouge">NullPointerException</code> as is demonstrated by program:</p>
 
-          case "foo": System.out.println("foo"); break;
-          default:    System.out.println("default"); break;
-      }
-    }
-    catch(NullPointerException ex) {
-        // exception stack trace points to `switch(s) {` line
-        System.out.println("null pointer exception");
-    }
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Program</span> 
+<span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
+  <span class="o">{</span>
+    <span class="n">String</span> <span class="n">s</span> <span class="o">=</span> <span class="n">getNullString</span><span class="o">();</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="k">switch</span><span class="o">(</span><span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+          <span class="c1">// case null - doesn't compile:</span>
+          <span class="c1">// error: constant string expression required</span>
+          <span class="c1">// case null:  System.out.println("null"); break;</span>
+
+          <span class="k">case</span> <span class="s">"foo"</span><span class="o">:</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"foo"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+          <span class="k">default</span><span class="o">:</span>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"default"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">catch</span><span class="o">(</span><span class="n">NullPointerException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// exception stack trace points to `switch(s) {` line</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"null pointer exception"</span><span class="o">);</span>
+    <span class="o">}</span>
     
-    FooEnum e = getNullFooEnum();
-    try {
-      switch(e) {
-       // case null doesn't compile
-       // error: an enum switch case label must be the unqualified name of an enumeration constant
-       // case null: System.out.println("null"); break;
+    <span class="n">FooEnum</span> <span class="n">e</span> <span class="o">=</span> <span class="n">getNullFooEnum</span><span class="o">();</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="k">switch</span><span class="o">(</span><span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+       <span class="c1">// case null doesn't compile</span>
+       <span class="c1">// error: an enum switch case label must be the unqualified name of an enumeration constant</span>
+       <span class="c1">// case null: System.out.println("null"); break;</span>
         
-       case OPTION_1: System.out.println("option 1"); break;
-       default:       System.out.println("default");  break;
-      }
-    }
-    catch(NullPointerException ex) {
-        // exception stack trace points to `switch(e) {` line
-        System.out.println("null pointer exception");
-    }
-  }
-  private static String getNullString() {
-        return null; 
-  }
-  private static FooEnum getNullFooEnum() {
-    return null;
-  }
-}
+       <span class="k">case</span> <span class="nl">OPTION_1:</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"option 1"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+       <span class="k">default</span><span class="o">:</span>       <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"default"</span><span class="o">);</span>  <span class="k">break</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">catch</span><span class="o">(</span><span class="n">NullPointerException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// exception stack trace points to `switch(e) {` line</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"null pointer exception"</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  <span class="kd">private</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">getNullString</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span> 
+  <span class="o">}</span>
+  <span class="kd">private</span> <span class="kd">static</span> <span class="n">FooEnum</span> <span class="n">getNullFooEnum</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
 
-enum FooEnum {
-  OPTION_1,
-  OPTION_2
-}
-{% endhighlight %}
-Program output:
-{% highlight no-highlight %}
-null pointer exception
-null pointer exception
-{% endhighlight %}
-As we have seen it's not even possible to declare `case null` label.
+<span class="kd">enum</span> <span class="n">FooEnum</span> <span class="o">{</span>
+  <span class="n">OPTION_1</span><span class="o">,</span>
+  <span class="n">OPTION_2</span>
+<span class="o">}</span></code></pre></figure>
 
-In Java until you are 100% sure that value will not contain `null` you must
-explicitly check for `null` before switch as in:
-{% highlight java %}
-FooEnum e = getNullFooEnum();
+<p>Program output:</p>
 
-if (e == null) { 
-  System.out.println("null"); 
-}
-else {
-  switch(e) {
-    case OPTION_1: System.out.println("option 1"); break;
-    default:       System.out.println("default");  break;
-  }
-}
-{% endhighlight %}
-Or use trick with default value:
-{% highlight java %}
-Integer n = getNullableInteger();
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">null pointer exception
+null pointer exception</code></pre></figure>
 
-// -1 is default here, but you may use Integer.MIN/MAX_VALUE or any
-// other value
-switch((e != null) ? e : -1) {
-  case 1:  System.out.println("1"); break;
-  case -1: System.out.println("null"); break;
-  default: System.out.println("default"); break;
-}
-{% endhighlight %}
+<p>As we have seen it’s not even possible to declare <code class="highlighter-rouge">case null</code> label.</p>
 
-WARNING: This Java behaviour may cause problems when we translate code from C# to Java.
+<p>In Java until you are 100% sure that value will not contain <code class="highlighter-rouge">null</code> you must
+explicitly check for <code class="highlighter-rouge">null</code> before switch as in:</p>
 
-#### JavaScript switch and null
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">FooEnum</span> <span class="n">e</span> <span class="o">=</span> <span class="n">getNullFooEnum</span><span class="o">();</span>
 
-JavaScript `switch` statement is very flexible, each `case` label may contain
-an expression that will be evaluated at runtime. To compare `case` label values to
-`switch` value JavaScript uses `===` operator.
+<span class="k">if</span> <span class="o">(</span><span class="n">e</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span> 
+  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"null"</span><span class="o">);</span> 
+<span class="o">}</span>
+<span class="k">else</span> <span class="o">{</span>
+  <span class="k">switch</span><span class="o">(</span><span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nl">OPTION_1:</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"option 1"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+    <span class="k">default</span><span class="o">:</span>       <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"default"</span><span class="o">);</span>  <span class="k">break</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-In JavaScript there is no problem with using `null` and even `undefined` as `case`
-labels. Only tricky thing is with `NaN`s because `NaN === NaN` yields `false`
+<p>Or use trick with default value:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Integer</span> <span class="n">n</span> <span class="o">=</span> <span class="n">getNullableInteger</span><span class="o">();</span>
+
+<span class="c1">// -1 is default here, but you may use Integer.MIN/MAX_VALUE or any</span>
+<span class="c1">// other value</span>
+<span class="k">switch</span><span class="o">((</span><span class="n">e</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">?</span> <span class="n">e</span> <span class="o">:</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="mi">1</span><span class="o">:</span>  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"1"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+  <span class="k">case</span> <span class="o">-</span><span class="mi">1</span><span class="o">:</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"null"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+  <span class="k">default</span><span class="o">:</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"default"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>WARNING: This Java behaviour may cause problems when we translate code from C# to Java.</p>
+
+<h4 id="javascript-switch-and-null">JavaScript switch and null</h4>
+
+<p>JavaScript <code class="highlighter-rouge">switch</code> statement is very flexible, each <code class="highlighter-rouge">case</code> label may contain
+an expression that will be evaluated at runtime. To compare <code class="highlighter-rouge">case</code> label values to
+<code class="highlighter-rouge">switch</code> value JavaScript uses <code class="highlighter-rouge">===</code> operator.</p>
+
+<p>In JavaScript there is no problem with using <code class="highlighter-rouge">null</code> and even <code class="highlighter-rouge">undefined</code> as <code class="highlighter-rouge">case</code>
+labels. Only tricky thing is with <code class="highlighter-rouge">NaN</code>s because <code class="highlighter-rouge">NaN === NaN</code> yields <code class="highlighter-rouge">false</code>
 in JavaScript. This is enforced by IEEE 754 standard that describes floating point
 numbers representation and behaviour. 
-In other words we can use `NaN` as a `case` label but
+In other words we can use <code class="highlighter-rouge">NaN</code> as a <code class="highlighter-rouge">case</code> label but
 program will never enter block of code associated with that label. As a side note
-it's worth to mention that in JavaScript `NaN` is 
-the only value for which expression `x === x` yields
-`false`.
+it’s worth to mention that in JavaScript <code class="highlighter-rouge">NaN</code> is 
+the only value for which expression <code class="highlighter-rouge">x === x</code> yields
+<code class="highlighter-rouge">false</code>.</p>
 
-Following program demonstrates flexibility of JavaScript `switch` statement:
-{% highlight js %}
-var values = [undefined, null, '', 0, NaN, 1, 'foo', {}];
+<p>Following program demonstrates flexibility of JavaScript <code class="highlighter-rouge">switch</code> statement:</p>
 
-values.forEach(function(value) {
-    switch (value) {
-        case undefined:
-            console.log('undefined');
-            break;
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">values</span> <span class="o">=</span> <span class="p">[</span><span class="kc">undefined</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">NaN</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'foo'</span><span class="p">,</span> <span class="p">{}];</span>
 
-         case null:
-            console.log('null');
-            break;
+<span class="nx">values</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="kc">undefined</span><span class="err">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'undefined'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+
+         <span class="k">case</span> <span class="kc">null</span><span class="err">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'null'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
         
-        case '':
-            console.log('empty string');
-            break;
+        <span class="k">case</span> <span class="s1">''</span><span class="err">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'empty string'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
         
-        case 0:
-            console.log('zero');
-            break;
+        <span class="k">case</span> <span class="mi">0</span><span class="err">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'zero'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
         
-        case NaN:
-            // dead code here
-            console.log('nan');
-            break;
+        <span class="k">case</span> <span class="kc">NaN</span><span class="err">:</span>
+            <span class="c1">// dead code here</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'nan'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
         
-        case 1:
-            console.log(1);
-            break;
+        <span class="k">case</span> <span class="mi">1</span><span class="err">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
         
-        // label with runtime expression here:
-        case 'f'+'oo':
-            console.log('foo');
-            break;
+        <span class="c1">// label with runtime expression here:</span>
+        <span class="k">case</span> <span class="s1">'f'</span><span class="o">+</span><span class="s1">'oo'</span><span class="err">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'foo'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
         
-        default:
-            console.log('default');
-            break;
-    }
-});
-{% endhighlight %}
-This program will write:
-{% highlight no-highlight %}
-"undefined"
+        <span class="nl">default</span><span class="p">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'default'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">});</span></code></pre></figure>
+
+<p>This program will write:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">"undefined"
 "null"
 "empty string"
 "zero"
 "default"
 1
 "foo"
-"default"
-{% endhighlight %}
-Notice that `"default"` was printed for `NaN` value.
+"default"</code></pre></figure>
 
-That's all for today, I hope you learned something new from this article.   
-May the Force be with you.
+<p>Notice that <code class="highlighter-rouge">"default"</code> was printed for <code class="highlighter-rouge">NaN</code> value.</p>
+
+<p>That’s all for today, I hope you learned something new from this article. <br />
+May the Force be with you.</p>
 
 
 	  ]]></description>
@@ -416,354 +418,342 @@ May the Force be with you.
 	  <pubDate>2016-06-12T02:00:00+02:00</pubDate>
 	  <guid>//object-and-collection-initializers-in-csharp</guid>
 	  <description><![CDATA[
-	     In this post I want to present a nice C# syntax sugar: object and collection
-initializers.
+	     <p>In this post I want to present a nice C# syntax sugar: object and collection
+initializers.</p>
 
-#### Object initializers
-We will start with object initializers. Let's assume we have classes:
-{% highlight csharp %}
-public class Position {
-    public int Top { get; set; }
-    public int Left { get; set; }
-}
+<h4 id="object-initializers">Object initializers</h4>
+<p>We will start with object initializers. Let’s assume we have classes:</p>
 
-public class Button {
-    public Position Position { get; private set; } 
-    public string Text { get; set; }
-    public int FontSize { get; set; }
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">Position</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">Top</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">Left</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
 
-    public Button() {
-        Position = new Position();
-        FontSize = 10;
-    }
-}
-{% endhighlight %}
-Without object initializer we could set `Button` object
-properties using the following code:
-{% highlight csharp %}
-var okButton = new Button();
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Button</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="n">Position</span> <span class="n">Position</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">private</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span> 
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Text</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">FontSize</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
 
-okButton.Position.Top = 100;
-okButton.Position.Left = 200;
-okButton.Text = "OK";
-okButton.FontSize = 13;
-{% endhighlight %}
-With object initializers we can shorten this code a bit:
-{% highlight csharp %}
-var okButton = new Button {
-    Position = {
-        Top = 100,
-        Left = 200
-    },
-    Text = "OK",
-    FontSize = 13
-};
-{% endhighlight %}
-Instructions generated by compiler in this two cases are exactly the same, but code 
-using object initializer is more clear and more readable.
+    <span class="k">public</span> <span class="nf">Button</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">Position</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Position</span><span class="p">();</span>
+        <span class="n">FontSize</span> <span class="p">=</span> <span class="m">10</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
 
-Now let's dive into some syntax details:  
+<p>Without object initializer we could set <code class="highlighter-rouge">Button</code> object
+properties using the following code:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">okButton</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Button</span><span class="p">();</span>
+
+<span class="n">okButton</span><span class="p">.</span><span class="n">Position</span><span class="p">.</span><span class="n">Top</span> <span class="p">=</span> <span class="m">100</span><span class="p">;</span>
+<span class="n">okButton</span><span class="p">.</span><span class="n">Position</span><span class="p">.</span><span class="n">Left</span> <span class="p">=</span> <span class="m">200</span><span class="p">;</span>
+<span class="n">okButton</span><span class="p">.</span><span class="n">Text</span> <span class="p">=</span> <span class="s">"OK"</span><span class="p">;</span>
+<span class="n">okButton</span><span class="p">.</span><span class="n">FontSize</span> <span class="p">=</span> <span class="m">13</span><span class="p">;</span></code></pre></figure>
+
+<p>With object initializers we can shorten this code a bit:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">okButton</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Button</span> <span class="p">{</span>
+    <span class="n">Position</span> <span class="p">=</span> <span class="p">{</span>
+        <span class="n">Top</span> <span class="p">=</span> <span class="m">100</span><span class="p">,</span>
+        <span class="n">Left</span> <span class="p">=</span> <span class="m">200</span>
+    <span class="p">},</span>
+    <span class="n">Text</span> <span class="p">=</span> <span class="s">"OK"</span><span class="p">,</span>
+    <span class="n">FontSize</span> <span class="p">=</span> <span class="m">13</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>Instructions generated by compiler in this two cases are exactly the same, but code 
+using object initializer is more clear and more readable.</p>
+
+<p>Now let’s dive into some syntax details:<br />
 I. We can pass any parameters to object
-constructor using syntax:
-{% highlight csharp %}
-var foo = new Foo(param1, param2) {
-    Property1 = "some value",
-    Property2 = "some other value",
-    // ...
-}
-{% endhighlight %}
+constructor using syntax:</p>
 
-II. When we call parameterless constructor we can omit parentheses 
-(like I did in the `Button` example):
-{% highlight csharp %}
-var foo = new Foo() {
-    // ...
-};
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">foo</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Foo</span><span class="p">(</span><span class="n">param1</span><span class="p">,</span> <span class="n">param2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">Property1</span> <span class="p">=</span> <span class="s">"some value"</span><span class="p">,</span>
+    <span class="n">Property2</span> <span class="p">=</span> <span class="s">"some other value"</span><span class="p">,</span>
+    <span class="c1">// ...
+</span><span class="p">}</span></code></pre></figure>
 
-// this is exactly the same as new Foo()
-var foo2 = new Foo {
-    // ...
-}
-{% endhighlight %}
-III. Object initializers can be nested:
-{% highlight csharp %}
-var invoice = new Invoice {
-    ShippingAddress = new Address {
-        Street = "Long Street",
-        Number = "3A"
-    },
+<p>II. When we call parameterless constructor we can omit parentheses 
+(like I did in the <code class="highlighter-rouge">Button</code> example):</p>
 
-    InvoiceAddress = new Address {
-        Street = "Short Street",
-        Number = "4B"
-    }
-};
-{% endhighlight %}
-IV. We can set nested properties without creating new objects  
-Do you remember our first example with `Button`? We use
-{% highlight csharp %}
-var okButton = new Button {
-    Position = {
-        Top = 100,
-        Left = 200
-    },
-    // ...
-};
-{% endhighlight %}
-to set properties of `Button` `Position` object. Notice that `Position`
-property has private setter
-{% highlight csharp %}
-public Position Position { get; private set; }
-{% endhighlight %}
-so we cannot use `new` to create new `Position` object
-{% highlight csharp %}
-var okButton = new Button {
-    //         v doesn't compile
-    Position = new Position {
-        Top = 100,
-        Left = 200
-    },
-    // ...
-};
-{% endhighlight %}
-Fortunately object initializer syntax is flexible enough to allow us
-set properties without creating new objects.  
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">foo</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Foo</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// ...
+</span><span class="p">};</span>
 
-V. Object initializer syntax works only with `new`  
-In other words following code doesn't compile:
-{% highlight csharp %}
-// doesn't compile
-var foo = SomeMethodReturningFoo() {
-    Property1 = 1
-};
-{% endhighlight %}
+<span class="c1">// this is exactly the same as new Foo()
+</span><span class="n">var</span> <span class="n">foo2</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Foo</span> <span class="p">{</span>
+    <span class="c1">// ...
+</span><span class="p">}</span></code></pre></figure>
 
-#### Collection initializers
+<p>III. Object initializers can be nested:</p>
 
-Now it's time to present collection initializers. We will start with
-`List<T>` initializers, then we will describe `Dictionary<TKey, TValue>`
-initializers.
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">invoice</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Invoice</span> <span class="p">{</span>
+    <span class="n">ShippingAddress</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Address</span> <span class="p">{</span>
+        <span class="n">Street</span> <span class="p">=</span> <span class="s">"Long Street"</span><span class="p">,</span>
+        <span class="n">Number</span> <span class="p">=</span> <span class="s">"3A"</span>
+    <span class="p">},</span>
 
-As we all know C# allows to create and initialize arrays in single expression:
-{% highlight csharp %}
-var funnyNames = new string[] { "foo", "bar", "baz", "yay" };
-{% endhighlight %}
-Wouldn't it be nice if this syntax worked with `List<T>`'s? Actually thanks
-to collection initializers it works and not only with `List`'s but also with
-custom classes!
+    <span class="n">InvoiceAddress</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Address</span> <span class="p">{</span>
+        <span class="n">Street</span> <span class="p">=</span> <span class="s">"Short Street"</span><span class="p">,</span>
+        <span class="n">Number</span> <span class="p">=</span> <span class="s">"4B"</span>
+    <span class="p">}</span>
+<span class="p">};</span></code></pre></figure>
 
-Let's see an example:
-{% highlight csharp %}
-List<string> funnyNames = new List<string> { "foo", "bar", "baz" };
-{% endhighlight %}
-this code is translated by compiler to
-{% highlight csharp %}
-List<string> tmp = new List<string>();
-tmp.Add("foo");
-tmp.Add("bar");
-tmp.Add("baz");
+<p>IV. We can set nested properties without creating new objects<br />
+Do you remember our first example with <code class="highlighter-rouge">Button</code>? We use</p>
 
-List<string> funnyNames = tmp;
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">okButton</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Button</span> <span class="p">{</span>
+    <span class="n">Position</span> <span class="p">=</span> <span class="p">{</span>
+        <span class="n">Top</span> <span class="p">=</span> <span class="m">100</span><span class="p">,</span>
+        <span class="n">Left</span> <span class="p">=</span> <span class="m">200</span>
+    <span class="p">},</span>
+    <span class="c1">// ...
+</span><span class="p">};</span></code></pre></figure>
 
-Inside initializers we are not limited to constants, we can use complex expressions
-like
-{% highlight csharp %}
-List<object> things = new List<object>() {
-    (1+3*7),
-    true.ToString(),
-    new object()
-};
-{% endhighlight %}
+<p>to set properties of <code class="highlighter-rouge">Button</code> <code class="highlighter-rouge">Position</code> object. Notice that <code class="highlighter-rouge">Position</code>
+property has private setter</p>
 
-As we already seen compiler translates collection initializers to a couple
-of `Add` calls. We can make collection initializers work with custom classes by
-providing `Add` method and implementing `IEnumerable` or `IEnumerable<T>`. This
-second requirement is very important - since we are using *collection* initializers,
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="n">Position</span> <span class="n">Position</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">private</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span></code></pre></figure>
+
+<p>so we cannot use <code class="highlighter-rouge">new</code> to create new <code class="highlighter-rouge">Position</code> object</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">okButton</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Button</span> <span class="p">{</span>
+    <span class="c1">//         v doesn't compile
+</span>    <span class="n">Position</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Position</span> <span class="p">{</span>
+        <span class="n">Top</span> <span class="p">=</span> <span class="m">100</span><span class="p">,</span>
+        <span class="n">Left</span> <span class="p">=</span> <span class="m">200</span>
+    <span class="p">},</span>
+    <span class="c1">// ...
+</span><span class="p">};</span></code></pre></figure>
+
+<p>Fortunately object initializer syntax is flexible enough to allow us
+set properties without creating new objects.</p>
+
+<p>V. Object initializer syntax works only with <code class="highlighter-rouge">new</code><br />
+In other words following code doesn’t compile:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// doesn't compile
+</span><span class="n">var</span> <span class="n">foo</span> <span class="p">=</span> <span class="nf">SomeMethodReturningFoo</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">Property1</span> <span class="p">=</span> <span class="m">1</span>
+<span class="p">};</span></code></pre></figure>
+
+<h4 id="collection-initializers">Collection initializers</h4>
+
+<p>Now it’s time to present collection initializers. We will start with
+<code class="highlighter-rouge">List&lt;T&gt;</code> initializers, then we will describe <code class="highlighter-rouge">Dictionary&lt;TKey, TValue&gt;</code>
+initializers.</p>
+
+<p>As we all know C# allows to create and initialize arrays in single expression:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">funnyNames</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">string</span><span class="p">[]</span> <span class="p">{</span> <span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> <span class="s">"baz"</span><span class="p">,</span> <span class="s">"yay"</span> <span class="p">};</span></code></pre></figure>
+
+<p>Wouldn’t it be nice if this syntax worked with <code class="highlighter-rouge">List&lt;T&gt;</code>’s? Actually thanks
+to collection initializers it works and not only with <code class="highlighter-rouge">List</code>’s but also with
+custom classes!</p>
+
+<p>Let’s see an example:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">funnyNames</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span> <span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> <span class="s">"baz"</span> <span class="p">};</span></code></pre></figure>
+
+<p>this code is translated by compiler to</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">tmp</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
+<span class="n">tmp</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="s">"foo"</span><span class="p">);</span>
+<span class="n">tmp</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="s">"bar"</span><span class="p">);</span>
+<span class="n">tmp</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="s">"baz"</span><span class="p">);</span>
+
+<span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">funnyNames</span> <span class="p">=</span> <span class="n">tmp</span><span class="p">;</span></code></pre></figure>
+
+<p>Inside initializers we are not limited to constants, we can use complex expressions
+like</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">List</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">&gt;</span> <span class="n">things</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">&gt;()</span> <span class="p">{</span>
+    <span class="p">(</span><span class="m">1</span><span class="p">+</span><span class="m">3</span><span class="p">*</span><span class="m">7</span><span class="p">),</span>
+    <span class="k">true</span><span class="p">.</span><span class="nf">ToString</span><span class="p">(),</span>
+    <span class="k">new</span> <span class="kt">object</span><span class="p">()</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>As we already seen compiler translates collection initializers to a couple
+of <code class="highlighter-rouge">Add</code> calls. We can make collection initializers work with custom classes by
+providing <code class="highlighter-rouge">Add</code> method and implementing <code class="highlighter-rouge">IEnumerable</code> or <code class="highlighter-rouge">IEnumerable&lt;T&gt;</code>. This
+second requirement is very important - since we are using <em>collection</em> initializers,
 compiler expects that we will initialize some kind of collection and collections
-ought to implement `IEnumerable` interface.
+ought to implement <code class="highlighter-rouge">IEnumerable</code> interface.</p>
 
-Below we present minimal generic and non-generic class that works with
-collections initializers:
-{% highlight csharp %}
-public class CustomCollection : IEnumerable {
-    public void Add(object item) {
-        Console.WriteLine("Add({0})", item);
-    }
+<p>Below we present minimal generic and non-generic class that works with
+collections initializers:</p>
 
-    IEnumerator IEnumerable.GetEnumerator() {
-        yield break;
-    }
-}
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">CustomCollection</span> <span class="p">:</span> <span class="n">IEnumerable</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Add</span><span class="p">(</span><span class="kt">object</span> <span class="n">item</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"Add({0})"</span><span class="p">,</span> <span class="n">item</span><span class="p">);</span>
+    <span class="p">}</span>
 
-public class CustomCollection<T> : IEnumerable<T> {
-    public void Add(T item) {
-        Console.WriteLine("Add<T>({0})", item);
-    }
+    <span class="n">IEnumerator</span> <span class="n">IEnumerable</span><span class="p">.</span><span class="nf">GetEnumerator</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">yield</span> <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 
-    IEnumerator<T> IEnumerable<T>.GetEnumerator() {
-        yield break;
-    }
+<span class="k">public</span> <span class="k">class</span> <span class="nc">CustomCollection</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Add</span><span class="p">(</span><span class="n">T</span> <span class="n">item</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"Add&lt;T&gt;({0})"</span><span class="p">,</span> <span class="n">item</span><span class="p">);</span>
+    <span class="p">}</span>
 
-    IEnumerator IEnumerable.GetEnumerator() {
-        yield break;
-    }
-}
-{% endhighlight %}
-NOTE: We used `yield break` to quickly provide dummy `IEnumerable` implementation.  
-Now we can test our custom collections:
-{% highlight csharp %}
-public class Program
-{
-    public static void Main(string[] args)
-    {
-        var nonGeneric = new CustomCollection { 1, 2, 3 };
-        var generic = new CustomCollection<int> { 1, 2, 3 };
-    }
-}
-{% endhighlight %}
-When ran this program will write:
-{% highlight no-highlight %}
-Add(1)
+    <span class="n">IEnumerator</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;.</span><span class="nf">GetEnumerator</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">yield</span> <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">IEnumerator</span> <span class="n">IEnumerable</span><span class="p">.</span><span class="nf">GetEnumerator</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">yield</span> <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>NOTE: We used <code class="highlighter-rouge">yield break</code> to quickly provide dummy <code class="highlighter-rouge">IEnumerable</code> implementation.<br />
+Now we can test our custom collections:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">Program</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">var</span> <span class="n">nonGeneric</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CustomCollection</span> <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span> <span class="p">};</span>
+        <span class="n">var</span> <span class="n">generic</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CustomCollection</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span> <span class="p">};</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>When ran this program will write:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">Add(1)
 Add(2)
 Add(3)
-Add<T>(1)
-Add<T>(2)
-Add<T>(3)
-{% endhighlight %}
+Add&lt;T&gt;(1)
+Add&lt;T&gt;(2)
+Add&lt;T&gt;(3)</code></pre></figure>
 
-Now since collections initializers are translated to a `Add` method calls, what will happen
-when we write `Add` method that take more than one parameter?
-{% highlight csharp %}
-public class CustomCollection2 : IEnumerable {
-    // notice *two* parameters
-    public void Add(object item, object item2) {
-        Console.WriteLine("Add({0}, {1})", item, item2);
-    }
+<p>Now since collections initializers are translated to a <code class="highlighter-rouge">Add</code> method calls, what will happen
+when we write <code class="highlighter-rouge">Add</code> method that take more than one parameter?</p>
 
-    IEnumerator IEnumerable.GetEnumerator() {
-        yield break;
-    }
-}
-{% endhighlight %}
-It turns out that we still can use collection initializers, but the syntax is a bit different
-{% highlight csharp %}
-var coll2 = new CustomCollection2 { 
-    { 1, 1 }, 
-    { 2, 2 },
-    { 3, 3 } 
-};
-{% endhighlight %}
-This is translated by compiler to
-{% highlight csharp %}
-CustomCollection2 tmp = new CustomCollection2();
-tmp.Add(1, 1);
-tmp.Add(2, 2);
-tmp.Add(3, 3);
-CustomCollection2 coll2 = tmp;
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">CustomCollection2</span> <span class="p">:</span> <span class="n">IEnumerable</span> <span class="p">{</span>
+    <span class="c1">// notice *two* parameters
+</span>    <span class="k">public</span> <span class="k">void</span> <span class="nf">Add</span><span class="p">(</span><span class="kt">object</span> <span class="n">item</span><span class="p">,</span> <span class="kt">object</span> <span class="n">item2</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"Add({0}, {1})"</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">item2</span><span class="p">);</span>
+    <span class="p">}</span>
 
-With this knowledge it should be now easy to understand how `Dictionary<TKey, TValue>`
-initializers work. First `Dictionary<TKey, TValue>` defines `Add(TKey, TValue)` method,
-second it implements `IEnumerable<KeyValuePair<TKey, TValue>>` interface - so it fulfills all 
-requirements needed by collection initializers to work.
+    <span class="n">IEnumerator</span> <span class="n">IEnumerable</span><span class="p">.</span><span class="nf">GetEnumerator</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">yield</span> <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
 
-We can initialize `Dictionary` with the following code
-{% highlight csharp %}
-var dict = new Dictionary<string, string> {
-    { "1", "one" },
-    { "2", "two" },
-    { "3", "three" }
-};
-{% endhighlight %}
-Which as we already know is translated into
-{% highlight csharp %}
-Dictionary<string, string> tmp = new Dictionary<string, string>();
-tmp.Add("1", "one");
-tmp.Add("2", "two");
-tmp.Add("3", "three");
+<p>It turns out that we still can use collection initializers, but the syntax is a bit different</p>
 
-var dict = tmp;
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">coll2</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CustomCollection2</span> <span class="p">{</span> 
+    <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">1</span> <span class="p">},</span> 
+    <span class="p">{</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="m">3</span><span class="p">,</span> <span class="m">3</span> <span class="p">}</span> 
+<span class="p">};</span></code></pre></figure>
 
-C# 6 introduced more flexible syntax for `Dictionary` initializers
-{% highlight csharp %}
-var dict = new Dictionary<string, string> {
-    ["1"] = "one",
-    ["2"] = "two",
-    ["3"] = "three"
-};
-{% endhighlight %}
-This is not translated to `Add` calls, but uses indexer instead
-{% highlight csharp %}
-Dictionary<string, string> tmp = new Dictionary<string, string>();
-tmp["1"] = "one";
-tmp["2"] = "two";
-tmp["3"] = "three";
-var dict = tmp;
-{% endhighlight %}
+<p>This is translated by compiler to</p>
 
-As other collection initializers it can work with custom types, only requirement is that
-type must have indexer
-{% highlight csharp %}
-public class CustomCollection {
-    public object this[string key] {
-        get { return null; }
-        set { /* do something with value */ }
-    }
-}
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">CustomCollection2</span> <span class="n">tmp</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">CustomCollection2</span><span class="p">();</span>
+<span class="n">tmp</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">1</span><span class="p">);</span>
+<span class="n">tmp</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="m">2</span><span class="p">);</span>
+<span class="n">tmp</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="m">3</span><span class="p">);</span>
+<span class="n">CustomCollection2</span> <span class="n">coll2</span> <span class="p">=</span> <span class="n">tmp</span><span class="p">;</span></code></pre></figure>
 
-// usage:
-var coll = new CustomCollection {
-    ["foo"] = 1,
-    ["bar"] = 2
-};
-{% endhighlight %}
+<p>With this knowledge it should be now easy to understand how <code class="highlighter-rouge">Dictionary&lt;TKey, TValue&gt;</code>
+initializers work. First <code class="highlighter-rouge">Dictionary&lt;TKey, TValue&gt;</code> defines <code class="highlighter-rouge">Add(TKey, TValue)</code> method,
+second it implements <code class="highlighter-rouge">IEnumerable&lt;KeyValuePair&lt;TKey, TValue&gt;&gt;</code> interface - so it fulfills all 
+requirements needed by collection initializers to work.</p>
 
-Another feature is that we can set properties of already existing objects in collection,
-for example let's assume that constructor of our collection already added some objects into
-collection:
-{% highlight csharp %}
-public class Example : Dictionary<string, Position> {
-    public Example() {
-        Add("topLeft", new Position());
-        Add("bottomRight", new Position());
-    }
-}
-{% endhighlight %}
-Then we can write
-{% highlight csharp %}
-var example  = new Example {
-    ["topLeft"] = { Top = 10, Left = 20 },
-    ["bottomRight"] = { Top = 100, Left = 220 }
-};
-{% endhighlight %}
-This will be translated by compiler into
-{% highlight csharp %}
-Example tmp = new Example();
-tmp["topLeft"].Top = 10;
-tmp["topLeft"].Left = 20;
-tmp["bottomRight"].Top = 100;
-tmp["bottomRight"].Left = 220;
-Example example = tmp;
-{%endhighlight %}
+<p>We can initialize <code class="highlighter-rouge">Dictionary</code> with the following code</p>
 
-The last thing worth know about this new initializer syntax is ability to mix it with
-property initializers e.g.
-{% highlight csharp %}
- var example  = new Example {
-    ["topLeft"] = { Top = 10, Left = 20 },
-    ["bottomRight"] = { Top = 100, Left = 220 },
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">dict</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="p">{</span> <span class="s">"1"</span><span class="p">,</span> <span class="s">"one"</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">"2"</span><span class="p">,</span> <span class="s">"two"</span> <span class="p">},</span>
+    <span class="p">{</span> <span class="s">"3"</span><span class="p">,</span> <span class="s">"three"</span> <span class="p">}</span>
+<span class="p">};</span></code></pre></figure>
 
-    // normal property
-    Tag = new object()
-};
-{% endhighlight %}
+<p>Which as we already know is translated into</p>
 
-That was plenty of knowledge, but the best way to learn about initializer is to use
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">tmp</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;();</span>
+<span class="n">tmp</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="s">"1"</span><span class="p">,</span> <span class="s">"one"</span><span class="p">);</span>
+<span class="n">tmp</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="s">"2"</span><span class="p">,</span> <span class="s">"two"</span><span class="p">);</span>
+<span class="n">tmp</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="s">"3"</span><span class="p">,</span> <span class="s">"three"</span><span class="p">);</span>
+
+<span class="n">var</span> <span class="n">dict</span> <span class="p">=</span> <span class="n">tmp</span><span class="p">;</span></code></pre></figure>
+
+<p>C# 6 introduced more flexible syntax for <code class="highlighter-rouge">Dictionary</code> initializers</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">dict</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="p">[</span><span class="s">"1"</span><span class="p">]</span> <span class="p">=</span> <span class="s">"one"</span><span class="p">,</span>
+    <span class="p">[</span><span class="s">"2"</span><span class="p">]</span> <span class="p">=</span> <span class="s">"two"</span><span class="p">,</span>
+    <span class="p">[</span><span class="s">"3"</span><span class="p">]</span> <span class="p">=</span> <span class="s">"three"</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>This is not translated to <code class="highlighter-rouge">Add</code> calls, but uses indexer instead</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">tmp</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;();</span>
+<span class="n">tmp</span><span class="p">[</span><span class="s">"1"</span><span class="p">]</span> <span class="p">=</span> <span class="s">"one"</span><span class="p">;</span>
+<span class="n">tmp</span><span class="p">[</span><span class="s">"2"</span><span class="p">]</span> <span class="p">=</span> <span class="s">"two"</span><span class="p">;</span>
+<span class="n">tmp</span><span class="p">[</span><span class="s">"3"</span><span class="p">]</span> <span class="p">=</span> <span class="s">"three"</span><span class="p">;</span>
+<span class="n">var</span> <span class="n">dict</span> <span class="p">=</span> <span class="n">tmp</span><span class="p">;</span></code></pre></figure>
+
+<p>As other collection initializers it can work with custom types, only requirement is that
+type must have indexer</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">CustomCollection</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">object</span> <span class="k">this</span><span class="p">[</span><span class="kt">string</span> <span class="n">key</span><span class="p">]</span> <span class="p">{</span>
+        <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="k">null</span><span class="p">;</span> <span class="p">}</span>
+        <span class="k">set</span> <span class="p">{</span> <span class="cm">/* do something with value */</span> <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// usage:
+</span><span class="n">var</span> <span class="n">coll</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CustomCollection</span> <span class="p">{</span>
+    <span class="p">[</span><span class="s">"foo"</span><span class="p">]</span> <span class="p">=</span> <span class="m">1</span><span class="p">,</span>
+    <span class="p">[</span><span class="s">"bar"</span><span class="p">]</span> <span class="p">=</span> <span class="m">2</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>Another feature is that we can set properties of already existing objects in collection,
+for example let’s assume that constructor of our collection already added some objects into
+collection:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">Example</span> <span class="p">:</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="n">Position</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="nf">Example</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nf">Add</span><span class="p">(</span><span class="s">"topLeft"</span><span class="p">,</span> <span class="k">new</span> <span class="nf">Position</span><span class="p">());</span>
+        <span class="nf">Add</span><span class="p">(</span><span class="s">"bottomRight"</span><span class="p">,</span> <span class="k">new</span> <span class="nf">Position</span><span class="p">());</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Then we can write</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">example</span>  <span class="p">=</span> <span class="k">new</span> <span class="n">Example</span> <span class="p">{</span>
+    <span class="p">[</span><span class="s">"topLeft"</span><span class="p">]</span> <span class="p">=</span> <span class="p">{</span> <span class="n">Top</span> <span class="p">=</span> <span class="m">10</span><span class="p">,</span> <span class="n">Left</span> <span class="p">=</span> <span class="m">20</span> <span class="p">},</span>
+    <span class="p">[</span><span class="s">"bottomRight"</span><span class="p">]</span> <span class="p">=</span> <span class="p">{</span> <span class="n">Top</span> <span class="p">=</span> <span class="m">100</span><span class="p">,</span> <span class="n">Left</span> <span class="p">=</span> <span class="m">220</span> <span class="p">}</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>This will be translated by compiler into</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">Example</span> <span class="n">tmp</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Example</span><span class="p">();</span>
+<span class="n">tmp</span><span class="p">[</span><span class="s">"topLeft"</span><span class="p">].</span><span class="n">Top</span> <span class="p">=</span> <span class="m">10</span><span class="p">;</span>
+<span class="n">tmp</span><span class="p">[</span><span class="s">"topLeft"</span><span class="p">].</span><span class="n">Left</span> <span class="p">=</span> <span class="m">20</span><span class="p">;</span>
+<span class="n">tmp</span><span class="p">[</span><span class="s">"bottomRight"</span><span class="p">].</span><span class="n">Top</span> <span class="p">=</span> <span class="m">100</span><span class="p">;</span>
+<span class="n">tmp</span><span class="p">[</span><span class="s">"bottomRight"</span><span class="p">].</span><span class="n">Left</span> <span class="p">=</span> <span class="m">220</span><span class="p">;</span>
+<span class="n">Example</span> <span class="n">example</span> <span class="p">=</span> <span class="n">tmp</span><span class="p">;</span></code></pre></figure>
+
+<p>The last thing worth know about this new initializer syntax is ability to mix it with
+property initializers e.g.</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"> <span class="n">var</span> <span class="n">example</span>  <span class="p">=</span> <span class="k">new</span> <span class="n">Example</span> <span class="p">{</span>
+    <span class="p">[</span><span class="s">"topLeft"</span><span class="p">]</span> <span class="p">=</span> <span class="p">{</span> <span class="n">Top</span> <span class="p">=</span> <span class="m">10</span><span class="p">,</span> <span class="n">Left</span> <span class="p">=</span> <span class="m">20</span> <span class="p">},</span>
+    <span class="p">[</span><span class="s">"bottomRight"</span><span class="p">]</span> <span class="p">=</span> <span class="p">{</span> <span class="n">Top</span> <span class="p">=</span> <span class="m">100</span><span class="p">,</span> <span class="n">Left</span> <span class="p">=</span> <span class="m">220</span> <span class="p">},</span>
+
+    <span class="c1">// normal property
+</span>    <span class="n">Tag</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">object</span><span class="p">()</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>That was plenty of knowledge, but the best way to learn about initializer is to use
 them in code. After a while they become second nature for C# programmers and central part
-of many language idioms.
-
+of many language idioms.</p>
 
 
 	  ]]></description>

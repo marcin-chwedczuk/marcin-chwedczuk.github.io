@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Random thoughts on Maybe</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover2.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Random thoughts on Maybe</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2019-01-01">01 Jan 2019</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/dotnet'>Dotnet</a>,
+                       
+                
+                    
+                       <a href='/tag/architecture'>Architecture</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>With functional programming on the rise nowadays, 
+more and more people start using functional 
+patterns in their code.
+One of the simplest patterns is <code class="highlighter-rouge">Maybe&lt;T&gt;</code> monad
+also called <code class="highlighter-rouge">Option&lt;T&gt;</code> or <code class="highlighter-rouge">Optional&lt;T&gt;</code>.
+<code class="highlighter-rouge">Maybe&lt;T&gt;</code>’s primary use case is to represent a possibly
+missing value.</p>
+
+<p>I have already use <code class="highlighter-rouge">Maybe&lt;T&gt;</code> a few times in real
+codebases and in this post I want to gather my thoughts
+on <code class="highlighter-rouge">Maybe&lt;T&gt;</code> and how, I think, it should be used.</p>
+
+<h4 id="why-we-use-maybet">Why we use <code class="highlighter-rouge">Maybe&lt;T&gt;</code>?</h4>
+
+<p>Most people that use <code class="highlighter-rouge">Maybe&lt;T&gt;</code> generally fall into
+one of the two categories.</p>
+
+<h5 id="category-1-wants-to-eliminate-nullreferenceexception">Category 1: Wants to eliminate <code class="highlighter-rouge">NullReferenceException</code></h5>
+
+<p>For a long time before <code class="highlighter-rouge">Maybe&lt;T&gt;</code> programmers tried to
+clearly state to the clients of their API that a given
+method may return <code class="highlighter-rouge">null</code> instead of an object.
+Some of them used special naming conventions or 
+comments, for example:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// Naming convention and XML documentation
+// comments in action.
+</span><span class="k">public</span> <span class="k">interface</span> <span class="n">IUserRepository</span> <span class="p">{</span>
+    <span class="c1">/// &lt;returns&gt;
+</span>    <span class="c1">/// Returns &lt;c&gt;null&lt;/c&gt; if user is not found.
+</span>    <span class="c1">/// &lt;/returns&gt;
+</span>    <span class="n">User</span> <span class="nf">FindById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
+
+    <span class="c1">/// &lt;exception cref="EntityNotFound"&gt;
+</span>    <span class="c1">/// If user is not found.
+</span>    <span class="c1">/// &lt;/exception&gt;
+</span>    <span class="n">User</span> <span class="nf">FindRequiredById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Others resorted to using special marking attributes and
+static code analysis tools. 
+A good example of this category is 
+<a href="https://www.nuget.org/packages/JetBrains.Annotations">JetBrains.Annotations</a> package, that can be used together with ReSharper
+to detect missing null checks:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IUserRepository</span> <span class="p">{</span>
+    <span class="p">[</span><span class="n">CanBeNull</span><span class="p">]</span>
+    <span class="n">User</span> <span class="nf">FindById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">interface</span> <span class="n">IUserService</span> <span class="p">{</span>
+    <span class="k">void</span> <span class="nf">ActivateUser</span><span class="p">([</span><span class="n">NotNull</span><span class="p">]</span> <span class="n">User</span> <span class="n">user</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Yet another solution to this problem were 
+<a href="https://www.infoq.com/articles/code-contracts-csharp">Code Contracts</a>
+developed by Microsoft.</p>
+
+<p>None of those solutions is perfect and <code class="highlighter-rouge">Maybe&lt;T&gt;</code> seems
+to offer a better alternative. 
+Why? Because it is checked by the compiler,
+does not require additional tools and does not slow
+down compilation.
+But remember there is 
+<a href="https://en.wikipedia.org/wiki/No_Silver_Bullet">no silver bullet</a>,
+and <code class="highlighter-rouge">Maybe&lt;T&gt;</code> is not perfect either.</p>
+
+<p>We can use <code class="highlighter-rouge">Maybe&lt;T&gt;</code> like this:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IUserRepository</span> <span class="p">{</span>
+    <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="nf">FindById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">// and usage:
+</span><span class="n">var</span> <span class="n">user</span> <span class="p">=</span> <span class="n">usersRepository</span><span class="p">.</span><span class="nf">FindById</span><span class="p">(</span><span class="n">userId</span><span class="p">);</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">user</span><span class="p">.</span><span class="n">HasValue</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nf">Ok</span><span class="p">(</span><span class="n">user</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nf">NotFound</span><span class="p">();</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>If you find yourself in this category of programmers, 
+you would definitely
+want to use a lightweight library that
+does not force you to embrace a more functional style.
+One good library that I can recommend is: 
+<a href="https://github.com/vkhorikov/CSharpFunctionalExtensions">CSharpFunctionalExtensions</a>.</p>
+
+<p>If you choose a different library, please make sure to check
+that <code class="highlighter-rouge">Maybe&lt;T&gt;</code> is implemented using <code class="highlighter-rouge">struct</code>, otherwise you
+may be surprised:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="nf">GetUserAgent</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">null</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>One small downside of using a <code class="highlighter-rouge">struct</code> is
+possibility of declaration of a nullable <code class="highlighter-rouge">Maybe&lt;T&gt;</code> type:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// Don't do this:
+</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;?</span> <span class="n">bad</span><span class="p">;</span></code></pre></figure>
+
+<p>When I was writing this article I tried to gather some
+best practices of using <code class="highlighter-rouge">Maybe&lt;T&gt;</code>. 
+Unfortunately it was very difficult to provide a comprehensive
+list. There is not much material on this on the web (I mean using 
+<code class="highlighter-rouge">Maybe&lt;T&gt;</code> <em>not</em> in the FP fashion) and the available
+material is often contradictory. 
+And so instead of providing you with a list of best practices, 
+I will only give you some hints where you can look for advice.</p>
+
+<p>We should start our search by looking at
+Java 8, which was published in 2014 and introduced 
+<code class="highlighter-rouge">java.util.Optional&lt;T&gt;</code> class. 
+The purpose of this class is to be a nullability marker
+for method results just like our <code class="highlighter-rouge">Maybe&lt;T&gt;</code>. 
+There are a lot of articles about how <code class="highlighter-rouge">Optional&lt;T&gt;</code> should
+and should not be used. 
+A good starting point will be 
+<a href="https://stackoverflow.com/questions/26327957/should-java-8-getters-return-optional-type">this SO question</a>
+with the first two answers. 
+From this question alone we may learn e.g. to never wrap
+a collection into <code class="highlighter-rouge">Maybe&lt;T&gt;</code>, 
+instead of we should return a possibly empty collection.</p>
+
+<p>The downside of reading Java’s best practices is that some
+of them do not apply to C#. For example let’s look at the
+advice given in <a href="https://stackoverflow.com/a/39005452/1779504">this SO answer</a>:</p>
+
+<blockquote>
+  <p>When a method can accept optional parameters, 
+it’s preferable to adopt the well-proven approach 
+and design such case using method overloading.</p>
+</blockquote>
+
+<p>In other words author suggest to change:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// this ctor:
+</span><span class="k">public</span> <span class="nf">SystemMessage</span><span class="p">(</span>
+    <span class="kt">string</span> <span class="n">title</span><span class="p">,</span>
+    <span class="kt">string</span> <span class="n">body</span><span class="p">,</span>
+    <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">Attachment</span><span class="p">&gt;</span> <span class="n">attachment</span><span class="p">);</span>
+
+<span class="c1">// into two ctor's:
+</span><span class="k">public</span> <span class="nf">SystemMessage</span><span class="p">(</span>
+    <span class="kt">string</span> <span class="n">title</span><span class="p">,</span>
+    <span class="kt">string</span> <span class="n">body</span><span class="p">,</span>
+    <span class="n">Attachment</span> <span class="n">attachment</span><span class="p">);</span>
+
+<span class="k">public</span> <span class="nf">SystemMessage</span><span class="p">(</span>
+    <span class="kt">string</span> <span class="n">title</span><span class="p">,</span>
+    <span class="kt">string</span> <span class="n">body</span><span class="p">);</span>
+
+<span class="c1">// Because using these ctor's would be easier for
+// the clients. Consider:
+</span><span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">Attachment</span><span class="p">&gt;.</span><span class="n">None</span><span class="p">)</span>
+<span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> 
+    <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">Attachment</span><span class="p">&gt;.</span><span class="nf">From</span><span class="p">(</span><span class="n">attachment</span><span class="p">))</span>
+<span class="c1">// vs
+</span><span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">);</span>
+<span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> <span class="n">attachment</span><span class="p">);</span></code></pre></figure>
+
+<p>But this argument does not applies to C#, where we can
+use implicit conversion operator with default parameters
+to achieve exactly the same effect without using overloads:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">struct</span> <span class="nc">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="p">{</span> 
+    <span class="k">private</span> <span class="n">T</span> <span class="n">_value</span><span class="p">;</span>
+    <span class="k">private</span> <span class="kt">bool</span> <span class="n">_present</span><span class="p">;</span>
+    
+    <span class="k">public</span> <span class="nf">Maybe</span><span class="p">(</span><span class="n">T</span> <span class="k">value</span><span class="p">)</span> <span class="p">{</span> 
+        <span class="n">_value</span> <span class="p">=</span> <span class="k">value</span><span class="p">;</span>
+        <span class="n">_present</span> <span class="p">=</span> <span class="p">(</span><span class="k">value</span> <span class="p">!=</span> <span class="k">null</span><span class="p">);</span>
+    <span class="p">}</span>
+    
+    <span class="k">public</span> <span class="k">static</span> <span class="k">implicit</span> <span class="k">operator</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">T</span> <span class="k">value</span><span class="p">)</span>
+        <span class="p">=&gt;</span> <span class="k">value</span> <span class="p">==</span> <span class="k">null</span> <span class="p">?</span> <span class="k">new</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;()</span> <span class="p">:</span> <span class="k">new</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="k">value</span><span class="p">);</span> 
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Attachment</span> <span class="p">{</span> <span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">SystemMessage</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="nf">SystemMessage</span><span class="p">(</span>
+        <span class="kt">string</span> <span class="n">title</span><span class="p">,</span> <span class="kt">string</span> <span class="n">body</span><span class="p">,</span> 
+        <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">Attachment</span><span class="p">&gt;</span> <span class="n">attachment</span> <span class="p">=</span> <span class="k">default</span><span class="p">(</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="n">Attachment</span><span class="p">&gt;))</span> <span class="p">{</span> 
+    <span class="p">}</span>
+<span class="p">}</span>   
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Program</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">()</span> <span class="p">{</span> 
+        <span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">);</span>
+        <span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> <span class="k">new</span> <span class="nf">Attachment</span><span class="p">());</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>As we can see every Java’ish advice must be taken with 
+a grain of salt.</p>
+
+<p>Fortunately for us there is more and more C# posts about
+using <code class="highlighter-rouge">Maybe&lt;T&gt;</code>. For example <a href="https://enterprisecraftsmanship.com/2015/03/13/functional-c-non-nullable-reference-types/">this one</a>
+from the author of CSharpFunctionalExtensions library.</p>
+
+<p>Although I cannot provide you with a list of best practices,
+I think I have gathered enough experience to provide
+you with a list of <code class="highlighter-rouge">Maybe&lt;T&gt;</code> code smells:</p>
+
+<ul>
+  <li>Nested <code class="highlighter-rouge">Maybe</code>s are wrong, for example <code class="highlighter-rouge">Maybe&lt;Maybe&lt;string&gt;&gt;</code>.
+ Usually this is a sign that you should replace one of
+ <code class="highlighter-rouge">Map</code> calls by a <code class="highlighter-rouge">FlatMap</code> (alternatively a <code class="highlighter-rouge">Select</code> by a <code class="highlighter-rouge">SelectMany</code> call).</li>
+  <li><code class="highlighter-rouge">Maybe</code>s that wrap collections are wrong, for example <code class="highlighter-rouge">Maybe&lt;List&lt;User&gt;&gt;</code>.
+ Instead return a non-empty or empty collection.</li>
+  <li><code class="highlighter-rouge">Maybe</code>s wrapping nullable types are wrong, for example <code class="highlighter-rouge">Maybe&lt;int?&gt;</code>.
+ Instead convert nullable type <code class="highlighter-rouge">T?</code> to <code class="highlighter-rouge">Maybe&lt;T&gt;</code>. 
+ Even if you chosen library does not support such conversion out of 
+ the box, you may write an extension method that provides this functionality
+ yourself:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">static</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">ToMaybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="k">this</span> <span class="n">T</span><span class="p">?</span> <span class="k">value</span><span class="p">)</span>
+        <span class="n">where</span> <span class="n">T</span><span class="p">:</span> <span class="k">struct</span>
+    <span class="err">=&gt;</span> <span class="nc">value</span><span class="p">.</span><span class="n">HasValue</span> <span class="p">?</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;.</span><span class="nf">From</span><span class="p">(</span><span class="k">value</span><span class="p">.</span><span class="n">Value</span><span class="p">)</span> <span class="p">:</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;.</span><span class="n">None</span><span class="p">;</span></code></pre></figure>
+
+<ul>
+  <li>Nested callbacks when using <code class="highlighter-rouge">Maybe&lt;T&gt;</code> fluent interface are wrong.
+ For example:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// BAD Fluent interface spaghetti
+</span><span class="n">var</span> <span class="n">cultureBad</span> <span class="p">=</span> <span class="n">user</span><span class="p">.</span><span class="nf">Select</span><span class="p">(</span>
+    <span class="n">u</span> <span class="p">=&gt;</span> <span class="nf">LoadPreferences</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">Select</span><span class="p">(</span><span class="n">prefs</span> <span class="p">=&gt;</span> <span class="n">prefs</span><span class="p">.</span><span class="n">Culture</span><span class="p">));</span>
+
+<span class="c1">// GOOD, only one operation per Select method call
+</span><span class="n">var</span> <span class="n">cultureGood</span> <span class="p">=</span> <span class="n">user</span>
+    <span class="p">.</span><span class="nf">Select</span><span class="p">(</span><span class="n">u</span> <span class="p">=&gt;</span> <span class="nf">LoadPreferences</span><span class="p">(</span><span class="n">u</span><span class="p">))</span>
+    <span class="p">.</span><span class="nf">Select</span><span class="p">(</span><span class="n">prefs</span> <span class="p">=&gt;</span> <span class="n">prefs</span><span class="p">.</span><span class="n">Culture</span><span class="p">);</span></code></pre></figure>
+
+<p>Also be mindful when using <code class="highlighter-rouge">Maybe&lt;T&gt;</code> with properties.
+A declaration like:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">Culture</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span></code></pre></figure>
+
+<p>Means that you may both get and set an optional value.
+In other words assignment of <code class="highlighter-rouge">None</code> value to this 
+property should be valid:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">foo</span><span class="p">.</span><span class="n">Culture</span> <span class="p">=</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;.</span><span class="n">None</span><span class="p">;</span></code></pre></figure>
+
+<p>A property that can return <code class="highlighter-rouge">None</code> but must be
+set to some value should be split into a getter and a method:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// AVOID:
+</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">Culture</span> <span class="p">{</span>
+    <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;.</span><span class="nf">From</span><span class="p">(</span><span class="n">_culture</span><span class="p">);</span> <span class="p">}</span>
+    <span class="k">set</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="k">value</span><span class="p">.</span><span class="n">HasNoValue</span><span class="p">)</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentException</span><span class="p">(</span><span class="s">"Culture cannot be empty."</span><span class="p">);</span>
+        <span class="n">_culture</span> <span class="p">=</span> <span class="k">value</span><span class="p">.</span><span class="n">Value</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// PREFER:
+</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">Culture</span>
+    <span class="p">=&gt;</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;.</span><span class="nf">From</span><span class="p">(</span><span class="n">_culture</span><span class="p">);</span>
+
+<span class="k">void</span> <span class="nf">SetCulture</span><span class="p">(</span><span class="kt">string</span> <span class="n">culture</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">culture</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentException</span><span class="p">(</span><span class="s">"Culture cannot be empty."</span><span class="p">);</span>
+    <span class="n">_culture</span> <span class="p">=</span> <span class="n">culture</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>As you probably heard C# 8.0 is going to introduce a nullable reference types (NRT).
+Will NRT replace <code class="highlighter-rouge">Maybe&lt;T&gt;</code>?
+For “Category 1” programmers, NRTs offer a better
+alternative to <code class="highlighter-rouge">Maybe&lt;T&gt;</code>. On the other hand a lot of people
+that start in “Category 1”, slowly begin to embrace more FP approach.
+Usually people start by using <code class="highlighter-rouge">Maybe&lt;T&gt;</code> fluent interface to transform
+one <code class="highlighter-rouge">Maybe&lt;T&gt;</code> value into another. After some time they take a leap and
+switch to writing in a more functional fashion.</p>
+
+<p>We may also take a look at <a href="https://kotlinlang.org/">Kotlin</a>,
+a language created by JetBrains that from the very beginning 
+<a href="https://kotlinlang.org/docs/reference/null-safety.html">offered nullable reference types</a>. 
+And yet the most popular Kotlin functional library
+<a href="https://github.com/MarioAriasC/funKTionale">funKTionale</a> 
+still offers an <code class="highlighter-rouge">Option</code> type. 
+So it looks like NRT or not, <code class="highlighter-rouge">Maybe&lt;T&gt;</code> is going to stay with us for sure.</p>
+
+<h5 id="category-2-wants-to-embrace-fp-paradigm">Category 2: Wants to embrace FP paradigm</h5>
+
+<p>Programmers belonging to this category embraced FP. They
+often think about using F# at work and are a bit disappointed
+by poor C# pattern matching facilities.</p>
+
+<p>Code written in FP fashion will never use <code class="highlighter-rouge">if</code> to check
+if <code class="highlighter-rouge">Maybe&lt;T&gt;</code> contains some value, instead a fluent interface
+will be used to transform <code class="highlighter-rouge">Maybe&lt;T&gt;</code>s into some other values, for example:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">private</span> <span class="n">UserRepository</span> <span class="n">_userRepository</span><span class="p">;</span>
+
+<span class="c1">// NOTICE: No if's in code
+</span><span class="k">public</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="nf">GetUserCulture</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span>
+    <span class="p">=&gt;</span> <span class="n">_userRepository</span><span class="p">.</span><span class="nf">FindById</span><span class="p">(</span><span class="n">userId</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">BiMap</span><span class="p">(</span>
+            <span class="n">Some</span><span class="p">:</span> <span class="n">user</span> <span class="p">=&gt;</span> <span class="nf">GetUserCulture</span><span class="p">(</span><span class="n">user</span><span class="p">),</span>
+            <span class="n">None</span><span class="p">:</span> <span class="n">_</span> <span class="p">=&gt;</span> <span class="k">null</span><span class="p">);</span>
+
+<span class="k">public</span> <span class="k">static</span> <span class="kt">string</span> <span class="nf">GetUserCulture</span><span class="p">(</span><span class="n">User</span> <span class="n">user</span><span class="p">)</span>
+    <span class="p">=&gt;</span> <span class="n">user</span><span class="p">.</span><span class="n">Preferences</span>    
+            <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">prefs</span> <span class="p">=&gt;</span> <span class="n">prefs</span><span class="p">.</span><span class="n">Culture</span><span class="p">)</span>
+            <span class="p">.</span><span class="nf">IfNone</span><span class="p">(</span><span class="s">"en-US"</span><span class="p">);</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">UserRepository</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="k">readonly</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="n">_users</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="p">{</span>
+        <span class="k">new</span> <span class="nf">User</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="k">null</span><span class="p">),</span>
+        <span class="k">new</span> <span class="nf">User</span><span class="p">(</span><span class="m">2</span><span class="p">,</span> <span class="k">new</span> <span class="n">UserPreferences</span> <span class="p">{</span>
+            <span class="n">Culture</span> <span class="p">=</span> <span class="s">"pl-PL"</span>
+        <span class="p">})</span>
+    <span class="p">};</span>
+
+    <span class="c1">// NOTICE: Extra extension methods for IEnumerable&lt;T&gt;
+</span>    <span class="c1">// that return Option&lt;T&gt; instead of null's.
+</span>    <span class="k">public</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="nf">FindById</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">_users</span><span class="p">.</span><span class="nf">Find</span><span class="p">(</span><span class="n">u</span> <span class="p">=&gt;</span> <span class="n">u</span><span class="p">.</span><span class="n">UserId</span> <span class="p">==</span> <span class="n">userId</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">User</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">int</span> <span class="n">UserId</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+
+    <span class="k">private</span> <span class="n">UserPreferences</span> <span class="n">_preferences</span><span class="p">;</span>
+    <span class="k">public</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">UserPreferences</span><span class="p">&gt;</span> <span class="n">Preferences</span>
+        <span class="p">=&gt;</span> <span class="nf">Optional</span><span class="p">(</span><span class="n">_preferences</span><span class="p">);</span>
+
+    <span class="k">public</span> <span class="nf">User</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">,</span> <span class="n">UserPreferences</span> <span class="n">preferences</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">UserId</span> <span class="p">=</span> <span class="n">userId</span><span class="p">;</span>
+        <span class="n">_preferences</span> <span class="p">=</span> <span class="n">preferences</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">UserPreferences</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Culture</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Alternatively we may change our previous method to:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">static</span> <span class="kt">string</span> <span class="nf">GetUserCulture2</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span>
+    <span class="p">=&gt;</span> <span class="n">_userRepository</span><span class="p">.</span><span class="nf">FindById</span><span class="p">(</span><span class="n">userId</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">Bind</span><span class="p">(</span><span class="n">user</span> <span class="p">=&gt;</span> <span class="n">user</span><span class="p">.</span><span class="n">Preferences</span><span class="p">)</span> <span class="c1">// FlatMap
+</span>        <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">prefs</span> <span class="p">=&gt;</span> <span class="n">prefs</span><span class="p">.</span><span class="n">Culture</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">IfNone</span><span class="p">(</span><span class="s">"en-US"</span><span class="p">);</span> <span class="p">//</span> <span class="k">default</span> <span class="n">culture</span></code></pre></figure>
+
+<p>The only difference between these two methods
+is the value returned for users not present in the repository.
+<code class="highlighter-rouge">GetUserCulture</code> returns for them <code class="highlighter-rouge">None()</code> but <code class="highlighter-rouge">GetUserCulture2</code>
+returns a default culture (<code class="highlighter-rouge">Some("en-US")</code>).</p>
+
+<p>Another sign of a functional design, is that monads like <code class="highlighter-rouge">Maybe&lt;T&gt;</code>
+will be unpacked only on the outskirts of the application.
+For example in a typical RESTful service, <code class="highlighter-rouge">Maybe&lt;T&gt;</code> value will 
+be unpacked only in the controller:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// GET /user/{userId}/culture
+</span><span class="k">public</span> <span class="n">IActionResult</span> <span class="nf">Get</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// WARNING: In real apps do not return bare strings 
+</span>    <span class="c1">// from the REST api. 
+</span>    <span class="c1">// Always wrap them in DTOs / ViewModels / QueryResponses.
+</span>    <span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">culture</span> <span class="p">=</span> <span class="nf">GetUserCulture</span><span class="p">();</span>
+    <span class="k">return</span> <span class="nf">Maybe</span><span class="p">(</span><span class="n">culture</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Presumably in the base controller
+</span><span class="k">public</span> <span class="n">IActionResult</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">m</span><span class="p">)</span>
+    <span class="p">=&gt;</span> <span class="n">m</span><span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="k">value</span> <span class="p">=&gt;</span> <span class="nf">Ok</span><span class="p">(</span><span class="k">value</span><span class="p">))</span>
+        <span class="p">.</span><span class="nf">IfNone</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nf">NotFound</span><span class="p">());</span></code></pre></figure>
+
+<p>In this category of programmers there is also a small group
+of zealots, that in my opinion go a little bit to far in their cult of monads. 
+They propose to use LINQ query syntax to transform monads.
+Let my explain this using an example:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// We want to sum three Option&lt;int&gt; values.
+</span><span class="k">private</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="p">=&gt;</span> <span class="m">3</span><span class="p">;</span>
+
+<span class="c1">// Using fluent interface:
+</span><span class="n">var</span> <span class="n">sum</span> <span class="p">=</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="p">.</span><span class="nf">SelectMany</span><span class="p">(</span><span class="n">_</span> <span class="p">=&gt;</span> <span class="nf">GetOptionalInt</span><span class="p">(),</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">a</span><span class="p">+</span><span class="n">b</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">SelectMany</span><span class="p">(</span><span class="n">_</span> <span class="p">=&gt;</span> <span class="nf">GetOptionalInt</span><span class="p">(),</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">a</span><span class="p">+</span><span class="n">b</span><span class="p">);</span>
+
+<span class="c1">// Using LINQ query:
+</span><span class="n">var</span> <span class="n">sum2</span> <span class="p">=</span>  <span class="n">from</span> <span class="n">n1</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+            <span class="n">from</span> <span class="n">n2</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+            <span class="n">from</span> <span class="n">n3</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+            <span class="n">select</span> <span class="n">n1</span><span class="p">+</span><span class="n">n2</span><span class="p">+</span><span class="n">n3</span><span class="p">;</span></code></pre></figure>
+
+<p>I must admin that LINQ query offers some advantages like
+ability to use <code class="highlighter-rouge">let</code> and <code class="highlighter-rouge">where</code> keywords. Also some transformations
+may be easier to express using LINQ query syntax, for example:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">sum2</span> <span class="p">=</span>  
+    <span class="n">from</span> <span class="n">n1</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="n">from</span> <span class="n">n2</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="n">from</span> <span class="n">n3</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="n">let</span> <span class="n">max</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
+    <span class="n">let</span> <span class="n">min</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
+    <span class="n">where</span> <span class="n">min</span> <span class="p">!=</span> <span class="m">0</span>
+    <span class="n">select</span> <span class="n">max</span> <span class="p">/</span> <span class="n">min</span><span class="p">;</span></code></pre></figure>
+
+<p>Yet in my opinion fluent interface is in 90% of cases 
+a more readable and understandable way 
+to transform <code class="highlighter-rouge">Maybe&lt;T&gt;</code>s and other monads.
+For example we may rewrite the last code snippet to:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">res</span> <span class="p">=</span> <span class="nf">Combine</span><span class="p">(</span>
+        <span class="nf">GetOptionalInt</span><span class="p">(),</span>
+        <span class="nf">GetOptionalInt</span><span class="p">(),</span>
+        <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">nnn</span> <span class="p">=&gt;</span> <span class="p">{</span>
+        <span class="p">(</span><span class="n">var</span> <span class="n">n1</span><span class="p">,</span> <span class="n">var</span> <span class="n">n2</span><span class="p">,</span> <span class="n">var</span> <span class="n">n3</span><span class="p">)</span> <span class="p">=</span> <span class="n">nnn</span><span class="p">;</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="p">{</span> 
+            <span class="n">Max</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">)),</span>
+            <span class="n">Min</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
+        <span class="p">};</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="nf">Filter</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="n">m</span><span class="p">.</span><span class="n">Min</span> <span class="p">!=</span> <span class="m">0</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="n">m</span><span class="p">.</span><span class="n">Max</span> <span class="p">/</span> <span class="n">m</span><span class="p">.</span><span class="n">Min</span><span class="p">);</span>
+
+<span class="c1">// We need a few utils
+</span><span class="k">private</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;(</span><span class="n">T</span><span class="p">,</span><span class="n">T</span><span class="p">)&gt;</span> <span class="n">Combine</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">Option</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">a</span><span class="p">,</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">b</span><span class="p">)</span>
+    <span class="p">=&gt;</span> <span class="n">a</span><span class="p">.</span><span class="nf">SelectMany</span><span class="p">(</span>
+            <span class="n">_</span> <span class="p">=&gt;</span> <span class="n">b</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">aValue</span><span class="p">,</span> <span class="n">bValue</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">(</span><span class="n">aValue</span><span class="p">,</span> <span class="n">bValue</span><span class="p">));</span>
+
+<span class="k">private</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;(</span><span class="n">T</span><span class="p">,</span><span class="n">T</span><span class="p">,</span><span class="n">T</span><span class="p">)&gt;</span> <span class="n">Combine</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">Option</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">a</span><span class="p">,</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">b</span><span class="p">,</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">c</span><span class="p">)</span>
+    <span class="p">=&gt;</span> <span class="nf">Combine</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">SelectMany</span><span class="p">(</span>
+            <span class="n">_</span> <span class="p">=&gt;</span> <span class="n">c</span><span class="p">,</span>
+            <span class="p">(</span><span class="n">tt</span><span class="p">,</span> <span class="n">cValue</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">(</span><span class="n">tt</span><span class="p">.</span><span class="n">Item1</span><span class="p">,</span> <span class="n">tt</span><span class="p">.</span><span class="n">Item2</span><span class="p">,</span> <span class="n">cValue</span><span class="p">));</span></code></pre></figure>
+
+<p>Not as pretty as LINQ query but still readable.</p>
+
+<p>At the end of the day consistency is what matters on real
+projects. Choose one style and follow it consistently.</p>
+
+<p>In this category we find libraries like 
+<a href="https://github.com/louthy/language-ext">LanguageExt</a>.
+This library has many flaws but still it is the best 
+functional library on the market. 
+My biggest disappointment with LanguageExt is poor documentation,
+which basically consists of just a list of functions without any guidelines how
+this library should be used and how it affects overall architecture.
+Compare this with <a href="https://www.vavr.io/vavr-docs/">Vavr</a>
+(the most popular FP library for JVM) and you can clearly
+see the difference.</p>
+
+<p>If you decided that you want to use FP in you code, you
+should definitively check awesome
+<a href="https://fsharpforfunandprofit.com/rop/">Railway oriented programming</a>
+talk.</p>
+
+<p><code class="highlighter-rouge">Maybe&lt;T&gt;</code> is not the only monad that is popular, other
+frequently used one is <code class="highlighter-rouge">Either&lt;L,R&gt;</code>. 
+<code class="highlighter-rouge">Either&lt;L,R&gt;</code> is used to represent either a result of computation or an error.
+You may think of <code class="highlighter-rouge">Either&lt;L,R&gt;</code> as a functional response to exceptions.
+If you want to use <code class="highlighter-rouge">Maybe&lt;T&gt;</code> efficiently, you must learn 
+how it can be transformed it into other monads, in particular into <code class="highlighter-rouge">Either&lt;L,R&gt;</code>.
+E.g. we may make our last example more robust if we provide
+information to the user why the computation failed:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">result</span> <span class="p">=</span> <span class="nf">Combine</span><span class="p">(</span>
+    <span class="nf">GetOptionalInt</span><span class="p">(),</span>
+    <span class="nf">GetOptionalInt</span><span class="p">(),</span>
+    <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">ttt</span> <span class="p">=&gt;</span> <span class="p">{</span>
+        <span class="p">(</span><span class="n">var</span> <span class="n">n1</span><span class="p">,</span> <span class="n">var</span> <span class="n">n2</span><span class="p">,</span> <span class="n">var</span> <span class="n">n3</span><span class="p">)</span> <span class="p">=</span> <span class="n">ttt</span><span class="p">;</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="p">{</span> 
+            <span class="n">Max</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">)),</span>
+            <span class="n">Min</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
+        <span class="p">};</span>
+    <span class="p">})</span>
+    <span class="p">.</span><span class="nf">ToEither</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nf">Error</span><span class="p">(</span><span class="s">"Not all values are available."</span><span class="p">))</span>
+    <span class="p">.</span><span class="nf">Bind</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="nf">Divide</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">Max</span><span class="p">,</span> <span class="n">m</span><span class="p">.</span><span class="n">Min</span><span class="p">));</span> <span class="c1">// FlatMap
+</span>
+<span class="n">Either</span><span class="p">&lt;</span><span class="n">Error</span><span class="p">,</span> <span class="kt">int</span><span class="p">&gt;</span> <span class="nf">Divide</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">b</span> <span class="p">==</span> <span class="m">0</span><span class="p">)</span> <span class="k">return</span> <span class="nf">Left</span><span class="p">(</span><span class="nf">Error</span><span class="p">(</span><span class="s">"Cannot divide by zero"</span><span class="p">));</span>
+    <span class="k">return</span> <span class="nf">Right</span><span class="p">(</span><span class="n">a</span> <span class="p">/</span> <span class="n">b</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// Helper classes:
+</span><span class="k">public</span> <span class="k">class</span> <span class="nc">Error</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">Message</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+
+    <span class="k">public</span> <span class="nf">Error</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">Message</span> <span class="p">=</span> <span class="n">message</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="nf">ToString</span><span class="p">()</span>
+        <span class="p">=&gt;</span> <span class="err">$</span><span class="s">"Error({Message})"</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">ErrorHelpers</span> <span class="p">{</span>
+    <span class="c1">// For `using static` import...
+</span>    <span class="k">public</span> <span class="k">static</span> <span class="n">Error</span> <span class="nf">Error</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">)</span>
+        <span class="p">=&gt;</span> <span class="k">new</span> <span class="nf">Error</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Since FP is on the rise, you will find a lot of books, blogs, podcasts
+and MOOC’s about using FP in C#. Also .NET has amazing F# community
+that is very welcoming to the beginners.
+One of the best blogs about FP in C# is in my opinion
+<a href="http://blog.ploeh.dk/archive/">Mark Seemann blog</a>.</p>
+
+<h4 id="what-to-do-with-none">What to do with None?</h4>
+
+<p>How much value you will be able to extract from <code class="highlighter-rouge">Maybe&lt;T&gt;</code> depends on
+your attitude towards <code class="highlighter-rouge">None</code>s. 
+Every time when you have to handle <code class="highlighter-rouge">None</code>, you must decide if it is 
+the result of 
+<a href="https://www.quora.com/What-are-essential-and-accidental-complexity">the accidental complexity</a>
+e.g. someone passed a wrong id to the REST API) 
+or if you just discovered a new edge case in your domain.</p>
+
+<p>To better understand the problem let’s follow an imaginary example.
+Joe must write a simple function that will
+send an email message to all users whose subscriptions will end in the next month.
+During implementation Joe notices that <code class="highlighter-rouge">EmailAddress</code> field in <code class="highlighter-rouge">User</code> entity 
+is declared as <code class="highlighter-rouge">Option&lt;Email&gt;</code>:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">User</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">Email</span><span class="p">&gt;</span> <span class="n">EmailAddress</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
+    <span class="c1">// ...
+</span><span class="p">}</span></code></pre></figure>
+
+<p>Now Joe knows that for some strange reason not all users have email addresses.
+Joe logs into production DB to confirm that some email addresses are missing 
+and indeed they are. Looks like Joe just discovered a new edge case.
+Joe goes to Mark a business analyst to describe the problem. Mark is a long
+timer in the company and knows that for a short period of time users
+were able to log into the platform using their phone numbers instead of emails.
+A new solution is created. Users that have no email address will receive 
+a text message instead of an email. Also users without email will be asked to
+enter their email address next time they log into the platform. Success!</p>
+
+<p>On the other hand consider what will happen if Joe just
+dig out the email address from <code class="highlighter-rouge">Maybe&lt;T&gt;</code> by accessing <code class="highlighter-rouge">Value</code> or if he just
+log a warning about missing email address 
+without telling anyone from the business side?</p>
+
+<h5 id="end-of-the-part-i">End of the part I</h5>
+
+<p>Soon I will write a follow up to this post in which 
+we will try to implement a perfect <code class="highlighter-rouge">Maybe&lt;T&gt;</code> type on our own and we will see
+that it is not an easy task in C#.</p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Random thoughts on Maybe&amp;url=https://marcin-chwedczuk.github.io/random-thoughts-on-maybe"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/random-thoughts-on-maybe"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/random-thoughts-on-maybe"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//random-thoughts-on-maybe';
+        this.page.identifier = '/random-thoughts-on-maybe';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover2.jpg)" href="/nsubstitute-and-the-search-for-perfect-error-messages">
+            <section class="post">
+                <h2>NSubstitute and the search for perfect error messages</h2>
+                <p>Those of us that practice TDD daily already know how important good error messages in...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2019</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>
