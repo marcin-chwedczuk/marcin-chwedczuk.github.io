@@ -235,7 +235,7 @@ services like any other dependency:</p>
             <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Closed</span><span class="p">)</span>
             <span class="p">.</span><span class="nf">OrderByDescending</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">CreationDate</span><span class="p">)</span>
             <span class="p">.</span><span class="nf">Take</span><span class="p">(</span><span class="m">10</span><span class="p">)</span>
-            <span class="p">.</span><span class="nf">ToList</span><span class="p">();</span>
+            <span class="p">.</span><span class="nf">ToArray</span><span class="p">();</span>
 
         <span class="k">return</span> <span class="n">_mapper</span><span class="p">.</span><span class="n">MapTo</span><span class="p">&lt;</span><span class="n">NewestOrderDto</span><span class="p">&gt;(</span><span class="n">newestOrders</span><span class="p">);</span>
     <span class="p">}</span>
@@ -279,7 +279,7 @@ and use <code class="highlighter-rouge">DbSet</code> in your services). And why?
 			  <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Closed</span><span class="p">)</span>
 			  <span class="p">.</span><span class="nf">OrderByDescending</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">CreationDate</span><span class="p">)</span>
 			  <span class="p">.</span><span class="nf">Take</span><span class="p">(</span><span class="m">10</span><span class="p">)</span>
-			  <span class="p">.</span><span class="nf">ToList</span><span class="p">();</span> 
+			  <span class="p">.</span><span class="nf">ToArray</span><span class="p">();</span> 
 
 		 <span class="k">return</span> <span class="n">_mapper</span><span class="p">.</span><span class="n">MapTo</span><span class="p">&lt;</span><span class="n">NewestOrderDto</span><span class="p">&gt;(</span><span class="n">newestOrders</span><span class="p">);</span>
 	<span class="p">}</span>
@@ -390,7 +390,7 @@ or a decorator around command handlers and/or services.</p>
         <span class="k">return</span> <span class="k">base</span><span class="p">.</span><span class="nf">FindAll</span><span class="p">()</span>
                 <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">AssignedTo</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">id</span><span class="p">.</span><span class="n">Value</span><span class="p">)</span>
                 <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Closed</span><span class="p">)</span>
-                <span class="p">.</span><span class="nf">ToList</span><span class="p">();</span>
+                <span class="p">.</span><span class="nf">ToArray</span><span class="p">();</span>
     <span class="p">}</span>
 <span class="p">}</span></code></pre></figure>
 
@@ -502,7 +502,7 @@ logic into query definitions. For example even this simple query:</p>
   <span class="k">return</span> <span class="k">base</span><span class="p">.</span><span class="nf">FindAll</span><span class="p">()</span>
           <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Closed</span> 
                        <span class="p">&amp;&amp;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Canceled</span><span class="p">)</span>
-          <span class="p">.</span><span class="nf">ToList</span><span class="p">();</span>
+          <span class="p">.</span><span class="nf">ToArray</span><span class="p">();</span>
 <span class="p">}</span></code></pre></figure>
 
 <p>contains a piece of business logic that describes what 
@@ -517,7 +517,7 @@ Our query method when we use the specification pattern should look similar to:</
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="nf">FindActiveOrders</span><span class="p">()</span> <span class="p">{</span>
   <span class="k">return</span> <span class="k">base</span><span class="p">.</span><span class="nf">FindBySpec</span><span class="p">(</span><span class="k">new</span> <span class="nf">ActiveOrders</span><span class="p">())</span>
-          <span class="p">.</span><span class="nf">ToList</span><span class="p">();</span>
+          <span class="p">.</span><span class="nf">ToArray</span><span class="p">();</span>
 <span class="p">}</span></code></pre></figure>
 
 
