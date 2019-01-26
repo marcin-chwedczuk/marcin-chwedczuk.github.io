@@ -27,7 +27,9 @@ value object classes:</p>
     <span class="k">public</span> <span class="nf">Method</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">Name</span> <span class="p">=</span> <span class="n">name</span><span class="p">;</span>
     <span class="p">}</span>
-<span class="p">}</span>
+    <span class="c1">// Equals, GetHashCode, ToString skipped
+</span>    <span class="c1">// to save space.
+</span><span class="p">}</span>
 <span class="k">public</span> <span class="k">class</span> <span class="nc">TypedArgument</span> <span class="p">{</span>
     <span class="k">public</span> <span class="n">Type</span> <span class="n">Type</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
     <span class="k">public</span> <span class="kt">object</span> <span class="n">Value</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
@@ -53,8 +55,8 @@ value object classes:</p>
 that <code class="highlighter-rouge">IReadOnlyList&lt;T&gt;</code> behaves like an immutable list.
 In other words that its content never changes.
 Due to this wrong assumption I did not create a defensive copy,
-that I usually do for collection arguments,
-but instead I just assigned <code class="highlighter-rouge">args</code> parameter to
+that I usually do for collection arguments.
+Instead I just assigned <code class="highlighter-rouge">args</code> parameter to
 a readonly property named <code class="highlighter-rouge">PassedArguments</code>.</p>
 
 <p><code class="highlighter-rouge">MethodCall</code> object was then used by another component
@@ -85,10 +87,10 @@ called <code class="highlighter-rouge">MethodCallSpy</code>:</p>
 <span class="p">}</span></code></pre></figure>
 
 <p><code class="highlighter-rouge">MethodCallSpy</code>
-gathers <code class="highlighter-rouge">TypeArgument</code>s passed to it via <code class="highlighter-rouge">AddArgument</code> calls
+gathers <code class="highlighter-rouge">TypedArgument</code>s passed to it via <code class="highlighter-rouge">AddArgument</code> calls
 in <code class="highlighter-rouge">_currentArguments</code> list. 
 Then when someone calls <code class="highlighter-rouge">AddMethodCall</code> method, it uses stored
-<code class="highlighter-rouge">TypeArgument</code>s and a value of <code class="highlighter-rouge">method</code> parameter to construct
+<code class="highlighter-rouge">TypedArgument</code>s and a value of <code class="highlighter-rouge">method</code> parameter to construct
 a new <code class="highlighter-rouge">MethodCall</code> object and adds it to <code class="highlighter-rouge">_methodCalls</code> list.</p>
 
 <p><code class="highlighter-rouge">MethodCallSpy</code> class worked perfectly, at least until I
@@ -115,11 +117,11 @@ but this was my quick’n’dirty pet project and I just cannot resist:</p>
 <p>Of course I also made a lot of other refactorings without
 running my tests (I had only a few integration tests).
 This was another mistake of mine. Looks like good
-practices help even if you are building
+programming practices help even if you are building
 quickly a Proof Of Concept solution.</p>
 
-<p>When I finally ran my tests, they all failed. For some reason
-<code class="highlighter-rouge">MethodCall</code> objects did not contain any <code class="highlighter-rouge">TypeArgument</code>s.
+<p>When I finally ran my tests, they all have failed. For some reason
+<code class="highlighter-rouge">MethodCall</code> objects did not contain any <code class="highlighter-rouge">TypedArgument</code>s.
 Strange, isn’t it…</p>
 
 <p>After a quarter of debugging, I have found that the bug was
@@ -184,7 +186,7 @@ are not protected at all. Consider this short program:</p>
 <p>It demonstrates that <code class="highlighter-rouge">IReadOnlyList&lt;T&gt;</code> can change even
 during duration of a single method!</p>
 
-<p>So what should we do to void this class of bugs?
+<p>So what should we do to avoid this class of bugs?
 Option one is to use old and proven defensive copy
 technique:</p>
 

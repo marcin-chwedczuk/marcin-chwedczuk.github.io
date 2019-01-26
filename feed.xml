@@ -8,6 +8,21 @@
     
       
       <item>
+        <title>Spy JVM network traffic with Owasp ZAP proxy</title>
+        
+          <description>&lt;p&gt;We start by downloading &lt;a href=&quot;https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project&quot;&gt;Owasp ZAP proxy&lt;/a&gt;:&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Thu, 24 Jan 2019 01:00:00 +0100</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//spy-jvm-network-traffic-with-owasp-zap</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//spy-jvm-network-traffic-with-owasp-zap</guid>
+      </item>
+      
+    
+      
+      <item>
         <title>ReadOnly does not mean Immutable</title>
         
           <description>&lt;p&gt;Recently I have introduced a subtle bug into my code.
@@ -19,7 +34,9 @@ value object classes:&lt;/p&gt;
     &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Method&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
         &lt;span class=&quot;n&quot;&gt;Name&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// Equals, GetHashCode, ToString skipped
+&lt;/span&gt;    &lt;span class=&quot;c1&quot;&gt;// to save space.
+&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;TypedArgument&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Type&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;object&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Value&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
@@ -45,8 +62,8 @@ value object classes:&lt;/p&gt;
 that &lt;code class=&quot;highlighter-rouge&quot;&gt;IReadOnlyList&amp;lt;T&amp;gt;&lt;/code&gt; behaves like an immutable list.
 In other words that its content never changes.
 Due to this wrong assumption I did not create a defensive copy,
-that I usually do for collection arguments,
-but instead I just assigned &lt;code class=&quot;highlighter-rouge&quot;&gt;args&lt;/code&gt; parameter to
+that I usually do for collection arguments.
+Instead I just assigned &lt;code class=&quot;highlighter-rouge&quot;&gt;args&lt;/code&gt; parameter to
 a readonly property named &lt;code class=&quot;highlighter-rouge&quot;&gt;PassedArguments&lt;/code&gt;.&lt;/p&gt;
 
 </description>

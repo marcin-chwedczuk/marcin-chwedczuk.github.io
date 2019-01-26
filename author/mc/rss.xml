@@ -12,6 +12,264 @@
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
+	  <title>Spy JVM network traffic with Owasp ZAP proxy</title>
+	  <link>//spy-jvm-network-traffic-with-owasp-zap</link>
+	  <author>marcin-chwedczuk</author>
+	  <pubDate>2019-01-24T01:00:00+01:00</pubDate>
+	  <guid>//spy-jvm-network-traffic-with-owasp-zap</guid>
+	  <description><![CDATA[
+	     <p>We start by downloading <a href="https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project">Owasp ZAP proxy</a>:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span><span class="c"># Download and unpack...</span>
+<span class="gp">$ </span>curl -O -J -L https://github.com/zaproxy/zaproxy/releases/download/2.7.0/ZAP_2.7.0_Linux.tar.gz
+<span class="gp">$ </span>tar xvzf ZAP_2.7.0_Linux.tar.gz
+
+<span class="gp">$ </span><span class="c"># Run ZAP proxy...</span>
+<span class="gp">$ </span>./ZAP_2.7.0/zap.sh  </code></pre></figure>
+
+<p>By default ZAP listens on <code class="highlighter-rouge">localhost:8080</code>. You can change default address
+and port by going into Tools -&gt; Options -&gt; Local Proxies tab:
+<img src="assets/images/2019-01-25/zap_options.png" alt="ZAP Local Proxies tab" /></p>
+
+<p>To test that network traffic interception works, 
+we will use a simple Java app:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+    <span class="n">CloseableHttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClientBuilder</span><span class="o">.</span><span class="na">create</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">useSystemProperties</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">String</span> <span class="n">status</span> <span class="o">=</span> <span class="n">client</span>
+            <span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">HttpGet</span><span class="o">(</span><span class="s">"http://httpstat.us/200"</span><span class="o">))</span>
+            <span class="o">.</span><span class="na">getStatusLine</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">status</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">finally</span> <span class="o">{</span>
+        <span class="n">client</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>There are few things to notice:</p>
+
+<ul>
+  <li>We use Apache HttpClient to perform http requests.</li>
+  <li>By default Apache HttpClient do not use proxy servers,
+ even if you set ZAP as a system wide proxy. We will deal
+ with this problem later. For now we will use <code class="highlighter-rouge">useSystemProperties()</code> method
+ on <code class="highlighter-rouge">HttpClientBuilder</code> class that will enable proxy support.</li>
+  <li>Right now we will concentrate on intercepting HTTP traffic.
+ I will show you how to deal with HTTPS connections later.</li>
+</ul>
+
+<p>If we, now, run our application, we will notice that ZAP did not
+intercept any traffic:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>java -jar ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar 
+HTTP/1.1 200 OK</code></pre></figure>
+
+<p>Indeed right now our application does not know that it should use
+a proxy server. We may force it to use a proxy via JVM command line
+parameters:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>java -Dhttp.proxyHost<span class="o">=</span>127.0.0.1 <span class="se">\</span>
+ -Dhttp.proxyPort<span class="o">=</span>8080 <span class="se">\</span>
+ -Dhttps.proxyHost<span class="o">=</span>127.0.0.1 <span class="se">\</span>
+ -Dhttps.proxyPort<span class="o">=</span>8080 <span class="se">\</span>
+ -jar ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar </code></pre></figure>
+
+<p>or by dynamicaly setting system properties in code:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"http.proxyHost"</span><span class="o">,</span> <span class="s">"127.0.0.1"</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"http.proxyPort"</span><span class="o">,</span> <span class="s">"8080"</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"https.proxyHost"</span><span class="o">,</span> <span class="s">"127.0.0.1"</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"https.proxyPort"</span><span class="o">,</span> <span class="s">"8080"</span><span class="o">);</span></code></pre></figure>
+
+<p>Whatever method you use, if you run the application again,
+you should be able to see now a single intercepted request in ZAP:
+<img src="assets/images/2019-01-25/intercepted_request.png" alt="Intercepted request in ZAP" />
+You can remove previously recorded requests in ZAP by pressing <code class="highlighter-rouge">Ctrl+N</code>.</p>
+
+<h4 id="intercepting-traffic-from-proxy-unfriendly-apps">Intercepting traffic from proxy unfriendly apps</h4>
+
+<p>As I mentioned previously, Apache HttpClient ignores
+proxy settings by default.
+If we create our <code class="highlighter-rouge">HttpClient</code> using <code class="highlighter-rouge">create()</code> method:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+    <span class="n">CloseableHttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClientBuilder</span><span class="o">.</span><span class="na">create</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">String</span> <span class="n">status</span> <span class="o">=</span> <span class="n">client</span>
+            <span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">HttpGet</span><span class="o">(</span><span class="s">"http://httpstat.us/200"</span><span class="o">))</span>
+            <span class="o">.</span><span class="na">getStatusLine</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">status</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">finally</span> <span class="o">{</span>
+        <span class="n">client</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">HttpClient</code> will ignore proxy settings no matter how we set them.</p>
+
+<p>For dealing with cases like this, we may use
+<a href="https://github.com/rofl0r/proxychains-ng/tree/v4.13">proxychains-ng</a>.
+This project is a new reincarnation of old
+<a href="https://github.com/haad/proxychains">proxychains</a> util which is no
+longer maintained.
+Please be aware of this difference. On my system <code class="highlighter-rouge">apt-get install proxychains</code>
+installs <code class="highlighter-rouge">proxychains</code> and not <code class="highlighter-rouge">proxychains-ng</code> that we need here.
+To install <code class="highlighter-rouge">proxychains-ng</code> I needed to download sources from GitHub
+and compile them myself:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span><span class="c"># Checkout tag v4.13</span>
+<span class="gp">$ </span>git clone --branch v4.13 git@github.com:rofl0r/proxychains-ng.git
+
+<span class="gp">$ </span><span class="nb">cd </span>proxychains-ng
+<span class="gp">$ </span>./configure
+<span class="gp">$ </span><span class="c"># If there are no errors from configure script</span>
+<span class="gp">$ </span>make
+<span class="gp">$ </span>./proxychains4 --help
+
+Usage:  ./proxychains4 -q -f config_file program_name <span class="o">[</span>arguments]
+    -q makes proxychains quiet - this overrides the config setting
+    -f allows one to manually specify a configfile to use
+    <span class="k">for </span>example : proxychains telnet somehost.com
+More <span class="nb">help </span><span class="k">in </span>README file
+
+<span class="gp">$ </span><span class="c"># Install system wide...</span>
+<span class="gp">$ </span>sudo make install</code></pre></figure>
+
+<p>We also need to change default <code class="highlighter-rouge">proxychains-ng</code> configuration:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">sudo vim /etc/proxychains.conf
+
+<span class="c"># Comment out line:</span>
+<span class="c"># proxy_dns</span>
+
+<span class="c"># Change ProxyList to:</span>
+<span class="o">[</span>ProxyList]
+http 127.0.0.1 8080</code></pre></figure>
+
+<p>Now if we run our application using <code class="highlighter-rouge">proxychains</code>:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>proxychains4 java -jar ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar 
+<span class="o">[</span>proxychains] config file found: /etc/proxychains.conf
+<span class="o">[</span>proxychains] preloading /usr/local/lib/libproxychains4.so
+<span class="o">[</span>proxychains] DLL init: proxychains-ng 4.13-git-10-g1198857
+<span class="o">[</span>proxychains] Strict chain  ...  127.0.0.1:8080  ...  23.99.0.12:80  ...  OK
+HTTP/1.1 200 OK</code></pre></figure>
+
+<p>We will be able to intercept traffic using ZAP.</p>
+
+<p>One of the limitations of proxychains is that it may not work for
+subprocesses. If you app launches other applications they may
+not be proxied at all.</p>
+
+<h4 id="intercepting-https-traffic">Intercepting HTTPS traffic</h4>
+
+<p>So far, so good, but what will happen if we try to intercept
+HTTPS traffic from a new, more secure, example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"http.proxyHost"</span><span class="o">,</span> <span class="s">"127.0.0.1"</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"http.proxyPort"</span><span class="o">,</span> <span class="s">"8080"</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"https.proxyHost"</span><span class="o">,</span> <span class="s">"127.0.0.1"</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"https.proxyPort"</span><span class="o">,</span> <span class="s">"8080"</span><span class="o">);</span>
+
+    <span class="n">CloseableHttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClientBuilder</span><span class="o">.</span><span class="na">create</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">useSystemProperties</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+
+    <span class="n">String</span> <span class="n">url</span> <span class="o">=</span> <span class="s">"https://www.random.org/integers/?num=12&amp;min=1&amp;max=100&amp;col=3&amp;base=10&amp;format=plain&amp;rnd=new"</span><span class="o">;</span>
+
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">HttpEntity</span> <span class="n">entity</span> <span class="o">=</span> <span class="n">client</span>
+            <span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">HttpGet</span><span class="o">(</span><span class="n">url</span><span class="o">))</span>
+            <span class="o">.</span><span class="na">getEntity</span><span class="o">();</span>
+
+        <span class="n">String</span> <span class="n">responseBody</span> <span class="o">=</span> <span class="n">EntityUtils</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">entity</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">responseBody</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">finally</span> <span class="o">{</span>
+        <span class="n">client</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>We will get an exception similar to:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">Exception in thread "main" javax.net.ssl.SSLHandshakeException:
+sun.security.validator.ValidatorException: PKIX path building failed:
+sun.security.provider.certpath.SunCertPathBuilderException: unable
+to find valid certification path to requested target</code></pre></figure>
+
+<p>We get this exception because certificate returned by ZAP
+proxy is not trusted.
+To fix this problem we must generate a new ZAP root cert and add it
+(temporarily) to Java keystore.</p>
+
+<p>Generate a new cert and save it somewhere
+(Tools -&gt; Options -&gt; Dynamic SSL Certificates):
+<img src="assets/images/2019-01-25/gen_cert.png" alt="ZAP generate a new root certificate" />
+Don’t forget to click OK.</p>
+
+<p>Then add ZAP root certificate to Java keystore:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span><span class="nb">cd</span> <span class="nv">$JAVA_HOME</span>/jre/lib/security
+<span class="gp">$ </span><span class="nb">pwd</span>
+/usr/lib/jvm/java-8-oracle/jre/lib/security
+<span class="gp">$ </span><span class="c"># You should see cacerts file in this directory.</span>
+
+<span class="gp">$ </span><span class="c"># Create a backup</span>
+<span class="gp">$ </span>sudo cp cacerts cacerts.bakup2019-01-26
+
+<span class="gp">$ </span><span class="c"># Add certificate to the store</span>
+<span class="gp">$ </span>sudo keytool -importcert <span class="se">\</span>
+ -alias zap-proxy.org <span class="se">\</span>
+ -file ~/owasp_zap_root_ca.cer <span class="se">\</span>
+ -keystore cacerts
+<span class="gp">$ </span><span class="c"># When asked about keystore password </span>
+<span class="gp">$ </span><span class="c"># write: changeit (the default password)</span></code></pre></figure>
+
+<p>If we run our app again, we will be able to intercept an HTTPS request:
+<img src="assets/images/2019-01-25/intercept_https.png" alt="Intercepted HTTPS call" /></p>
+
+<p>This again should work with <code class="highlighter-rouge">proxychains-ng</code>.
+Sometimes to make it work you will have to <strong>uncommend</strong> <code class="highlighter-rouge">proxy_dns</code>
+option in <code class="highlighter-rouge">/etc/proxychains.conf</code> file, that I earlier said to
+comment out. Why is this sometimes needed, to be honest, I don’t know but
+it works this way…</p>
+
+<p><strong>For security reasons</strong> after you finished your debugging session,
+you should remove ZAP certificate from Java keystore:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span><span class="nb">cd</span> <span class="nv">$JAVA_HOME</span>/jre/lib/security
+
+<span class="gp">$ </span><span class="c"># Make sure you see your cert</span>
+<span class="gp">$ </span>sudo keytool -list -v -keystore cacerts | grep zap-proxy.org
+Enter keystore password:  changeit
+
+<span class="gp">$ </span><span class="c"># Remove it</span>
+<span class="gp">$ </span>sudo keytool -delete -alias zap-proxy.org -keystore cacerts
+
+<span class="gp">$ </span><span class="c"># Make sure it's gone</span>
+<span class="gp">$ </span>sudo keytool -list -v -keystore cacerts | grep zap-proxy.org
+Enter keystore password:  changeit</code></pre></figure>
+
+<p>Always generate a new ZAP proxy certificate
+before adding it to Java keystore. If you must do this
+often, I can advice you to create a script and/or bash alias to
+make entire process more convenient.</p>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
 	  <title>ReadOnly does not mean Immutable</title>
 	  <link>//read-only-does-not-mean-immutable</link>
 	  <author>marcin-chwedczuk</author>
@@ -27,7 +285,9 @@ value object classes:</p>
     <span class="k">public</span> <span class="nf">Method</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">Name</span> <span class="p">=</span> <span class="n">name</span><span class="p">;</span>
     <span class="p">}</span>
-<span class="p">}</span>
+    <span class="c1">// Equals, GetHashCode, ToString skipped
+</span>    <span class="c1">// to save space.
+</span><span class="p">}</span>
 <span class="k">public</span> <span class="k">class</span> <span class="nc">TypedArgument</span> <span class="p">{</span>
     <span class="k">public</span> <span class="n">Type</span> <span class="n">Type</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
     <span class="k">public</span> <span class="kt">object</span> <span class="n">Value</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
@@ -53,8 +313,8 @@ value object classes:</p>
 that <code class="highlighter-rouge">IReadOnlyList&lt;T&gt;</code> behaves like an immutable list.
 In other words that its content never changes.
 Due to this wrong assumption I did not create a defensive copy,
-that I usually do for collection arguments,
-but instead I just assigned <code class="highlighter-rouge">args</code> parameter to
+that I usually do for collection arguments.
+Instead I just assigned <code class="highlighter-rouge">args</code> parameter to
 a readonly property named <code class="highlighter-rouge">PassedArguments</code>.</p>
 
 <p><code class="highlighter-rouge">MethodCall</code> object was then used by another component
@@ -85,10 +345,10 @@ called <code class="highlighter-rouge">MethodCallSpy</code>:</p>
 <span class="p">}</span></code></pre></figure>
 
 <p><code class="highlighter-rouge">MethodCallSpy</code>
-gathers <code class="highlighter-rouge">TypeArgument</code>s passed to it via <code class="highlighter-rouge">AddArgument</code> calls
+gathers <code class="highlighter-rouge">TypedArgument</code>s passed to it via <code class="highlighter-rouge">AddArgument</code> calls
 in <code class="highlighter-rouge">_currentArguments</code> list. 
 Then when someone calls <code class="highlighter-rouge">AddMethodCall</code> method, it uses stored
-<code class="highlighter-rouge">TypeArgument</code>s and a value of <code class="highlighter-rouge">method</code> parameter to construct
+<code class="highlighter-rouge">TypedArgument</code>s and a value of <code class="highlighter-rouge">method</code> parameter to construct
 a new <code class="highlighter-rouge">MethodCall</code> object and adds it to <code class="highlighter-rouge">_methodCalls</code> list.</p>
 
 <p><code class="highlighter-rouge">MethodCallSpy</code> class worked perfectly, at least until I
@@ -115,11 +375,11 @@ but this was my quick’n’dirty pet project and I just cannot resist:</p>
 <p>Of course I also made a lot of other refactorings without
 running my tests (I had only a few integration tests).
 This was another mistake of mine. Looks like good
-practices help even if you are building
+programming practices help even if you are building
 quickly a Proof Of Concept solution.</p>
 
-<p>When I finally ran my tests, they all failed. For some reason
-<code class="highlighter-rouge">MethodCall</code> objects did not contain any <code class="highlighter-rouge">TypeArgument</code>s.
+<p>When I finally ran my tests, they all have failed. For some reason
+<code class="highlighter-rouge">MethodCall</code> objects did not contain any <code class="highlighter-rouge">TypedArgument</code>s.
 Strange, isn’t it…</p>
 
 <p>After a quarter of debugging, I have found that the bug was
@@ -184,7 +444,7 @@ are not protected at all. Consider this short program:</p>
 <p>It demonstrates that <code class="highlighter-rouge">IReadOnlyList&lt;T&gt;</code> can change even
 during duration of a single method!</p>
 
-<p>So what should we do to void this class of bugs?
+<p>So what should we do to avoid this class of bugs?
 Option one is to use old and proven defensive copy
 technique:</p>
 
@@ -2402,403 +2662,6 @@ mocking frameworks.</p>
 
 <p>Sample source code (with a bit more complicated example): 
 <a href="https://github.com/marcin-chwedczuk/blog-fakes-vs-mocks">GitHub</a>.</p>
-
-
-	  ]]></description>
-	</item>
-
-	<item>
-	  <title>How NOT to use the repository pattern</title>
-	  <link>//repository-pattern-my-way</link>
-	  <author>marcin-chwedczuk</author>
-	  <pubDate>2018-07-08T02:00:00+02:00</pubDate>
-	  <guid>//repository-pattern-my-way</guid>
-	  <description><![CDATA[
-	     <h3 id="generic-repository-pattern">Generic repository pattern</h3>
-
-<p>First, to avoid misunderstandings, let me explain what I understand
-by generic repository. Have your ever seen an interface like this:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IGenericRepository</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> 
-    <span class="n">where</span> <span class="n">TEntity</span> <span class="p">:</span> <span class="k">class</span> 
-<span class="err">{</span>
-    <span class="nc">IEnumerable</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="nf">Get</span><span class="p">(</span>
-        <span class="n">Expression</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">,</span> <span class="kt">bool</span><span class="p">&gt;&gt;</span> <span class="n">filter</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
-        <span class="n">Func</span><span class="p">&lt;</span><span class="n">IQueryable</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;,</span> <span class="n">IOrderedQueryable</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;&gt;</span> <span class="n">orderBy</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
-        <span class="kt">string</span> <span class="n">includeProperties</span> <span class="p">=</span> <span class="s">""</span><span class="p">);</span>
-    <span class="n">TEntity</span> <span class="nf">GetById</span><span class="p">(</span><span class="kt">object</span> <span class="n">id</span><span class="p">);</span>
-
-    <span class="k">void</span> <span class="nf">Insert</span><span class="p">(</span><span class="n">TEntity</span> <span class="n">entity</span><span class="p">);</span>
-
-    <span class="k">void</span> <span class="nf">Update</span><span class="p">(</span><span class="n">TEntity</span> <span class="n">entityToUpdate</span><span class="p">);</span>
-
-    <span class="k">void</span> <span class="nf">Delete</span><span class="p">(</span><span class="kt">object</span> <span class="n">id</span><span class="p">);</span>
-    <span class="k">void</span> <span class="nf">Delete</span><span class="p">(</span><span class="n">TEntity</span> <span class="n">entityToDelete</span><span class="p">);</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>Or maybe you saw it’s twin brother that have a slightly 
-different variant of <code class="highlighter-rouge">Get</code> method:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">IQueryable</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="nf">GetAll</span><span class="p">();</span></code></pre></figure>
-
-<p>Inspiration for the first of these examples comes from 
-<a href="https://docs.microsoft.com/en-us/aspnet/mvc/overview/older-versions/getting-started-with-ef-5-using-mvc-4/implementing-the-repository-and-unit-of-work-patterns-in-an-asp-net-mvc-application#implement-a-generic-repository-and-a-unit-of-work-class">official Microsoft documentation for ASP.NET MVC 4</a>.
-As for the second example you can find countless number of blogs that
-describe this variant of the repository pattern e.g.
-<a href="http://www.tugberkugurlu.com/archive/generic-repository-pattern-entity-framework-asp-net-mvc-and-unit-testing-triangle">here</a>,
-<a href="https://deviq.com/repository-pattern/">and here</a>,
-<a href="https://www.codeproject.com/Articles/814768/CRUD-Operations-Using-the-Generic-Repository-Patte">and also here</a>
-sometimes with slight variantions like returning <code class="highlighter-rouge">IEnumerable&lt;TEntity&gt;</code> instead of
-<code class="highlighter-rouge">IQueryable&lt;TEntity&gt;</code>. 
-And in the later case often with an additional method for generating
-queries like:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="nf">FindAll</span><span class="p">(</span><span class="n">Expression</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">T</span><span class="p">,</span> <span class="kt">bool</span><span class="p">&gt;&gt;</span> <span class="n">predicate</span><span class="p">);</span></code></pre></figure>
-
-<p>So what is wrong with them you may ask? So far almost nothing,
-not counting of course badly naming of the methods from Microsoft example(
-they should be called <code class="highlighter-rouge">Find</code> and <code class="highlighter-rouge">FindAll</code> not <code class="highlighter-rouge">Get</code> and <code class="highlighter-rouge">GetAll</code>).</p>
-
-<p>But “almost nothing” does not equal “nothing”. One problem that I find with
-these interfaces is that they violate Interface Segregation Principle.
-They expose full set of CRUD operations even for entities for which 
-e.g. deleting does not make sense (for example when you deactivate users
-instead of deleting them from DB;
-also see <a href="http://udidahan.com/2009/09/01/dont-delete-just-dont/">Udi Dahan post about deleting data</a>).
-But this problem can be easily solved by splitting this interface into three -
-one for reading, one for updating and one for deleting entities.</p>
-
-<p>The real problem that I have with these interfaces comes from their <em>improper</em>
-usage. The original idea behind them is that they should be used as a base
-interfaces for your custom repository interfaces, just like this:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IFooRepository</span> <span class="p">:</span> <span class="n">IGenericRepository</span><span class="p">&lt;</span><span class="n">Foo</span><span class="p">&gt;</span> <span class="p">{</span>
-    <span class="n">Foo</span> <span class="nf">FindNewest</span><span class="p">();</span>
-    <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Foo</span><span class="p">&gt;</span> <span class="nf">FindAllOutdated</span><span class="p">();</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>And that your command handlers and services 
-(in other words clients of your custom repositories) 
-should decide what methods are
-needed and should be put on your custom repository interfaces.</p>
-
-<p>That is the theory. Unfortunately what I already saw a few times in my career 
-instead is this:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// notice: this is NOT an abstract class
-</span><span class="k">public</span> <span class="k">class</span> <span class="nc">GenericRepostiory</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IGenericRepository</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="p">{</span>
-    <span class="c1">// implementation details skiped
-</span>
-    <span class="k">public</span> <span class="n">IQueryable</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="nf">GetAll</span><span class="p">()</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
-    <span class="k">public</span> <span class="n">TEntity</span> <span class="nf">GetById</span><span class="p">(</span><span class="kt">object</span> <span class="n">id</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
-
-    <span class="k">public</span> <span class="k">void</span> <span class="nf">Insert</span><span class="p">(</span><span class="n">TEntity</span> <span class="n">entity</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
-    <span class="k">public</span> <span class="k">void</span> <span class="nf">Update</span><span class="p">(</span><span class="n">TEntity</span> <span class="n">entityToUpdate</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
-
-    <span class="k">public</span> <span class="k">void</span> <span class="nf">Delete</span><span class="p">(</span><span class="kt">object</span> <span class="n">id</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
-    <span class="k">public</span> <span class="k">void</span> <span class="nf">Delete</span><span class="p">(</span><span class="n">TEntity</span> <span class="n">entityToDelete</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>Someone has created a working implementation of <code class="highlighter-rouge">IGenericRepostory</code> interface.
-What is worse this implementation is almost always registered in IoC container and
-can be injected into your command handlers and
-services like any other dependency:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">OrderService</span> <span class="p">{</span>
-    <span class="k">private</span> <span class="k">readonly</span> <span class="n">IGenericRepository</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="n">_orderRepository</span><span class="p">;</span>
-
-    <span class="c1">// ctor and other stuff...
-</span>
-    <span class="k">public</span> <span class="n">NewestOrderDto</span> <span class="nf">FindNewestOrderForCurrentUser</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">var</span> <span class="n">newestOrders</span> <span class="p">=</span> <span class="n">_orderRepository</span><span class="p">.</span><span class="nf">GetAll</span><span class="p">()</span>
-            <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">AssignedTo</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">_currentUser</span><span class="p">.</span><span class="n">Id</span><span class="p">)</span>
-            <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Closed</span><span class="p">)</span>
-            <span class="p">.</span><span class="nf">OrderByDescending</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">CreationDate</span><span class="p">)</span>
-            <span class="p">.</span><span class="nf">Take</span><span class="p">(</span><span class="m">10</span><span class="p">)</span>
-            <span class="p">.</span><span class="nf">ToArray</span><span class="p">();</span>
-
-        <span class="k">return</span> <span class="n">_mapper</span><span class="p">.</span><span class="n">MapTo</span><span class="p">&lt;</span><span class="n">NewestOrderDto</span><span class="p">&gt;(</span><span class="n">newestOrders</span><span class="p">);</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>This <em>looks</em> nice and clean but is not. I will tell you more about why
-this is wrong later. Now I want to deal with one “solution” to the
-<code class="highlighter-rouge">GenericRepository&lt;T&gt;</code> misinterpretation that 
-I often hear from other developers. 
-This solution sounds like this (dialog during code-review):</p>
-
-<p>JIM SENIOR: Have you ever heard that
-NHibernate <code class="highlighter-rouge">ISession</code> or Entity Framework <code class="highlighter-rouge">DbSet</code> <em>is a</em> repository?
-Indeed what you just created is a tin wrapper over either 
-<code class="highlighter-rouge">ISession</code> or <code class="highlighter-rouge">DbSet</code>.
-Actually we can replace this <code class="highlighter-rouge">GenericRepository&lt;T&gt;</code> by e.g.
-<code class="highlighter-rouge">DbSet</code> and get pretty must the same results.
-The only service that <code class="highlighter-rouge">IGenericRepository&lt;T&gt;</code> provides is that it hides
-most of the thirty methods that <code class="highlighter-rouge">DbSet</code> has. 
-JONNY JUNIOR: Oh, indeed what you just said make sense.
-I guess using generic repository
-pattern here was a bit of overengineering. (Happily gets back to coding…)</p>
-
-<p>For me using either <code class="highlighter-rouge">GenericRepository&lt;T&gt;</code> or raw <code class="highlighter-rouge">DbSet</code> is wrong most of the
-time (one exception that I can accept is when you write 
-the most CRUDest application ever, then don’t bother
-and use <code class="highlighter-rouge">DbSet</code> in your services). And why? Due to the following reasons:</p>
-
-<ul>
-  <li>The only option to make sure that your LINQ queries will be properly translated
- to SQL is to test them against <strong>the same</strong> kind of database that you use 
- in production environment. But when your queries are scattered over methods 
- of your services it may be hard to create integration tests for them.
- For example look at the code:</li>
-</ul>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">if</span> <span class="p">(</span><span class="cm">/* some complicated condition */</span><span class="p">)</span> <span class="p">{</span>
-	<span class="k">if</span> <span class="p">(</span><span class="cm">/* some other complicated condition */</span><span class="p">)</span> <span class="p">{</span>
-		 <span class="n">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">_orderRepository</span><span class="p">.</span><span class="nf">GetAll</span><span class="p">()</span>
-			  <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">AssignedTo</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">_currentUser</span><span class="p">.</span><span class="n">Id</span><span class="p">)</span>
-			  <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Closed</span><span class="p">)</span>
-			  <span class="p">.</span><span class="nf">OrderByDescending</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">CreationDate</span><span class="p">)</span>
-			  <span class="p">.</span><span class="nf">Take</span><span class="p">(</span><span class="m">10</span><span class="p">)</span>
-			  <span class="p">.</span><span class="nf">ToArray</span><span class="p">();</span> 
-
-		 <span class="k">return</span> <span class="n">_mapper</span><span class="p">.</span><span class="n">MapTo</span><span class="p">&lt;</span><span class="n">NewestOrderDto</span><span class="p">&gt;(</span><span class="n">newestOrders</span><span class="p">);</span>
-	<span class="p">}</span>
-	<span class="c1">// some code here
-</span><span class="p">}</span>
-<span class="p">//</span> <span class="n">more</span> <span class="n">code</span> <span class="n">here</span></code></pre></figure>
-
-<p>To execute above query you must fulfill two if’s conditions. This will make
-an integration test for the above query less readable and more fragile. 
-Instead imagine that this query is encapsulated by a repository method.
-In integration test you would just call that repo method and check the 
-results - simple isn’t it?</p>
-
-<ul>
-  <li>
-    <p>I am sure that you agree with me 
- that inline LINQ queries inside services 
- are not reusable and that they have a nasty tendency to
- duplicate themselves over the codebase. Even when a programmer decides to
- extract query to it’s own method, it will usually be a private method on 
- a particular service. Moving queries to repository 
- methods makes them automatically reusable
- across entire application.</p>
-  </li>
-  <li>
-    <p>Inline LINQ queries are not named. Usually the only clue what a particular
- query does (without going deep it’s logic) is the name of the variable that
- holds query result. Unfortunately for us inventing a good variable names is a skill
- that only comes with the experience and since we have a lot of junior devs in our 
- industry we are faced with names like <code class="highlighter-rouge">result</code>, <code class="highlighter-rouge">ordersToProcess</code> or just <code class="highlighter-rouge">orders</code>.
- Wrapping the query inside a repo method will automatically give it a name. 
- Even if this name is not perfect we can refactor it later and all places 
- that call this method will benefit from our refactoring automatically!</p>
-  </li>
-  <li>
-    <p>Sometimes for performance reasons we are forced to use raw SQL to get our
- data from DB. Do you really want to litter your business logic with low
- level technical stuff like <code class="highlighter-rouge">DbConnection</code>s, query parameters and <code class="highlighter-rouge">SqlException</code>s?
- Let’s hide this low level stuff inside a repository and let our business code 
- concentrate on business logic. Also see 
- <a href="http://principles-wiki.net/principles:single_level_of_abstraction">Single level of abstraction principle</a>.</p>
-  </li>
-</ul>
-
-<p>So what is the solution you may ask? Get ready…</p>
-
-<h3 id="what-we-need-is-the-specific-repository-pattern">What we need is the “specific” repository pattern</h3>
-
-<p>We should start repository design by specifying it’s interface. 
-The interface should contain only methods required by clients of 
-the repository. In other words if nobody needs to delete entities of a given type
-or it does not make sense from business point of view
-we will not add <code class="highlighter-rouge">Delete</code> method to the interface.</p>
-
-<p>If you are afraid that you will end up with different names for
-basic CRUD operations like <code class="highlighter-rouge">Delete</code> on one repo and <code class="highlighter-rouge">Remove</code> on the other
-you may create helper interfaces like <code class="highlighter-rouge">ICanDeleteEntity&lt;TEntity&gt;</code>,
-<code class="highlighter-rouge">ICanUpdateEntity&lt;TEntity&gt;</code> etc. that will contain only methods for
-specific usage like deleting, updating etc. 
-Then the repository interface can inherit 
-appropriate subset of them.</p>
-
-<p>None of the methods on the repository interface should return <code class="highlighter-rouge">IQueryable&lt;T&gt;</code>
-type.
-Also make sure that the repository implementation does not 
-return <code class="highlighter-rouge">IQueryable&lt;T&gt;</code> value hidden as <code class="highlighter-rouge">IEnumerable&lt;T&gt;</code> one. 
-Always call <code class="highlighter-rouge">ToList()</code>
-or <code class="highlighter-rouge">ToArray()</code> to materialize query results before returning them 
-to the client.</p>
-
-<p>When it comes to the repository implementation, the implementation is free
-to inherit from <em>abstract</em> <code class="highlighter-rouge">GenericRepository&lt;TEntity&gt;</code> base class. 
-Alternatively it may use <code class="highlighter-rouge">ISession</code> or <code class="highlighter-rouge">DbSet</code> directly if it is more convenient. 
-No matter what approach you choose remember that “excessive” methods
-like <code class="highlighter-rouge">Delete</code>
-inherited from base class
-may be hidden by the repository interface.</p>
-
-<p>Please remember that your repository is NOT responsible for managing
-database transactions. This concern is best managed using 
-<a href="https://martinfowler.com/eaaCatalog/unitOfWork.html">Unit of Work pattern</a>.
-This pattern is already implemented by both <code class="highlighter-rouge">ISession</code> and <code class="highlighter-rouge">DatabaseContext</code>
-(think change tracking and dirty checking),
-we only need a better interface over them:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IUnitOfWork</span> <span class="p">{</span>
-    <span class="c1">// or just Begin()
-</span>    <span class="k">void</span> <span class="nf">BeginTransaction</span><span class="p">();</span>
-
-    <span class="k">void</span> <span class="nf">Commit</span><span class="p">();</span>
-    <span class="k">void</span> <span class="nf">Rollback</span><span class="p">();</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>For the most web applications it is enough to start transaction using <code class="highlighter-rouge">IUnitOfWork</code>
-at the beginning of the HTTP request and either <code class="highlighter-rouge">Commit</code> or <code class="highlighter-rouge">Rollback</code> at
-the end of the request. This can be done by using either an action filter
-or a decorator around command handlers and/or services.</p>
-
-<p>Example repository created using the above guidelines:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IOrderRepository</span> <span class="p">{</span>
-	<span class="c1">// We do not need FindById so we do not included it
-</span>	<span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="nf">FindActiveOrdersAssignedToUser</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span> 
-<span class="p">}</span>
-
-<span class="k">public</span> <span class="k">class</span> <span class="nc">OrderRepository</span> <span class="p">:</span> <span class="n">GenericRepository</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;,</span> <span class="n">IOrderRepository</span> <span class="p">{</span>
-    <span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="nf">FindActiveOrdersAssignedToUser</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="k">base</span><span class="p">.</span><span class="nf">FindAll</span><span class="p">()</span>
-                <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">AssignedTo</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">id</span><span class="p">.</span><span class="n">Value</span><span class="p">)</span>
-                <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Closed</span><span class="p">)</span>
-                <span class="p">.</span><span class="nf">ToArray</span><span class="p">();</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>This should be obvious by now, but let’s not take chances.
-Every method of our repositories should be covered by one or more
-integration tests, which should use the same kind of DB that we use 
-in production environment. Remember always use <em>integration</em> tests to
-test your repositories.</p>
-
-<h3 id="turbocharging-the-repository-pattern">Turbocharging the repository pattern</h3>
-
-<p>There is no rose without thorns and presented above approach also has some
-serious drawbacks. Some of them can be fixed by using a different
-architecture than classic 3-layer arch.
-Most common problems with “specific” repositories are as follows:</p>
-
-<ul>
-  <li>Repositories can over long periods of time accumulate 
- dozens and dozens of <code class="highlighter-rouge">Find*</code> methods. Often these methods will be very similar
- to each other. There are two ways to combat this unwanted grow. One is to use 
- a query object pattern. Basically you group several of these <code class="highlighter-rouge">Find*</code> methods together
- into one more general <code class="highlighter-rouge">Find</code> method. That method should accept an object that will
- represent a query criteria. For example:</li>
-</ul>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">ordersToCancel</span> <span class="p">=</span> <span class="n">_orderRepository</span><span class="p">.</span><span class="nf">FindAllMatching</span><span class="p">(</span>
-	<span class="c1">// Alternatively you may use the builder pattern
-</span>	<span class="c1">// to create a criteria object.
-</span>	<span class="k">new</span> <span class="n">OrderCriteria</span> <span class="p">{</span>
-		<span class="n">StatusIsIn</span> <span class="p">=</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="n">OrderStatus</span><span class="p">.</span><span class="n">New</span><span class="p">,</span> <span class="n">OrderStatus</span><span class="p">.</span><span class="n">InProgres</span> <span class="p">},</span>
-		<span class="n">OrderedItemsContainAll</span> <span class="p">=</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="n">searchedItem</span> <span class="p">},</span>
-		<span class="n">CustomerIs</span> <span class="p">=</span> <span class="nf">GetCurrentCustomer</span><span class="p">()</span>
-	<span class="p">});</span></code></pre></figure>
-
-<p>To create a query from the criteria object we examine each search criteria and
-build query step-by-step:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">IQueryable</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="n">q</span> <span class="p">=</span> <span class="k">base</span><span class="p">.</span><span class="nf">FindAll</span><span class="p">();</span>
-
-<span class="k">if</span> <span class="p">(</span><span class="n">criteria</span><span class="p">.</span><span class="n">StatusIsIn</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
-	<span class="n">q</span> <span class="p">=</span> <span class="n">q</span><span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">o</span> <span class="p">=&gt;</span> <span class="n">criteria</span><span class="p">.</span><span class="n">StatusIsIn</span><span class="p">.</span><span class="nf">Contains</span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="n">Status</span><span class="p">));</span>
-<span class="p">}</span>
-
-<span class="c1">// A long list of other conditions here..
-</span>
-<span class="k">return</span> <span class="n">q</span><span class="p">.</span><span class="nf">ToList</span><span class="p">();</span></code></pre></figure>
-
-<p>A closely related yet different aproach is to use the query object pattern (see 
-<a href="https://martinfowler.com/eaaCatalog/queryObject.html">this</a> and
-<a href="https://lostechies.com/jimmybogard/2012/10/08/favor-query-objects-over-repositories">this</a>).</p>
-
-<p>The second solution to this problem is more robust and reliable.
-Usually too big repositories are accompanied by huge services and 
-overgrown entities. You can slim down both your repos and services 
-by using something that I call CQRS-light. It differs from full-blown
-CQRS by using exactly the same database tables for both reads and writes.
-When doing CQRS-light we can use the same ORM framework for both reading and
-writing data and slowly migrate to real CQRS only in these parts of our
-application that really need it (do recall this 80+ columns searchable grid that
-generates 20+ inner join query that halts your DB server? - real CQRS can help here).</p>
-
-<p>The diagram below presents typical architecture of CQRS-light application:
-<img src="assets/images/2018-07-08/cqrs-light.svg" alt="CQRS-light architecture" /></p>
-
-<p>The key principles of CQRS-light are:</p>
-
-<ul>
-  <li>
-    <p>Split all user actions into two categories. In the first put all actions that
- can modify the state of the system like e.g. creating a new order in an e-commerce app.
- In the second<br />
- category put all actions that do not modify state of the system e.g. 
- viewing an order details. First category represents commands (writes), the second one
- queries (reads). Only commands can change state of the system.</p>
-  </li>
-  <li>
-    <p>Query handlers do NOT use repositories to access data. They access DB 
- using whatever technology they want.
- Usual configurations include a single ORM on both read and write sides, 
- ORM for writes and micro-ORM like Dapper for reads or 
- using ORM for writes and raw SQL for reads.</p>
-  </li>
-  <li>
-    <p>Command handlers can only use repositories to access and modify data. 
- Command handlers 
- should not call query handlers to fetch data from database. 
- If a command handler needs to execute 
- a complex query and this query can be answered by a query handler
- you should duplicate this query logic and put it
- in both query handler and in a repository method
- (read and write sides must be separated).</p>
-  </li>
-  <li>
-    <p>Query handlers are tested only using integration tests.
- For command handlers you will have unit and optionally integration tests.
- Repositories will be tested using integration tests.</p>
-  </li>
-</ul>
-
-<p>CQRS even in the “light” version is a huge topic and deserves a blog post of it’s own.
-<a href="https://github.com/jbogard/MediatR">MediatR</a> library is a good starting point
-if you want to find out more about CQRS-light approach.</p>
-
-<p>Let us return to the subject of the “specific” repository pattern drawbacks. 
-The second drawback that I want to mention is unwanted migration of the business
-logic into query definitions. For example even this simple query:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="nf">FindActiveOrders</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="k">base</span><span class="p">.</span><span class="nf">FindAll</span><span class="p">()</span>
-          <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Closed</span> 
-                       <span class="p">&amp;&amp;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Canceled</span><span class="p">)</span>
-          <span class="p">.</span><span class="nf">ToArray</span><span class="p">();</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>contains a piece of business logic that describes what 
-it means for an order to be active.
-Usually ORM’s prevent us from encapsulating such pieces of logic
-into a separate properties like <code class="highlighter-rouge">IsActive</code>.</p>
-
-<p>What we need here is the specification pattern.
-You can find pretty decent overview of the specification pattern
-<a href="https://enterprisecraftsmanship.com/2016/02/08/specification-pattern-c-implementation/">here</a>.
-Our query method when we use the specification pattern should look similar to:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="nf">FindActiveOrders</span><span class="p">()</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="k">base</span><span class="p">.</span><span class="nf">FindBySpec</span><span class="p">(</span><span class="k">new</span> <span class="nf">ActiveOrders</span><span class="p">())</span>
-          <span class="p">.</span><span class="nf">ToArray</span><span class="p">();</span>
-<span class="p">}</span></code></pre></figure>
 
 
 	  ]]></description>

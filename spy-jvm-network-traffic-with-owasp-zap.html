@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- [[! Document Settings ]] -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- [[! Page Meta ]] -->
+    <title>Spy JVM network traffic with Owasp ZAP proxy</title>
+    <meta name="description" content="Programming is Magic - A place where I can share my thoughts about programming" />
+
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- [[! Styles'n'Scripts ]] -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css"
+          href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- [[! highlight.js ]] -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    
+
+    <!-- [[! Ghost outputs important style and meta data with this tag ]] -->
+        <link rel="canonical" href="/" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Programming is Magic" />
+    <meta property="og:description" content="A place where I can share my thoughts about programming" />
+    <meta property="og:url" content="/" />
+    <meta property="og:image" content="/assets/images/cover1.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Programming is Magic" />
+    <meta name="twitter:description" content="A place where I can share my thoughts about programming" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:image:src" content="/assets/images/cover1.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "url": "/",
+    "image": "/assets/images/cover1.jpg",
+    "description": "A place where I can share my thoughts about programming"
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation">
+            <a href="/">Home</a>
+        </li>
+        
+        <li class="nav-javascript " role="presentation"><a href="/tag/javascript">JavaScript</a></li>
+        <li class="nav-speeches " role="presentation"><a href="/tag/java">Java</a></li>
+
+        <li class="nav-fiction " role="presentation"><a href="/tag/csharp">C#</a></li>
+        
+        <li class="nav-fiction " role="presentation"><a href="/tag/algorithms">Algorithms</a></li>
+
+
+        <li class="nav-author " role="presentation">
+            <a href="/author/mc">Author</a>
+        </li>
+    </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- [[! Everything else gets inserted here ]] -->
+        <!-- < default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+<header class="main-header post-head  no-gradient" style="background-image: url(/assets/images/mc_cover2.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Spy JVM network traffic with Owasp ZAP proxy</h1>
+            <section class="post-meta">
+            <!-- <a href='/'>marcin-chwedczuk</a> -->
+            <time class="post-date" datetime="2019-01-24">24 Jan 2019</time>
+                <!-- [[tags prefix=" on "]] -->
+                 
+                on 
+                
+                    
+                       <a href='/tag/java'>Java</a>
+                       
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+            
+            <p>We start by downloading <a href="https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project">Owasp ZAP proxy</a>:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span><span class="c"># Download and unpack...</span>
+<span class="gp">$ </span>curl -O -J -L https://github.com/zaproxy/zaproxy/releases/download/2.7.0/ZAP_2.7.0_Linux.tar.gz
+<span class="gp">$ </span>tar xvzf ZAP_2.7.0_Linux.tar.gz
+
+<span class="gp">$ </span><span class="c"># Run ZAP proxy...</span>
+<span class="gp">$ </span>./ZAP_2.7.0/zap.sh  </code></pre></figure>
+
+<p>By default ZAP listens on <code class="highlighter-rouge">localhost:8080</code>. You can change default address
+and port by going into Tools -&gt; Options -&gt; Local Proxies tab:
+<img src="assets/images/2019-01-25/zap_options.png" alt="ZAP Local Proxies tab" /></p>
+
+<p>To test that network traffic interception works, 
+we will use a simple Java app:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+    <span class="n">CloseableHttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClientBuilder</span><span class="o">.</span><span class="na">create</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">useSystemProperties</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">String</span> <span class="n">status</span> <span class="o">=</span> <span class="n">client</span>
+            <span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">HttpGet</span><span class="o">(</span><span class="s">"http://httpstat.us/200"</span><span class="o">))</span>
+            <span class="o">.</span><span class="na">getStatusLine</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">status</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">finally</span> <span class="o">{</span>
+        <span class="n">client</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>There are few things to notice:</p>
+
+<ul>
+  <li>We use Apache HttpClient to perform http requests.</li>
+  <li>By default Apache HttpClient do not use proxy servers,
+ even if you set ZAP as a system wide proxy. We will deal
+ with this problem later. For now we will use <code class="highlighter-rouge">useSystemProperties()</code> method
+ on <code class="highlighter-rouge">HttpClientBuilder</code> class that will enable proxy support.</li>
+  <li>Right now we will concentrate on intercepting HTTP traffic.
+ I will show you how to deal with HTTPS connections later.</li>
+</ul>
+
+<p>If we, now, run our application, we will notice that ZAP did not
+intercept any traffic:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>java -jar ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar 
+HTTP/1.1 200 OK</code></pre></figure>
+
+<p>Indeed right now our application does not know that it should use
+a proxy server. We may force it to use a proxy via JVM command line
+parameters:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>java -Dhttp.proxyHost<span class="o">=</span>127.0.0.1 <span class="se">\</span>
+ -Dhttp.proxyPort<span class="o">=</span>8080 <span class="se">\</span>
+ -Dhttps.proxyHost<span class="o">=</span>127.0.0.1 <span class="se">\</span>
+ -Dhttps.proxyPort<span class="o">=</span>8080 <span class="se">\</span>
+ -jar ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar </code></pre></figure>
+
+<p>or by dynamicaly setting system properties in code:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"http.proxyHost"</span><span class="o">,</span> <span class="s">"127.0.0.1"</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"http.proxyPort"</span><span class="o">,</span> <span class="s">"8080"</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"https.proxyHost"</span><span class="o">,</span> <span class="s">"127.0.0.1"</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"https.proxyPort"</span><span class="o">,</span> <span class="s">"8080"</span><span class="o">);</span></code></pre></figure>
+
+<p>Whatever method you use, if you run the application again,
+you should be able to see now a single intercepted request in ZAP:
+<img src="assets/images/2019-01-25/intercepted_request.png" alt="Intercepted request in ZAP" />
+You can remove previously recorded requests in ZAP by pressing <code class="highlighter-rouge">Ctrl+N</code>.</p>
+
+<h4 id="intercepting-traffic-from-proxy-unfriendly-apps">Intercepting traffic from proxy unfriendly apps</h4>
+
+<p>As I mentioned previously, Apache HttpClient ignores
+proxy settings by default.
+If we create our <code class="highlighter-rouge">HttpClient</code> using <code class="highlighter-rouge">create()</code> method:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+    <span class="n">CloseableHttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClientBuilder</span><span class="o">.</span><span class="na">create</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">String</span> <span class="n">status</span> <span class="o">=</span> <span class="n">client</span>
+            <span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">HttpGet</span><span class="o">(</span><span class="s">"http://httpstat.us/200"</span><span class="o">))</span>
+            <span class="o">.</span><span class="na">getStatusLine</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">status</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">finally</span> <span class="o">{</span>
+        <span class="n">client</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">HttpClient</code> will ignore proxy settings no matter how we set them.</p>
+
+<p>For dealing with cases like this, we may use
+<a href="https://github.com/rofl0r/proxychains-ng/tree/v4.13">proxychains-ng</a>.
+This project is a new reincarnation of old
+<a href="https://github.com/haad/proxychains">proxychains</a> util which is no
+longer maintained.
+Please be aware of this difference. On my system <code class="highlighter-rouge">apt-get install proxychains</code>
+installs <code class="highlighter-rouge">proxychains</code> and not <code class="highlighter-rouge">proxychains-ng</code> that we need here.
+To install <code class="highlighter-rouge">proxychains-ng</code> I needed to download sources from GitHub
+and compile them myself:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span><span class="c"># Checkout tag v4.13</span>
+<span class="gp">$ </span>git clone --branch v4.13 git@github.com:rofl0r/proxychains-ng.git
+
+<span class="gp">$ </span><span class="nb">cd </span>proxychains-ng
+<span class="gp">$ </span>./configure
+<span class="gp">$ </span><span class="c"># If there are no errors from configure script</span>
+<span class="gp">$ </span>make
+<span class="gp">$ </span>./proxychains4 --help
+
+Usage:  ./proxychains4 -q -f config_file program_name <span class="o">[</span>arguments]
+    -q makes proxychains quiet - this overrides the config setting
+    -f allows one to manually specify a configfile to use
+    <span class="k">for </span>example : proxychains telnet somehost.com
+More <span class="nb">help </span><span class="k">in </span>README file
+
+<span class="gp">$ </span><span class="c"># Install system wide...</span>
+<span class="gp">$ </span>sudo make install</code></pre></figure>
+
+<p>We also need to change default <code class="highlighter-rouge">proxychains-ng</code> configuration:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">sudo vim /etc/proxychains.conf
+
+<span class="c"># Comment out line:</span>
+<span class="c"># proxy_dns</span>
+
+<span class="c"># Change ProxyList to:</span>
+<span class="o">[</span>ProxyList]
+http 127.0.0.1 8080</code></pre></figure>
+
+<p>Now if we run our application using <code class="highlighter-rouge">proxychains</code>:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>proxychains4 java -jar ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar 
+<span class="o">[</span>proxychains] config file found: /etc/proxychains.conf
+<span class="o">[</span>proxychains] preloading /usr/local/lib/libproxychains4.so
+<span class="o">[</span>proxychains] DLL init: proxychains-ng 4.13-git-10-g1198857
+<span class="o">[</span>proxychains] Strict chain  ...  127.0.0.1:8080  ...  23.99.0.12:80  ...  OK
+HTTP/1.1 200 OK</code></pre></figure>
+
+<p>We will be able to intercept traffic using ZAP.</p>
+
+<p>One of the limitations of proxychains is that it may not work for
+subprocesses. If you app launches other applications they may
+not be proxied at all.</p>
+
+<h4 id="intercepting-https-traffic">Intercepting HTTPS traffic</h4>
+
+<p>So far, so good, but what will happen if we try to intercept
+HTTPS traffic from a new, more secure, example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"http.proxyHost"</span><span class="o">,</span> <span class="s">"127.0.0.1"</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"http.proxyPort"</span><span class="o">,</span> <span class="s">"8080"</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"https.proxyHost"</span><span class="o">,</span> <span class="s">"127.0.0.1"</span><span class="o">);</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"https.proxyPort"</span><span class="o">,</span> <span class="s">"8080"</span><span class="o">);</span>
+
+    <span class="n">CloseableHttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClientBuilder</span><span class="o">.</span><span class="na">create</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">useSystemProperties</span><span class="o">()</span>
+            <span class="o">.</span><span class="na">build</span><span class="o">();</span>
+
+    <span class="n">String</span> <span class="n">url</span> <span class="o">=</span> <span class="s">"https://www.random.org/integers/?num=12&amp;min=1&amp;max=100&amp;col=3&amp;base=10&amp;format=plain&amp;rnd=new"</span><span class="o">;</span>
+
+    <span class="k">try</span> <span class="o">{</span>
+        <span class="n">HttpEntity</span> <span class="n">entity</span> <span class="o">=</span> <span class="n">client</span>
+            <span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">HttpGet</span><span class="o">(</span><span class="n">url</span><span class="o">))</span>
+            <span class="o">.</span><span class="na">getEntity</span><span class="o">();</span>
+
+        <span class="n">String</span> <span class="n">responseBody</span> <span class="o">=</span> <span class="n">EntityUtils</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">entity</span><span class="o">);</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">responseBody</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="k">finally</span> <span class="o">{</span>
+        <span class="n">client</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>We will get an exception similar to:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">Exception in thread "main" javax.net.ssl.SSLHandshakeException:
+sun.security.validator.ValidatorException: PKIX path building failed:
+sun.security.provider.certpath.SunCertPathBuilderException: unable
+to find valid certification path to requested target</code></pre></figure>
+
+<p>We get this exception because certificate returned by ZAP
+proxy is not trusted.
+To fix this problem we must generate a new ZAP root cert and add it
+(temporarily) to Java keystore.</p>
+
+<p>Generate a new cert and save it somewhere
+(Tools -&gt; Options -&gt; Dynamic SSL Certificates):
+<img src="assets/images/2019-01-25/gen_cert.png" alt="ZAP generate a new root certificate" />
+Don’t forget to click OK.</p>
+
+<p>Then add ZAP root certificate to Java keystore:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span><span class="nb">cd</span> <span class="nv">$JAVA_HOME</span>/jre/lib/security
+<span class="gp">$ </span><span class="nb">pwd</span>
+/usr/lib/jvm/java-8-oracle/jre/lib/security
+<span class="gp">$ </span><span class="c"># You should see cacerts file in this directory.</span>
+
+<span class="gp">$ </span><span class="c"># Create a backup</span>
+<span class="gp">$ </span>sudo cp cacerts cacerts.bakup2019-01-26
+
+<span class="gp">$ </span><span class="c"># Add certificate to the store</span>
+<span class="gp">$ </span>sudo keytool -importcert <span class="se">\</span>
+ -alias zap-proxy.org <span class="se">\</span>
+ -file ~/owasp_zap_root_ca.cer <span class="se">\</span>
+ -keystore cacerts
+<span class="gp">$ </span><span class="c"># When asked about keystore password </span>
+<span class="gp">$ </span><span class="c"># write: changeit (the default password)</span></code></pre></figure>
+
+<p>If we run our app again, we will be able to intercept an HTTPS request:
+<img src="assets/images/2019-01-25/intercept_https.png" alt="Intercepted HTTPS call" /></p>
+
+<p>This again should work with <code class="highlighter-rouge">proxychains-ng</code>.
+Sometimes to make it work you will have to <strong>uncommend</strong> <code class="highlighter-rouge">proxy_dns</code>
+option in <code class="highlighter-rouge">/etc/proxychains.conf</code> file, that I earlier said to
+comment out. Why is this sometimes needed, to be honest, I don’t know but
+it works this way…</p>
+
+<p><strong>For security reasons</strong> after you finished your debugging session,
+you should remove ZAP certificate from Java keystore:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span><span class="nb">cd</span> <span class="nv">$JAVA_HOME</span>/jre/lib/security
+
+<span class="gp">$ </span><span class="c"># Make sure you see your cert</span>
+<span class="gp">$ </span>sudo keytool -list -v -keystore cacerts | grep zap-proxy.org
+Enter keystore password:  changeit
+
+<span class="gp">$ </span><span class="c"># Remove it</span>
+<span class="gp">$ </span>sudo keytool -delete -alias zap-proxy.org -keystore cacerts
+
+<span class="gp">$ </span><span class="c"># Make sure it's gone</span>
+<span class="gp">$ </span>sudo keytool -list -v -keystore cacerts | grep zap-proxy.org
+Enter keystore password:  changeit</code></pre></figure>
+
+<p>Always generate a new ZAP proxy certificate
+before adding it to Java keystore. If you must do this
+often, I can advice you to create a script and/or bash alias to
+make entire process more convenient.</p>
+
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+
+            
+            <figure class="author-image">
+                <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">'s Picture</span></a>
+            </figure>
+            
+
+            <section class="author">
+                <h4><a href="/author/mc">marcin-chwedczuk</a></h4>
+                
+                
+                    <p> A Programmer, A Geek, A Human</p>
+                
+                <div class="author-meta">
+                    <span class="author-location icon-location"> Warsaw, Poland</span> 
+                    <span class="author-link icon-link"><a href="https://marcin-chwedczuk.github.io/"> marcin-chwedczuk.github.io/</a></span> 
+                </div>
+            </section>
+
+            <!-- /author  -->
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="http://twitter.com/share?text=Spy JVM network traffic with Owasp ZAP proxy&amp;url=https://marcin-chwedczuk.github.io/spy-jvm-network-traffic-with-owasp-zap"
+                    onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=https://marcin-chwedczuk.github.io/spy-jvm-network-traffic-with-owasp-zap"
+                    onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=https://marcin-chwedczuk.github.io/spy-jvm-network-traffic-with-owasp-zap"
+                   onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+            
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script>
+    /**
+    * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+    * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+    */
+    
+    var disqus_config = function () {
+        this.page.url = 'https://marcin-chwedczuk.github.io//spy-jvm-network-traffic-with-owasp-zap';
+        this.page.identifier = '/spy-jvm-network-traffic-with-owasp-zap';
+    };
+    
+    (function() { // DON'T EDIT BELOW THIS LINE
+    var d = document, s = d.createElement('script');
+    
+    s.src = '//marcinchwedczukgithubio.disqus.com/embed.js';
+    
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+            
+            
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover2.jpg)" href="/read-only-does-not-mean-immutable">
+            <section class="post">
+                <h2>ReadOnly does not mean Immutable</h2>
+                <p>Recently I have introduced a subtle bug into my code. It all started when I...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2019</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/biomadeira/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- [[! Ghost outputs important scripts and data with this tag ]] -->
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <!-- [[! The main JavaScript file for Casper ]] -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+    <!-- Add Google Analytics  -->
+    <!-- Google Analytics Tracking code -->
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-82096342-1', 'auto');
+  ga('send', 'pageview');
+</script>
+
+</body>
+</html>
