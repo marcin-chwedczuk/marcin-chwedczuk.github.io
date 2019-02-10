@@ -12,6 +12,93 @@
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
+	  <title>FluentAssertions and code formatting</title>
+	  <link>//fluent-assertions-and-code-formatting</link>
+	  <author>marcin-chwedczuk</author>
+	  <pubDate>2019-02-10T01:00:00+01:00</pubDate>
+	  <guid>//fluent-assertions-and-code-formatting</guid>
+	  <description><![CDATA[
+	     <p>Recently I was playing with
+<a href="https://fluentassertions.com/">FluentAssertions</a>
+library.
+I was amazed by the beautiful error messages that FluentAssertions
+can generate. For example for this simple failing test:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
+<span class="k">public</span> <span class="k">void</span> <span class="nf">add_returns_sum_of_arguments</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c1">// Arrange
+</span>	<span class="n">var</span> <span class="n">service</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ServiceA</span><span class="p">();</span>
+	
+	<span class="c1">// Assert
+</span>	<span class="n">service</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">).</span><span class="nf">Should</span><span class="p">().</span><span class="nf">Be</span><span class="p">(</span><span class="m">3</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>FluentAssertions generates a message:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">Outcome: Failed
+Error Message:
+Expected service.Add(1, 2) to be 3, but found 42.</code></pre></figure>
+
+<p>Unfortunatelly my joy did not last long.
+When I added an explanation to my assertion and
+broke the line because it got too long:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
+<span class="k">public</span> <span class="k">void</span> <span class="nf">add_returns_sum_of_arguments</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c1">// Arrange
+</span>	<span class="n">var</span> <span class="n">service</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ServiceA</span><span class="p">();</span>
+
+	<span class="c1">// Assert
+</span>	<span class="n">service</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">)</span>
+		<span class="p">.</span><span class="nf">Should</span><span class="p">().</span><span class="nf">Be</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="n">because</span><span class="p">:</span> <span class="s">"three is sum of one and two"</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>FluentAssertions reproted just:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">Outcome: Failed
+Error Message:
+Expected value to be 3 because three is sum of one and two, but found 42.</code></pre></figure>
+
+<p>It turns out, in order to have this fancy error messages,
+we must place <code class="highlighter-rouge">.Should()</code> call on the same line as the
+tested expression:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
+<span class="k">public</span> <span class="k">void</span> <span class="nf">add_returns_sum_of_arguments</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c1">// Arrange
+</span>	<span class="n">var</span> <span class="n">service</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ServiceA</span><span class="p">();</span>
+
+	<span class="c1">// Assert
+</span>	<span class="n">service</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">)</span><span class="cm">/*abra cadabra*/</span><span class="p">.</span><span class="nf">Should</span><span class="p">()</span>
+		<span class="p">.</span><span class="nf">Be</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="n">because</span><span class="p">:</span> <span class="s">"three is sum of one and two"</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>The above test generates a message:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">Outcome: Failed
+Error Message:
+Expected service.Add(1, 2)/*abra cadabra*/ to be 3 because three is sum of one and two, but found 42.</code></pre></figure>
+
+<p>Notice that comment was also include in the message.</p>
+
+<p>This behavior of FluentAssertions really suprised me.
+Why the way we format our code have any influence over
+the readability of error messages?</p>
+
+<p>Anyway this is how FluentAssertions works.
+Moreover this behaviour is described 
+(with short explanation how it works) on the <em>first</em> page
+of <a href="https://fluentassertions.com/documentation/#subject-identification">the official documentation</a>.
+If only I have spend ten minutes reading the friendly docs instead of
+skimming it…</p>
+
+<p>From now on I will follow Read The Friendly Manual (or RTFM for short) advice!!!</p>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
 	  <title>Random thoughts on Maybe</title>
 	  <link>//random-thoughts-on-maybe</link>
 	  <author>marcin-chwedczuk</author>
