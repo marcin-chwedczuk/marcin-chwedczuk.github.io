@@ -140,10 +140,38 @@
     
     <article class="post">
         <header class="post-header">
+            <h2 class="post-title"><a href="/nsubstitute-and-the-search-for-perfect-error-messages">NSubstitute and the search for perfect error messages</a></h2>
+        </header>
+        <section class="post-excerpt">
+            <p>Those of us that practice TDD daily already know how important good error messages in tests are. After all writing a failing test that clearly states... <a class="read-more" href="/nsubstitute-and-the-search-for-perfect-error-messages">&raquo;</a></p>
+        </section>
+        <footer class="post-meta">
+            <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
+            <!-- author -->
+            <a href='/author/mc'>marcin-chwedczuk</a>
+            <!-- [[tags prefix=" on "]] -->
+             
+                on 
+                
+                    
+                       <a href='/tag/dotnet'>Dotnet</a>,
+                       
+                
+                    
+                       <a href='/tag/architecture'>Architecture</a>
+                       
+                
+            
+            <time class="post-date" datetime="2018-12-15">15 Dec 2018</time>
+        </footer>
+    </article>
+    
+    <article class="post">
+        <header class="post-header">
             <h2 class="post-title"><a href="/inheritance-just-say-no">Inheritance? Just say no!</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>Recently during a code review I have found the following piece of code: {% highlight csharp %} public class TemplateCache : ConcurrentDictionary { } {% endhighlight... <a class="read-more" href="/inheritance-just-say-no">&raquo;</a></p>
+            <p>Recently during a code review I have found the following piece of code: public class TemplateCache : ConcurrentDictionary&lt;TemplateName, Template&gt; { } Here the programmer broke one... <a class="read-more" href="/inheritance-just-say-no">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
@@ -171,7 +199,7 @@
             <h2 class="post-title"><a href="/abusing-local-functions-to-hide-design-problems">Abusing local functions to hide design problems</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>Recently I was browsing through a certain code base and I saw a code similar to this: {% highlight csharp %} public class EnterpriseNotificationSender { private... <a class="read-more" href="/abusing-local-functions-to-hide-design-problems">&raquo;</a></p>
+            <p>Recently I was browsing through a certain code base and I saw a code similar to this: public class EnterpriseNotificationSender { private readonly IUserManagementService _userManagementService; //... <a class="read-more" href="/abusing-local-functions-to-hide-design-problems">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
@@ -199,7 +227,7 @@
             <h2 class="post-title"><a href="/automatically-generate-new-oauth2-tokens-when-using-postman">Automatically generate new OAuth 2.0 access tokens when using Postman</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>Did you ever try to use [Postman](https://www.getpostman.com/) with OAuth 2.0 protected API? It is pretty annoying. First you must select the correct authorization type, then you... <a class="read-more" href="/automatically-generate-new-oauth2-tokens-when-using-postman">&raquo;</a></p>
+            <p>Did you ever try to use Postman with OAuth 2.0 protected API? It is pretty annoying. First you must select the correct authorization type, then you... <a class="read-more" href="/automatically-generate-new-oauth2-tokens-when-using-postman">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
@@ -227,7 +255,7 @@
             <h2 class="post-title"><a href="/avoid-hidden-coupling-to-interface-implementation">Avoid hidden coupling to interface implementation</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>A few days ago I was reviewing a pull request at work and one line of code catch my eye: {% highlight csharp %} var @event... <a class="read-more" href="/avoid-hidden-coupling-to-interface-implementation">&raquo;</a></p>
+            <p>A few days ago I was reviewing a pull request at work and one line of code catch my eye: var @event = new CupOfCoffeeReadyEvent(/* ...... <a class="read-more" href="/avoid-hidden-coupling-to-interface-implementation">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
@@ -247,34 +275,6 @@
                 
             
             <time class="post-date" datetime="2018-09-21">21 Sep 2018</time>
-        </footer>
-    </article>
-    
-    <article class="post">
-        <header class="post-header">
-            <h2 class="post-title"><a href="/fluent-validation-and-complex-dependencies-between-properties">Fluent Validation and complex dependencies between properties</a></h2>
-        </header>
-        <section class="post-excerpt">
-            <p>[FluentValidation](https://fluentvalidation.net/) is one of the best validation libraries for .NET. I use it daily both at work and in my personal pet projects. Still from time... <a class="read-more" href="/fluent-validation-and-complex-dependencies-between-properties">&raquo;</a></p>
-        </section>
-        <footer class="post-meta">
-            <img class="author-thumb" src="/assets/images/mc.png" alt="Author image" nopin="nopin" />
-            <!-- author -->
-            <a href='/author/mc'>marcin-chwedczuk</a>
-            <!-- [[tags prefix=" on "]] -->
-             
-                on 
-                
-                    
-                       <a href='/tag/dotnet'>Dotnet</a>,
-                       
-                
-                    
-                       <a href='/tag/unit-testing'>Unit-testing</a>
-                       
-                
-            
-            <time class="post-date" datetime="2018-09-18">18 Sep 2018</time>
         </footer>
     </article>
     

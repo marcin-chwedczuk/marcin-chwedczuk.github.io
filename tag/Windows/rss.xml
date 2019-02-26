@@ -18,65 +18,66 @@
 	  <pubDate>2016-09-26T02:00:00+02:00</pubDate>
 	  <guid>//obfuscating-windows-batch-files</guid>
 	  <description><![CDATA[
-	     In this post I will present an old trick from mid 90s used by hackers to 
-[obfuscate](https://en.wikipedia.org/wiki/Obfuscation_(software))
-code stored in Windows `.bat` files. The trick is simple and works on all versions
-of Windows up to Windows 10.
+	     <p>In this post I will present an old trick from mid 90s used by hackers to 
+<a href="https://en.wikipedia.org/wiki/Obfuscation_(software)">obfuscate</a>
+code stored in Windows <code class="highlighter-rouge">.bat</code> files. The trick is simple and works on all versions
+of Windows up to Windows 10.</p>
 
-Let's start with a simple command:
-{% highlight no-highlight %}
-> echo %TIME%
-18:50:43.39
-{% endhighlight %}
-As we can see `cmd.exe` expands all environmental variables
+<p>Let’s start with a simple command:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">&gt; echo %TIME%
+18:50:43.39</code></pre></figure>
+
+<p>As we can see <code class="highlighter-rouge">cmd.exe</code> expands all environmental variables
 to their values before executing command.
-What will happen when we try to use a variable that is not defined, let's try:
-{% highlight no-highlight %}
-> echo %foo%
-%foo%
-{% endhighlight %}
-When `cmd.exe` cannot resolve variable it just gives up and passes
-text `%foo%` to the command. Let's try this again but this time
-inside `.bat` file:
-{% highlight no-highlight %}
-> type test1.bat
+What will happen when we try to use a variable that is not defined, let’s try:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">&gt; echo %foo%
+%foo%</code></pre></figure>
+
+<p>When <code class="highlighter-rouge">cmd.exe</code> cannot resolve variable it just gives up and passes
+text <code class="highlighter-rouge">%foo%</code> to the command. Let’s try this again but this time
+inside <code class="highlighter-rouge">.bat</code> file:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">&gt; type test1.bat
 @echo off
 echo %foo%
 
-> test1
+&gt; test1</code></pre></figure>
 
-{% endhighlight %}
-As we can see nothing was printed, so inside `.bat` files undefined
+<p>As we can see nothing was printed, so inside <code class="highlighter-rouge">.bat</code> files undefined
 environmental variables are expanded to empty strings.
-Since `cmd.exe` allows using variables inside
-command names like this:
-{% highlight no-highlight %}
-e%var1%cho%var2% "Hello, world!"
-{% endhighlight %}
-we may use this trick to obfuscate commands stored inside `.bat` files!
+Since <code class="highlighter-rouge">cmd.exe</code> allows using variables inside
+command names like this:</p>
 
-So actual algorithm goes like this:
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">e%var1%cho%var2% "Hello, world!"</code></pre></figure>
 
-1. Choose some set of environmental variables that you are certain are
+<p>we may use this trick to obfuscate commands stored inside <code class="highlighter-rouge">.bat</code> files!</p>
+
+<p>So actual algorithm goes like this:</p>
+
+<ol>
+  <li>Choose some set of environmental variables that you are certain are
  not defined on most of the machines e.g. single or two letter variables like
- `%aa%`, `%bz%`, `%d%`
-2. Insert random variable from point 1 every character or two 
- of every command stored inside `.bat` file
-3. Do not insert environmental variables inside other variables, transforming
- `%windir%` into `%win%a%dir%` won't work
+ <code class="highlighter-rouge">%aa%</code>, <code class="highlighter-rouge">%bz%</code>, <code class="highlighter-rouge">%d%</code></li>
+  <li>Insert random variable from point 1 every character or two 
+ of every command stored inside <code class="highlighter-rouge">.bat</code> file</li>
+  <li>Do not insert environmental variables inside other variables, transforming
+ <code class="highlighter-rouge">%windir%</code> into <code class="highlighter-rouge">%win%a%dir%</code> won’t work</li>
+</ol>
 
-Using this trick we may change this obvious and innocent looking `.bat` file:
-{% highlight no-highlight %}
-@echo off
-echo "Hello, world!"
-{% endhighlight %}
-into monstrous:
-{% highlight no-highlight %}
-@%n%e%x%c%s%h%z%o%f% o%d%f%d%f
-e%n%c%o%h%n%o %n%H%p%e%n%l%o%l%o%o%o%,%o% w%c%o%n%r%p%l%k%d%e%!%s%
-{% endhighlight %}
-As a bonus since expansion will not work on command prompt just copying and pasting lines
-from `.bat` file won't work, this give us additional layer of "security".
+<p>Using this trick we may change this obvious and innocent looking <code class="highlighter-rouge">.bat</code> file:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">@echo off
+echo "Hello, world!"</code></pre></figure>
+
+<p>into monstrous:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">@%n%e%x%c%s%h%z%o%f% o%d%f%d%f
+e%n%c%o%h%n%o %n%H%p%e%n%l%o%l%o%o%o%,%o% w%c%o%n%r%p%l%k%d%e%!%s%</code></pre></figure>
+
+<p>As a bonus since expansion will not work on command prompt just copying and pasting lines
+from <code class="highlighter-rouge">.bat</code> file won’t work, this give us additional layer of “security”.</p>
 
 
 	  ]]></description>

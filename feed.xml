@@ -8,6 +8,29 @@
     
       
       <item>
+        <title>Why using PESEL as a password is a very bad idea</title>
+        
+          <description>&lt;p&gt;I am sure, none of you, my dear readers would use a PESEL number
+as a password or an encryption key.
+Still, as unbelievable as it may sounds, recently 
+I was talking with my friend on a topic of computer security and
+he told me a horror story about a certain company doing exactly that.
+Such practice is highly insecure and in this post I going to
+prove that. Namely we will create an encrypted 7zip archive with
+a random PESEL as a password and then we will crack it using
+&lt;a href=&quot;https://github.com/magnumripper/JohnTheRipper&quot;&gt;John the Ripper&lt;/a&gt;.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Mon, 25 Feb 2019 01:00:00 +0100</pubDate>
+        <link>
+        https://marcin-chwedczuk.github.io//why-using-pesel-as-a-password-is-a-very-bad-idea</link>
+        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//why-using-pesel-as-a-password-is-a-very-bad-idea</guid>
+      </item>
+      
+    
+      
+      <item>
         <title>FluentAssertions and code formatting</title>
         
           <description>&lt;p&gt;Recently I was playing with
@@ -18,11 +41,11 @@ For example, for this failing test:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;na&quot;&gt;[Fact]&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;add_returns_sum_of_its_arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;c1&quot;&gt;// Arrange
-&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;service&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ServiceA&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
-	
-	&lt;span class=&quot;c1&quot;&gt;// Assert
-&lt;/span&gt;	&lt;span class=&quot;n&quot;&gt;service&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Should&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Be&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// Arrange
+&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;service&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ServiceA&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    
+    &lt;span class=&quot;c1&quot;&gt;// Assert
+&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;service&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Should&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Be&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;FluentAssertions generates a message:&lt;/p&gt;
