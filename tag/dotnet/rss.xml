@@ -12,6 +12,91 @@
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
+	  <title>Reduce cognitive load for readers of your code</title>
+	  <link>//reduce-cognitive-load</link>
+	  <author>marcin-chwedczuk</author>
+	  <pubDate>2019-03-05T01:00:00+01:00</pubDate>
+	  <guid>//reduce-cognitive-load</guid>
+	  <description><![CDATA[
+	     <p>Recently I was reviewing a piece of code that was performing
+some computation on file sizes. The author of that code
+followed good programming practices and created a separate
+type for representing file sizes:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">struct</span> <span class="nc">FileSize</span> <span class="p">{</span>
+   <span class="k">public</span> <span class="k">static</span> <span class="n">FileSize</span> <span class="nf">FromBytes</span><span class="p">(</span><span class="kt">ulong</span> <span class="n">bytes</span><span class="p">)</span>
+       <span class="p">=&gt;</span> <span class="k">new</span> <span class="nf">FileSize</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span>
+   <span class="c1">// Other factory methods...
+</span>   
+   <span class="k">private</span> <span class="kt">ulong</span> <span class="n">_bytes</span><span class="p">;</span>
+   <span class="k">public</span> <span class="kt">ulong</span> <span class="n">TotalBytes</span>
+       <span class="p">=&gt;</span> <span class="n">_bytes</span><span class="p">;</span>
+   
+   <span class="k">public</span> <span class="nf">FileSize</span><span class="p">(</span><span class="kt">ulong</span> <span class="n">bytes</span><span class="p">)</span> <span class="p">{</span>
+       <span class="n">_bytes</span> <span class="p">=</span> <span class="n">bytes</span><span class="p">;</span>
+   <span class="p">}</span>
+   <span class="c1">// Other stuff, equatable, comparable, blah...
+</span>   
+   <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="nf">ToString</span><span class="p">()</span>
+       <span class="p">=&gt;</span> <span class="err">$</span><span class="s">"{_bytes:##,#B}"</span><span class="p">;</span>
+   
+   <span class="k">public</span> <span class="k">static</span> <span class="n">FileSize</span> <span class="k">operator</span><span class="p">+(</span><span class="n">FileSize</span> <span class="n">left</span><span class="p">,</span> <span class="n">FileSize</span> <span class="n">right</span><span class="p">)</span>
+       <span class="p">=&gt;</span> <span class="k">new</span> <span class="nf">FileSize</span><span class="p">(</span><span class="n">left</span><span class="p">.</span><span class="n">_bytes</span> <span class="p">+</span> <span class="n">right</span><span class="p">.</span><span class="n">_bytes</span><span class="p">);</span>
+   <span class="c1">// Other operators...
+</span><span class="p">}</span></code></pre></figure>
+
+<p>Yet when it came to computing a total size of set of files I saw
+code like this:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">total</span> <span class="p">=</span> <span class="n">fileSizes</span><span class="p">.</span><span class="nf">Aggregate</span><span class="p">((</span><span class="n">acc</span><span class="p">,</span> <span class="n">curr</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">acc</span> <span class="p">+</span> <span class="n">curr</span><span class="p">);</span></code></pre></figure>
+
+<p>What is wrong with this code?
+It forces readers to concentrate on irrelevant details like how
+to sum a list of file sizes. As a programmer, reading a lot
+of code I would prefer to have something like:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">total</span> <span class="p">=</span> <span class="n">fileSizes</span><span class="p">.</span><span class="nf">Sum</span><span class="p">();</span></code></pre></figure>
+
+<p>Which is shorter, easier to read and also hides implementation
+of <code class="highlighter-rouge">Sum</code> method.</p>
+
+<p>The first code snippet is also a good example of 
+<a href="http://wiki.c2.com/?MixingLevels">Mixing levels of abstractions</a>
+antipattern. If you never heard about this antipattern or
+of the <em>Single level of abstraction</em> principle you can find
+<a href="http://principles-wiki.net/principles:single_level_of_abstraction">a good introduction here</a>.</p>
+
+<p>Fortunately for us, we may quickly implement <code class="highlighter-rouge">Sum</code> 
+using extension methods and also solve the problem
+of summing empty list of file sizes (which previous snippet did not
+handle well):</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">static</span> <span class="k">class</span> <span class="nc">EnumerableOfFileSize</span> <span class="p">{</span>
+     <span class="cm">/* This version is fine, but does not check overflow:
+     public static FileSize Sum(this IEnumerable&lt;FileSize&gt; sizes)
+         =&gt; sizes.Aggregate(FileSize.FromBytes(0), 
+                            (acc, curr) =&gt; acc + curr);
+     */</span>
+
+     <span class="k">public</span> <span class="k">static</span> <span class="n">FileSize</span> <span class="nf">Sum</span><span class="p">(</span><span class="k">this</span> <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">FileSize</span><span class="p">&gt;</span> <span class="n">sizes</span><span class="p">)</span> <span class="p">{</span>
+         <span class="kt">ulong</span> <span class="n">total</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span>
+
+         <span class="k">foreach</span> <span class="p">(</span><span class="n">var</span> <span class="n">size</span> <span class="k">in</span> <span class="n">sizes</span><span class="p">)</span> <span class="p">{</span>
+             <span class="n">total</span> <span class="p">=</span> <span class="k">checked</span><span class="p">(</span><span class="n">total</span> <span class="p">+</span> <span class="n">size</span><span class="p">.</span><span class="n">TotalBytes</span><span class="p">);</span>
+         <span class="p">}</span>
+
+         <span class="k">return</span> <span class="k">new</span> <span class="nf">FileSize</span><span class="p">(</span><span class="n">total</span><span class="p">);</span>
+     <span class="p">}</span>
+ <span class="p">}</span></code></pre></figure>
+
+<p>After this change we achieved code that is easy to read and
+also hides irrelevant details. Yay!</p>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
 	  <title>FluentAssertions and code formatting</title>
 	  <link>//fluent-assertions-and-code-formatting</link>
 	  <author>marcin-chwedczuk</author>
