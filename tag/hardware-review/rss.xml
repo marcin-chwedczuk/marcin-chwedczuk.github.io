@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+   
+      <title>marcin-chwedczuk.github.io/</title>
+   
+   <link>https://marcin-chwedczuk.github.io/</link>
+   <description>A place where I can share my thoughts about programming</description>
+   <language>en-uk</language>
+   <managingEditor> marcin-chwedczuk</managingEditor>
+   <atom:link href="rss" rel="self" type="application/rss+xml" />
+   
+	<item>
+	  <title>Kensington Orbit Trackball review</title>
+	  <link>//kensington-orbit-trackball-review</link>
+	  <author>marcin-chwedczuk</author>
+	  <pubDate>2019-04-14T02:00:00+02:00</pubDate>
+	  <guid>//kensington-orbit-trackball-review</guid>
+	  <description><![CDATA[
+	     <p>Since about three months I use 
+<a href="https://www.kensington.com/p/products/control/trackballs/orbit-trackball-with-scroll-ring/">Kensington Orbit Trackball</a>
+as my only pointing device.
+This is my very first trackball, I bought it for about 180PLN.</p>
+
+<p><img src="assets/images/2019-04-14/t1.jpg" alt="Kensington Orbit Trackball" /></p>
+
+<p>Kensington Orbit Trackball is a “stationary device”,
+good for a PC or for a laptop with docking station, but not
+very mobile.
+The device by itself takes more space than a mouse, but since
+it does not require any movements, you end up with a huge desk space savings.
+In my case I ended up needing only about one third of
+the space that I needed for my mouse.</p>
+
+<p>It took me about two weeks to get used to it.
+In the beginning all my movements were clumsy and
+my fingers got tired really quickly just from clicking right and
+left buttons.
+Yet the biggest challenge for me was the middle-click.
+On Kensington it is performed by pressing simultaneously left
+and right buttons. After a few presses like this my fingers literally
+hurt.
+Fortunately for me the pain and discomfort lasted
+only few days. After that my hands developed necessary muscles
+and using my trackball become bearable.
+Still I needed about two weeks more to get to the point when
+using my trackball was actually comfortable.
+When it comes to movement precision I still have troubles
+with selecting text fragments and 
+drawing is definitively out of the question right now.</p>
+
+<p>I use Kensington trackball only
+at home, at work I still use a mouse.
+This may explain the long time it took me to get used to it.
+On the other hand it may be too painful and uncomfortable
+to start using trackball for 8+ hours a day.
+So maybe starting small is not a bad strategy…</p>
+
+<p>Instead of a scroll wheel Kensington offers a huge
+scroll ring located around the ball, which
+is very pleasant to use.
+In case of my Kensington the ring did not rotate
+smoothly during first few days of using it, but after that
+I had no problems with it.</p>
+
+<p>Kensington provides drivers for Windows and macOS,
+but not for Linux (shame on you Kensington).
+One of the downsides of this
+is that the middle click that caused me so much discomfort
+does not work out of the box with Linux.
+Fortunately this is 
+<a href="https://oliversmith.io/technology/2016/01/03/Enabling-middle-click-for-kensington-trackball-on-ubuntu-linux/">easy to fix</a>,
+just add to your <code class="highlighter-rouge">~/.profile</code>:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">xinput <span class="se">\</span>
+  --set-prop <span class="se">\</span>
+  --type<span class="o">=</span>int <span class="se">\</span>
+  --format<span class="o">=</span>8 <span class="se">\</span>
+  <span class="s2">"Primax Kensington Eagle Trackball"</span> <span class="se">\</span>
+  <span class="s2">"Evdev Middle Button Emulation"</span> <span class="se">\</span>
+  1</code></pre></figure>
+
+<p>The downside of this solution is that you must reexecute this command
+every time you unplug and plug your trackball again.</p>
+
+<p>The other thing that surprised me is that this device
+requires regular cleaning. In my case about once a week.
+The cleaning is not too difficult, you just need to push the ball out 
+using a pencil or your pinky finger and remove dust and dirt.
+You can find a lot of tutorials how to do this properly on the internet.</p>
+
+<p><img src="assets/images/2019-04-14/t2.jpg" alt="Cleaning" /></p>
+
+<p>If you will ever want to open this trackball e.g. to do some
+more serious cleaning, please remember that there is 
+a hidden screw:
+<img src="assets/images/2019-04-14/t3.jpg" alt="Cleaning" />
+I removed a piece of rubber that hid the screw using
+box cutter knife.
+It is really a shame that nowadays manufacturers use
+tricks like that to stop users from
+repairing their products.</p>
+
+<p>The last thing that I want to mention is price.
+In my opinion this product is a bit overpriced.
+This is really sad considering how few people are using trackballs.
+I think that these devices would be much more popular if they
+where cheaper.</p>
+
+<p>Time to sum up.
+All in all Kensington Orbit Trackball turned out to be a good
+purchase. It took me some time to get use to it, but now I like it very much
+and I do not plan to return to a mouse anytime soon.</p>
+
+
+	  ]]></description>
+	</item>
+
+
+</channel>
+</rss>
