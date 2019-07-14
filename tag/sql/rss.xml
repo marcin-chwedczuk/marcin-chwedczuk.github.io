@@ -5,16 +5,16 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>https://marcin-chwedczuk.github.io/</link>
-   <description>A place where I can share my thoughts about programming</description>
+   <link>http://localhost:4000</link>
+   <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> marcin-chwedczuk</managingEditor>
+   <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Indexes in PostgreSQL database</title>
 	  <link>//indexes-in-postgresql</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2016-08-06T02:00:00+02:00</pubDate>
 	  <guid>//indexes-in-postgresql</guid>
 	  <description><![CDATA[
@@ -70,7 +70,7 @@ tables:</p>
 You may check if your current account is <code class="highlighter-rouge">superuser</code> by executing query:</p>
 
 <figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">show</span> <span class="n">is_superuser</span><span class="p">;</span>
-<span class="o">--</span> <span class="n">if</span> <span class="n">you</span> <span class="k">get</span> <span class="s1">'1'</span><span class="p">,</span> <span class="s1">'on'</span> <span class="k">or</span> <span class="s1">'yes'</span> <span class="k">then</span> <span class="n">you</span> <span class="k">are</span> <span class="n">a</span> <span class="n">superuser</span></code></pre></figure>
+<span class="c1">-- if you get '1', 'on' or 'yes' then you are a superuser</span></code></pre></figure>
 
 <p>On Ubuntu you can create <code class="highlighter-rouge">superuser</code> account using command:</p>
 
@@ -80,34 +80,34 @@ You may check if your current account is <code class="highlighter-rouge">superus
 <code class="highlighter-rouge">first_name</code> and <code class="highlighter-rouge">last_name</code> tables:</p>
 
 <figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">from</span> <span class="n">first_name</span><span class="p">;</span>
-<span class="c1">-- 5164
-</span><span class="k">select</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">from</span> <span class="n">last_name</span><span class="p">;</span>
-<span class="o">--</span> <span class="mi">88798</span></code></pre></figure>
+<span class="c1">-- 5164</span>
+<span class="k">select</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">from</span> <span class="n">last_name</span><span class="p">;</span>
+<span class="c1">-- 88798</span></code></pre></figure>
 
 <p>Now we may use data from <code class="highlighter-rouge">first_name</code> and <code class="highlighter-rouge">last_name</code> to populate <code class="highlighter-rouge">account</code> table:</p>
 
 <figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">insert</span> <span class="k">into</span> <span class="n">account</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">is_active</span><span class="p">)</span>
 <span class="k">select</span> 
-    <span class="c1">-- create email by joining first letter of first name, dot and last name
-</span>    <span class="k">lower</span><span class="p">(</span><span class="k">substring</span><span class="p">(</span><span class="n">F</span><span class="p">.</span><span class="n">first_name</span> <span class="k">from</span> <span class="mi">1</span> <span class="k">for</span> <span class="mi">1</span><span class="p">)</span><span class="o">||</span><span class="s1">'.'</span><span class="o">||</span><span class="n">L</span><span class="p">.</span><span class="n">last_name</span><span class="o">||</span><span class="s1">'@example.com'</span><span class="p">)</span> <span class="k">as</span> <span class="n">email</span><span class="p">,</span>
+    <span class="c1">-- create email by joining first letter of first name, dot and last name</span>
+    <span class="k">lower</span><span class="p">(</span><span class="k">substring</span><span class="p">(</span><span class="n">F</span><span class="p">.</span><span class="n">first_name</span> <span class="k">from</span> <span class="mi">1</span> <span class="k">for</span> <span class="mi">1</span><span class="p">)</span><span class="o">||</span><span class="s1">'.'</span><span class="o">||</span><span class="n">L</span><span class="p">.</span><span class="n">last_name</span><span class="o">||</span><span class="s1">'@example.com'</span><span class="p">)</span> <span class="k">as</span> <span class="n">email</span><span class="p">,</span>
     <span class="n">F</span><span class="p">.</span><span class="n">first_name</span> <span class="k">as</span> <span class="n">first_name</span><span class="p">,</span>
     <span class="n">L</span><span class="p">.</span><span class="n">last_name</span>  <span class="k">as</span> <span class="n">last_name</span><span class="p">,</span>
     <span class="k">true</span> <span class="k">as</span> <span class="n">is_active</span>
 <span class="k">from</span> <span class="p">(</span>
     <span class="k">select</span> 
         <span class="n">last_name</span><span class="p">,</span>
-        <span class="c1">-- select random number from 1 to count_of_first_names
-</span>        <span class="n">ceil</span><span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="k">select</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">from</span> <span class="n">first_name</span><span class="p">))</span> <span class="k">as</span> <span class="n">first_name_index</span>
+        <span class="c1">-- select random number from 1 to count_of_first_names</span>
+        <span class="n">ceil</span><span class="p">(</span><span class="n">random</span><span class="p">()</span> <span class="o">*</span> <span class="p">(</span><span class="k">select</span> <span class="k">count</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">from</span> <span class="n">first_name</span><span class="p">))</span> <span class="k">as</span> <span class="n">first_name_index</span>
     <span class="k">from</span> <span class="n">last_name</span>
 <span class="p">)</span> <span class="n">L</span>
 <span class="k">inner</span> <span class="k">join</span> <span class="p">(</span>
     <span class="k">select</span> 
         <span class="n">first_name</span><span class="p">,</span> 
-        <span class="c1">-- number first names from 1 to count_of_first_names
-</span>        <span class="n">row_number</span><span class="p">()</span> <span class="n">over</span> <span class="p">()</span> <span class="k">as</span> <span class="k">index</span>
+        <span class="c1">-- number first names from 1 to count_of_first_names</span>
+        <span class="n">row_number</span><span class="p">()</span> <span class="n">over</span> <span class="p">()</span> <span class="k">as</span> <span class="k">index</span>
     <span class="k">from</span> <span class="n">first_name</span>
 <span class="p">)</span> <span class="n">F</span> <span class="k">on</span> <span class="n">F</span><span class="p">.</span><span class="k">index</span> <span class="o">=</span> <span class="n">L</span><span class="p">.</span><span class="n">first_name_index</span>
-<span class="o">--</span> <span class="n">we</span> <span class="k">join</span> <span class="k">on</span> <span class="n">first_name_index</span><span class="p">,</span> <span class="n">so</span> <span class="k">each</span> <span class="n">last_name</span> <span class="n">will</span> <span class="k">get</span> <span class="n">random</span> <span class="n">first_name</span></code></pre></figure>
+<span class="c1">-- we join on first_name_index, so each last_name will get random first_name</span></code></pre></figure>
 
 <p>After executing this query <code class="highlighter-rouge">account</code> table will contain test data:
 <img src="assets/images/2016-08-06/account_data.png" alt="Data in account table" /></p>
@@ -122,8 +122,8 @@ Databases allow us to implement such a constraint via unique index.</p>
 <p>We will add unique index to <code class="highlighter-rouge">account</code> table to
 ensure that each account email is unique:</p>
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="c1">-- udx_account_email is index name
-</span><span class="k">create</span> <span class="k">unique</span> <span class="k">index</span> <span class="n">udx_account_email</span> <span class="k">on</span> <span class="n">account</span><span class="p">(</span><span class="n">email</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="c1">-- udx_account_email is index name</span>
+<span class="k">create</span> <span class="k">unique</span> <span class="k">index</span> <span class="n">udx_account_email</span> <span class="k">on</span> <span class="n">account</span><span class="p">(</span><span class="n">email</span><span class="p">)</span></code></pre></figure>
 
 <p>If in the future we decide that after all emails may repeat, we may
 drop (remove) index using:</p>
@@ -134,16 +134,16 @@ drop (remove) index using:</p>
 
 <figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">insert</span> <span class="k">into</span> <span class="n">account</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">is_active</span><span class="p">)</span>
 <span class="k">values</span> <span class="p">(</span><span class="s1">'j.doe@example.com'</span><span class="p">,</span> <span class="s1">'jon'</span><span class="p">,</span> <span class="s1">'doe'</span><span class="p">,</span> <span class="k">true</span><span class="p">)</span>
-<span class="c1">-- OK
-</span>
+<span class="c1">-- OK</span>
+
 <span class="k">insert</span> <span class="k">into</span> <span class="n">account</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">is_active</span><span class="p">)</span>
 <span class="k">values</span> <span class="p">(</span><span class="s1">'j.doe@example.com'</span><span class="p">,</span> <span class="s1">'joseph'</span><span class="p">,</span> <span class="s1">'doe'</span><span class="p">,</span> <span class="k">true</span><span class="p">)</span>
-<span class="c1">-- ERROR:  duplicate key value violates unique constraint "udx_account_email"
--- DETAIL:  Key (email)=(j.doe@example.com) already exists.
-</span>
+<span class="c1">-- ERROR:  duplicate key value violates unique constraint "udx_account_email"</span>
+<span class="c1">-- DETAIL:  Key (email)=(j.doe@example.com) already exists.</span>
+
 <span class="k">insert</span> <span class="k">into</span> <span class="n">account</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">is_active</span><span class="p">)</span>
 <span class="k">values</span> <span class="p">(</span><span class="s1">'J.doe@example.com'</span><span class="p">,</span> <span class="s1">'joseph'</span><span class="p">,</span> <span class="s1">'doe'</span><span class="p">,</span> <span class="k">true</span><span class="p">)</span>
-<span class="o">--</span> <span class="n">OK</span></code></pre></figure>
+<span class="c1">-- OK</span></code></pre></figure>
 
 <p>Looks like our index works, but uses case sensitive check to compare two emails.
 It would be better to ignore case when performing check, we may achieve this by using
@@ -158,12 +158,12 @@ It would be better to ignore case when performing check, we may achieve this by 
 
 <span class="k">insert</span> <span class="k">into</span> <span class="n">account</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">is_active</span><span class="p">)</span>
 <span class="k">values</span> <span class="p">(</span><span class="s1">'j.doe@example.com'</span><span class="p">,</span> <span class="s1">'joe'</span><span class="p">,</span> <span class="s1">'doe'</span><span class="p">,</span> <span class="k">true</span><span class="p">);</span>
-<span class="c1">-- OK
-</span>
+<span class="c1">-- OK</span>
+
 <span class="k">insert</span> <span class="k">into</span> <span class="n">account</span><span class="p">(</span><span class="n">email</span><span class="p">,</span> <span class="n">first_name</span><span class="p">,</span> <span class="n">last_name</span><span class="p">,</span> <span class="n">is_active</span><span class="p">)</span>
 <span class="k">values</span> <span class="p">(</span><span class="s1">'J.doe@example.com'</span><span class="p">,</span> <span class="s1">'joseph'</span><span class="p">,</span> <span class="s1">'doe'</span><span class="p">,</span> <span class="k">true</span><span class="p">)</span>
-<span class="c1">-- ERROR:  duplicate key value violates unique constraint "udx_account_email"
-</span><span class="o">--</span> <span class="n">DETAIL</span><span class="p">:</span>  <span class="k">Key</span> <span class="p">(</span><span class="k">lower</span><span class="p">(</span><span class="n">email</span><span class="p">))</span><span class="o">=</span><span class="p">(</span><span class="n">j</span><span class="p">.</span><span class="n">doe</span><span class="o">@</span><span class="n">example</span><span class="p">.</span><span class="n">com</span><span class="p">)</span> <span class="n">already</span> <span class="k">exists</span><span class="p">.</span></code></pre></figure>
+<span class="c1">-- ERROR:  duplicate key value violates unique constraint "udx_account_email"</span>
+<span class="c1">-- DETAIL:  Key (lower(email))=(j.doe@example.com) already exists.</span></code></pre></figure>
 
 <h4 id="standard-indexes">Standard Indexes</h4>
 
@@ -176,8 +176,8 @@ The following example will illustrate that:</p>
 <span class="k">from</span> <span class="n">account</span>
 <span class="k">where</span> <span class="n">first_name</span> <span class="k">like</span> <span class="s1">'Michael'</span>
 
-<span class="c1">-- Seq Scan on account  (cost=0.00..1907.98 rows=17 width=39)
-</span><span class="o">--</span>   <span class="n">Filter</span><span class="p">:</span> <span class="p">(</span><span class="n">first_name</span> <span class="o">~~</span> <span class="s1">'Michael'</span><span class="p">::</span><span class="n">text</span><span class="p">)</span></code></pre></figure>
+<span class="c1">-- Seq Scan on account  (cost=0.00..1907.98 rows=17 width=39)</span>
+<span class="c1">--   Filter: (first_name ~~ 'Michael'::text)</span></code></pre></figure>
 
 <p>We can use <code class="highlighter-rouge">explain</code> to ask database how it will execute query.
 In our example since we don’t have any index on <code class="highlighter-rouge">first_name</code> column
@@ -193,9 +193,9 @@ that will keep track where rows with given <code class="highlighter-rouge">first
 <span class="k">from</span> <span class="n">account</span>
 <span class="k">where</span> <span class="n">first_name</span> <span class="k">like</span> <span class="s1">'Michael'</span>
 
-<span class="c1">-- Index Scan using idx_account_first_name on account  (cost=0.29..8.63 rows=17 width=39)
---  Index Cond: (first_name = 'Michael'::text)
-</span><span class="o">--</span>  <span class="n">Filter</span><span class="p">:</span> <span class="p">(</span><span class="n">first_name</span> <span class="o">~~</span> <span class="s1">'Michael'</span><span class="p">::</span><span class="n">text</span><span class="p">)</span></code></pre></figure>
+<span class="c1">-- Index Scan using idx_account_first_name on account  (cost=0.29..8.63 rows=17 width=39)</span>
+<span class="c1">--  Index Cond: (first_name = 'Michael'::text)</span>
+<span class="c1">--  Filter: (first_name ~~ 'Michael'::text)</span></code></pre></figure>
 
 <p>Now we can see that database will use index to perform search (Index Scan).
 When we look at <code class="highlighter-rouge">cost</code> returned by explain we can see that
@@ -213,16 +213,16 @@ Adding too many indexes to table may actually slow things down, be warned.</p>
 For example let’s say that we want to speed up query that filters
 accounts by first name and last name:</p>
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="c1">-- we use analyze option here to get total query running time
-</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="c1">-- we use analyze option here to get total query running time</span>
+
 <span class="k">explain</span> <span class="k">analyze</span> <span class="k">select</span> <span class="o">*</span> 
 <span class="k">from</span> <span class="n">account</span>
 <span class="k">where</span> <span class="n">first_name</span> <span class="k">like</span> <span class="s1">'Heber'</span> <span class="k">and</span> <span class="n">first_name</span> <span class="k">like</span> <span class="s1">'Michael'</span>
 
-<span class="c1">-- Index Scan using idx_account_first_name on account  (cost=0.29..8.32 rows=1 width=39) (actual time=0.001..0.001 rows=0 loops=1)
---  Index Cond: ((first_name = 'Heber'::text) AND (first_name = 'Michael'::text))
---  Filter: ((first_name ~~ 'Heber'::text) AND (first_name ~~ 'Michael'::text))
-</span><span class="o">--</span> <span class="n">Total</span> <span class="n">runtime</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">017</span> <span class="n">ms</span></code></pre></figure>
+<span class="c1">-- Index Scan using idx_account_first_name on account  (cost=0.29..8.32 rows=1 width=39) (actual time=0.001..0.001 rows=0 loops=1)</span>
+<span class="c1">--  Index Cond: ((first_name = 'Heber'::text) AND (first_name = 'Michael'::text))</span>
+<span class="c1">--  Filter: ((first_name ~~ 'Heber'::text) AND (first_name ~~ 'Michael'::text))</span>
+<span class="c1">-- Total runtime: 0.017 ms</span></code></pre></figure>
 
 <p>As we can see this query uses <code class="highlighter-rouge">idx_account_first_name</code> index that we created in
 previous section and has quite good performance already.
@@ -239,10 +239,10 @@ But we can do even better by creating index on <code class="highlighter-rouge">f
 <span class="k">from</span> <span class="n">account</span>
 <span class="k">where</span> <span class="n">last_name</span> <span class="k">like</span> <span class="s1">'Heber'</span> <span class="k">and</span> <span class="n">first_name</span> <span class="k">like</span> <span class="s1">'Michael'</span>
 
-<span class="c1">-- Index Scan using idx_acount_first_name_last_name on account  (cost=0.42..8.44 rows=1 width=39) (actual time=0.001..0.001 rows=0 loops=1)
---  Index Cond: ((first_name = 'Heber'::text) AND (first_name = 'Michael'::text))
---  Filter: ((first_name ~~ 'Heber'::text) AND (first_name ~~ 'Michael'::text))
-</span><span class="o">--</span> <span class="n">Total</span> <span class="n">runtime</span><span class="p">:</span> <span class="mi">0</span><span class="p">.</span><span class="mi">013</span> <span class="n">ms</span></code></pre></figure>
+<span class="c1">-- Index Scan using idx_acount_first_name_last_name on account  (cost=0.42..8.44 rows=1 width=39) (actual time=0.001..0.001 rows=0 loops=1)</span>
+<span class="c1">--  Index Cond: ((first_name = 'Heber'::text) AND (first_name = 'Michael'::text))</span>
+<span class="c1">--  Filter: ((first_name ~~ 'Heber'::text) AND (first_name ~~ 'Michael'::text))</span>
+<span class="c1">-- Total runtime: 0.013 ms</span></code></pre></figure>
 
 <p>We didn’t gain much in this example (running time 0.017 ms vs 0.013 ms) 
 but it’s worth to know that
@@ -253,24 +253,24 @@ to optimize queries that test for equality/inequality for columns <code class="h
 that use comparisons (equal, greater then, less than etc.) on <code class="highlighter-rouge">col(K+1)</code>.
 In other words our multicolumn index will be used to optimize queries:</p>
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="c1">-- we test first index column for equality
-</span><span class="k">select</span> <span class="o">*</span> 
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="c1">-- we test first index column for equality</span>
+<span class="k">select</span> <span class="o">*</span> 
 <span class="k">from</span> <span class="n">account</span>
 <span class="k">where</span> <span class="n">first_name</span> <span class="k">like</span> <span class="s1">'Michael'</span><span class="p">;</span>
 
-<span class="c1">-- we test first index column for equality
--- and perform comparison on second index column:
--- last_name must be greater than 'A' and less than 'B' (in lexicographic order)
-</span><span class="k">select</span> <span class="o">*</span> 
+<span class="c1">-- we test first index column for equality</span>
+<span class="c1">-- and perform comparison on second index column:</span>
+<span class="c1">-- last_name must be greater than 'A' and less than 'B' (in lexicographic order)</span>
+<span class="k">select</span> <span class="o">*</span> 
 <span class="k">from</span> <span class="n">account</span>
 <span class="k">where</span> <span class="n">first_name</span> <span class="k">like</span> <span class="s1">'Michael'</span> <span class="k">and</span> <span class="n">last_name</span> <span class="k">like</span> <span class="s1">'A%'</span></code></pre></figure>
 
 <p>But our index cannot be used to optimise query:</p>
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="c1">-- first_name is not used in where, index can be only used
--- when we test for equality/inequality on first_name and
--- perform some additional test on last_name
-</span><span class="k">select</span> <span class="o">*</span> 
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="c1">-- first_name is not used in where, index can be only used</span>
+<span class="c1">-- when we test for equality/inequality on first_name and</span>
+<span class="c1">-- perform some additional test on last_name</span>
+<span class="k">select</span> <span class="o">*</span> 
 <span class="k">from</span> <span class="n">account</span>
 <span class="k">where</span> <span class="n">last_name</span> <span class="k">like</span> <span class="s1">'Heber'</span></code></pre></figure>
 
@@ -278,11 +278,11 @@ In other words our multicolumn index will be used to optimize queries:</p>
 on disk. We can get size of all indexes for given table via query:</p>
 
 <figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="n">pg_size_pretty</span><span class="p">(</span><span class="n">pg_indexes_size</span><span class="p">(</span><span class="s1">'account'</span><span class="p">));</span>
-<span class="c1">-- 4896 kB
-</span>
-<span class="c1">-- while using single column index on first_name:
-</span><span class="k">select</span> <span class="n">pg_size_pretty</span><span class="p">(</span><span class="n">pg_indexes_size</span><span class="p">(</span><span class="s1">'account'</span><span class="p">));</span>
-<span class="o">--</span> <span class="mi">4040</span> <span class="n">kB</span></code></pre></figure>
+<span class="c1">-- 4896 kB</span>
+
+<span class="c1">-- while using single column index on first_name:</span>
+<span class="k">select</span> <span class="n">pg_size_pretty</span><span class="p">(</span><span class="n">pg_indexes_size</span><span class="p">(</span><span class="s1">'account'</span><span class="p">));</span>
+<span class="c1">-- 4040 kB</span></code></pre></figure>
 
 <h4 id="partial-indexes">Partial Indexes</h4>
 
@@ -291,23 +291,23 @@ want to index <code class="highlighter-rouge">email</code>s of only active users
 To support such scenarios PostgreSQL provides partial indexes.
 For example:</p>
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="c1">-- you must use where clause to specify 
--- which rows should be included in index
-</span>
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="c1">-- you must use where clause to specify </span>
+<span class="c1">-- which rows should be included in index</span>
+
 <span class="k">create</span> <span class="k">index</span> <span class="n">idx_email_active_account</span> <span class="k">on</span> <span class="n">account</span><span class="p">(</span><span class="n">email</span><span class="p">)</span>
         <span class="k">where</span> <span class="n">is_active</span><span class="p">;</span></code></pre></figure>
 
 <p>After index creation database will use index to speed up queries like:</p>
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="c1">-- we search only active accounts
-</span><span class="k">select</span> <span class="o">*</span> 
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="c1">-- we search only active accounts</span>
+<span class="k">select</span> <span class="o">*</span> 
 <span class="k">from</span> <span class="n">account</span>
 <span class="k">where</span> <span class="n">email</span> <span class="k">like</span> <span class="s1">'foo'</span> <span class="k">and</span> <span class="n">is_active</span> <span class="o">=</span> <span class="k">true</span></code></pre></figure>
 
 <p>But will use SeqScan to perform queries:</p>
 
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="c1">-- we may want to include not active accounts
-</span><span class="k">select</span> <span class="o">*</span> 
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="c1">-- we may want to include not active accounts</span>
+<span class="k">select</span> <span class="o">*</span> 
 <span class="k">from</span> <span class="n">account</span>
 <span class="k">where</span> <span class="n">email</span> <span class="k">like</span> <span class="s1">'foo'</span></code></pre></figure>
 

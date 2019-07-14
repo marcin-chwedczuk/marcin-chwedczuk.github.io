@@ -5,27 +5,27 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>https://marcin-chwedczuk.github.io/</link>
-   <description>A place where I can share my thoughts about programming</description>
+   <link>http://localhost:4000</link>
+   <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> marcin-chwedczuk</managingEditor>
+   <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Spy JVM network traffic with Owasp ZAP proxy</title>
 	  <link>//spy-jvm-network-traffic-with-owasp-zap</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2019-01-24T01:00:00+01:00</pubDate>
 	  <guid>//spy-jvm-network-traffic-with-owasp-zap</guid>
 	  <description><![CDATA[
 	     <p>We start by downloading <a href="https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project">Owasp ZAP proxy</a>:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span><span class="c"># Download and unpack...</span>
-<span class="gp">$ </span>curl -O -J -L https://github.com/zaproxy/zaproxy/releases/download/2.7.0/ZAP_2.7.0_Linux.tar.gz
-<span class="gp">$ </span>tar xvzf ZAP_2.7.0_Linux.tar.gz
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span><span class="c"># Download and unpack...</span>
+<span class="nv">$ </span>curl <span class="nt">-O</span> <span class="nt">-J</span> <span class="nt">-L</span> https://github.com/zaproxy/zaproxy/releases/download/2.7.0/ZAP_2.7.0_Linux.tar.gz
+<span class="nv">$ </span><span class="nb">tar </span>xvzf ZAP_2.7.0_Linux.tar.gz
 
-<span class="gp">$ </span><span class="c"># Run ZAP proxy...</span>
-<span class="gp">$ </span>./ZAP_2.7.0/zap.sh  </code></pre></figure>
+<span class="nv">$ </span><span class="c"># Run ZAP proxy...</span>
+<span class="nv">$ </span>./ZAP_2.7.0/zap.sh  </code></pre></figure>
 
 <p>By default ZAP listens on <code class="highlighter-rouge">localhost:8080</code>. You can change default address
 and port by going into Tools -&gt; Options -&gt; Local Proxies tab:
@@ -34,7 +34,7 @@ and port by going into Tools -&gt; Options -&gt; Local Proxies tab:
 <p>To test that network traffic interception works, 
 we will use a simple Java app:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
     <span class="n">CloseableHttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClientBuilder</span><span class="o">.</span><span class="na">create</span><span class="o">()</span>
             <span class="o">.</span><span class="na">useSystemProperties</span><span class="o">()</span>
             <span class="o">.</span><span class="na">build</span><span class="o">();</span>
@@ -66,18 +66,18 @@ we will use a simple Java app:</p>
 <p>If we, now, run our application, we will notice that ZAP did not
 intercept any traffic:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>java -jar ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar 
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>java <span class="nt">-jar</span> ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar 
 HTTP/1.1 200 OK</code></pre></figure>
 
 <p>Indeed right now our application does not know that it should use
 a proxy server. We may force it to use a proxy via JVM command line
 parameters:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>java -Dhttp.proxyHost<span class="o">=</span>127.0.0.1 <span class="se">\</span>
- -Dhttp.proxyPort<span class="o">=</span>8080 <span class="se">\</span>
- -Dhttps.proxyHost<span class="o">=</span>127.0.0.1 <span class="se">\</span>
- -Dhttps.proxyPort<span class="o">=</span>8080 <span class="se">\</span>
- -jar ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar </code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>java <span class="nt">-Dhttp</span>.proxyHost<span class="o">=</span>127.0.0.1 <span class="se">\</span>
+ <span class="nt">-Dhttp</span>.proxyPort<span class="o">=</span>8080 <span class="se">\</span>
+ <span class="nt">-Dhttps</span>.proxyHost<span class="o">=</span>127.0.0.1 <span class="se">\</span>
+ <span class="nt">-Dhttps</span>.proxyPort<span class="o">=</span>8080 <span class="se">\</span>
+ <span class="nt">-jar</span> ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar </code></pre></figure>
 
 <p>or by dynamicaly setting system properties in code:</p>
 
@@ -97,7 +97,7 @@ You can remove previously recorded requests in ZAP by pressing <code class="high
 proxy settings by default.
 If we create our <code class="highlighter-rouge">HttpClient</code> using <code class="highlighter-rouge">create()</code> method:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
     <span class="n">CloseableHttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClientBuilder</span><span class="o">.</span><span class="na">create</span><span class="o">()</span>
             <span class="o">.</span><span class="na">build</span><span class="o">();</span>
 
@@ -126,27 +126,27 @@ installs <code class="highlighter-rouge">proxychains</code> and not <code class=
 To install <code class="highlighter-rouge">proxychains-ng</code> I needed to download sources from GitHub
 and compile them myself:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span><span class="c"># Checkout tag v4.13</span>
-<span class="gp">$ </span>git clone --branch v4.13 git@github.com:rofl0r/proxychains-ng.git
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span><span class="c"># Checkout tag v4.13</span>
+<span class="nv">$ </span>git clone <span class="nt">--branch</span> v4.13 git@github.com:rofl0r/proxychains-ng.git
 
-<span class="gp">$ </span><span class="nb">cd </span>proxychains-ng
-<span class="gp">$ </span>./configure
-<span class="gp">$ </span><span class="c"># If there are no errors from configure script</span>
-<span class="gp">$ </span>make
-<span class="gp">$ </span>./proxychains4 --help
+<span class="nv">$ </span><span class="nb">cd </span>proxychains-ng
+<span class="nv">$ </span>./configure
+<span class="nv">$ </span><span class="c"># If there are no errors from configure script</span>
+<span class="nv">$ </span>make
+<span class="nv">$ </span>./proxychains4 <span class="nt">--help</span>
 
-Usage:  ./proxychains4 -q -f config_file program_name <span class="o">[</span>arguments]
-    -q makes proxychains quiet - this overrides the config setting
-    -f allows one to manually specify a configfile to use
+Usage:  ./proxychains4 <span class="nt">-q</span> <span class="nt">-f</span> config_file program_name <span class="o">[</span>arguments]
+    <span class="nt">-q</span> makes proxychains quiet - this overrides the config setting
+    <span class="nt">-f</span> allows one to manually specify a configfile to use
     <span class="k">for </span>example : proxychains telnet somehost.com
 More <span class="nb">help </span><span class="k">in </span>README file
 
-<span class="gp">$ </span><span class="c"># Install system wide...</span>
-<span class="gp">$ </span>sudo make install</code></pre></figure>
+<span class="nv">$ </span><span class="c"># Install system wide...</span>
+<span class="nv">$ </span><span class="nb">sudo </span>make install</code></pre></figure>
 
 <p>We also need to change default <code class="highlighter-rouge">proxychains-ng</code> configuration:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">sudo vim /etc/proxychains.conf
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">sudo </span>vim /etc/proxychains.conf
 
 <span class="c"># Comment out line:</span>
 <span class="c"># proxy_dns</span>
@@ -157,7 +157,7 @@ http 127.0.0.1 8080</code></pre></figure>
 
 <p>Now if we run our application using <code class="highlighter-rouge">proxychains</code>:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>proxychains4 java -jar ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar 
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>proxychains4 java <span class="nt">-jar</span> ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar 
 <span class="o">[</span>proxychains] config file found: /etc/proxychains.conf
 <span class="o">[</span>proxychains] preloading /usr/local/lib/libproxychains4.so
 <span class="o">[</span>proxychains] DLL init: proxychains-ng 4.13-git-10-g1198857
@@ -175,7 +175,7 @@ not be proxied at all.</p>
 <p>So far, so good, but what will happen if we try to intercept
 HTTPS traffic from a new, more secure, example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
     <span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"http.proxyHost"</span><span class="o">,</span> <span class="s">"127.0.0.1"</span><span class="o">);</span>
     <span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"http.proxyPort"</span><span class="o">,</span> <span class="s">"8080"</span><span class="o">);</span>
     <span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"https.proxyHost"</span><span class="o">,</span> <span class="s">"127.0.0.1"</span><span class="o">);</span>
@@ -219,21 +219,21 @@ Don’t forget to click OK.</p>
 
 <p>Then add ZAP root certificate to Java keystore:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span><span class="nb">cd</span> <span class="nv">$JAVA_HOME</span>/jre/lib/security
-<span class="gp">$ </span><span class="nb">pwd</span>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span><span class="nb">cd</span> <span class="nv">$JAVA_HOME</span>/jre/lib/security
+<span class="nv">$ </span><span class="nb">pwd</span>
 /usr/lib/jvm/java-8-oracle/jre/lib/security
-<span class="gp">$ </span><span class="c"># You should see cacerts file in this directory.</span>
+<span class="nv">$ </span><span class="c"># You should see cacerts file in this directory.</span>
 
-<span class="gp">$ </span><span class="c"># Create a backup</span>
-<span class="gp">$ </span>sudo cp cacerts cacerts.bakup2019-01-26
+<span class="nv">$ </span><span class="c"># Create a backup</span>
+<span class="nv">$ </span><span class="nb">sudo </span>cp cacerts cacerts.bakup2019-01-26
 
-<span class="gp">$ </span><span class="c"># Add certificate to the store</span>
-<span class="gp">$ </span>sudo keytool -importcert <span class="se">\</span>
- -alias zap-proxy.org <span class="se">\</span>
- -file ~/owasp_zap_root_ca.cer <span class="se">\</span>
- -keystore cacerts
-<span class="gp">$ </span><span class="c"># When asked about keystore password </span>
-<span class="gp">$ </span><span class="c"># write: changeit (the default password)</span></code></pre></figure>
+<span class="nv">$ </span><span class="c"># Add certificate to the store</span>
+<span class="nv">$ </span><span class="nb">sudo </span>keytool <span class="nt">-importcert</span> <span class="se">\</span>
+ <span class="nt">-alias</span> zap-proxy.org <span class="se">\</span>
+ <span class="nt">-file</span> ~/owasp_zap_root_ca.cer <span class="se">\</span>
+ <span class="nt">-keystore</span> cacerts
+<span class="nv">$ </span><span class="c"># When asked about keystore password </span>
+<span class="nv">$ </span><span class="c"># write: changeit (the default password)</span></code></pre></figure>
 
 <p>If we run our app again, we will be able to intercept an HTTPS request:
 <img src="assets/images/2019-01-25/intercept_https.png" alt="Intercepted HTTPS call" /></p>
@@ -247,17 +247,17 @@ it works this way…</p>
 <p><strong>For security reasons</strong> after you finished your debugging session,
 you should remove ZAP certificate from Java keystore:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span><span class="nb">cd</span> <span class="nv">$JAVA_HOME</span>/jre/lib/security
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span><span class="nb">cd</span> <span class="nv">$JAVA_HOME</span>/jre/lib/security
 
-<span class="gp">$ </span><span class="c"># Make sure you see your cert</span>
-<span class="gp">$ </span>sudo keytool -list -v -keystore cacerts | grep zap-proxy.org
+<span class="nv">$ </span><span class="c"># Make sure you see your cert</span>
+<span class="nv">$ </span><span class="nb">sudo </span>keytool <span class="nt">-list</span> <span class="nt">-v</span> <span class="nt">-keystore</span> cacerts | <span class="nb">grep </span>zap-proxy.org
 Enter keystore password:  changeit
 
-<span class="gp">$ </span><span class="c"># Remove it</span>
-<span class="gp">$ </span>sudo keytool -delete -alias zap-proxy.org -keystore cacerts
+<span class="nv">$ </span><span class="c"># Remove it</span>
+<span class="nv">$ </span><span class="nb">sudo </span>keytool <span class="nt">-delete</span> <span class="nt">-alias</span> zap-proxy.org <span class="nt">-keystore</span> cacerts
 
-<span class="gp">$ </span><span class="c"># Make sure it's gone</span>
-<span class="gp">$ </span>sudo keytool -list -v -keystore cacerts | grep zap-proxy.org
+<span class="nv">$ </span><span class="c"># Make sure it's gone</span>
+<span class="nv">$ </span><span class="nb">sudo </span>keytool <span class="nt">-list</span> <span class="nt">-v</span> <span class="nt">-keystore</span> cacerts | <span class="nb">grep </span>zap-proxy.org
 Enter keystore password:  changeit</code></pre></figure>
 
 <p>Always generate a new ZAP proxy certificate
@@ -272,7 +272,7 @@ make entire process more convenient.</p>
 	<item>
 	  <title>Java streams best practices</title>
 	  <link>//java-streams-best-practices</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2017-11-08T01:00:00+01:00</pubDate>
 	  <guid>//java-streams-best-practices</guid>
 	  <description><![CDATA[
@@ -385,7 +385,7 @@ you must use expression:</p>
 	<span class="o">.</span><span class="na">collect</span><span class="o">(</span><span class="n">ExtraCollectors</span><span class="o">.</span><span class="na">toByIdMap</span><span class="o">());</span>
 
 <span class="kd">private</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">ExtraCollectors</span> <span class="o">{</span>
-  <span class="kd">public</span> <span class="kd">static</span> <span class="n">Collector</span><span class="o">&lt;</span><span class="n">Entity</span><span class="o">,?,</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span><span class="n">Entity</span><span class="o">&gt;&gt;</span> <span class="n">toByIdMap</span><span class="o">()</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="n">Collector</span><span class="o">&lt;</span><span class="n">Entity</span><span class="o">,?,</span><span class="n">Map</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">,</span><span class="n">Entity</span><span class="o">&gt;&gt;</span> <span class="nf">toByIdMap</span><span class="o">()</span> <span class="o">{</span>
 	<span class="k">return</span> <span class="n">Collectors</span><span class="o">.</span><span class="na">toMap</span><span class="o">(</span><span class="nl">Entity:</span><span class="o">:</span><span class="n">getId</span><span class="o">,</span> <span class="n">identity</span><span class="o">());</span>
   <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -467,7 +467,7 @@ practices in the future. Bye!</p>
 	<item>
 	  <title>Hibernate HHH000179 warning&#58 Narrowing proxy to class this operation breaks ==</title>
 	  <link>//HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2017-07-30T02:00:00+02:00</pubDate>
 	  <guid>//HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</guid>
 	  <description><![CDATA[
@@ -510,11 +510,11 @@ library like <a href="http://jboss-javassist.github.io/javassist/">Javassit</a>.
  
     <span class="c1">// plenty of other stuff here</span>
  
-    <span class="kd">public</span> <span class="kd">final</span> <span class="n">UUID</span> <span class="n">_d7getId</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">final</span> <span class="n">UUID</span> <span class="nf">_d7getId</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="kd">super</span><span class="o">.</span><span class="na">getId</span><span class="o">();</span>
     <span class="o">}</span>
  
-    <span class="kd">public</span> <span class="kd">final</span> <span class="n">UUID</span> <span class="n">getId</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">final</span> <span class="n">UUID</span> <span class="nf">getId</span><span class="o">()</span> <span class="o">{</span>
         <span class="n">Method</span><span class="o">[]</span> <span class="n">var1</span> <span class="o">=</span> <span class="n">_methods_</span><span class="o">;</span>
         <span class="k">return</span> <span class="o">(</span><span class="n">UUID</span><span class="o">)</span><span class="k">this</span><span class="o">.</span><span class="na">handler</span><span class="o">.</span><span class="na">invoke</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">var1</span><span class="o">[</span><span class="mi">14</span><span class="o">],</span> <span class="n">var1</span><span class="o">[</span><span class="mi">15</span><span class="o">],</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
     <span class="o">}</span>
@@ -544,7 +544,7 @@ Given a simple class hierarchy:</p>
     <span class="nd">@OneToOne</span><span class="o">(</span><span class="n">optional</span> <span class="o">=</span> <span class="kc">false</span><span class="o">,</span> <span class="n">fetch</span> <span class="o">=</span> <span class="n">FetchType</span><span class="o">.</span><span class="na">LAZY</span><span class="o">)</span>
     <span class="kd">private</span> <span class="n">Person</span> <span class="n">owner</span><span class="o">;</span>
 
-    <span class="kd">public</span> <span class="kd">abstract</span> <span class="n">String</span> <span class="n">makeNoise</span><span class="o">();</span>
+    <span class="kd">public</span> <span class="kd">abstract</span> <span class="n">String</span> <span class="nf">makeNoise</span><span class="o">();</span>
     <span class="c1">// ...</span>
 <span class="o">}</span>
 
@@ -668,24 +668,24 @@ that is based either on primary key or business key equality, for example:</p>
     <span class="nd">@Type</span><span class="o">(</span><span class="n">type</span><span class="o">=</span><span class="s">"binary(16)"</span><span class="o">)</span>
     <span class="kd">private</span> <span class="n">UUID</span> <span class="n">id</span><span class="o">;</span>
 
-    <span class="kd">protected</span> <span class="n">BaseEntity</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">protected</span> <span class="nf">BaseEntity</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">UUID</span><span class="o">.</span><span class="na">randomUUID</span><span class="o">();</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">boolean</span> <span class="n">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">o</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">o</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">if</span> <span class="o">(</span><span class="k">this</span> <span class="o">==</span> <span class="n">o</span><span class="o">)</span> <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">o</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="o">!(</span><span class="n">o</span> <span class="k">instanceof</span> <span class="n">BaseEntity</span><span class="o">))</span> <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
 
         <span class="n">BaseEntity</span> <span class="n">that</span> <span class="o">=</span> <span class="o">(</span><span class="n">BaseEntity</span><span class="o">)</span> <span class="n">o</span><span class="o">;</span>
 
         <span class="c1">// remember to use *getters*</span>
-        <span class="k">return</span> <span class="n">getId</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">that</span><span class="o">.</span><span class="na">getId</span><span class="o">());</span>
+        <span class="k">return</span> <span class="nf">getId</span><span class="o">().</span><span class="na">equals</span><span class="o">(</span><span class="n">that</span><span class="o">.</span><span class="na">getId</span><span class="o">());</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">int</span> <span class="n">hashCode</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">getId</span><span class="o">().</span><span class="na">hashCode</span><span class="o">();</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">hashCode</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nf">getId</span><span class="o">().</span><span class="na">hashCode</span><span class="o">();</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -838,7 +838,7 @@ HHH000179 warning can be safely ignored.</p>
 	<item>
 	  <title>Debugging OpenJDK 8 with NetBeans on Ubuntu</title>
 	  <link>//debugging-openjdk8-with-netbeans-on-ubuntu</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2017-06-24T02:00:00+02:00</pubDate>
 	  <guid>//debugging-openjdk8-with-netbeans-on-ubuntu</guid>
 	  <description><![CDATA[
@@ -1011,7 +1011,7 @@ Now you will be able to check and understand how JVM is working under cover.</p>
 	<item>
 	  <title>Zen and the Art of Unit Testing</title>
 	  <link>//zen-and-the-art-of-unit-testing</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2017-02-19T01:00:00+01:00</pubDate>
 	  <guid>//zen-and-the-art-of-unit-testing</guid>
 	  <description><![CDATA[
@@ -1092,7 +1092,7 @@ with <a href="http://site.mockito.org/">Mockito</a> mocking library.</p>
     <span class="kd">private</span> <span class="kd">final</span> <span class="n">DateTimeProvider</span> <span class="n">dateTimeProvider</span><span class="o">;</span>
     <span class="kd">private</span> <span class="kd">final</span> <span class="n">CryptoService</span> <span class="n">cryptoService</span><span class="o">;</span>
 
-    <span class="kd">public</span> <span class="n">UserServiceImpl</span><span class="o">(</span>
+    <span class="kd">public</span> <span class="nf">UserServiceImpl</span><span class="o">(</span>
 		<span class="n">UserRepository</span> <span class="n">userRepository</span><span class="o">,</span>
 		<span class="n">DateTimeProvider</span> <span class="n">dateTimeProvider</span><span class="o">,</span>
 		<span class="n">CryptoService</span> <span class="n">cryptoService</span><span class="o">,</span>
@@ -1105,7 +1105,7 @@ with <a href="http://site.mockito.org/">Mockito</a> mocking library.</p>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">startResetPasswordProcess</span><span class="o">(</span><span class="n">String</span> <span class="n">userEmailAddress</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">startResetPasswordProcess</span><span class="o">(</span><span class="n">String</span> <span class="n">userEmailAddress</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">User</span> <span class="n">user</span> <span class="o">=</span> <span class="n">userRepository</span><span class="o">.</span><span class="na">findByEmailAddress</span><span class="o">(</span><span class="n">userEmailAddress</span><span class="o">);</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">user</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
             <span class="k">return</span><span class="o">;</span>
@@ -1119,7 +1119,7 @@ with <a href="http://site.mockito.org/">Mockito</a> mocking library.</p>
                 <span class="n">tokenValidityEndDate</span><span class="o">);</span>
 
         <span class="n">ResetPasswordNotificationData</span> <span class="n">notificationData</span> <span class="o">=</span> 
-            <span class="k">new</span> <span class="n">ResetPasswordNotificationData</span><span class="o">(</span>
+            <span class="k">new</span> <span class="nf">ResetPasswordNotificationData</span><span class="o">(</span>
                 <span class="n">user</span><span class="o">.</span><span class="na">getEmail</span><span class="o">(),</span>
                 <span class="n">token</span><span class="o">,</span>
                 <span class="n">tokenValidityEndDate</span><span class="o">);</span>
@@ -1129,7 +1129,7 @@ with <a href="http://site.mockito.org/">Mockito</a> mocking library.</p>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">finishResetPasswordProcess</span><span class="o">(</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">finishResetPasswordProcess</span><span class="o">(</span>
             <span class="n">String</span> <span class="n">userEmailAddress</span><span class="o">,</span>
             <span class="n">String</span> <span class="n">newPassword</span><span class="o">,</span>
             <span class="n">UUID</span> <span class="n">resetPasswordToken</span><span class="o">)</span>
@@ -1177,21 +1177,21 @@ with <a href="http://site.mockito.org/">Mockito</a> mocking library.</p>
 <code class="highlighter-rouge">NotificationService</code>, <code class="highlighter-rouge">DateTimeProvider</code> and <code class="highlighter-rouge">CryptoService</code>:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">UserRepository</span> <span class="o">{</span>
-    <span class="n">User</span> <span class="n">findByEmailAddress</span><span class="o">(</span><span class="n">String</span> <span class="n">emailAddress</span><span class="o">);</span>
+    <span class="n">User</span> <span class="nf">findByEmailAddress</span><span class="o">(</span><span class="n">String</span> <span class="n">emailAddress</span><span class="o">);</span>
 <span class="o">}</span>
     
 <span class="kd">public</span> <span class="kd">interface</span> <span class="nc">NotificationService</span> <span class="o">{</span>
-    <span class="kt">void</span> <span class="n">sendResetPasswordNotification</span><span class="o">(</span>
+    <span class="kt">void</span> <span class="nf">sendResetPasswordNotification</span><span class="o">(</span>
             <span class="n">ResetPasswordNotificationData</span> <span class="n">data</span><span class="o">);</span>
-    <span class="kt">void</span> <span class="n">sendPasswordChangedConfirmation</span><span class="o">(</span><span class="n">String</span> <span class="n">email</span><span class="o">);</span>
+    <span class="kt">void</span> <span class="nf">sendPasswordChangedConfirmation</span><span class="o">(</span><span class="n">String</span> <span class="n">email</span><span class="o">);</span>
 <span class="o">}</span>
     
 <span class="kd">public</span> <span class="kd">interface</span> <span class="nc">DateTimeProvider</span> <span class="o">{</span>
-    <span class="n">LocalDateTime</span> <span class="n">now</span><span class="o">();</span>
+    <span class="n">LocalDateTime</span> <span class="nf">now</span><span class="o">();</span>
 <span class="o">}</span>
     
 <span class="kd">public</span> <span class="kd">interface</span> <span class="nc">CryptoService</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">sha1</span><span class="o">(</span><span class="n">String</span> <span class="n">input</span><span class="o">);</span>
+    <span class="n">String</span> <span class="nf">sha1</span><span class="o">(</span><span class="n">String</span> <span class="n">input</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
 <p><code class="highlighter-rouge">DateTimeProvider</code> dependency was introduced solely for the purpose
@@ -1277,7 +1277,7 @@ you should stick with it for some time.</p>
 school teaches that test name should consists of three parts:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Test</span>
-<span class="kt">void</span> <span class="nf">scenario_conditions_outcome</span><span class="p">(</span><span class="o">)</span></code></pre></figure>
+<span class="kt">void</span> <span class="nf">scenario_conditions_outcome</span><span class="o">()</span></code></pre></figure>
 
 <p><code class="highlighter-rouge">scenario</code> is the thing that we want to test, this in most cases
 will be the name of the method that we want to test.
@@ -1288,9 +1288,9 @@ that we expect after tested method returns.</p>
 <p>To give you a feeling how this naming scheme works here
 are some dummy tests for Java <code class="highlighter-rouge">+</code> operator:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">plusOperator_given1And5_returns6</span><span class="p">(</span><span class="o">)</span>
-<span class="kt">void</span> <span class="nf">plusOperator_given1AndMinus7_returnsMinus6</span><span class="p">(</span><span class="o">)</span>
-<span class="kt">void</span> <span class="nf">plusOperator_whenResultIsGreaterThanMAXINT_wrapsResultsUsingMod2Arithmetic</span><span class="p">(</span><span class="o">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">plusOperator_given1And5_returns6</span><span class="o">()</span>
+<span class="kt">void</span> <span class="nf">plusOperator_given1AndMinus7_returnsMinus6</span><span class="o">()</span>
+<span class="kt">void</span> <span class="nf">plusOperator_whenResultIsGreaterThanMAXINT_wrapsResultsUsingMod2Arithmetic</span><span class="o">()</span></code></pre></figure>
 
 <p>The second school took inspiration for thier naming scheme from 
 <a href="https://en.wikipedia.org/wiki/Behavior-driven_development">BDD</a>
@@ -1301,9 +1301,9 @@ conditions and outcome of tested method.
 Names for <code class="highlighter-rouge">+</code> operator tests following this
 scheme looks like:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">_1_plus_5_should_return_6</span><span class="p">(</span><span class="o">)</span>
-<span class="kt">void</span> <span class="nf">_1_plus_minus_7_should_return_minus_6</span><span class="p">(</span><span class="o">)</span>
-<span class="kt">void</span> <span class="nf">when_result_of_addition_is_greater_than_MAXINT_plus_operator_should_wrap_result_using_mod_2_arithmetic</span><span class="p">(</span><span class="o">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">_1_plus_5_should_return_6</span><span class="o">()</span>
+<span class="kt">void</span> <span class="nf">_1_plus_minus_7_should_return_minus_6</span><span class="o">()</span>
+<span class="kt">void</span> <span class="nf">when_result_of_addition_is_greater_than_MAXINT_plus_operator_should_wrap_result_using_mod_2_arithmetic</span><span class="o">()</span></code></pre></figure>
 
 <p>As you can see test names generated using this approach 
 can be quite verbose at times. Verbosity of this schema is it great advantage 
@@ -1315,9 +1315,9 @@ so I will use it exclusively in the rest of this post.</p>
 
 <p>Returning to <code class="highlighter-rouge">startResetPasswordProcess</code> we should create three tests:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">startResetPasswordProcess_givenEmailNotBelongingToAnyUser_doesNothing</span><span class="p">(</span><span class="o">)</span>
-<span class="kt">void</span> <span class="nf">startResetPasswordProcess_givenEmailOfExistingUser_generatesToken</span><span class="p">(</span><span class="o">)</span>
-<span class="kt">void</span> <span class="nf">startResetPasswordProcess_givenEmailOfExistingUser_sendsNotificationToUser</span><span class="p">(</span><span class="o">)</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">startResetPasswordProcess_givenEmailNotBelongingToAnyUser_doesNothing</span><span class="o">()</span>
+<span class="kt">void</span> <span class="nf">startResetPasswordProcess_givenEmailOfExistingUser_generatesToken</span><span class="o">()</span>
+<span class="kt">void</span> <span class="nf">startResetPasswordProcess_givenEmailOfExistingUser_sendsNotificationToUser</span><span class="o">()</span></code></pre></figure>
 
 <p>These test names are not as descriptive as they may be, but are close
 to what you may expect in average enterprise application.</p>
@@ -1336,7 +1336,7 @@ are similar to handcrafted test stubs like:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">UserRepositoryStub</span> <span class="kd">implements</span> <span class="n">UserRepository</span> <span class="o">{</span>
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">User</span> <span class="n">findByEmailAddress</span><span class="o">(</span><span class="n">String</span> <span class="n">emailAddress</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">User</span> <span class="nf">findByEmailAddress</span><span class="o">(</span><span class="n">String</span> <span class="n">emailAddress</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -1348,7 +1348,7 @@ on dummy object.</p>
 <p>Below you can see our first test code:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Test</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">startResetPasswordProcess_givenEmailNotBelongingToAnyUser_doesNothing</span><span class="p">(</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">startResetPasswordProcess_givenEmailNotBelongingToAnyUser_doesNothing</span><span class="o">()</span> <span class="o">{</span>
    <span class="c1">// arrange</span>
    <span class="n">UserRepository</span> <span class="n">userRepository</span> <span class="o">=</span> <span class="n">mock</span><span class="o">(</span><span class="n">UserRepository</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
    <span class="n">DateTimeProvider</span> <span class="n">dateTimeProvider</span> <span class="o">=</span> <span class="n">mock</span><span class="o">(</span><span class="n">DateTimeProvider</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
@@ -1460,7 +1460,7 @@ password change process).
 Here is our second test code:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Test</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">startResetPasswordProcess_givenEmailOfExistingUser_generatesToken</span><span class="p">(</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">startResetPasswordProcess_givenEmailOfExistingUser_generatesToken</span><span class="o">()</span> <span class="o">{</span>
    <span class="c1">// arrange</span>
    <span class="n">UserRepository</span> <span class="n">userRepository</span> <span class="o">=</span> <span class="n">mock</span><span class="o">(</span><span class="n">UserRepository</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
    <span class="n">DateTimeProvider</span> <span class="n">dateTimeProvider</span> <span class="o">=</span> <span class="n">mock</span><span class="o">(</span><span class="n">DateTimeProvider</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
@@ -1599,7 +1599,7 @@ tests into <code class="highlighter-rouge">setUp</code> method and to create som
     <span class="kd">private</span> <span class="n">UserServiceImpl</span> <span class="n">userService</span><span class="o">;</span>
 
     <span class="nd">@Before</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">setUp</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setUp</span><span class="o">()</span> <span class="o">{</span>
         <span class="n">userRepository</span> <span class="o">=</span> <span class="n">mock</span><span class="o">(</span><span class="n">UserRepository</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
         <span class="n">dateTimeProvider</span> <span class="o">=</span> <span class="n">mock</span><span class="o">(</span><span class="n">DateTimeProvider</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
         <span class="n">cryptoService</span> <span class="o">=</span> <span class="n">mock</span><span class="o">(</span><span class="n">CryptoService</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
@@ -1613,7 +1613,7 @@ tests into <code class="highlighter-rouge">setUp</code> method and to create som
     <span class="o">}</span>
 
     <span class="nd">@Test</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">startResetPasswordProcess_givenEmailNotBelongingToAnyUser_doesNothing</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">startResetPasswordProcess_givenEmailNotBelongingToAnyUser_doesNothing</span><span class="o">()</span> <span class="o">{</span>
         <span class="c1">// arrange</span>
         <span class="n">when</span><span class="o">(</span><span class="n">userRepository</span><span class="o">.</span><span class="na">findByEmailAddress</span><span class="o">(</span><span class="s">"unknown@example.com"</span><span class="o">))</span>
                 <span class="o">.</span><span class="na">thenReturn</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
@@ -1630,7 +1630,7 @@ tests into <code class="highlighter-rouge">setUp</code> method and to create som
     <span class="o">}</span>
 
     <span class="nd">@Test</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">startResetPasswordProcess_givenEmailOfExistingUser_generatesToken</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">startResetPasswordProcess_givenEmailOfExistingUser_generatesToken</span><span class="o">()</span> <span class="o">{</span>
         <span class="c1">// arrange</span>
         <span class="n">User</span> <span class="n">joe</span> <span class="o">=</span> <span class="n">Fixtures</span><span class="o">.</span><span class="na">userJoe</span><span class="o">();</span>
 
@@ -1681,7 +1681,7 @@ a fixture. Since I expected that we will need <code class="highlighter-rouge">Us
 test, I extracted code that created dummy user into <code class="highlighter-rouge">Fixtures</code> class:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Fixtures</span> <span class="o">{</span>
-   <span class="kd">public</span> <span class="kd">static</span> <span class="n">User</span> <span class="n">userJoe</span><span class="o">()</span> <span class="o">{</span>
+   <span class="kd">public</span> <span class="kd">static</span> <span class="n">User</span> <span class="nf">userJoe</span><span class="o">()</span> <span class="o">{</span>
 	  <span class="n">User</span> <span class="n">joe</span> <span class="o">=</span> <span class="k">new</span> <span class="n">User</span><span class="o">();</span>
 
 	  <span class="n">joe</span><span class="o">.</span><span class="na">setEmail</span><span class="o">(</span><span class="s">"joe@example.com"</span><span class="o">);</span>
@@ -1766,7 +1766,7 @@ And see you soon again!</p>
 	<item>
 	  <title>Hello, Hibernate Validator</title>
 	  <link>//hello-hibernate-validator</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2017-02-05T01:00:00+01:00</pubDate>
 	  <guid>//hello-hibernate-validator</guid>
 	  <description><![CDATA[
@@ -1840,7 +1840,7 @@ instance:</p>
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">javax.validation.Validation</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">javax.validation.Validator</span><span class="o">;</span>
 
-<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
     <span class="n">Validator</span> <span class="n">validator</span> <span class="o">=</span> <span class="n">Validation</span>
                               <span class="o">.</span><span class="na">buildDefaultValidatorFactory</span><span class="o">()</span>
                               <span class="o">.</span><span class="na">getValidator</span><span class="o">();</span>
@@ -1869,10 +1869,10 @@ We may put annotations on both fields and getters, for example:</p>
 <span class="c1">// or:</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">Person</span> <span class="o">{</span>
     <span class="nd">@NotNull</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="n">getName</span><span class="o">()</span> <span class="o">{</span>             
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>             
         <span class="k">return</span> <span class="n">name</span><span class="o">;</span>                      
     <span class="o">}</span>                                     
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>    
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>    
         <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>                 
     <span class="o">}</span>                                     
 <span class="o">}</span></code></pre></figure>
@@ -2076,13 +2076,13 @@ to <code class="highlighter-rouge">Person</code> bean:</p>
     <span class="nd">@Email</span>
     <span class="kd">private</span> <span class="n">String</span> <span class="n">email</span><span class="o">;</span>
 
-    <span class="kd">public</span> <span class="n">EmailContact</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
-    <span class="kd">public</span> <span class="n">EmailContact</span><span class="o">(</span><span class="n">String</span> <span class="n">email</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">EmailContact</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="nf">EmailContact</span><span class="o">(</span><span class="n">String</span> <span class="n">email</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">email</span> <span class="o">=</span> <span class="n">email</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">String</span> <span class="n">getEmail</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">email</span><span class="o">;</span> <span class="o">}</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">setEmail</span><span class="o">(</span><span class="n">String</span> <span class="n">email</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">.</span><span class="na">email</span> <span class="o">=</span> <span class="n">email</span><span class="o">;</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getEmail</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">email</span><span class="o">;</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setEmail</span><span class="o">(</span><span class="n">String</span> <span class="n">email</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">.</span><span class="na">email</span> <span class="o">=</span> <span class="n">email</span><span class="o">;</span> <span class="o">}</span>
 <span class="o">}</span>
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">PhoneContact</span> <span class="kd">extends</span> <span class="n">Contact</span> <span class="o">{</span>
@@ -2090,13 +2090,13 @@ to <code class="highlighter-rouge">Person</code> bean:</p>
              <span class="n">message</span> <span class="o">=</span> <span class="s">"invalid phone number"</span><span class="o">)</span>
     <span class="kd">private</span> <span class="n">String</span> <span class="n">phoneNumber</span><span class="o">;</span>
 
-    <span class="kd">public</span> <span class="n">PhoneContact</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
-    <span class="kd">public</span> <span class="n">PhoneContact</span><span class="o">(</span><span class="n">String</span> <span class="n">phoneNumber</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">PhoneContact</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="nf">PhoneContact</span><span class="o">(</span><span class="n">String</span> <span class="n">phoneNumber</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">phoneNumber</span> <span class="o">=</span> <span class="n">phoneNumber</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">String</span> <span class="n">getPhoneNumber</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">phoneNumber</span><span class="o">;</span> <span class="o">}</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">setPhoneNumber</span><span class="o">(</span><span class="n">String</span> <span class="n">phoneNumber</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">.</span><span class="na">phoneNumber</span> <span class="o">=</span> <span class="n">phoneNumber</span><span class="o">;</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getPhoneNumber</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">phoneNumber</span><span class="o">;</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setPhoneNumber</span><span class="o">(</span><span class="n">String</span> <span class="n">phoneNumber</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">.</span><span class="na">phoneNumber</span> <span class="o">=</span> <span class="n">phoneNumber</span><span class="o">;</span> <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>Again we used <code class="highlighter-rouge">@Valid</code> annotation to tell Hibernate Validator to
@@ -2104,10 +2104,10 @@ validate all non null beans contained in <code class="highlighter-rouge">contact
 Now we may check if all <code class="highlighter-rouge">Person</code> contacts are valid:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">joe</span><span class="o">.</span><span class="na">setContacts</span><span class="o">(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span>
-    <span class="k">new</span> <span class="n">EmailContact</span><span class="o">(</span><span class="s">"joe@example.com"</span><span class="o">),</span>
-    <span class="k">new</span> <span class="n">PhoneContact</span><span class="o">(</span><span class="s">"123-123-123"</span><span class="o">),</span>
-    <span class="k">new</span> <span class="n">EmailContact</span><span class="o">(</span><span class="s">"invalid_email"</span><span class="o">),</span>
-    <span class="k">new</span> <span class="n">PhoneContact</span><span class="o">(</span><span class="s">"invali_phone"</span><span class="o">)</span>
+    <span class="k">new</span> <span class="nf">EmailContact</span><span class="o">(</span><span class="s">"joe@example.com"</span><span class="o">),</span>
+    <span class="k">new</span> <span class="nf">PhoneContact</span><span class="o">(</span><span class="s">"123-123-123"</span><span class="o">),</span>
+    <span class="k">new</span> <span class="nf">EmailContact</span><span class="o">(</span><span class="s">"invalid_email"</span><span class="o">),</span>
+    <span class="k">new</span> <span class="nf">PhoneContact</span><span class="o">(</span><span class="s">"invali_phone"</span><span class="o">)</span>
 <span class="o">));</span>
 
 <span class="n">validator</span><span class="o">.</span><span class="na">validate</span><span class="o">(</span><span class="n">joe</span><span class="o">);</span>
@@ -2187,9 +2187,9 @@ For example we may create <code class="highlighter-rouge">ValidPhoneNumber</code
 <span class="nd">@Retention</span><span class="o">(</span><span class="n">RUNTIME</span><span class="o">)</span>
 <span class="nd">@Documented</span>
 <span class="kd">public</span> <span class="nd">@interface</span> <span class="n">ValidPhoneNumber</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">message</span><span class="o">()</span> <span class="k">default</span> <span class="s">"phone number should be in format 999-999-999"</span><span class="o">;</span>
+    <span class="n">String</span> <span class="nf">message</span><span class="o">()</span> <span class="k">default</span> <span class="s">"phone number should be in format 999-999-999"</span><span class="o">;</span>
     <span class="n">Class</span><span class="o">&lt;?&gt;[]</span> <span class="n">groups</span><span class="o">()</span> <span class="k">default</span> <span class="o">{</span> <span class="o">};</span>
-    <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">Payload</span><span class="o">&gt;[]</span> <span class="n">payload</span><span class="o">()</span> <span class="k">default</span> <span class="o">{</span> <span class="o">};</span>
+    <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">Payload</span><span class="o">&gt;[]</span> <span class="nf">payload</span><span class="o">()</span> <span class="k">default</span> <span class="o">{</span> <span class="o">};</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>And then use it accross our codebase:</p>
@@ -2213,9 +2213,9 @@ is now more readable.</p>
 <span class="nd">@Documented</span>
 <span class="c1">// @ReportAsSingleViolation</span>
 <span class="kd">public</span> <span class="nd">@interface</span> <span class="n">ValidPersonName</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">message</span><span class="o">()</span> <span class="k">default</span> <span class="s">"person must have a name"</span><span class="o">;</span>
+    <span class="n">String</span> <span class="nf">message</span><span class="o">()</span> <span class="k">default</span> <span class="s">"person must have a name"</span><span class="o">;</span>
     <span class="n">Class</span><span class="o">&lt;?&gt;[]</span> <span class="n">groups</span><span class="o">()</span> <span class="k">default</span> <span class="o">{</span> <span class="o">};</span>
-    <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">Payload</span><span class="o">&gt;[]</span> <span class="n">payload</span><span class="o">()</span> <span class="k">default</span> <span class="o">{</span> <span class="o">};</span>
+    <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">Payload</span><span class="o">&gt;[]</span> <span class="nf">payload</span><span class="o">()</span> <span class="k">default</span> <span class="o">{</span> <span class="o">};</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>And then use it on a field:</p>
@@ -2278,7 +2278,7 @@ to differentiate between errors and warnings.</p>
 <p>Finally we may use them to decide if given <code class="highlighter-rouge">ConstraintViolation</code>
 is warning or error:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isWarning</span><span class="p">(</span><span class="n">ConstraintViolation</span><span class="o">&lt;?&gt;</span> <span class="n">violation</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isWarning</span><span class="o">(</span><span class="n">ConstraintViolation</span><span class="o">&lt;?&gt;</span> <span class="n">violation</span><span class="o">)</span> <span class="o">{</span>
     <span class="kt">boolean</span> <span class="n">isWarning</span> <span class="o">=</span> <span class="n">violation</span><span class="o">.</span><span class="na">getConstraintDescriptor</span><span class="o">()</span>
             <span class="o">.</span><span class="na">getPayload</span><span class="o">()</span>
             <span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">SEVERITY</span><span class="o">.</span><span class="na">WARNING</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
@@ -2303,16 +2303,16 @@ to follow example from <a href="https://docs.jboss.org/hibernate/stable/validato
 <span class="nd">@Documented</span>
 <span class="nd">@Constraint</span><span class="o">(</span><span class="n">validatedBy</span> <span class="o">=</span> <span class="n">NotContainValidator</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
 <span class="kd">public</span> <span class="nd">@interface</span> <span class="n">NotContain</span> <span class="o">{</span>
-    <span class="n">String</span> <span class="n">message</span><span class="o">()</span> <span class="k">default</span> <span class="s">"{validation.NotContain}"</span><span class="o">;</span>
+    <span class="n">String</span> <span class="nf">message</span><span class="o">()</span> <span class="k">default</span> <span class="s">"{validation.NotContain}"</span><span class="o">;</span>
     <span class="n">Class</span><span class="o">&lt;?&gt;[]</span> <span class="n">groups</span><span class="o">()</span> <span class="k">default</span> <span class="o">{</span> <span class="o">};</span>
-    <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">Payload</span><span class="o">&gt;[]</span> <span class="n">payload</span><span class="o">()</span> <span class="k">default</span> <span class="o">{</span> <span class="o">};</span>
-    <span class="n">String</span> <span class="n">value</span><span class="o">();</span>
+    <span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">Payload</span><span class="o">&gt;[]</span> <span class="nf">payload</span><span class="o">()</span> <span class="k">default</span> <span class="o">{</span> <span class="o">};</span>
+    <span class="n">String</span> <span class="nf">value</span><span class="o">();</span>
 
     <span class="nd">@Target</span><span class="o">({</span> <span class="n">FIELD</span><span class="o">,</span> <span class="n">METHOD</span><span class="o">,</span> <span class="n">ANNOTATION_TYPE</span> <span class="o">})</span>
     <span class="nd">@Retention</span><span class="o">(</span><span class="n">RUNTIME</span><span class="o">)</span>
     <span class="nd">@Documented</span>
     <span class="nd">@interface</span> <span class="n">List</span> <span class="o">{</span>
-        <span class="n">NotContain</span><span class="o">[]</span> <span class="n">value</span><span class="o">();</span>
+        <span class="n">NotContain</span><span class="o">[]</span> <span class="nf">value</span><span class="o">();</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -2322,11 +2322,11 @@ to follow example from <a href="https://docs.jboss.org/hibernate/stable/validato
     <span class="kd">implements</span> <span class="n">ConstraintValidator</span><span class="o">&lt;</span><span class="n">NotContain</span><span class="o">,</span> <span class="n">String</span><span class="o">&gt;</span>
 <span class="o">{</span>
     <span class="kd">private</span> <span class="n">String</span> <span class="n">bannedPhrase</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">initialize</span><span class="o">(</span><span class="n">NotContain</span> <span class="n">constraintAnnotation</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">initialize</span><span class="o">(</span><span class="n">NotContain</span> <span class="n">constraintAnnotation</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">bannedPhrase</span> <span class="o">=</span> <span class="n">constraintAnnotation</span><span class="o">.</span><span class="na">value</span><span class="o">();</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">boolean</span> <span class="n">isValid</span><span class="o">(</span><span class="n">String</span> <span class="n">value</span><span class="o">,</span> <span class="n">ConstraintValidatorContext</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isValid</span><span class="o">(</span><span class="n">String</span> <span class="n">value</span><span class="o">,</span> <span class="n">ConstraintValidatorContext</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
         <span class="kt">boolean</span> <span class="n">isValid</span> <span class="o">=</span>
             <span class="n">value</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="o">!</span><span class="n">value</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">bannedPhrase</span><span class="o">);</span>
         <span class="k">return</span> <span class="n">isValid</span><span class="o">;</span>
@@ -2363,10 +2363,10 @@ for a sake of example we will create our own “wrapper” type:</p>
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Box</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
     <span class="kd">private</span> <span class="n">T</span> <span class="n">value</span><span class="o">;</span>
 
-    <span class="kd">public</span> <span class="n">T</span> <span class="n">getValue</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">T</span> <span class="nf">getValue</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">value</span><span class="o">;</span>
     <span class="o">}</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">setValue</span><span class="o">(</span><span class="n">T</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setValue</span><span class="o">(</span><span class="n">T</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -2395,12 +2395,12 @@ own type unwrapper:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BoxUnwrapper</span> <span class="kd">extends</span> <span class="n">ValidatedValueUnwrapper</span><span class="o">&lt;</span><span class="n">Box</span><span class="o">&lt;?&gt;&gt;</span> <span class="o">{</span>
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">Object</span> <span class="n">handleValidatedValue</span><span class="o">(</span><span class="n">Box</span><span class="o">&lt;?&gt;</span> <span class="n">property</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">handleValidatedValue</span><span class="o">(</span><span class="n">Box</span><span class="o">&lt;?&gt;</span> <span class="n">property</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">property</span><span class="o">.</span><span class="na">getValue</span><span class="o">();</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">Type</span> <span class="n">getValidatedValueType</span><span class="o">(</span><span class="n">Type</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">Type</span> <span class="nf">getValidatedValueType</span><span class="o">(</span><span class="n">Type</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
         <span class="c1">// return generic parameter T of Box&lt;T&gt;</span>
         <span class="n">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazz</span> <span class="o">=</span> <span class="o">(</span><span class="n">Class</span><span class="o">&lt;?&gt;)</span>
                 <span class="o">((</span><span class="n">ParameterizedType</span><span class="o">)</span><span class="n">type</span><span class="o">).</span><span class="na">getActualTypeArguments</span><span class="o">()[</span><span class="mi">0</span><span class="o">];</span>
@@ -2449,7 +2449,7 @@ and in Hibernate Validator framework:</p>
     <span class="kd">private</span> <span class="n">ApplicationContext</span> <span class="n">context</span><span class="o">;</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span> <span class="kd">extends</span> <span class="n">ConstraintValidator</span><span class="o">&lt;?,</span> <span class="o">?&gt;&gt;</span> <span class="n">T</span> <span class="n">getInstance</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="o">&lt;</span><span class="n">T</span> <span class="kd">extends</span> <span class="n">ConstraintValidator</span><span class="o">&lt;?,</span> <span class="o">?&gt;&gt;</span> <span class="n">T</span> <span class="nf">getInstance</span><span class="o">(</span><span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">key</span><span class="o">.</span><span class="na">getPackage</span><span class="o">().</span><span class="na">getName</span><span class="o">().</span><span class="na">startsWith</span><span class="o">(</span><span class="s">"javax.validation"</span><span class="o">)</span> <span class="o">||</span>
             <span class="n">key</span><span class="o">.</span><span class="na">getPackage</span><span class="o">().</span><span class="na">getName</span><span class="o">().</span><span class="na">startsWith</span><span class="o">(</span><span class="s">"org.hibernate.validator"</span><span class="o">))</span>
         <span class="o">{</span>
@@ -2458,7 +2458,7 @@ and in Hibernate Validator framework:</p>
                 <span class="c1">// default constructor</span>
                 <span class="k">return</span> <span class="n">key</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span>
             <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">Exception</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-                <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="n">ex</span><span class="o">);</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">ex</span><span class="o">);</span>
             <span class="o">}</span>
         <span class="o">}</span>
 
@@ -2467,7 +2467,7 @@ and in Hibernate Validator framework:</p>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">releaseInstance</span><span class="o">(</span><span class="n">ConstraintValidator</span><span class="o">&lt;?,</span> <span class="o">?&gt;</span> <span class="n">instance</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">releaseInstance</span><span class="o">(</span><span class="n">ConstraintValidator</span><span class="o">&lt;?,</span> <span class="o">?&gt;</span> <span class="n">instance</span><span class="o">)</span> <span class="o">{</span>
         <span class="c1">// DO NOTHING</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -2478,7 +2478,7 @@ and in Hibernate Validator framework:</p>
 <span class="nd">@ComponentScan</span><span class="o">(</span><span class="s">"your.package.name"</span><span class="o">)</span>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">AppConfig</span> <span class="o">{</span>
     <span class="nd">@Bean</span>
-    <span class="kd">public</span> <span class="n">Validator</span> <span class="n">getHibernateValidator</span><span class="o">(</span>
+    <span class="kd">public</span> <span class="n">Validator</span> <span class="nf">getHibernateValidator</span><span class="o">(</span>
         <span class="n">SpringConstrainValidationFactory</span> <span class="n">factory</span><span class="o">)</span>
     <span class="o">{</span>
        <span class="n">Validator</span> <span class="n">validatorEx</span> <span class="o">=</span> <span class="n">Validation</span><span class="o">.</span><span class="na">byProvider</span><span class="o">(</span><span class="n">HibernateValidator</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
@@ -2503,7 +2503,7 @@ use dependency injection inside validators.</p>
 	<item>
 	  <title>Comparing with nullsFirst and nullsLast</title>
 	  <link>//comparing-with-nullsFirst-and-nullsLast</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2017-01-14T01:00:00+01:00</pubDate>
 	  <guid>//comparing-with-nullsFirst-and-nullsLast</guid>
 	  <description><![CDATA[
@@ -2511,22 +2511,22 @@ use dependency injection inside validators.</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Data</span> <span class="o">{</span>
     <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">value</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="n">Data</span><span class="o">(</span><span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">Data</span><span class="o">(</span><span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
     <span class="o">}</span>
  
-    <span class="kd">public</span> <span class="n">String</span> <span class="n">getValue</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">value</span><span class="o">;</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getValue</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">value</span><span class="o">;</span> <span class="o">}</span>
  
-    <span class="nd">@Override</span> <span class="kd">public</span> <span class="n">String</span> <span class="n">toString</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nd">@Override</span> <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"Data(%s)"</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">value</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span>
  
-<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
    <span class="n">List</span><span class="o">&lt;</span><span class="n">Data</span><span class="o">&gt;</span> <span class="n">listOfData</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span>
-          <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"foo"</span><span class="o">),</span>
-          <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"bar"</span><span class="o">),</span>
-          <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"nyu"</span><span class="o">));</span>
+          <span class="k">new</span> <span class="nf">Data</span><span class="o">(</span><span class="s">"foo"</span><span class="o">),</span>
+          <span class="k">new</span> <span class="nf">Data</span><span class="o">(</span><span class="s">"bar"</span><span class="o">),</span>
+          <span class="k">new</span> <span class="nf">Data</span><span class="o">(</span><span class="s">"nyu"</span><span class="o">));</span>
  
    <span class="n">listOfData</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">comparing</span><span class="o">(</span><span class="nl">Data:</span><span class="o">:</span><span class="n">getValue</span><span class="o">));</span>
    <span class="n">listOfData</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
@@ -2539,10 +2539,10 @@ use dependency injection inside validators.</p>
 <p>…unless we try to sort a collection containing null values:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span><span class="o">&lt;</span><span class="n">Data</span><span class="o">&gt;</span> <span class="n">listOfData</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span>
-       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"foo"</span><span class="o">),</span>
+       <span class="k">new</span> <span class="nf">Data</span><span class="o">(</span><span class="s">"foo"</span><span class="o">),</span>
        <span class="kc">null</span><span class="o">,</span>
-       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"bar"</span><span class="o">),</span>
-       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"nyu"</span><span class="o">));</span>
+       <span class="k">new</span> <span class="nf">Data</span><span class="o">(</span><span class="s">"bar"</span><span class="o">),</span>
+       <span class="k">new</span> <span class="nf">Data</span><span class="o">(</span><span class="s">"nyu"</span><span class="o">));</span>
  
 <span class="n">listOfData</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">comparing</span><span class="o">(</span><span class="nl">Data:</span><span class="o">:</span><span class="n">getValue</span><span class="o">));</span>
 <span class="n">listOfData</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
@@ -2558,10 +2558,10 @@ decorators provided by <code class="highlighter-rouge">Comparator</code> interfa
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">import</span> <span class="nn">static</span> <span class="n">java</span><span class="o">.</span><span class="na">util</span><span class="o">.</span><span class="na">Comparator</span><span class="o">.*;</span>
  
 <span class="n">List</span><span class="o">&lt;</span><span class="n">Data</span><span class="o">&gt;</span> <span class="n">listOfData</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span>
-       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"foo"</span><span class="o">),</span>
+       <span class="k">new</span> <span class="nf">Data</span><span class="o">(</span><span class="s">"foo"</span><span class="o">),</span>
        <span class="kc">null</span><span class="o">,</span>
-       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"bar"</span><span class="o">),</span>
-       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"nyu"</span><span class="o">));</span>
+       <span class="k">new</span> <span class="nf">Data</span><span class="o">(</span><span class="s">"bar"</span><span class="o">),</span>
+       <span class="k">new</span> <span class="nf">Data</span><span class="o">(</span><span class="s">"nyu"</span><span class="o">));</span>
  
 <span class="n">listOfData</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">nullsFirst</span><span class="o">(</span><span class="n">comparing</span><span class="o">(</span><span class="nl">Data:</span><span class="o">:</span><span class="n">getValue</span><span class="o">)));</span>
 <span class="n">listOfData</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
@@ -2575,7 +2575,7 @@ decorators provided by <code class="highlighter-rouge">Comparator</code> interfa
 (it adds functionality but doesn’t change interface).
 <code class="highlighter-rouge">nullsFirst</code> works by wrapping provided comparator in code similar to:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">Comparator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">nullsFirst</span><span class="o">(</span><span class="n">Comparator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">comparator</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">Comparator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="nf">nullsFirst</span><span class="o">(</span><span class="n">Comparator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">comparator</span><span class="o">)</span> <span class="o">{</span>
   <span class="k">return</span> <span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="o">{</span>
     <span class="k">if</span> <span class="o">(</span><span class="n">a</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span>
         <span class="k">return</span> <span class="o">(</span><span class="n">b</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
@@ -2592,10 +2592,10 @@ decorators provided by <code class="highlighter-rouge">Comparator</code> interfa
 containing <code class="highlighter-rouge">Data(null)</code>:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span><span class="o">&lt;</span><span class="n">Data</span><span class="o">&gt;</span> <span class="n">listOfData</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span>
-       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"foo"</span><span class="o">),</span>
-       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="kc">null</span><span class="o">),</span>
-       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"bar"</span><span class="o">),</span>
-       <span class="k">new</span> <span class="n">Data</span><span class="o">(</span><span class="s">"nyu"</span><span class="o">));</span>
+       <span class="k">new</span> <span class="nf">Data</span><span class="o">(</span><span class="s">"foo"</span><span class="o">),</span>
+       <span class="k">new</span> <span class="nf">Data</span><span class="o">(</span><span class="kc">null</span><span class="o">),</span>
+       <span class="k">new</span> <span class="nf">Data</span><span class="o">(</span><span class="s">"bar"</span><span class="o">),</span>
+       <span class="k">new</span> <span class="nf">Data</span><span class="o">(</span><span class="s">"nyu"</span><span class="o">));</span>
 
 <span class="n">listOfData</span><span class="o">.</span><span class="na">sort</span><span class="o">(</span><span class="n">nullsFirst</span><span class="o">(</span><span class="n">comparing</span><span class="o">(</span><span class="nl">Data:</span><span class="o">:</span><span class="n">getValue</span><span class="o">)));</span>
 <span class="n">listOfData</span><span class="o">.</span><span class="na">forEach</span><span class="o">(</span><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">::</span><span class="n">println</span><span class="o">);</span>
@@ -2623,7 +2623,7 @@ this thing:</p>
 
 <p>First: we use the following overload of <code class="highlighter-rouge">comparing</code> method:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">,</span> <span class="n">U</span><span class="o">&gt;</span> <span class="n">Comparator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">comparing</span><span class="o">(</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">,</span> <span class="n">U</span><span class="o">&gt;</span> <span class="n">Comparator</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="nf">comparing</span><span class="o">(</span>
    <span class="n">Function</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">T</span><span class="o">,</span> <span class="o">?</span> <span class="kd">extends</span> <span class="n">U</span><span class="o">&gt;</span> <span class="n">keyExtractor</span><span class="o">,</span>
    <span class="n">Comparator</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">U</span><span class="o">&gt;</span>            <span class="n">keyComparator</span><span class="o">)</span>
 <span class="o">{</span>
@@ -2653,7 +2653,7 @@ to bear in mind.</p>
 	<item>
 	  <title>Spring @Transactional cheat sheet</title>
 	  <link>//spring-transactional-cheat-sheet</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2017-01-07T01:00:00+01:00</pubDate>
 	  <guid>//spring-transactional-cheat-sheet</guid>
 	  <description><![CDATA[
@@ -2772,7 +2772,7 @@ transaction (with propagation <code class="highlighter-rouge">REQUIRED</code>, <
 	<item>
 	  <title>Crudest CRUD using Spring</title>
 	  <link>//crudest-curd-using-spring</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2016-12-27T01:00:00+01:00</pubDate>
 	  <guid>//crudest-curd-using-spring</guid>
 	  <description><![CDATA[
@@ -2818,8 +2818,8 @@ to <code class="highlighter-rouge">curd</code> user:</p>
 
 <figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">grant</span> <span class="k">all</span> <span class="k">on</span> <span class="k">table</span> <span class="n">app_data</span> <span class="k">to</span> <span class="n">crud</span>
 
-<span class="c1">-- needed to autogenerate primary key
-</span><span class="k">grant</span> <span class="k">all</span> <span class="k">on</span> <span class="n">sequence</span> <span class="n">app_data_id_seq</span> <span class="k">to</span> <span class="n">crud</span></code></pre></figure>
+<span class="c1">-- needed to autogenerate primary key</span>
+<span class="k">grant</span> <span class="k">all</span> <span class="k">on</span> <span class="n">sequence</span> <span class="n">app_data_id_seq</span> <span class="k">to</span> <span class="n">crud</span></code></pre></figure>
 
 <h4 id="setup-application">Setup application</h4>
 
@@ -2941,9 +2941,9 @@ command line:</p>
 <p>Add following code to the <code class="highlighter-rouge">main</code> method:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">ClassPathXmlApplicationContext</span> <span class="n">appContext</span> <span class="o">=</span>
-                <span class="k">new</span> <span class="n">ClassPathXmlApplicationContext</span><span class="o">(</span><span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span>
+                <span class="k">new</span> <span class="nf">ClassPathXmlApplicationContext</span><span class="o">(</span><span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span>
                         <span class="s">"spring/app-context.xml"</span>
                 <span class="o">});</span>
 
@@ -3035,15 +3035,15 @@ will be responsible for CURD operations on <code class="highlighter-rouge">app_d
     <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">index</span><span class="o">;</span>
     <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">value</span><span class="o">;</span>
 
-    <span class="kd">public</span> <span class="n">AppData</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">,</span> <span class="kt">int</span> <span class="n">index</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">AppData</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">,</span> <span class="kt">int</span> <span class="n">index</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">id</span><span class="o">;</span>
         <span class="k">this</span><span class="o">.</span><span class="na">index</span> <span class="o">=</span> <span class="n">index</span><span class="o">;</span>
         <span class="k">this</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">int</span> <span class="n">getId</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">id</span><span class="o">;</span> <span class="o">}</span>
-    <span class="kd">public</span> <span class="kt">int</span> <span class="n">getIndex</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">index</span><span class="o">;</span> <span class="o">}</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="n">getValue</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">value</span><span class="o">;</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getId</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">id</span><span class="o">;</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getIndex</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">index</span><span class="o">;</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getValue</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">value</span><span class="o">;</span> <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>It is a good practice to program to interface, so
@@ -3051,10 +3051,10 @@ instead of creating a single bean <code class="highlighter-rouge">AppDataDAO</co
 <code class="highlighter-rouge">AppDataDAO</code> interface and then provide an implementation:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">AppDataDAO</span> <span class="o">{</span>
-    <span class="kt">int</span> <span class="n">insert</span><span class="o">(</span><span class="kt">int</span> <span class="n">index</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">);</span>
-    <span class="kt">void</span> <span class="n">update</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">,</span> <span class="kt">int</span> <span class="n">newIndex</span><span class="o">,</span> <span class="n">String</span> <span class="n">newValue</span><span class="o">);</span>
-    <span class="kt">boolean</span> <span class="n">delete</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">);</span>
-    <span class="n">List</span><span class="o">&lt;</span><span class="n">AppData</span><span class="o">&gt;</span> <span class="n">selectAll</span><span class="o">();</span>
+    <span class="kt">int</span> <span class="nf">insert</span><span class="o">(</span><span class="kt">int</span> <span class="n">index</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">);</span>
+    <span class="kt">void</span> <span class="nf">update</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">,</span> <span class="kt">int</span> <span class="n">newIndex</span><span class="o">,</span> <span class="n">String</span> <span class="n">newValue</span><span class="o">);</span>
+    <span class="kt">boolean</span> <span class="nf">delete</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">);</span>
+    <span class="n">List</span><span class="o">&lt;</span><span class="n">AppData</span><span class="o">&gt;</span> <span class="nf">selectAll</span><span class="o">();</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>Finally we may create <code class="highlighter-rouge">JDBCAppDataDAO</code> class that will implement <code class="highlighter-rouge">AppDataDAO</code>
@@ -3064,22 +3064,22 @@ interface:</p>
     <span class="kd">private</span> <span class="n">DataSource</span> <span class="n">ds</span><span class="o">;</span>
     
     <span class="nd">@Autowired</span>
-    <span class="kd">public</span> <span class="n">JDBCAppDataDAO</span><span class="o">(</span><span class="n">DataSource</span> <span class="n">ds</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">JDBCAppDataDAO</span><span class="o">(</span><span class="n">DataSource</span> <span class="n">ds</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">ds</span> <span class="o">=</span> <span class="n">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">ds</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="kd">private</span> <span class="kd">interface</span> <span class="nc">ConnectionConsumer</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
-        <span class="n">T</span> <span class="n">consume</span><span class="o">(</span><span class="n">Connection</span> <span class="n">conn</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">SQLException</span><span class="o">;</span>
+        <span class="n">T</span> <span class="nf">consume</span><span class="o">(</span><span class="n">Connection</span> <span class="n">conn</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">SQLException</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">private</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="n">usingConnection</span><span class="o">(</span><span class="n">ConnectionConsumer</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">consumer</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">usingConnection</span><span class="o">(</span><span class="n">ConnectionConsumer</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">consumer</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">Connection</span> <span class="n">connection</span> <span class="o">=</span> <span class="n">DataSourceUtils</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="n">ds</span><span class="o">);</span>
 
         <span class="k">try</span> <span class="o">{</span>
             <span class="k">return</span> <span class="n">consumer</span><span class="o">.</span><span class="na">consume</span><span class="o">(</span><span class="n">connection</span><span class="o">);</span>
         <span class="o">}</span>
         <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="n">ex</span><span class="o">);</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">ex</span><span class="o">);</span>
         <span class="o">}</span>
         <span class="k">finally</span> <span class="o">{</span>
             <span class="n">DataSourceUtils</span><span class="o">.</span><span class="na">releaseConnection</span><span class="o">(</span><span class="n">connection</span><span class="o">,</span> <span class="n">ds</span><span class="o">);</span>
@@ -3087,8 +3087,8 @@ interface:</p>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">int</span> <span class="n">insert</span><span class="o">(</span><span class="kt">int</span> <span class="n">index</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">usingConnection</span><span class="o">(</span><span class="n">conn</span> <span class="o">-&gt;</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">insert</span><span class="o">(</span><span class="kt">int</span> <span class="n">index</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nf">usingConnection</span><span class="o">(</span><span class="n">conn</span> <span class="o">-&gt;</span> <span class="o">{</span>
             <span class="n">String</span> <span class="n">sql</span> <span class="o">=</span> <span class="s">"insert into app_data(index,value) values(?,?)"</span><span class="o">;</span>
             <span class="k">try</span> <span class="o">(</span><span class="n">PreparedStatement</span> <span class="n">stmt</span> <span class="o">=</span>
                     <span class="n">conn</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span><span class="n">sql</span><span class="o">,</span> <span class="n">PreparedStatement</span><span class="o">.</span><span class="na">RETURN_GENERATED_KEYS</span><span class="o">))</span> <span class="o">{</span>
@@ -3102,7 +3102,7 @@ interface:</p>
                         <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
                     <span class="o">}</span>
                     <span class="k">else</span>
-                        <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">"no generated key!"</span><span class="o">);</span>
+                        <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"no generated key!"</span><span class="o">);</span>
                 <span class="o">}</span>
             <span class="o">}</span>
         <span class="o">});</span>
@@ -3177,8 +3177,8 @@ dataSource.serverName=localhost</code></pre></figure>
 <span class="n">appDataDAO</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="mi">102</span><span class="o">,</span> <span class="s">"bar"</span><span class="o">);</span>
 
 <span class="c1">// given:</span>
-<span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">someOperation</span><span class="p">(</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">"uber error"</span><span class="o">);</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">someOperation</span><span class="o">()</span> <span class="o">{</span>
+  <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"uber error"</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>Of course running this program results in error and only one row
@@ -3202,7 +3202,7 @@ follow this pattern. As usually we will start by creating
 <code class="highlighter-rouge">CRUDAppDemoService</code> interface:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">CRUDAppDemoService</span> <span class="o">{</span>
-    <span class="kt">void</span> <span class="n">doDemo</span><span class="o">();</span>
+    <span class="kt">void</span> <span class="nf">doDemo</span><span class="o">();</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>Then we may write implementation of <code class="highlighter-rouge">CRUDAppDemoService</code>:</p>
@@ -3212,14 +3212,14 @@ follow this pattern. As usually we will start by creating
     <span class="kd">private</span> <span class="kd">final</span> <span class="n">AppDataDAO</span> <span class="n">appDataDAO</span><span class="o">;</span>
 
     <span class="nd">@Autowired</span>
-    <span class="kd">public</span> <span class="n">CRUDAppDemoServiceImpl</span><span class="o">(</span>
+    <span class="kd">public</span> <span class="nf">CRUDAppDemoServiceImpl</span><span class="o">(</span>
       <span class="n">TransactionTemplate</span> <span class="n">txTemplate</span><span class="o">,</span> <span class="n">AppDataDAO</span> <span class="n">appDataDAO</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">txTemplate</span> <span class="o">=</span> <span class="n">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">txTemplate</span><span class="o">);</span>
         <span class="k">this</span><span class="o">.</span><span class="na">appDataDAO</span> <span class="o">=</span> <span class="n">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">appDataDAO</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">doDemo</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doDemo</span><span class="o">()</span> <span class="o">{</span>
         <span class="n">txTemplate</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">ts</span> <span class="o">-&gt;</span> <span class="o">{</span>
             <span class="n">appDataDAO</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="mi">101</span><span class="o">,</span> <span class="s">"foo"</span><span class="o">);</span>
             <span class="n">someOperation</span><span class="o">();</span>
@@ -3229,8 +3229,8 @@ follow this pattern. As usually we will start by creating
         <span class="o">});</span>
     <span class="o">}</span>
 
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">someOperation</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">"uber error"</span><span class="o">);</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">someOperation</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"uber error"</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -3282,20 +3282,20 @@ Let’s change our <code class="highlighter-rouge">CRUDAppDemoServiceImpl</code>
     <span class="kd">private</span> <span class="kd">final</span> <span class="n">AppDataDAO</span> <span class="n">appDataDAO</span><span class="o">;</span>
 
     <span class="nd">@Autowired</span>
-    <span class="kd">public</span> <span class="n">CRUDAppDemoServiceImpl</span><span class="o">(</span><span class="n">AppDataDAO</span> <span class="n">appDataDAO</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">CRUDAppDemoServiceImpl</span><span class="o">(</span><span class="n">AppDataDAO</span> <span class="n">appDataDAO</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">appDataDAO</span> <span class="o">=</span> <span class="n">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">appDataDAO</span><span class="o">);</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
     <span class="nd">@Transactional</span><span class="o">(</span><span class="n">propagation</span> <span class="o">=</span> <span class="n">Propagation</span><span class="o">.</span><span class="na">REQUIRED</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">doDemo</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doDemo</span><span class="o">()</span> <span class="o">{</span>
         <span class="n">appDataDAO</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="mi">101</span><span class="o">,</span> <span class="s">"foo"</span><span class="o">);</span>
         <span class="n">someOperation</span><span class="o">();</span>
         <span class="n">appDataDAO</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="mi">102</span><span class="o">,</span> <span class="s">"bar"</span><span class="o">);</span>
     <span class="o">}</span>
 
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">someOperation</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="s">"uber error"</span><span class="o">);</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">someOperation</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"uber error"</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -3322,12 +3322,12 @@ configuration file. First we must add <code class="highlighter-rouge">tx</code> 
        <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
        <span class="na">xmlns:context=</span><span class="s">"http://www.springframework.org/schema/context"</span>
        <span class="na">xmlns:tx=</span><span class="s">"http://www.springframework.org/schema/tx"</span>
-       <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans</span>
-    <span class="err">http://www.springframework.org/schema/beans/spring-beans-3.0.xsd</span>
-    <span class="err">http://www.springframework.org/schema/context</span>
-    <span class="err">http://www.springframework.org/schema/context/spring-context-3.0.xsd</span>
-    <span class="err">http://www.springframework.org/schema/tx</span>
-    <span class="err">http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"</span><span class="nt">&gt;</span></code></pre></figure>
+       <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.0.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"</span><span class="nt">&gt;</span></code></pre></figure>
 
 <p>And then we must enable annotation driven transactions:</p>
 
@@ -3346,7 +3346,7 @@ configuration file. First we must add <code class="highlighter-rouge">tx</code> 
 	<item>
 	  <title>Generics in Java</title>
 	  <link>//generics-in-java</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2016-12-27T01:00:00+01:00</pubDate>
 	  <guid>//generics-in-java</guid>
 	  <description><![CDATA[
@@ -3365,13 +3365,13 @@ your code.</p>
     <span class="kd">private</span> <span class="kd">final</span> <span class="n">E1</span> <span class="n">first</span><span class="o">;</span>
     <span class="kd">private</span> <span class="kd">final</span> <span class="n">E2</span> <span class="n">second</span><span class="o">;</span>
 
-    <span class="kd">public</span> <span class="n">Pair</span><span class="o">(</span><span class="n">E1</span> <span class="n">first</span><span class="o">,</span> <span class="n">E2</span> <span class="n">second</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">Pair</span><span class="o">(</span><span class="n">E1</span> <span class="n">first</span><span class="o">,</span> <span class="n">E2</span> <span class="n">second</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">first</span> <span class="o">=</span> <span class="n">first</span><span class="o">;</span>
         <span class="k">this</span><span class="o">.</span><span class="na">second</span> <span class="o">=</span> <span class="n">second</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">E1</span> <span class="n">getFirst</span><span class="o">()</span>  <span class="o">{</span> <span class="k">return</span> <span class="n">first</span><span class="o">;</span>  <span class="o">}</span>
-    <span class="kd">public</span> <span class="n">E2</span> <span class="n">getSecond</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">second</span><span class="o">;</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="n">E1</span> <span class="nf">getFirst</span><span class="o">()</span>  <span class="o">{</span> <span class="k">return</span> <span class="n">first</span><span class="o">;</span>  <span class="o">}</span>
+    <span class="kd">public</span> <span class="n">E2</span> <span class="nf">getSecond</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">second</span><span class="o">;</span> <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>Then we can use <code class="highlighter-rouge">Pair</code> as follows:</p>
@@ -3426,13 +3426,13 @@ For example our <code class="highlighter-rouge">Pair</code> class would be trans
     <span class="kd">private</span> <span class="kd">final</span> <span class="n">Object</span> <span class="n">first</span><span class="o">;</span>
     <span class="kd">private</span> <span class="kd">final</span> <span class="n">Object</span> <span class="n">second</span><span class="o">;</span>
 
-    <span class="kd">public</span> <span class="n">Pair</span><span class="o">(</span><span class="n">Object</span> <span class="n">first</span><span class="o">,</span> <span class="n">Object</span> <span class="n">second</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">Pair</span><span class="o">(</span><span class="n">Object</span> <span class="n">first</span><span class="o">,</span> <span class="n">Object</span> <span class="n">second</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">first</span> <span class="o">=</span> <span class="n">first</span><span class="o">;</span>
         <span class="k">this</span><span class="o">.</span><span class="na">second</span> <span class="o">=</span> <span class="n">second</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">Object</span> <span class="n">getFirst</span><span class="o">()</span>  <span class="o">{</span> <span class="k">return</span> <span class="n">first</span><span class="o">;</span>  <span class="o">}</span>
-    <span class="kd">public</span> <span class="n">Object</span> <span class="n">getSecond</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">second</span><span class="o">;</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">getFirst</span><span class="o">()</span>  <span class="o">{</span> <span class="k">return</span> <span class="n">first</span><span class="o">;</span>  <span class="o">}</span>
+    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">getSecond</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">second</span><span class="o">;</span> <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>Compiler also inserts necessary casts, and converts between primitives 
@@ -3479,11 +3479,11 @@ Below is a list of Java generics shortcomings:</p>
     <span class="c1">// private static T last;</span>
 
     <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">printCounter</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">printCounter</span><span class="o">()</span> <span class="o">{</span>
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"counter: "</span> <span class="o">+</span> <span class="n">counter</span><span class="o">);</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">Example</span><span class="o">()</span> <span class="o">{</span> <span class="n">counter</span><span class="o">++;</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="nf">Example</span><span class="o">()</span> <span class="o">{</span> <span class="n">counter</span><span class="o">++;</span> <span class="o">}</span>
 <span class="o">}</span>
 
 <span class="k">new</span> <span class="n">Example</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span>
@@ -3502,12 +3502,12 @@ Below is a list of Java generics shortcomings:</p>
 </ul>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">interface</span> <span class="nc">TestInterface</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
-    <span class="kt">void</span> <span class="n">consume</span><span class="o">(</span><span class="n">T</span> <span class="n">value</span><span class="o">);</span>
+    <span class="kt">void</span> <span class="nf">consume</span><span class="o">(</span><span class="n">T</span> <span class="n">value</span><span class="o">);</span>
 <span class="o">}</span>
 
 <span class="kd">class</span> <span class="nc">TestClass</span> <span class="kd">implements</span> <span class="n">TestInterface</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="o">{</span>
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">consume</span><span class="o">(</span><span class="n">Integer</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">consume</span><span class="o">(</span><span class="n">Integer</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">value</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -3515,11 +3515,11 @@ Below is a list of Java generics shortcomings:</p>
 <p>after type erasure becomes:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">interface</span> <span class="nc">TestInterface</span> <span class="o">{</span>
-	<span class="kt">void</span> <span class="n">consume</span><span class="o">(</span><span class="n">Object</span> <span class="n">value</span><span class="o">);</span>
+	<span class="kt">void</span> <span class="nf">consume</span><span class="o">(</span><span class="n">Object</span> <span class="n">value</span><span class="o">);</span>
 <span class="o">}</span>
 
 <span class="kd">class</span> <span class="nc">TestClass</span> <span class="kd">implements</span> <span class="n">TestInterface</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">consume</span><span class="o">(</span><span class="n">Integer</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">consume</span><span class="o">(</span><span class="n">Integer</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">value</span><span class="o">);</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -3530,11 +3530,11 @@ problem compiler adds following method to <code class="highlighter-rouge">TestCl
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">TestClass</span> <span class="kd">implements</span> <span class="n">TestInterface</span> <span class="o">{</span>
    <span class="c1">// bridge method added by compiler:</span>
-   <span class="nd">@Override</span> <span class="kd">public</span> <span class="kt">void</span> <span class="n">consume</span><span class="o">(</span><span class="n">Object</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
+   <span class="nd">@Override</span> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">consume</span><span class="o">(</span><span class="n">Object</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
 	 <span class="k">this</span><span class="o">.</span><span class="na">consume</span><span class="o">((</span><span class="n">Integer</span><span class="o">)</span><span class="n">value</span><span class="o">);</span>
    <span class="o">}</span>
 
-   <span class="kd">public</span> <span class="kt">void</span> <span class="n">consume</span><span class="o">(</span><span class="n">Integer</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span> <span class="o">...</span> <span class="o">}</span>
+   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">consume</span><span class="o">(</span><span class="n">Integer</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span> <span class="o">...</span> <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
 <ul>
@@ -3542,12 +3542,12 @@ problem compiler adds following method to <code class="highlighter-rouge">TestCl
  overloads are forbidden:</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">check</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">ints</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">check</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">strings</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">check</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">ints</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+<span class="kd">public</span> <span class="kt">void</span> <span class="nf">check</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">strings</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span></code></pre></figure>
 
 <p>because after type erasure both methods have exactly the same signature</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">check</span><span class="p">(</span><span class="n">List</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">check</span><span class="o">(</span><span class="n">List</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span></code></pre></figure>
 
 <p>Similarly we cannot implement the same interface twice
 with different generic parameters. Again type erasure is our culprit:</p>
@@ -3582,7 +3582,7 @@ Raw types should only be used to interact with legacy code.</p>
 correctly and in case that we didn’t we should expect <code class="highlighter-rouge">ClassCastException</code>
 at runtime. For example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
   <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">ints</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span>
 
   <span class="n">List</span> <span class="n">rawList</span> <span class="o">=</span> <span class="n">ints</span><span class="o">;</span>
@@ -3591,7 +3591,7 @@ at runtime. For example:</p>
   <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="n">ints</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// ClassCastException</span>
 <span class="o">}</span>
 
-<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">legacyCode</span><span class="p">(</span><span class="n">List</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">legacyCode</span><span class="o">(</span><span class="n">List</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
   <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">"foo"</span><span class="o">);</span> <span class="c1">// unchecked warning</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -3610,7 +3610,7 @@ client wanted to access list element.</p>
 
 <p>We can declare generic method as follows:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">E1</span><span class="o">,</span><span class="n">E2</span><span class="o">&gt;</span> <span class="n">Pair</span><span class="o">&lt;</span><span class="n">E1</span><span class="o">,</span><span class="n">E2</span><span class="o">&gt;</span> <span class="n">pair</span><span class="o">(</span><span class="n">E1</span> <span class="n">first</span><span class="o">,</span> <span class="n">E2</span> <span class="n">second</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">E1</span><span class="o">,</span><span class="n">E2</span><span class="o">&gt;</span> <span class="n">Pair</span><span class="o">&lt;</span><span class="n">E1</span><span class="o">,</span><span class="n">E2</span><span class="o">&gt;</span> <span class="nf">pair</span><span class="o">(</span><span class="n">E1</span> <span class="n">first</span><span class="o">,</span> <span class="n">E2</span> <span class="n">second</span><span class="o">)</span> <span class="o">{</span>
    <span class="k">return</span> <span class="k">new</span> <span class="n">Pair</span><span class="o">&lt;</span><span class="n">E1</span><span class="o">,</span><span class="n">E2</span><span class="o">&gt;(</span><span class="n">first</span><span class="o">,</span> <span class="n">second</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -3634,7 +3634,7 @@ explicitly specifying generic parameters values:</p>
 <p>Let’s consider method that copies elements from one list to
 another:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="n">copy</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">dest</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">src</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">copy</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">dest</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">src</span><span class="o">)</span> <span class="o">{</span>
    <span class="k">for</span> <span class="o">(</span><span class="n">T</span> <span class="nl">element:</span> <span class="n">src</span><span class="o">)</span> <span class="o">{</span>
 	  <span class="n">dest</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">element</span><span class="o">);</span>
    <span class="o">}</span>
@@ -3656,7 +3656,7 @@ another:</p>
 <p>We may fix method by adding second generic parameter:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">D</span><span class="o">,</span><span class="n">S</span> <span class="kd">extends</span> <span class="n">D</span><span class="o">&gt;</span>
-<span class="kt">void</span> <span class="nf">copy</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">D</span><span class="o">&gt;</span> <span class="n">dest</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">src</span><span class="o">)</span> <span class="o">{</span>
+<span class="kt">void</span> <span class="nf">copy</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">D</span><span class="o">&gt;</span> <span class="n">dest</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">src</span><span class="o">)</span> <span class="o">{</span>
    <span class="k">for</span> <span class="o">(</span><span class="n">S</span> <span class="nl">element:</span> <span class="n">src</span><span class="o">)</span> <span class="o">{</span>
 	  <span class="n">dest</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">element</span><span class="o">);</span>
    <span class="o">}</span>
@@ -3664,7 +3664,7 @@ another:</p>
 
 <p>This is so common situation that Java introduces a shortcut:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="n">copy</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">dest</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">T</span><span class="o">&gt;</span> <span class="n">src</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">copy</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">dest</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">T</span><span class="o">&gt;</span> <span class="n">src</span><span class="o">)</span> <span class="o">{</span>
   <span class="k">for</span> <span class="o">(</span><span class="n">T</span> <span class="nl">element:</span> <span class="n">src</span><span class="o">)</span> <span class="o">{</span>
 	  <span class="n">dest</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">element</span><span class="o">);</span>
   <span class="o">}</span>
@@ -3676,11 +3676,11 @@ extends or implements type <code class="highlighter-rouge">T</code>.</p>
 <p>Wildcards allows us to reduce number of required generic parameters and
 made method declarations more clear, for example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">boolean</span> <span class="n">isNullOrEmpty</span><span class="o">(</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">coll</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">boolean</span> <span class="nf">isNullOrEmpty</span><span class="o">(</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">coll</span><span class="o">)</span> <span class="o">{</span>
   <span class="k">return</span> <span class="n">coll</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">coll</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">();</span>
 <span class="o">}</span>
 
-<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isNullOrEmptyWildcards</span><span class="p">(</span><span class="n">Collection</span><span class="o">&lt;?&gt;</span> <span class="n">coll</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isNullOrEmptyWildcards</span><span class="o">(</span><span class="n">Collection</span><span class="o">&lt;?&gt;</span> <span class="n">coll</span><span class="o">)</span> <span class="o">{</span>
   <span class="k">return</span> <span class="n">coll</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">coll</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">();</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -3694,7 +3694,7 @@ e.g. this may be
 <code class="highlighter-rouge">super</code> bound restricts values of wildcard to given class
 and all of its superclasses, for example method:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">process</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">Integer</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">process</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">Integer</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span></code></pre></figure>
 
 <p>can only be used with <code class="highlighter-rouge">List&lt;Integer&gt;</code>, <code class="highlighter-rouge">List&lt;Number&gt;</code> and <code class="highlighter-rouge">List&lt;Object&gt;</code>.
 Calling method with <code class="highlighter-rouge">List&lt;String&gt;</code> results in compile time error.</p>
@@ -3704,7 +3704,7 @@ from generic type instance,
 <code class="highlighter-rouge">super</code> bound is needed when we want to pass values to generic type instance.
 For example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="n">produceConsume</span><span class="o">(</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">produceConsume</span><span class="o">(</span>
 	  <span class="n">Producer</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">T</span><span class="o">&gt;</span> <span class="n">producer</span><span class="o">,</span>
 	  <span class="n">Consumer</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">T</span><span class="o">&gt;</span> <span class="n">consumer</span><span class="o">)</span>
 <span class="o">{</span>
@@ -3728,7 +3728,7 @@ and <code class="highlighter-rouge">Consumer&lt;Object&gt;</code> <code class="h
 <p>Let’s say that we want to create a method that swaps elements of
 the list, we may write:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">swap</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;?&gt;</span> <span class="n">list</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i2</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">swap</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;?&gt;</span> <span class="n">list</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i2</span><span class="o">)</span> <span class="o">{</span>
    <span class="c1">// doesn't compile</span>
    <span class="o">?</span> <span class="n">tmp</span> <span class="o">=</span> <span class="n">list</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i1</span><span class="o">);</span>
    <span class="n">list</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">i1</span><span class="o">,</span> <span class="n">list</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i2</span><span class="o">));</span>
@@ -3740,10 +3740,10 @@ introduce generic parameter to method signature or create
 a helper method with generic parameter that 
 will “capture” wildcard value:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">swap</span><span class="p">(</span><span class="n">List</span><span class="o">&lt;?&gt;</span> <span class="n">list</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i2</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">swap</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;?&gt;</span> <span class="n">list</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i2</span><span class="o">)</span> <span class="o">{</span>
    <span class="n">swapImpl</span><span class="o">(</span><span class="n">list</span><span class="o">,</span> <span class="n">i1</span><span class="o">,</span> <span class="n">i2</span><span class="o">);</span>
 <span class="o">}</span>
-<span class="kd">private</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="n">swapImpl</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i2</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">private</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">swapImpl</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i2</span><span class="o">)</span> <span class="o">{</span>
    <span class="n">T</span> <span class="n">tmp</span> <span class="o">=</span> <span class="n">list</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i1</span><span class="o">);</span>
    <span class="n">list</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">i1</span><span class="o">,</span> <span class="n">list</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i2</span><span class="o">));</span>
    <span class="n">list</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">i2</span><span class="o">,</span> <span class="n">tmp</span><span class="o">);</span>
@@ -3850,7 +3850,7 @@ get class token we should use raw type (<code class="highlighter-rouge">ArrayLis
 
 <p>Let’s consider this innocent looking code:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span><span class="o">[]</span> <span class="n">toArray</span><span class="o">(</span><span class="n">T</span> <span class="n">v1</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span><span class="o">[]</span> <span class="nf">toArray</span><span class="o">(</span><span class="n">T</span> <span class="n">v1</span><span class="o">)</span> <span class="o">{</span>
   <span class="n">T</span><span class="o">[]</span> <span class="n">array</span> <span class="o">=</span> <span class="o">(</span><span class="n">T</span><span class="o">[])</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span> <span class="c1">// unchecked warning</span>
   <span class="n">array</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="n">v1</span><span class="o">;</span>
   <span class="k">return</span> <span class="n">array</span><span class="o">;</span>
@@ -3867,7 +3867,7 @@ we don’t know what array we should create - should it be array of
 objects or maybe array of strings. We may fix this method by passing
 additional parameter that will represent required type of array elements:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span><span class="o">[]</span> <span class="n">toArray</span><span class="o">(</span><span class="n">T</span> <span class="n">v1</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span><span class="o">[]</span> <span class="nf">toArray</span><span class="o">(</span><span class="n">T</span> <span class="n">v1</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
   <span class="n">T</span><span class="o">[]</span> <span class="n">array</span> <span class="o">=</span> <span class="o">(</span><span class="n">T</span><span class="o">[])</span> <span class="n">Array</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="n">type</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
   <span class="n">array</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="n">v1</span><span class="o">;</span>
   <span class="k">return</span> <span class="n">array</span><span class="o">;</span>
@@ -3894,7 +3894,7 @@ create array with generic elements - type erasure is culprit again:</p>
 <p>Java varargs methods are implemented using arrays, when we try
 to use varargs with generics:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">concat</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">T</span><span class="o">&gt;...</span> <span class="n">lists</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="nf">concat</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">T</span><span class="o">&gt;...</span> <span class="n">lists</span><span class="o">)</span> <span class="o">{</span>
    <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">concatenated</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;();</span>
 
    <span class="k">for</span> <span class="o">(</span><span class="n">List</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">T</span><span class="o">&gt;</span> <span class="nl">l:</span> <span class="n">lists</span><span class="o">)</span> <span class="o">{</span>

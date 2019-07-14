@@ -5,16 +5,16 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>https://marcin-chwedczuk.github.io/</link>
-   <description>A place where I can share my thoughts about programming</description>
+   <link>http://localhost:4000</link>
+   <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> marcin-chwedczuk</managingEditor>
+   <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Why using PESEL as a password is a very bad idea</title>
 	  <link>//why-using-pesel-as-a-password-is-a-very-bad-idea</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2019-02-25T01:00:00+01:00</pubDate>
 	  <guid>//why-using-pesel-as-a-password-is-a-very-bad-idea</guid>
 	  <description><![CDATA[
@@ -92,18 +92,18 @@ these commands on macOS or Windows.</p>
 
 <p>First we need to install <a href="https://www.7-zip.org/download.html">7-zip</a>:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">sudo apt-get install p7zip-full p7zip-rar</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">sudo </span>apt-get install p7zip-full p7zip-rar</code></pre></figure>
 
 <p>Then we can create an encrypted archive:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">7z a -m0<span class="o">=</span>lzma2 -mx<span class="o">=</span>9 -p29032502498 secret.7z secret.txt </code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">7z a <span class="nt">-m0</span><span class="o">=</span>lzma2 <span class="nt">-mx</span><span class="o">=</span>9 <span class="nt">-p29032502498</span> secret.7z secret.txt </code></pre></figure>
 
 <p>with <code class="highlighter-rouge">29032502498</code> PESEL as a password.</p>
 
 <p>Just to make sure that the archive is indeed encrypted,
 we execute:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>7z l -slt secret.7z
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>7z l <span class="nt">-slt</span> secret.7z
 
 <span class="o">(</span>... skipped ...<span class="o">)</span>
 Encrypted <span class="o">=</span> +
@@ -122,11 +122,11 @@ I compiled John without OpenCL and REXGEN support, YMMV though.</p>
 <p>To allow John to crack <code class="highlighter-rouge">7z</code> file, first we must extract a hash from
 it:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">./john/run/7z2john.pl secret.7z &gt; secret.7z.hash</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">./john/run/7z2john.pl secret.7z <span class="o">&gt;</span> secret.7z.hash</code></pre></figure>
 
 <p>To make this Perl script work, I had to install this library:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">sudo apt-get install libcompress-raw-lzma-perl</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">sudo </span>apt-get install libcompress-raw-lzma-perl</code></pre></figure>
 
 <p>Then I generated a suitable list of PESEL numbers
 (people aged 20-65, males) using
@@ -138,10 +138,10 @@ We are going to use it as a John the Ripper wordlist.</p>
 
 <p>Now we can start cracking:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">./john/run/john --wordlist<span class="o">=</span>pesels.txt secret.7z.hash
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">./john/run/john <span class="nt">--wordlist</span><span class="o">=</span>pesels.txt secret.7z.hash
 
 <span class="c"># Found passwords are saved in john.pot file</span>
-cat ./john/run/john.pot</code></pre></figure>
+<span class="nb">cat</span> ./john/run/john.pot</code></pre></figure>
 
 <p>I performed two test. First I tried to crack a small
 340B archive that you can find <a href="https://github.com/marcin-chwedczuk/blog-pesel-password-bad-idea/blob/master/secret.7z">here</a>.

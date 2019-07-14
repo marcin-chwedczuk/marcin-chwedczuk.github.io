@@ -5,16 +5,16 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>https://marcin-chwedczuk.github.io/</link>
-   <description>A place where I can share my thoughts about programming</description>
+   <link>http://localhost:4000</link>
+   <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> marcin-chwedczuk</managingEditor>
+   <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>JavaScript in and delete operators</title>
 	  <link>//JavaScript-in-and-delete-operators</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2016-11-12T01:00:01+01:00</pubDate>
 	  <guid>//JavaScript-in-and-delete-operators</guid>
 	  <description><![CDATA[
@@ -158,7 +158,7 @@ in array returned by <code class="highlighter-rouge">Object.keys()</code>.</p>
 	<item>
 	  <title>Hoisting in JavaScript</title>
 	  <link>//hoisting-in-javascript</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2016-10-30T02:00:00+02:00</pubDate>
 	  <guid>//hoisting-in-javascript</guid>
 	  <description><![CDATA[
@@ -488,7 +488,7 @@ If you have any remarks how I can improve this article please leave a comment.</
 	<item>
 	  <title>How null's are handled in switch statement in C#, Java and JavaScript</title>
 	  <link>//how-nulls-are-handled-in-switch-statement</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2016-07-09T02:00:00+02:00</pubDate>
 	  <guid>//how-nulls-are-handled-in-switch-statement</guid>
 	  <description><![CDATA[
@@ -512,8 +512,8 @@ we just declare <code class="highlighter-rouge">case null</code> label and it wi
    <span class="k">public</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">()</span> <span class="p">{</span>
         <span class="kt">int</span><span class="p">?</span> <span class="n">n</span> <span class="p">=</span> <span class="n">GetDefault</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">?&gt;();</span>
  
-        <span class="c1">// This will write null       
-</span>        <span class="k">switch</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// This will write null       </span>
+        <span class="k">switch</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="p">{</span>
             <span class="k">case</span> <span class="k">null</span><span class="p">:</span> <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"null"</span><span class="p">);</span>    <span class="k">break</span><span class="p">;</span>
             <span class="k">case</span> <span class="m">1</span><span class="p">:</span>    <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"value 1"</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
             <span class="k">default</span><span class="p">:</span>   <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"default"</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
@@ -522,16 +522,16 @@ we just declare <code class="highlighter-rouge">case null</code> label and it wi
 
         <span class="kt">string</span> <span class="n">s</span> <span class="p">=</span> <span class="n">GetDefault</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
  
-        <span class="c1">// This will write null       
-</span>        <span class="k">switch</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// This will write null       </span>
+        <span class="k">switch</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">{</span>
             <span class="k">case</span> <span class="k">null</span><span class="p">:</span>   <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"null"</span><span class="p">);</span>    <span class="k">break</span><span class="p">;</span>
             <span class="k">case</span> <span class="s">"foo"</span><span class="p">:</span>  <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"foo"</span><span class="p">);</span>     <span class="k">break</span><span class="p">;</span>
             <span class="k">default</span><span class="p">:</span>     <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"default"</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
         <span class="p">}</span>
     <span class="p">}</span>
     
-    <span class="c1">// GetDefault returns null for nullable and reference type T
-</span>    <span class="k">private</span> <span class="n">T</span> <span class="n">GetDefault</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;()</span> <span class="p">{</span>
+    <span class="c1">// GetDefault returns null for nullable and reference type T</span>
+    <span class="k">private</span> <span class="n">T</span> <span class="n">GetDefault</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;()</span> <span class="p">{</span>
         <span class="k">return</span> <span class="k">default</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>   
     <span class="p">}</span>
 <span class="p">}</span></code></pre></figure>
@@ -544,7 +544,7 @@ In that case Java will throw <code class="highlighter-rouge">NullPointerExceptio
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Program</span> 
 <span class="o">{</span>
-  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
   <span class="o">{</span>
     <span class="n">String</span> <span class="n">s</span> <span class="o">=</span> <span class="n">getNullString</span><span class="o">();</span>
     <span class="k">try</span> <span class="o">{</span>
@@ -578,10 +578,10 @@ In that case Java will throw <code class="highlighter-rouge">NullPointerExceptio
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"null pointer exception"</span><span class="o">);</span>
     <span class="o">}</span>
   <span class="o">}</span>
-  <span class="kd">private</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">getNullString</span><span class="o">()</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">getNullString</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="kc">null</span><span class="o">;</span> 
   <span class="o">}</span>
-  <span class="kd">private</span> <span class="kd">static</span> <span class="n">FooEnum</span> <span class="n">getNullFooEnum</span><span class="o">()</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="kd">static</span> <span class="n">FooEnum</span> <span class="nf">getNullFooEnum</span><span class="o">()</span> <span class="o">{</span>
     <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
   <span class="o">}</span>
 <span class="o">}</span>
@@ -649,33 +649,33 @@ the only value for which expression <code class="highlighter-rouge">x === x</cod
 
 <span class="nx">values</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">switch</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">case</span> <span class="kc">undefined</span><span class="err">:</span>
+        <span class="k">case</span> <span class="kc">undefined</span><span class="p">:</span>
             <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'undefined'</span><span class="p">);</span>
             <span class="k">break</span><span class="p">;</span>
 
-         <span class="k">case</span> <span class="kc">null</span><span class="err">:</span>
+         <span class="k">case</span> <span class="kc">null</span><span class="p">:</span>
             <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'null'</span><span class="p">);</span>
             <span class="k">break</span><span class="p">;</span>
         
-        <span class="k">case</span> <span class="s1">''</span><span class="err">:</span>
+        <span class="k">case</span> <span class="s1">''</span><span class="p">:</span>
             <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'empty string'</span><span class="p">);</span>
             <span class="k">break</span><span class="p">;</span>
         
-        <span class="k">case</span> <span class="mi">0</span><span class="err">:</span>
+        <span class="k">case</span> <span class="mi">0</span><span class="p">:</span>
             <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'zero'</span><span class="p">);</span>
             <span class="k">break</span><span class="p">;</span>
         
-        <span class="k">case</span> <span class="kc">NaN</span><span class="err">:</span>
+        <span class="k">case</span> <span class="kc">NaN</span><span class="p">:</span>
             <span class="c1">// dead code here</span>
             <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'nan'</span><span class="p">);</span>
             <span class="k">break</span><span class="p">;</span>
         
-        <span class="k">case</span> <span class="mi">1</span><span class="err">:</span>
+        <span class="k">case</span> <span class="mi">1</span><span class="p">:</span>
             <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
             <span class="k">break</span><span class="p">;</span>
         
         <span class="c1">// label with runtime expression here:</span>
-        <span class="k">case</span> <span class="s1">'f'</span><span class="o">+</span><span class="s1">'oo'</span><span class="err">:</span>
+        <span class="k">case</span> <span class="s1">'f'</span><span class="o">+</span><span class="s1">'oo'</span><span class="p">:</span>
             <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'foo'</span><span class="p">);</span>
             <span class="k">break</span><span class="p">;</span>
         
@@ -708,7 +708,7 @@ May the Force be with you.</p>
 	<item>
 	  <title>Augmenting JavaScript objects with toString and valueOf</title>
 	  <link>//augmenting-JavaScript-objects-with-toString-and-valueOf</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2016-06-09T02:00:00+02:00</pubDate>
 	  <guid>//augmenting-JavaScript-objects-with-toString-and-valueOf</guid>
 	  <description><![CDATA[
@@ -749,7 +749,7 @@ let’s augment our point with <code class="highlighter-rouge">toString</code> m
 it doesn’t work with <code class="highlighter-rouge">console.log</code>:</p>
 
 <figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="o">&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">point</span><span class="p">)</span>
-<span class="nb">Object</span> <span class="p">{</span><span class="nl">x</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="nx">y</span><span class="err">:</span> <span class="mi">20</span><span class="p">}</span></code></pre></figure>
+<span class="nb">Object</span> <span class="p">{</span><span class="nl">x</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="nx">y</span><span class="p">:</span> <span class="mi">20</span><span class="p">}</span></code></pre></figure>
 
 <p>Now we go into interesting topic: when JavaScript objects are converted to string’s?
 We already given two examples: when object is concatenated with string and when we explicitly
@@ -820,7 +820,7 @@ to this we can use <code class="highlighter-rouge">&gt;</code> to compare dates,
 	<item>
 	  <title>Break out of block of code in Java and JavaScript</title>
 	  <link>//break-out-of-code-block-in-java-and-javascript</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2016-06-04T02:00:00+02:00</pubDate>
 	  <guid>//break-out-of-code-block-in-java-and-javascript</guid>
 	  <description><![CDATA[
@@ -839,7 +839,7 @@ nested loops, e.g. in Java we may write:</p>
 
 <p>Likewise in JavaScript we may write:</p>
 
-<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">OUTER_LOOP</span><span class="err">:</span> <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">OUTER_LOOP</span><span class="p">:</span> <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
         <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">([</span><span class="nx">i</span><span class="p">,</span> <span class="s1">'x'</span><span class="p">,</span> <span class="nx">j</span><span class="p">,</span> <span class="s1">'='</span><span class="p">,</span> <span class="nx">i</span><span class="o">*</span><span class="nx">j</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">' '</span><span class="p">));</span>
         <span class="k">if</span> <span class="p">(</span><span class="nx">j</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="k">break</span> <span class="nx">OUTER_LOOP</span><span class="p">;</span>
@@ -856,7 +856,7 @@ nested loops, e.g. in Java we may write:</p>
 <p>I think most of you knew this already, but what’s more interesting is that you can break
 out of any nested code block, for example in Java:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">func</span><span class="p">(</span><span class="kt">boolean</span> <span class="n">useBreak</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">func</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">useBreak</span><span class="o">)</span> <span class="o">{</span>
     <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"before outer"</span><span class="o">);</span>
     <span class="nl">OUTER:</span> <span class="o">{</span>
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"before break"</span><span class="o">);</span>
@@ -870,7 +870,7 @@ out of any nested code block, for example in Java:</p>
     <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"after outer"</span><span class="o">);</span>
 <span class="o">}</span>
 
-<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
     <span class="n">func</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 

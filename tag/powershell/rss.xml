@@ -5,16 +5,16 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>https://marcin-chwedczuk.github.io/</link>
-   <description>A place where I can share my thoughts about programming</description>
+   <link>http://localhost:4000</link>
+   <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> marcin-chwedczuk</managingEditor>
+   <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>PowerShell function declaration pitfall</title>
 	  <link>//powershell-function-declaration-pitfall</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2016-07-15T02:00:00+02:00</pubDate>
 	  <guid>//powershell-function-declaration-pitfall</guid>
 	  <description><![CDATA[
@@ -33,13 +33,13 @@ that taken or returned single value:</p>
 
 <p>Of course they worked brilliantly:</p>
 
-<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="gp">&gt; </span>printArg<span class="o">(</span>1<span class="o">)</span>
+<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="o">&gt;</span> printArg<span class="o">(</span>1<span class="o">)</span>
 printArg: <span class="nv">arg1</span><span class="o">=</span>1
     
-<span class="gp">&gt; </span>printArg<span class="o">(</span><span class="s2">"foo"</span><span class="o">)</span>
+<span class="o">&gt;</span> printArg<span class="o">(</span><span class="s2">"foo"</span><span class="o">)</span>
 printArg: <span class="nv">arg1</span><span class="o">=</span>foo
     
-<span class="gp">&gt; </span><span class="nb">write-host</span> <span class="k">$(</span>transformArg<span class="o">(</span>3<span class="k">)</span><span class="o">)</span>
+<span class="o">&gt;</span> <span class="nb">write-host</span> <span class="k">$(</span>transformArg<span class="o">(</span>3<span class="k">)</span><span class="o">)</span>
 9</code></pre></figure>
 
 <p>But then I needed to declare function that takes three arguments,
@@ -51,26 +51,26 @@ I started with code:</p>
 
 <p>Unfortunatelly it didn’t work as expected:</p>
 
-<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="gp">&gt; </span>manyArgs<span class="o">(</span>1, 2, 3<span class="o">)</span>
+<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="o">&gt;</span> manyArgs<span class="o">(</span>1, 2, 3<span class="o">)</span>
 manyArgs: <span class="nv">arg1</span><span class="o">=</span>1 2 3, <span class="nv">arg2</span><span class="o">=</span>, <span class="nv">arg3</span><span class="o">=</span></code></pre></figure>
 
 <p>After a bit of research
 it turned out that PowerShell <strong><em>uses space as argument separator</em></strong>.
 So to pass three arguments we need to write:</p>
 
-<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="gp">&gt; </span>manyArgs 1 2 3
+<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="o">&gt;</span> manyArgs 1 2 3
 manyArgs: <span class="nv">arg1</span><span class="o">=</span>1, <span class="nv">arg2</span><span class="o">=</span>2, <span class="nv">arg3</span><span class="o">=</span>3
     
 <span class="c1"># or using more verbose syntax:</span>
-<span class="gp">&gt; </span>manyArgs -arg1 1 -arg2 2 -arg3 3
+<span class="o">&gt;</span> manyArgs -arg1 1 -arg2 2 -arg3 3
 manyArgs: <span class="nv">arg1</span><span class="o">=</span>1, <span class="nv">arg2</span><span class="o">=</span>2, <span class="nv">arg3</span><span class="o">=</span>3</code></pre></figure>
 
 <p>This also works with single argument functions:</p>
 
-<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="gp">&gt; </span>printArg 1
+<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="o">&gt;</span> printArg 1
 printArg: <span class="nv">arg1</span><span class="o">=</span>1
     
-<span class="gp">&gt; </span>printArg -arg1 1
+<span class="o">&gt;</span> printArg -arg1 1
 printArg: <span class="nv">arg1</span><span class="o">=</span>1</code></pre></figure>
 
 <p>Before we end let’s find out what exactly is <code class="highlighter-rouge">(1, 2, 3)</code> 
@@ -78,12 +78,12 @@ and why calling <code class="highlighter-rouge">printArg(1)</code> works.
 It turns out that
 <code class="highlighter-rouge">(a, b, ..., z)</code> expression represents array of objects in PowerShell:</p>
 
-<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="gp">&gt; </span><span class="o">(</span>1, 2, 3<span class="o">)</span>.getType<span class="o">()</span>.name
+<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="o">&gt;</span> <span class="o">(</span>1, 2, 3<span class="o">)</span>.getType<span class="o">()</span>.name
 <span class="kt">Object</span><span class="o">[]</span></code></pre></figure>
 
 <p>And <code class="highlighter-rouge">(x)</code> expression represents just <code class="highlighter-rouge">x</code> value :</p>
 
-<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="gp">&gt; </span><span class="o">(</span>1<span class="o">)</span>.getType<span class="o">()</span>.name
+<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="o">&gt;</span> <span class="o">(</span>1<span class="o">)</span>.getType<span class="o">()</span>.name
 Int32</code></pre></figure>
 
 <p>and thats explain outputs of <code class="highlighter-rouge">printArg(1)</code> and <code class="highlighter-rouge">manyArgs(1, 2, 3)</code> command.</p>

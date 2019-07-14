@@ -5,16 +5,16 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>https://marcin-chwedczuk.github.io/</link>
-   <description>A place where I can share my thoughts about programming</description>
+   <link>http://localhost:4000</link>
+   <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> marcin-chwedczuk</managingEditor>
+   <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Introduction to Hibernate embeddable types</title>
 	  <link>//introduction-to-hibernate-embeddable-types</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2016-07-16T02:00:00+02:00</pubDate>
 	  <guid>//introduction-to-hibernate-embeddable-types</guid>
 	  <description><![CDATA[
@@ -73,19 +73,19 @@ Since it is our first value type I will present entire class:</p>
     <span class="nd">@Column</span><span class="o">(</span><span class="n">length</span> <span class="o">=</span> <span class="mi">16</span><span class="o">,</span> <span class="n">nullable</span> <span class="o">=</span> <span class="kc">false</span><span class="o">)</span>
     <span class="kd">private</span> <span class="n">String</span> <span class="n">phoneNumber</span><span class="o">;</span>
 
-    <span class="kd">protected</span> <span class="n">PhoneNumber</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
+    <span class="kd">protected</span> <span class="nf">PhoneNumber</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">PhoneNumber</span><span class="o">(</span><span class="n">String</span> <span class="n">phoneNumber</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">PhoneNumber</span><span class="o">(</span><span class="n">String</span> <span class="n">phoneNumber</span><span class="o">)</span> <span class="o">{</span>
         <span class="c1">// You can add validation here</span>
         <span class="k">this</span><span class="o">.</span><span class="na">phoneNumber</span> <span class="o">=</span> <span class="n">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">phoneNumber</span><span class="o">);</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">String</span> <span class="n">getPhoneNumber</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getPhoneNumber</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">phoneNumber</span><span class="o">;</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">boolean</span> <span class="n">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">o</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">equals</span><span class="o">(</span><span class="n">Object</span> <span class="n">o</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">if</span> <span class="o">(</span><span class="k">this</span> <span class="o">==</span> <span class="n">o</span><span class="o">)</span> <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">o</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="o">!(</span><span class="n">o</span> <span class="k">instanceof</span> <span class="n">PhoneNumber</span><span class="o">))</span> <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
 
@@ -94,12 +94,12 @@ Since it is our first value type I will present entire class:</p>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">int</span> <span class="n">hashCode</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">hashCode</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">phoneNumber</span><span class="o">.</span><span class="na">hashCode</span><span class="o">();</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="n">toString</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="s">"phone: "</span> <span class="o">+</span> <span class="n">phoneNumber</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -123,9 +123,9 @@ To improve debugging experience we also overriden <code class="highlighter-rouge
 
     <span class="c1">// constructor getters etc.</span>
 
-    <span class="kd">public</span> <span class="n">MoneyAmount</span> <span class="n">add</span><span class="o">(</span><span class="n">MoneyAmount</span> <span class="n">m</span><span class="o">)</span> <span class="o">{</span> <span class="cm">/* ... */</span> <span class="o">}</span>
-    <span class="kd">public</span> <span class="n">MoneyAmount</span> <span class="n">subtract</span><span class="o">(</span><span class="n">MoneyAmount</span> <span class="n">m</span><span class="o">)</span> <span class="o">{</span> <span class="cm">/* ... */</span> <span class="o">}</span>
-    <span class="kd">public</span> <span class="kt">boolean</span> <span class="n">isLessThan</span><span class="o">(</span><span class="n">MoneyAmount</span> <span class="n">other</span><span class="o">)</span> <span class="o">{</span> <span class="cm">/* ... */</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="n">MoneyAmount</span> <span class="nf">add</span><span class="o">(</span><span class="n">MoneyAmount</span> <span class="n">m</span><span class="o">)</span> <span class="o">{</span> <span class="cm">/* ... */</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="n">MoneyAmount</span> <span class="nf">subtract</span><span class="o">(</span><span class="n">MoneyAmount</span> <span class="n">m</span><span class="o">)</span> <span class="o">{</span> <span class="cm">/* ... */</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">isLessThan</span><span class="o">(</span><span class="n">MoneyAmount</span> <span class="n">other</span><span class="o">)</span> <span class="o">{</span> <span class="cm">/* ... */</span> <span class="o">}</span>
 
     <span class="c1">// equals, hashCode, toString </span>
 <span class="o">}</span></code></pre></figure>
@@ -149,16 +149,16 @@ For example for our <code class="highlighter-rouge">User</code> entity Hibernate
 
 <figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">users</span>
 <span class="p">(</span>
-  <span class="n">id</span> <span class="n">bigint</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span> <span class="c1">-- User
-</span>
-  <span class="n">amount</span> <span class="n">numeric</span><span class="p">(</span><span class="mi">19</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="c1">-- MoneyAmount
-</span>  <span class="n">currency</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="n">id</span> <span class="n">bigint</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span> <span class="c1">-- User</span>
+
+  <span class="n">amount</span> <span class="n">numeric</span><span class="p">(</span><span class="mi">19</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="c1">-- MoneyAmount</span>
+  <span class="n">currency</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
 
   <span class="n">phonenumber</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span> 
-        <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span> <span class="c1">-- PhoneNumber
-</span>
-  <span class="n">username</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span> <span class="c1">-- User
-</span>  
+        <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span> <span class="c1">-- PhoneNumber</span>
+
+  <span class="n">username</span> <span class="n">character</span> <span class="n">varying</span><span class="p">(</span><span class="mi">255</span><span class="p">),</span> <span class="c1">-- User</span>
+  
   <span class="k">CONSTRAINT</span> <span class="n">users_pkey</span> <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="n">id</span><span class="p">)</span>
 <span class="p">)</span></code></pre></figure>
 
@@ -186,8 +186,8 @@ syntax to do so it pretty verbose.</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">User</span> <span class="n">bob</span> <span class="o">=</span> <span class="k">new</span> <span class="n">User</span><span class="o">(</span>
     <span class="s">"bob"</span><span class="o">,</span>
-    <span class="k">new</span> <span class="n">PhoneNumber</span><span class="o">(</span><span class="s">"111-222-333"</span><span class="o">),</span>
-    <span class="k">new</span> <span class="n">MoneyAmount</span><span class="o">(</span><span class="k">new</span> <span class="n">BigDecimal</span><span class="o">(</span><span class="mi">100</span><span class="o">),</span> <span class="s">"EUR"</span><span class="o">));</span>
+    <span class="k">new</span> <span class="nf">PhoneNumber</span><span class="o">(</span><span class="s">"111-222-333"</span><span class="o">),</span>
+    <span class="k">new</span> <span class="nf">MoneyAmount</span><span class="o">(</span><span class="k">new</span> <span class="n">BigDecimal</span><span class="o">(</span><span class="mi">100</span><span class="o">),</span> <span class="s">"EUR"</span><span class="o">));</span>
 
 <span class="n">entityManager</span><span class="o">.</span><span class="na">persist</span><span class="o">(</span><span class="n">bob</span><span class="o">);</span></code></pre></figure>
 
@@ -202,9 +202,9 @@ syntax to do so it pretty verbose.</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">User</span> <span class="o">{</span>
     <span class="c1">// ...</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">chargeUser</span><span class="o">(</span><span class="n">MoneyAmount</span> <span class="n">amount</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">chargeUser</span><span class="o">(</span><span class="n">MoneyAmount</span> <span class="n">amount</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">if</span> <span class="o">(</span><span class="n">availableFunds</span><span class="o">.</span><span class="na">isLessThan</span><span class="o">(</span><span class="n">amount</span><span class="o">))</span>
-            <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalStateException</span><span class="o">(</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalStateException</span><span class="o">(</span>
                     <span class="s">"User don't have enough money available."</span><span class="o">);</span>
 
         <span class="n">availableFunds</span> <span class="o">=</span> <span class="n">availableFunds</span><span class="o">.</span><span class="na">subtract</span><span class="o">(</span><span class="n">amount</span><span class="o">);</span>
@@ -215,7 +215,7 @@ syntax to do so it pretty verbose.</p>
 <span class="n">User</span> <span class="n">bob</span> <span class="o">=</span> <span class="n">entityManager</span><span class="o">.</span><span class="na">find</span><span class="o">(</span><span class="n">User</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
 
 <span class="n">bob</span><span class="o">.</span><span class="na">chargeUser</span><span class="o">(</span>
-    <span class="k">new</span> <span class="n">MoneyAmount</span><span class="o">(</span><span class="k">new</span> <span class="n">BigDecimal</span><span class="o">(</span><span class="mi">10</span><span class="o">),</span> <span class="s">"EUR"</span><span class="o">)</span>
+    <span class="k">new</span> <span class="nf">MoneyAmount</span><span class="o">(</span><span class="k">new</span> <span class="n">BigDecimal</span><span class="o">(</span><span class="mi">10</span><span class="o">),</span> <span class="s">"EUR"</span><span class="o">)</span>
     <span class="o">);</span></code></pre></figure>
 
 <p>This will generate <code class="highlighter-rouge">UPDATE</code>:</p>
@@ -317,15 +317,15 @@ so that user can have any number of phone numbers:</p>
             <span class="n">joinColumns</span> <span class="o">=</span> <span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"user_id"</span><span class="o">))</span>
     <span class="kd">private</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">PhoneNumber</span><span class="o">&gt;</span> <span class="n">phoneNumbers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HashSet</span><span class="o">&lt;&gt;();</span>
 
-    <span class="kd">public</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">PhoneNumber</span><span class="o">&gt;</span> <span class="n">getPhoneNumbers</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">Collection</span><span class="o">&lt;</span><span class="n">PhoneNumber</span><span class="o">&gt;</span> <span class="nf">getPhoneNumbers</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">Collections</span><span class="o">.</span><span class="na">unmodifiableCollection</span><span class="o">(</span><span class="n">phoneNumbers</span><span class="o">);</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">addPhoneNumber</span><span class="o">(</span><span class="n">PhoneNumber</span> <span class="n">number</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">addPhoneNumber</span><span class="o">(</span><span class="n">PhoneNumber</span> <span class="n">number</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">phoneNumbers</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">number</span><span class="o">);</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">removePhoneNumber</span><span class="o">(</span><span class="n">PhoneNumber</span> <span class="n">number</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">removePhoneNumber</span><span class="o">(</span><span class="n">PhoneNumber</span> <span class="n">number</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">phoneNumbers</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">number</span><span class="o">);</span>
     <span class="o">}</span>
 
@@ -407,7 +407,7 @@ great book: <a href="https://amzn.com/1617290459">Java Persistence with Hibernat
 	<item>
 	  <title>Mapping class inheritance in Hibernate 5</title>
 	  <link>//mapping-inheritance-in-hibernate</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2016-06-30T02:00:00+02:00</pubDate>
 	  <guid>//mapping-inheritance-in-hibernate</guid>
 	  <description><![CDATA[
@@ -517,11 +517,11 @@ to help Hibernate know which subclass is stored in given row.</p>
 <span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Animal</span> <span class="kd">extends</span> <span class="n">BaseEntity</span> <span class="o">{</span>
     <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
 
-    <span class="kd">public</span> <span class="n">String</span> <span class="n">getName</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -1076,7 +1076,7 @@ generate.
 	<item>
 	  <title>Hibernate hello world application</title>
 	  <link>//hibernate-hello-world-app</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2016-06-22T02:00:00+02:00</pubDate>
 	  <guid>//hibernate-hello-world-app</guid>
 	  <description><![CDATA[
@@ -1324,7 +1324,7 @@ can be used suppress log messages).</p>
     <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> 
                         <span class="n">Logger</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">App</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
     <span class="o">{</span>
         <span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"Hello, World!"</span><span class="o">);</span>
     <span class="o">}</span>
@@ -1423,22 +1423,22 @@ The most important for us are:</p>
     <span class="nd">@Column</span><span class="o">(</span><span class="n">unique</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
     <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
 
-    <span class="kd">public</span> <span class="n">TestEntity</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="nf">TestEntity</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">Long</span> <span class="n">getId</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">Long</span> <span class="nf">getId</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">id</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">String</span> <span class="n">getName</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="n">toString</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"User id: %d, name: %s"</span><span class="o">,</span> <span class="n">getId</span><span class="o">(),</span> <span class="n">getName</span><span class="o">());</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -1472,11 +1472,11 @@ field or as in our example to set unique constrain.</p>
 <span class="o">{</span>
     <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">App</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
     <span class="o">{</span>
         <span class="c1">// read configuration and build session factory</span>
         <span class="kd">final</span> <span class="n">StandardServiceRegistry</span> <span class="n">registry</span> <span class="o">=</span>
-                <span class="k">new</span> <span class="n">StandardServiceRegistryBuilder</span><span class="o">()</span>
+                <span class="k">new</span> <span class="nf">StandardServiceRegistryBuilder</span><span class="o">()</span>
                         <span class="o">.</span><span class="na">configure</span><span class="o">(</span><span class="s">"hibernate_cfg.xml"</span><span class="o">)</span>
                         <span class="o">.</span><span class="na">build</span><span class="o">();</span>
 
@@ -1521,7 +1521,7 @@ field or as in our example to set unique constrain.</p>
 Notice how we are loading settings from our <code class="highlighter-rouge">hibernate_cfg.xml</code> file:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">final</span> <span class="n">StandardServiceRegistry</span> <span class="n">registry</span> <span class="o">=</span>
-        <span class="k">new</span> <span class="n">StandardServiceRegistryBuilder</span><span class="o">()</span>
+        <span class="k">new</span> <span class="nf">StandardServiceRegistryBuilder</span><span class="o">()</span>
                 <span class="o">.</span><span class="na">configure</span><span class="o">(</span><span class="s">"hibernate_cfg.xml"</span><span class="o">)</span>
                 <span class="o">.</span><span class="na">build</span><span class="o">();</span></code></pre></figure>
 
@@ -1629,22 +1629,22 @@ The most important for us are:</p>
     <span class="nd">@Column</span><span class="o">(</span><span class="n">unique</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
     <span class="kd">private</span> <span class="n">String</span> <span class="n">name</span><span class="o">;</span>
 
-    <span class="kd">public</span> <span class="n">TestEntity</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="nf">TestEntity</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">Long</span> <span class="n">getId</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">Long</span> <span class="nf">getId</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">id</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">String</span> <span class="n">getName</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getName</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">name</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">setName</span><span class="o">(</span><span class="n">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">name</span> <span class="o">=</span> <span class="n">name</span><span class="o">;</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="n">toString</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"User id: %d, name: %s"</span><span class="o">,</span> <span class="n">getId</span><span class="o">(),</span> <span class="n">getName</span><span class="o">());</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -1675,7 +1675,7 @@ field or as in our example to set unique constrain.</p>
 <span class="o">{</span>
     <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">Logger</span> <span class="n">logger</span> <span class="o">=</span> <span class="n">Logger</span><span class="o">.</span><span class="na">getLogger</span><span class="o">(</span><span class="n">App</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
     <span class="o">{</span>
         <span class="n">logger</span><span class="o">.</span><span class="na">debug</span><span class="o">(</span><span class="s">"starting application...."</span><span class="o">);</span>
 

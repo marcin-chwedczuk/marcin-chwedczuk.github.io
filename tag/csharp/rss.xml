@@ -5,16 +5,16 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>https://marcin-chwedczuk.github.io/</link>
-   <description>A place where I can share my thoughts about programming</description>
+   <link>http://localhost:4000</link>
+   <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> marcin-chwedczuk</managingEditor>
+   <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Don't ask me about Singletons</title>
 	  <link>//dont-ask-me-about-singletons</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2017-09-30T02:00:00+02:00</pubDate>
 	  <guid>//dont-ask-me-about-singletons</guid>
 	  <description><![CDATA[
@@ -79,9 +79,9 @@ works on .NET Core - but we cannot be 100% sure.</p>
         
     <span class="k">private</span> <span class="k">class</span> <span class="nc">Nested</span>
     <span class="p">{</span>
-        <span class="c1">// Explicit static constructor to tell C# compiler
-</span>        <span class="c1">// not to mark type as beforefieldinit
-</span>        <span class="k">static</span> <span class="nf">Nested</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+        <span class="c1">// Explicit static constructor to tell C# compiler</span>
+        <span class="c1">// not to mark type as beforefieldinit</span>
+        <span class="k">static</span> <span class="nf">Nested</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
 
         <span class="k">internal</span> <span class="k">static</span> <span class="k">readonly</span> <span class="n">SingletonC</span> <span class="n">instance</span> 
             <span class="p">=</span> <span class="k">new</span> <span class="nf">Singleton</span><span class="p">();</span>
@@ -106,14 +106,14 @@ any person that implements singletons in our codebase knows about
 unfortunately is clearly visible only in CIL bytecode and is responsible
 for the above behaviour:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// without static constructor Nested class is declared in CIL
-// as follows:
-</span><span class="p">.</span><span class="k">class</span> <span class="nc">nested</span> <span class="k">private</span> <span class="n">auto</span> <span class="n">ansi</span> <span class="n">beforefieldinit</span> <span class="n">Nested</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// without static constructor Nested class is declared in CIL</span>
+<span class="c1">// as follows:</span>
+<span class="p">.</span><span class="k">class</span> <span class="nc">nested</span> <span class="k">private</span> <span class="n">auto</span> <span class="n">ansi</span> <span class="n">beforefieldinit</span> <span class="n">Nested</span>
         <span class="n">extends</span> <span class="p">[</span><span class="n">mscorlib</span><span class="p">]</span><span class="n">System</span><span class="p">.</span><span class="n">Object</span>
     <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
 
-<span class="c1">// and with static constructor we get:
-</span><span class="p">.</span><span class="k">class</span> <span class="nc">nested</span> <span class="k">private</span> <span class="n">auto</span> <span class="n">ansi</span> <span class="n">Nested</span>
+<span class="c1">// and with static constructor we get:</span>
+<span class="p">.</span><span class="k">class</span> <span class="nc">nested</span> <span class="k">private</span> <span class="n">auto</span> <span class="n">ansi</span> <span class="n">Nested</span>
         <span class="n">extends</span> <span class="p">[</span><span class="n">mscorlib</span><span class="p">]</span><span class="n">System</span><span class="p">.</span><span class="n">Object</span>
     <span class="p">{</span> <span class="p">...</span> <span class="p">}</span></code></pre></figure>
 
@@ -122,8 +122,8 @@ from forming cyclic dependency between singletons:</p>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">sealed</span> <span class="k">class</span> <span class="nc">SingletonC</span>
 <span class="p">{</span>
-    <span class="c1">// singleton stuff...
-</span>
+    <span class="c1">// singleton stuff...</span>
+
     <span class="k">private</span> <span class="nf">SingletonC</span><span class="p">()</span>
     <span class="p">{</span>
         <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"SingletonC()"</span><span class="p">);</span>
@@ -133,8 +133,8 @@ from forming cyclic dependency between singletons:</p>
 
 <span class="k">public</span> <span class="k">sealed</span> <span class="k">class</span> <span class="nc">SingletonD</span>
 <span class="p">{</span>
-    <span class="c1">// singleton stuff...
-</span>
+    <span class="c1">// singleton stuff...</span>
+
     <span class="k">private</span> <span class="nf">SingletonD</span><span class="p">()</span>
     <span class="p">{</span>
         <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"SingletonD()"</span><span class="p">);</span>
@@ -145,14 +145,14 @@ from forming cyclic dependency between singletons:</p>
 <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">()</span>
 <span class="p">{</span>
     <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"Main()"</span><span class="p">);</span>
-    <span class="n">var</span> <span class="n">tmp</span> <span class="p">=</span> <span class="n">SingletonC</span><span class="p">.</span><span class="n">Instance</span><span class="p">;</span>
+    <span class="kt">var</span> <span class="n">tmp</span> <span class="p">=</span> <span class="n">SingletonC</span><span class="p">.</span><span class="n">Instance</span><span class="p">;</span>
 <span class="p">}</span>
-<span class="c1">// Program output:
-// Main()
-// SingletonC()
-// SingletonD()
-// C: (null)
-</span><span class="p">//</span> <span class="n">D</span><span class="p">:</span> <span class="n">SingletonD</span></code></pre></figure>
+<span class="c1">// Program output:</span>
+<span class="c1">// Main()</span>
+<span class="c1">// SingletonC()</span>
+<span class="c1">// SingletonD()</span>
+<span class="c1">// C: (null)</span>
+<span class="c1">// D: SingletonD</span></code></pre></figure>
 
 <p>As we can see <code class="highlighter-rouge">SingletonC.Intance</code> inside <code class="highlighter-rouge">SingletonD</code> constructor
 returned <code class="highlighter-rouge">null</code>. If we tried to create cyclic dependency with our
@@ -192,9 +192,354 @@ you want to hear discussion about <code class="highlighter-rouge">beforefieldini
 	</item>
 
 	<item>
+	  <title>Castle Windsor most popular features</title>
+	  <link>//castle-windsor-most-popular-features</link>
+	  <author></author>
+	  <pubDate>2016-09-11T02:00:00+02:00</pubDate>
+	  <guid>//castle-windsor-most-popular-features</guid>
+	  <description><![CDATA[
+	     <p>In this post I will present the most popular 
+<a href="http://www.castleproject.org/projects/windsor/">Castle Windsor</a> features
+encountered in typical enterprise applications.</p>
+
+<blockquote>
+  <p>Source code: <a href="https://github.com/marcin-chwedczuk/castle-windsor-most-popular-features">https://github.com/marcin-chwedczuk/castle-windsor-most-popular-features</a></p>
+</blockquote>
+
+<h5 id="typed-factory">Typed factory</h5>
+
+<p>When I follow good software development practices like
+<a href="https://en.wikipedia.org/wiki/SOLID_(object-oriented_design)">SOLID</a>
+I find myself writing plenty of <a href="https://en.wikipedia.org/wiki/Factory_(object-oriented_programming)">factory</a> classes.
+These factory classes often fall in one of the two categories:</p>
+
+<ul>
+  <li>I need to create instance of generic service for specific type e.g. I want to get 
+ service that implements <code class="highlighter-rouge">ICommandHandler&lt;TCommand&gt;</code> for <code class="highlighter-rouge">TCommand</code> type</li>
+  <li>I must pass parameters and/or configuration to the service before I
+ can use it e.g. <code class="highlighter-rouge">HeuristicSearch</code> service has <code class="highlighter-rouge">quality</code> constructor parameter
+ to decide what solutions are good enough for the user</li>
+</ul>
+
+<p>In cases like these we can use typed factory feature to generate
+factory implementations:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// to enable typed factory we must add TypedFactoryFacility</span>
+<span class="c1">// to the container</span>
+<span class="n">container</span><span class="p">.</span><span class="n">AddFacility</span><span class="p">&lt;</span><span class="n">TypedFactoryFacility</span><span class="p">&gt;();</span>
+
+<span class="c1">// case  I: get generic service instance for specific type</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="nc">ICommandHandler</span><span class="p">&lt;</span><span class="n">TCommand</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="k">void</span> <span class="nf">Handle</span><span class="p">(</span><span class="n">TCommand</span> <span class="n">command</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="nc">ICommandHandlerFactory</span> <span class="p">{</span>
+    <span class="n">ICommandHandler</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">Create</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;();</span>
+    <span class="k">void</span> <span class="n">Release</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">ICommandHandler</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">instance</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">AddUserCommandHandler</span> <span class="p">:</span> <span class="n">ICommandHandler</span><span class="p">&lt;</span><span class="n">AddUserCommand</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="nf">AddUserCommandHandler</span><span class="p">(</span><span class="cm">/* dependencies */</span><span class="p">)</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Handle</span><span class="p">(</span><span class="n">AddUserCommand</span> <span class="n">command</span><span class="p">)</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICommandHandler</span><span class="p">&lt;</span><span class="n">AddUserCommand</span><span class="p">&gt;&gt;()</span>
+        <span class="p">.</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">AddUserCommandHandler</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">LifeStyle</span><span class="p">.</span><span class="n">Transient</span><span class="p">,</span>
+
+    <span class="c1">// tell Windsor that it should generate factory for me</span>
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ICommandHandlerFactory</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="nf">AsFactory</span><span class="p">()</span>
+    <span class="p">);</span>
+
+<span class="c1">// usage</span>
+<span class="n">ICommandHandlerFactory</span> <span class="n">factory</span> <span class="p">=</span>
+        <span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">ICommandHandlerFactory</span><span class="p">&gt;();</span>
+
+<span class="n">ICommandHandler</span><span class="p">&lt;</span><span class="n">AddUserCommand</span><span class="p">&gt;</span> <span class="n">handler</span> <span class="p">=</span>
+    <span class="n">factory</span><span class="p">.</span><span class="n">Create</span><span class="p">&lt;</span><span class="n">AddUserCommand</span><span class="p">&gt;();</span>
+
+<span class="n">handler</span><span class="p">.</span><span class="nf">Handle</span><span class="p">(</span><span class="k">new</span> <span class="nf">AddUserCommand</span><span class="p">());</span>
+
+<span class="n">factory</span><span class="p">.</span><span class="nf">Release</span><span class="p">(</span><span class="n">handler</span><span class="p">);</span>
+
+<span class="c1">// case II: pass configuration to the service</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="nc">IGreeter</span> <span class="p">{</span>
+    <span class="k">void</span> <span class="nf">Greet</span><span class="p">();</span>
+<span class="p">}</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="nc">IGreeterFactory</span> <span class="p">{</span>
+    <span class="n">IGreeter</span> <span class="nf">Create</span><span class="p">(</span><span class="kt">string</span> <span class="n">greeting</span><span class="p">);</span>
+    <span class="k">void</span> <span class="nf">Release</span><span class="p">(</span><span class="n">IGreeter</span> <span class="n">instance</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">ConsoleGreeter</span> <span class="p">:</span> <span class="n">IGreeter</span> <span class="p">{</span>
+    <span class="p">...</span>
+    <span class="k">public</span> <span class="nf">ConsoleGreeter</span><span class="p">(</span><span class="kt">string</span> <span class="n">greeting</span>
+        <span class="cm">/* you may add other dependencies here,
+         * e.g. ITextWrapper wrapper */</span><span class="p">)</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IGreeter</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">ConsoleGreeter</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="nf">LifestyleTransient</span><span class="p">(),</span>
+
+    <span class="c1">// tell Windsor that it should generate factory for me</span>
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IGreeterFactory</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="nf">AsFactory</span><span class="p">()</span>
+    <span class="p">);</span>
+
+<span class="c1">// usage</span>
+<span class="n">IGreeterFactory</span> <span class="n">greeterFactory</span> <span class="p">=</span> 
+    <span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">IGreeterFactory</span><span class="p">&gt;();</span>
+
+<span class="n">IGreeter</span> <span class="n">helloWorldGreeter</span> <span class="p">=</span> <span class="n">greeterFactory</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="s">"hello, world!"</span><span class="p">);</span>
+<span class="n">IGreeter</span> <span class="n">goodbyeGreeter</span> <span class="p">=</span> <span class="n">greeterFactory</span><span class="p">.</span><span class="nf">Create</span><span class="p">(</span><span class="s">"goodbye cruel world!"</span><span class="p">);</span>
+
+<span class="n">helloWorldGreeter</span><span class="p">.</span><span class="nf">Greet</span><span class="p">();</span>
+<span class="n">goodbyeGreeter</span><span class="p">.</span><span class="nf">Greet</span><span class="p">();</span>
+
+<span class="n">greeterFactory</span><span class="p">.</span><span class="nf">Release</span><span class="p">(</span><span class="n">helloWorldGreeter</span><span class="p">);</span>
+<span class="n">greeterFactory</span><span class="p">.</span><span class="nf">Release</span><span class="p">(</span><span class="n">goodbyeGreeter</span><span class="p">);</span></code></pre></figure>
+
+<p>Things to remember when using typed factory:</p>
+
+<ul>
+  <li><code class="highlighter-rouge">Release</code> method in factory interface is optional.<br />
+ It is a good practice to
+ always include <code class="highlighter-rouge">Release</code> method in factory interface and to release all instances
+ created using factory when they are no longer needed</li>
+  <li>In case of transient or per-web-request components that are disposable
+ not releasing component will result in a memory leak</li>
+  <li>Remember that some factories should be implemented manually especially these 
+ that contain domain knowledge e.g. factory that selects discount
+ <a href="https://en.wikipedia.org/wiki/Strategy_pattern">strategy</a> based on user profile</li>
+</ul>
+
+<h5 id="collection-resolver">Collection resolver</h5>
+
+<p>Sometime we want to get all components that provide given service.
+For example we may try to implement message filtering component and
+we want to get all components that implement <code class="highlighter-rouge">IFilter</code> interface.
+We may achieve this easily by using Castle Windsor <code class="highlighter-rouge">CollectionResolver</code>:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// register CollectionResolver in the container:</span>
+<span class="n">container</span><span class="p">.</span><span class="n">Kernel</span><span class="p">.</span><span class="n">Resolver</span><span class="p">.</span><span class="nf">AddSubResolver</span><span class="p">(</span>
+        <span class="k">new</span> <span class="nf">CollectionResolver</span><span class="p">(</span><span class="n">container</span><span class="p">.</span><span class="n">Kernel</span><span class="p">));</span>
+
+<span class="c1">// demo:</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="nc">IFilter</span> <span class="p">{</span>
+    <span class="kt">bool</span> <span class="nf">IsAllowed</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">MessageFilterService</span> <span class="p">{</span>
+    <span class="k">private</span> <span class="n">ICollection</span><span class="p">&lt;</span><span class="n">IFilter</span><span class="p">&gt;</span> <span class="n">_filters</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="nf">MessageFilterService</span><span class="p">(</span><span class="n">ICollection</span><span class="p">&lt;</span><span class="n">IFilter</span><span class="p">&gt;</span> <span class="n">filters</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">_filters</span> <span class="p">=</span> <span class="n">filters</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="p">...</span>
+<span class="p">}</span>
+
+<span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">MessageFilterService</span><span class="p">&gt;().</span><span class="n">LifeStyle</span><span class="p">.</span><span class="n">Transient</span><span class="p">,</span>
+
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IFilter</span><span class="p">&gt;().</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">RejectBazWordFilter</span><span class="p">&gt;(),</span>
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IFilter</span><span class="p">&gt;().</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">FooOrBazFilter</span><span class="p">&gt;()</span>
+<span class="p">);</span>
+
+<span class="n">MessageFilterService</span> <span class="n">service</span> <span class="p">=</span> <span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">MessageFilterService</span><span class="p">&gt;();</span>
+<span class="n">service</span><span class="p">.</span><span class="nf">IsAllowed</span><span class="p">(</span><span class="s">"foo"</span><span class="p">);</span></code></pre></figure>
+
+<p>Since registering <code class="highlighter-rouge">CollectionResolver</code> requires a bit of interaction
+with a container it is advisable to wrap that logic into custom facility:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">ResolveCollectionsFacility</span> <span class="p">:</span> <span class="n">AbstractFacility</span> <span class="p">{</span>
+    <span class="k">protected</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Init</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">Kernel</span><span class="p">.</span><span class="n">Resolver</span><span class="p">.</span><span class="nf">AddSubResolver</span><span class="p">(</span><span class="k">new</span> <span class="nf">CollectionResolver</span><span class="p">(</span><span class="n">Kernel</span><span class="p">));</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="c1">// then use:</span>
+<span class="c1">// container.AddFacility&lt;ResolveCollectionsFacility&gt;();</span></code></pre></figure>
+
+<h5 id="component-registration-using-conventions">Component registration using conventions</h5>
+
+<p><a href="https://en.wikipedia.org/wiki/Convention_over_configuration">Convention over configuration</a>
+is popular subject these days so why not to apply it to the component registration.
+Instead of writing boring:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IFooRepository</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">FooRepository</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">Lifestyle</span><span class="p">.</span><span class="n">PerWebRequest</span><span class="p">,</span>
+<span class="p">...</span>
+<span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IBarRepository</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">BarRepository</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">Lifestyle</span><span class="p">.</span><span class="n">PerWebRequest</span></code></pre></figure>
+
+<p>We may write just once:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">Classes</span><span class="p">.</span><span class="nf">FromThisAssembly</span><span class="p">()</span>
+    <span class="p">.</span><span class="nf">BasedOn</span><span class="p">(</span><span class="k">typeof</span><span class="p">(</span><span class="n">IRepository</span><span class="p">&lt;&gt;))</span>
+    <span class="p">.</span><span class="n">WithService</span><span class="p">.</span><span class="nf">AllInterfaces</span><span class="p">()</span>
+    <span class="p">.</span><span class="n">Lifestyle</span><span class="p">.</span><span class="n">PerWebRequest</span></code></pre></figure>
+
+<p>Castle Windsor is very flexible when it comes to registering components
+by convention, we may scan selected assemblies and/or namespaces, we
+may even select components to register by testing component <code class="highlighter-rouge">Type</code>.</p>
+
+<blockquote>
+  <p>PITFALL: Avoid creating conventions based on type name (e.g. register all classes that
+have names ending with <code class="highlighter-rouge">Repository</code>) as
+much as possible. It is always better to create empty marker interface
+e.g. <code class="highlighter-rouge">IApplicationService</code> and use it to register all necessary components.</p>
+</blockquote>
+
+<h5 id="installers">Installers</h5>
+
+<p>Castle Windsor installers allow us to group component registrations into
+reusable pieces of code. The real power of installers comes from the fact that
+we may pass them arguments or in other words we may configure them.
+For example installer may take a single argument that tells what lifestyle should
+be applied to all registrations contained in the installer. Such installer can
+be used in both ASP.NET MVC app when most of the components will be
+registered as <code class="highlighter-rouge">PerWebRequest</code> and in Windows service app where components will 
+be registered as either <code class="highlighter-rouge">Transient</code> or <code class="highlighter-rouge">Singleton</code>.</p>
+
+<p>Here is example of very simple installer:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">DummyModuleInstaller</span> <span class="p">:</span> <span class="n">IWindsorInstaller</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Install</span><span class="p">(</span><span class="n">IWindsorContainer</span> <span class="n">container</span><span class="p">,</span> <span class="n">IConfigurationStore</span> <span class="n">store</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">container</span><span class="p">.</span><span class="n">AddFacility</span><span class="p">&lt;</span><span class="n">TypedFactoryFacility</span><span class="p">&gt;();</span>
+
+        <span class="c1">// add other installers, facilities etc.</span>
+
+        <span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+            <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">DummyService</span><span class="p">&gt;().</span><span class="n">LifeStyle</span><span class="p">.</span><span class="n">Transient</span>
+            <span class="c1">// other components</span>
+            <span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">container</span><span class="p">.</span><span class="nf">Install</span><span class="p">(</span><span class="k">new</span> <span class="p">[]</span> <span class="p">{</span>
+    <span class="k">new</span> <span class="nf">DummyModuleInstaller</span><span class="p">()</span>
+<span class="p">});</span></code></pre></figure>
+
+<h5 id="fallback-and-default-components">Fallback and default components</h5>
+
+<p>When we start grouping registrations into installers often we will find ourselves
+in situation that we want to register given service only when user of the installer
+didn’t provide she’s own implementation. We may achieve this by passing parameters
+to the installer but a fallback components are a better choice here.
+Components registered as fallbacks will be used by the container only when there is no
+other component that provides given service:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// fallback is used when no other component</span>
+<span class="c1">// for service is registered</span>
+<span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IFooService</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">FallbackFooService</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">LifeStyle</span><span class="p">.</span><span class="n">Transient</span>
+        <span class="p">.</span><span class="nf">IsFallback</span><span class="p">()</span>
+        <span class="p">);</span>
+
+<span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">IFooService</span><span class="p">&gt;(),</span>
+    <span class="n">Is</span><span class="p">.</span><span class="n">InstanceOf</span><span class="p">&lt;</span><span class="n">FallbackFooService</span><span class="p">&gt;());</span>
+
+<span class="c1">// we may register our own component for FooService</span>
+<span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IFooService</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">FooService</span><span class="p">&gt;()</span>
+        <span class="p">);</span>
+
+<span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">IFooService</span><span class="p">&gt;(),</span>
+    <span class="n">Is</span><span class="p">.</span><span class="n">InstanceOf</span><span class="p">&lt;</span><span class="n">FooService</span><span class="p">&gt;());</span></code></pre></figure>
+
+<p>Since word isn’t perfect it happens from time to time that we want to
+overwrite component registration for some particular service. This usually happens
+because author of the installer doesn’t use fallback components. But don’t panic
+Castle Windsor allow us to overwrite service registrations using default components:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IFooService</span><span class="p">&gt;()</span>
+        <span class="p">.</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">FooService</span><span class="p">&gt;());</span>
+
+<span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">IFooService</span><span class="p">&gt;(),</span>
+    <span class="n">Is</span><span class="p">.</span><span class="n">InstanceOf</span><span class="p">&lt;</span><span class="n">FooService</span><span class="p">&gt;());</span>
+
+<span class="c1">// Without IsDefault() we</span>
+<span class="c1">// would get an exception telling us that</span>
+<span class="c1">// there is already component registered for IFooService</span>
+<span class="c1">// interface.</span>
+<span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+   <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IFooService</span><span class="p">&gt;()</span>
+       <span class="p">.</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">DefaultFooService</span><span class="p">&gt;()</span>
+       <span class="p">.</span><span class="nf">IsDefault</span><span class="p">()</span>
+       <span class="p">);</span>
+
+<span class="n">Assert</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">IFooService</span><span class="p">&gt;(),</span>
+    <span class="n">Is</span><span class="p">.</span><span class="n">InstanceOf</span><span class="p">&lt;</span><span class="n">DefaultFooService</span><span class="p">&gt;());</span></code></pre></figure>
+
+<h5 id="interceptors">Interceptors</h5>
+
+<p>Interceptors are most powerful Castle Windsor feature that
+brings power of <a href="https://en.wikipedia.org/wiki/Aspect-oriented_programming">aspect oriented programming</a>
+to .NET.
+Interceptors can be used to implement transaction management, logging, security checks,
+we may use them to gather performance related statistics and for many other purposes.</p>
+
+<p>Here is a simple interceptor that log the invocations of all component methods:</p>
+
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">EventTracingInterceptor</span> <span class="p">:</span> <span class="n">IInterceptor</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Intercept</span><span class="p">(</span><span class="n">IInvocation</span> <span class="n">invocation</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">EventTracer</span><span class="p">.</span><span class="nf">AddEvent</span><span class="p">(</span><span class="s">"BEFORE "</span> <span class="p">+</span> <span class="n">invocation</span><span class="p">.</span><span class="n">Method</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
+
+        <span class="k">try</span> <span class="p">{</span>
+            <span class="c1">// call original method, we may inspect method arguments,</span>
+            <span class="c1">// generic parameters, return value and many others</span>
+            <span class="n">invocation</span><span class="p">.</span><span class="nf">Proceed</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="k">finally</span> <span class="p">{</span>
+            <span class="n">EventTracer</span><span class="p">.</span><span class="nf">AddEvent</span><span class="p">(</span><span class="s">"AFTER "</span> <span class="p">+</span> <span class="n">invocation</span><span class="p">.</span><span class="n">Method</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="na">[Interceptor(typeof(EventTracingInterceptor))]</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Service</span> <span class="p">:</span> <span class="n">IService</span> <span class="p">{</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Foo</span><span class="p">()</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Bar</span><span class="p">()</span> <span class="p">{</span> <span class="p">...</span> <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">container</span><span class="p">.</span><span class="nf">Register</span><span class="p">(</span>
+    <span class="c1">// interceptors work only when you expose your</span>
+    <span class="c1">// components via interfaces.</span>
+    <span class="c1">// here I registered interceptors by using</span>
+    <span class="c1">// attributes on Service class but you may also</span>
+    <span class="c1">// use fluent api.</span>
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">IService</span><span class="p">&gt;().</span><span class="n">ImplementedBy</span><span class="p">&lt;</span><span class="n">Service</span><span class="p">&gt;(),</span>
+    <span class="n">Component</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">EventTracingInterceptor</span><span class="p">&gt;()</span>
+    <span class="p">);</span>
+
+<span class="n">IService</span> <span class="n">service</span> <span class="p">=</span> <span class="n">container</span><span class="p">.</span><span class="n">Resolve</span><span class="p">&lt;</span><span class="n">IService</span><span class="p">&gt;();</span>
+<span class="n">service</span><span class="p">.</span><span class="nf">Foo</span><span class="p">();</span></code></pre></figure>
+
+<p>When you start writing your own interceptors it is generally advisable to
+create custom attribute e.g. <code class="highlighter-rouge">TransactionalAttribute</code> to mark classes that
+should have interceptors attached. 
+Then you should write your own facility that will scan all components
+registered in container
+and will attach interceptor for these marked with your custom attribute.
+<a href="http://blog.willbeattie.net/2010/09/implementing-custom-castle-windsor.html">Here is a good example of this approach</a>
+used to implement caching.</p>
+
+<p>That’s all for today! Thanks for reading.</p>
+
+	  ]]></description>
+	</item>
+
+	<item>
 	  <title>How null's are handled in switch statement in C#, Java and JavaScript</title>
 	  <link>//how-nulls-are-handled-in-switch-statement</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2016-07-09T02:00:00+02:00</pubDate>
 	  <guid>//how-nulls-are-handled-in-switch-statement</guid>
 	  <description><![CDATA[
@@ -218,8 +563,8 @@ we just declare <code class="highlighter-rouge">case null</code> label and it wi
    <span class="k">public</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">()</span> <span class="p">{</span>
         <span class="kt">int</span><span class="p">?</span> <span class="n">n</span> <span class="p">=</span> <span class="n">GetDefault</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">?&gt;();</span>
  
-        <span class="c1">// This will write null       
-</span>        <span class="k">switch</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// This will write null       </span>
+        <span class="k">switch</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="p">{</span>
             <span class="k">case</span> <span class="k">null</span><span class="p">:</span> <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"null"</span><span class="p">);</span>    <span class="k">break</span><span class="p">;</span>
             <span class="k">case</span> <span class="m">1</span><span class="p">:</span>    <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"value 1"</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
             <span class="k">default</span><span class="p">:</span>   <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"default"</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
@@ -228,16 +573,16 @@ we just declare <code class="highlighter-rouge">case null</code> label and it wi
 
         <span class="kt">string</span> <span class="n">s</span> <span class="p">=</span> <span class="n">GetDefault</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
  
-        <span class="c1">// This will write null       
-</span>        <span class="k">switch</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// This will write null       </span>
+        <span class="k">switch</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">{</span>
             <span class="k">case</span> <span class="k">null</span><span class="p">:</span>   <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"null"</span><span class="p">);</span>    <span class="k">break</span><span class="p">;</span>
             <span class="k">case</span> <span class="s">"foo"</span><span class="p">:</span>  <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"foo"</span><span class="p">);</span>     <span class="k">break</span><span class="p">;</span>
             <span class="k">default</span><span class="p">:</span>     <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"default"</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
         <span class="p">}</span>
     <span class="p">}</span>
     
-    <span class="c1">// GetDefault returns null for nullable and reference type T
-</span>    <span class="k">private</span> <span class="n">T</span> <span class="n">GetDefault</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;()</span> <span class="p">{</span>
+    <span class="c1">// GetDefault returns null for nullable and reference type T</span>
+    <span class="k">private</span> <span class="n">T</span> <span class="n">GetDefault</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;()</span> <span class="p">{</span>
         <span class="k">return</span> <span class="k">default</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>   
     <span class="p">}</span>
 <span class="p">}</span></code></pre></figure>
@@ -250,7 +595,7 @@ In that case Java will throw <code class="highlighter-rouge">NullPointerExceptio
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Program</span> 
 <span class="o">{</span>
-  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="n">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
   <span class="o">{</span>
     <span class="n">String</span> <span class="n">s</span> <span class="o">=</span> <span class="n">getNullString</span><span class="o">();</span>
     <span class="k">try</span> <span class="o">{</span>
@@ -284,10 +629,10 @@ In that case Java will throw <code class="highlighter-rouge">NullPointerExceptio
         <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"null pointer exception"</span><span class="o">);</span>
     <span class="o">}</span>
   <span class="o">}</span>
-  <span class="kd">private</span> <span class="kd">static</span> <span class="n">String</span> <span class="n">getNullString</span><span class="o">()</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">getNullString</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="kc">null</span><span class="o">;</span> 
   <span class="o">}</span>
-  <span class="kd">private</span> <span class="kd">static</span> <span class="n">FooEnum</span> <span class="n">getNullFooEnum</span><span class="o">()</span> <span class="o">{</span>
+  <span class="kd">private</span> <span class="kd">static</span> <span class="n">FooEnum</span> <span class="nf">getNullFooEnum</span><span class="o">()</span> <span class="o">{</span>
     <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
   <span class="o">}</span>
 <span class="o">}</span>
@@ -355,33 +700,33 @@ the only value for which expression <code class="highlighter-rouge">x === x</cod
 
 <span class="nx">values</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">switch</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">case</span> <span class="kc">undefined</span><span class="err">:</span>
+        <span class="k">case</span> <span class="kc">undefined</span><span class="p">:</span>
             <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'undefined'</span><span class="p">);</span>
             <span class="k">break</span><span class="p">;</span>
 
-         <span class="k">case</span> <span class="kc">null</span><span class="err">:</span>
+         <span class="k">case</span> <span class="kc">null</span><span class="p">:</span>
             <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'null'</span><span class="p">);</span>
             <span class="k">break</span><span class="p">;</span>
         
-        <span class="k">case</span> <span class="s1">''</span><span class="err">:</span>
+        <span class="k">case</span> <span class="s1">''</span><span class="p">:</span>
             <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'empty string'</span><span class="p">);</span>
             <span class="k">break</span><span class="p">;</span>
         
-        <span class="k">case</span> <span class="mi">0</span><span class="err">:</span>
+        <span class="k">case</span> <span class="mi">0</span><span class="p">:</span>
             <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'zero'</span><span class="p">);</span>
             <span class="k">break</span><span class="p">;</span>
         
-        <span class="k">case</span> <span class="kc">NaN</span><span class="err">:</span>
+        <span class="k">case</span> <span class="kc">NaN</span><span class="p">:</span>
             <span class="c1">// dead code here</span>
             <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'nan'</span><span class="p">);</span>
             <span class="k">break</span><span class="p">;</span>
         
-        <span class="k">case</span> <span class="mi">1</span><span class="err">:</span>
+        <span class="k">case</span> <span class="mi">1</span><span class="p">:</span>
             <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
             <span class="k">break</span><span class="p">;</span>
         
         <span class="c1">// label with runtime expression here:</span>
-        <span class="k">case</span> <span class="s1">'f'</span><span class="o">+</span><span class="s1">'oo'</span><span class="err">:</span>
+        <span class="k">case</span> <span class="s1">'f'</span><span class="o">+</span><span class="s1">'oo'</span><span class="p">:</span>
             <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'foo'</span><span class="p">);</span>
             <span class="k">break</span><span class="p">;</span>
         
@@ -414,7 +759,7 @@ May the Force be with you.</p>
 	<item>
 	  <title>Object and collection initializers in C#</title>
 	  <link>//object-and-collection-initializers-in-csharp</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2016-06-12T02:00:00+02:00</pubDate>
 	  <guid>//object-and-collection-initializers-in-csharp</guid>
 	  <description><![CDATA[
@@ -443,7 +788,7 @@ initializers.</p>
 <p>Without object initializer we could set <code class="highlighter-rouge">Button</code> object
 properties using the following code:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">okButton</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Button</span><span class="p">();</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">okButton</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Button</span><span class="p">();</span>
 
 <span class="n">okButton</span><span class="p">.</span><span class="n">Position</span><span class="p">.</span><span class="n">Top</span> <span class="p">=</span> <span class="m">100</span><span class="p">;</span>
 <span class="n">okButton</span><span class="p">.</span><span class="n">Position</span><span class="p">.</span><span class="n">Left</span> <span class="p">=</span> <span class="m">200</span><span class="p">;</span>
@@ -452,7 +797,7 @@ properties using the following code:</p>
 
 <p>With object initializers we can shorten this code a bit:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">okButton</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Button</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">okButton</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Button</span> <span class="p">{</span>
     <span class="n">Position</span> <span class="p">=</span> <span class="p">{</span>
         <span class="n">Top</span> <span class="p">=</span> <span class="m">100</span><span class="p">,</span>
         <span class="n">Left</span> <span class="p">=</span> <span class="m">200</span>
@@ -468,27 +813,27 @@ using object initializer is more clear and more readable.</p>
 I. We can pass any parameters to object
 constructor using syntax:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">foo</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Foo</span><span class="p">(</span><span class="n">param1</span><span class="p">,</span> <span class="n">param2</span><span class="p">)</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">foo</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Foo</span><span class="p">(</span><span class="n">param1</span><span class="p">,</span> <span class="n">param2</span><span class="p">)</span> <span class="p">{</span>
     <span class="n">Property1</span> <span class="p">=</span> <span class="s">"some value"</span><span class="p">,</span>
     <span class="n">Property2</span> <span class="p">=</span> <span class="s">"some other value"</span><span class="p">,</span>
-    <span class="c1">// ...
-</span><span class="p">}</span></code></pre></figure>
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>II. When we call parameterless constructor we can omit parentheses 
 (like I did in the <code class="highlighter-rouge">Button</code> example):</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">foo</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Foo</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// ...
-</span><span class="p">};</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">foo</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Foo</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">};</span>
 
-<span class="c1">// this is exactly the same as new Foo()
-</span><span class="n">var</span> <span class="n">foo2</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Foo</span> <span class="p">{</span>
-    <span class="c1">// ...
-</span><span class="p">}</span></code></pre></figure>
+<span class="c1">// this is exactly the same as new Foo()</span>
+<span class="kt">var</span> <span class="n">foo2</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Foo</span> <span class="p">{</span>
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>III. Object initializers can be nested:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">invoice</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Invoice</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">invoice</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Invoice</span> <span class="p">{</span>
     <span class="n">ShippingAddress</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Address</span> <span class="p">{</span>
         <span class="n">Street</span> <span class="p">=</span> <span class="s">"Long Street"</span><span class="p">,</span>
         <span class="n">Number</span> <span class="p">=</span> <span class="s">"3A"</span>
@@ -503,13 +848,13 @@ constructor using syntax:</p>
 <p>IV. We can set nested properties without creating new objects<br />
 Do you remember our first example with <code class="highlighter-rouge">Button</code>? We use</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">okButton</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Button</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">okButton</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Button</span> <span class="p">{</span>
     <span class="n">Position</span> <span class="p">=</span> <span class="p">{</span>
         <span class="n">Top</span> <span class="p">=</span> <span class="m">100</span><span class="p">,</span>
         <span class="n">Left</span> <span class="p">=</span> <span class="m">200</span>
     <span class="p">},</span>
-    <span class="c1">// ...
-</span><span class="p">};</span></code></pre></figure>
+    <span class="c1">// ...</span>
+<span class="p">};</span></code></pre></figure>
 
 <p>to set properties of <code class="highlighter-rouge">Button</code> <code class="highlighter-rouge">Position</code> object. Notice that <code class="highlighter-rouge">Position</code>
 property has private setter</p>
@@ -518,14 +863,14 @@ property has private setter</p>
 
 <p>so we cannot use <code class="highlighter-rouge">new</code> to create new <code class="highlighter-rouge">Position</code> object</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">okButton</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Button</span> <span class="p">{</span>
-    <span class="c1">//         v doesn't compile
-</span>    <span class="n">Position</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Position</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">okButton</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Button</span> <span class="p">{</span>
+    <span class="c1">//         v doesn't compile</span>
+    <span class="n">Position</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Position</span> <span class="p">{</span>
         <span class="n">Top</span> <span class="p">=</span> <span class="m">100</span><span class="p">,</span>
         <span class="n">Left</span> <span class="p">=</span> <span class="m">200</span>
     <span class="p">},</span>
-    <span class="c1">// ...
-</span><span class="p">};</span></code></pre></figure>
+    <span class="c1">// ...</span>
+<span class="p">};</span></code></pre></figure>
 
 <p>Fortunately object initializer syntax is flexible enough to allow us
 set properties without creating new objects.</p>
@@ -533,8 +878,8 @@ set properties without creating new objects.</p>
 <p>V. Object initializer syntax works only with <code class="highlighter-rouge">new</code><br />
 In other words following code doesn’t compile:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// doesn't compile
-</span><span class="n">var</span> <span class="n">foo</span> <span class="p">=</span> <span class="nf">SomeMethodReturningFoo</span><span class="p">()</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// doesn't compile</span>
+<span class="kt">var</span> <span class="n">foo</span> <span class="p">=</span> <span class="nf">SomeMethodReturningFoo</span><span class="p">()</span> <span class="p">{</span>
     <span class="n">Property1</span> <span class="p">=</span> <span class="m">1</span>
 <span class="p">};</span></code></pre></figure>
 
@@ -546,7 +891,7 @@ initializers.</p>
 
 <p>As we all know C# allows to create and initialize arrays in single expression:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">funnyNames</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">string</span><span class="p">[]</span> <span class="p">{</span> <span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> <span class="s">"baz"</span><span class="p">,</span> <span class="s">"yay"</span> <span class="p">};</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">funnyNames</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">string</span><span class="p">[]</span> <span class="p">{</span> <span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> <span class="s">"baz"</span><span class="p">,</span> <span class="s">"yay"</span> <span class="p">};</span></code></pre></figure>
 
 <p>Wouldn’t it be nice if this syntax worked with <code class="highlighter-rouge">List&lt;T&gt;</code>’s? Actually thanks
 to collection initializers it works and not only with <code class="highlighter-rouge">List</code>’s but also with
@@ -615,8 +960,8 @@ Now we can test our custom collections:</p>
 <span class="p">{</span>
     <span class="k">public</span> <span class="k">static</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">(</span><span class="kt">string</span><span class="p">[]</span> <span class="n">args</span><span class="p">)</span>
     <span class="p">{</span>
-        <span class="n">var</span> <span class="n">nonGeneric</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CustomCollection</span> <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span> <span class="p">};</span>
-        <span class="n">var</span> <span class="n">generic</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CustomCollection</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span> <span class="p">};</span>
+        <span class="kt">var</span> <span class="n">nonGeneric</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CustomCollection</span> <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span> <span class="p">};</span>
+        <span class="kt">var</span> <span class="n">generic</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CustomCollection</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span> <span class="p">};</span>
     <span class="p">}</span>
 <span class="p">}</span></code></pre></figure>
 
@@ -633,8 +978,8 @@ Add&lt;T&gt;(3)</code></pre></figure>
 when we write <code class="highlighter-rouge">Add</code> method that take more than one parameter?</p>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">CustomCollection2</span> <span class="p">:</span> <span class="n">IEnumerable</span> <span class="p">{</span>
-    <span class="c1">// notice *two* parameters
-</span>    <span class="k">public</span> <span class="k">void</span> <span class="nf">Add</span><span class="p">(</span><span class="kt">object</span> <span class="n">item</span><span class="p">,</span> <span class="kt">object</span> <span class="n">item2</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// notice *two* parameters</span>
+    <span class="k">public</span> <span class="k">void</span> <span class="nf">Add</span><span class="p">(</span><span class="kt">object</span> <span class="n">item</span><span class="p">,</span> <span class="kt">object</span> <span class="n">item2</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"Add({0}, {1})"</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">item2</span><span class="p">);</span>
     <span class="p">}</span>
 
@@ -645,7 +990,7 @@ when we write <code class="highlighter-rouge">Add</code> method that take more t
 
 <p>It turns out that we still can use collection initializers, but the syntax is a bit different</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">coll2</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CustomCollection2</span> <span class="p">{</span> 
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">coll2</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CustomCollection2</span> <span class="p">{</span> 
     <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">1</span> <span class="p">},</span> 
     <span class="p">{</span> <span class="m">2</span><span class="p">,</span> <span class="m">2</span> <span class="p">},</span>
     <span class="p">{</span> <span class="m">3</span><span class="p">,</span> <span class="m">3</span> <span class="p">}</span> 
@@ -666,7 +1011,7 @@ requirements needed by collection initializers to work.</p>
 
 <p>We can initialize <code class="highlighter-rouge">Dictionary</code> with the following code</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">dict</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">dict</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span>
     <span class="p">{</span> <span class="s">"1"</span><span class="p">,</span> <span class="s">"one"</span> <span class="p">},</span>
     <span class="p">{</span> <span class="s">"2"</span><span class="p">,</span> <span class="s">"two"</span> <span class="p">},</span>
     <span class="p">{</span> <span class="s">"3"</span><span class="p">,</span> <span class="s">"three"</span> <span class="p">}</span>
@@ -679,11 +1024,11 @@ requirements needed by collection initializers to work.</p>
 <span class="n">tmp</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="s">"2"</span><span class="p">,</span> <span class="s">"two"</span><span class="p">);</span>
 <span class="n">tmp</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="s">"3"</span><span class="p">,</span> <span class="s">"three"</span><span class="p">);</span>
 
-<span class="n">var</span> <span class="n">dict</span> <span class="p">=</span> <span class="n">tmp</span><span class="p">;</span></code></pre></figure>
+<span class="kt">var</span> <span class="n">dict</span> <span class="p">=</span> <span class="n">tmp</span><span class="p">;</span></code></pre></figure>
 
 <p>C# 6 introduced more flexible syntax for <code class="highlighter-rouge">Dictionary</code> initializers</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">dict</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">dict</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Dictionary</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span>
     <span class="p">[</span><span class="s">"1"</span><span class="p">]</span> <span class="p">=</span> <span class="s">"one"</span><span class="p">,</span>
     <span class="p">[</span><span class="s">"2"</span><span class="p">]</span> <span class="p">=</span> <span class="s">"two"</span><span class="p">,</span>
     <span class="p">[</span><span class="s">"3"</span><span class="p">]</span> <span class="p">=</span> <span class="s">"three"</span>
@@ -695,7 +1040,7 @@ requirements needed by collection initializers to work.</p>
 <span class="n">tmp</span><span class="p">[</span><span class="s">"1"</span><span class="p">]</span> <span class="p">=</span> <span class="s">"one"</span><span class="p">;</span>
 <span class="n">tmp</span><span class="p">[</span><span class="s">"2"</span><span class="p">]</span> <span class="p">=</span> <span class="s">"two"</span><span class="p">;</span>
 <span class="n">tmp</span><span class="p">[</span><span class="s">"3"</span><span class="p">]</span> <span class="p">=</span> <span class="s">"three"</span><span class="p">;</span>
-<span class="n">var</span> <span class="n">dict</span> <span class="p">=</span> <span class="n">tmp</span><span class="p">;</span></code></pre></figure>
+<span class="kt">var</span> <span class="n">dict</span> <span class="p">=</span> <span class="n">tmp</span><span class="p">;</span></code></pre></figure>
 
 <p>As other collection initializers it can work with custom types, only requirement is that
 type must have indexer</p>
@@ -707,8 +1052,8 @@ type must have indexer</p>
     <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="c1">// usage:
-</span><span class="n">var</span> <span class="n">coll</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CustomCollection</span> <span class="p">{</span>
+<span class="c1">// usage:</span>
+<span class="kt">var</span> <span class="n">coll</span> <span class="p">=</span> <span class="k">new</span> <span class="n">CustomCollection</span> <span class="p">{</span>
     <span class="p">[</span><span class="s">"foo"</span><span class="p">]</span> <span class="p">=</span> <span class="m">1</span><span class="p">,</span>
     <span class="p">[</span><span class="s">"bar"</span><span class="p">]</span> <span class="p">=</span> <span class="m">2</span>
 <span class="p">};</span></code></pre></figure>
@@ -726,7 +1071,7 @@ collection:</p>
 
 <p>Then we can write</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">example</span>  <span class="p">=</span> <span class="k">new</span> <span class="n">Example</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">example</span>  <span class="p">=</span> <span class="k">new</span> <span class="n">Example</span> <span class="p">{</span>
     <span class="p">[</span><span class="s">"topLeft"</span><span class="p">]</span> <span class="p">=</span> <span class="p">{</span> <span class="n">Top</span> <span class="p">=</span> <span class="m">10</span><span class="p">,</span> <span class="n">Left</span> <span class="p">=</span> <span class="m">20</span> <span class="p">},</span>
     <span class="p">[</span><span class="s">"bottomRight"</span><span class="p">]</span> <span class="p">=</span> <span class="p">{</span> <span class="n">Top</span> <span class="p">=</span> <span class="m">100</span><span class="p">,</span> <span class="n">Left</span> <span class="p">=</span> <span class="m">220</span> <span class="p">}</span>
 <span class="p">};</span></code></pre></figure>
@@ -743,12 +1088,12 @@ collection:</p>
 <p>The last thing worth know about this new initializer syntax is ability to mix it with
 property initializers e.g.</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"> <span class="n">var</span> <span class="n">example</span>  <span class="p">=</span> <span class="k">new</span> <span class="n">Example</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"> <span class="kt">var</span> <span class="n">example</span>  <span class="p">=</span> <span class="k">new</span> <span class="n">Example</span> <span class="p">{</span>
     <span class="p">[</span><span class="s">"topLeft"</span><span class="p">]</span> <span class="p">=</span> <span class="p">{</span> <span class="n">Top</span> <span class="p">=</span> <span class="m">10</span><span class="p">,</span> <span class="n">Left</span> <span class="p">=</span> <span class="m">20</span> <span class="p">},</span>
     <span class="p">[</span><span class="s">"bottomRight"</span><span class="p">]</span> <span class="p">=</span> <span class="p">{</span> <span class="n">Top</span> <span class="p">=</span> <span class="m">100</span><span class="p">,</span> <span class="n">Left</span> <span class="p">=</span> <span class="m">220</span> <span class="p">},</span>
 
-    <span class="c1">// normal property
-</span>    <span class="n">Tag</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">object</span><span class="p">()</span>
+    <span class="c1">// normal property</span>
+    <span class="n">Tag</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">object</span><span class="p">()</span>
 <span class="p">};</span></code></pre></figure>
 
 <p>That was plenty of knowledge, but the best way to learn about initializer is to use

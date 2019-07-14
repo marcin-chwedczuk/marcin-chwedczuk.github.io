@@ -5,16 +5,16 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>https://marcin-chwedczuk.github.io/</link>
-   <description>A place where I can share my thoughts about programming</description>
+   <link>http://localhost:4000</link>
+   <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> marcin-chwedczuk</managingEditor>
+   <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Automatically generate new OAuth 2.0 access tokens when using Postman</title>
 	  <link>//automatically-generate-new-oauth2-tokens-when-using-postman</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2018-09-29T02:00:00+02:00</pubDate>
 	  <guid>//automatically-generate-new-oauth2-tokens-when-using-postman</guid>
 	  <description><![CDATA[
@@ -80,8 +80,8 @@ We will populate this variable using the following pre-request script:</p>
 
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">({</span> <span class="nx">err</span><span class="p">,</span> <span class="nx">jsonResponse</span><span class="p">,</span> <span class="nx">newAccessToken</span> <span class="p">})</span>
 
-    <span class="nx">pm</span><span class="p">.</span><span class="nx">environment</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'accessToken'</span><span class="p">,</span> <span class="nx">newAccessToken</span><span class="p">);</span>
-    <span class="nx">pm</span><span class="p">.</span><span class="nx">variables</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="s1">'accessToken'</span><span class="p">,</span> <span class="nx">newAccessToken</span><span class="p">);</span>
+    <span class="nx">pm</span><span class="p">.</span><span class="nx">environment</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="s1">'accessToken'</span><span class="p">,</span> <span class="nx">newAccessToken</span><span class="p">);</span>
+    <span class="nx">pm</span><span class="p">.</span><span class="nx">variables</span><span class="p">.</span><span class="kd">set</span><span class="p">(</span><span class="s1">'accessToken'</span><span class="p">,</span> <span class="nx">newAccessToken</span><span class="p">);</span>
 <span class="p">});</span></code></pre></figure>
 
 <p>Which should be set on Pre-request Scripts tab:
@@ -117,9 +117,9 @@ that are needed by our pre-request script:
 environment:</p>
 
 <figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">getvar</span><span class="p">(</span><span class="nx">variableName</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kd">let</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">pm</span><span class="p">.</span><span class="nx">variables</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">variableName</span><span class="p">);</span>
+    <span class="kd">let</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">pm</span><span class="p">.</span><span class="nx">variables</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="nx">variableName</span><span class="p">);</span>
     <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">value</span><span class="p">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span>
-        <span class="err">`</span><span class="nx">Variable</span> <span class="s1">'${variableName}'</span> <span class="nx">is</span> <span class="nx">not</span> <span class="nx">defined</span><span class="p">.</span> <span class="nx">Do</span> <span class="nx">you</span> <span class="nx">forget</span> <span class="nx">to</span> <span class="nx">select</span> <span class="nx">an</span> <span class="nx">environment</span><span class="p">?</span><span class="err">`</span><span class="p">);</span>
+        <span class="s2">`Variable '</span><span class="p">${</span><span class="nx">variableName</span><span class="p">}</span><span class="s2">' is not defined. Do you forget to select an environment?`</span><span class="p">);</span>
     <span class="k">return</span> <span class="nx">value</span><span class="p">;</span>
 <span class="p">}</span>
 

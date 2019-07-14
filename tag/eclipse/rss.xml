@@ -5,16 +5,16 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>https://marcin-chwedczuk.github.io/</link>
-   <description>A place where I can share my thoughts about programming</description>
+   <link>http://localhost:4000</link>
+   <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> marcin-chwedczuk</managingEditor>
+   <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Using Tomcat 8.5 with Eclipse Neon on Ubuntu</title>
 	  <link>//using-tomcat-8.5-with-eclipse-neon</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2016-10-31T01:00:00+01:00</pubDate>
 	  <guid>//using-tomcat-8.5-with-eclipse-neon</guid>
 	  <description><![CDATA[
@@ -211,7 +211,7 @@ Don’t forget to select WAR as packaging method.</p>
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">HomeController</span> <span class="o">{</span>
 
     <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/"</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="n">welcome</span><span class="o">(</span><span class="n">Model</span> <span class="n">model</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">welcome</span><span class="o">(</span><span class="n">Model</span> <span class="n">model</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">model</span><span class="o">.</span><span class="na">addAttribute</span><span class="o">(</span><span class="s">"greeting"</span><span class="o">,</span> <span class="s">"gretting!!!"</span><span class="o">);</span>
         <span class="n">model</span><span class="o">.</span><span class="na">addAttribute</span><span class="o">(</span><span class="s">"tagline"</span><span class="o">,</span> <span class="s">"it works"</span><span class="o">);</span>
         

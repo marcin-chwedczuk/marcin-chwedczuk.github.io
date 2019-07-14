@@ -5,16 +5,16 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>https://marcin-chwedczuk.github.io/</link>
-   <description>A place where I can share my thoughts about programming</description>
+   <link>http://localhost:4000</link>
+   <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> marcin-chwedczuk</managingEditor>
+   <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>A closer look at Portable Executable MS-DOS Stub</title>
 	  <link>//a-closer-look-at-portable-executable-msdos-stub</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2017-11-18T01:00:00+01:00</pubDate>
 	  <guid>//a-closer-look-at-portable-executable-msdos-stub</guid>
 	  <description><![CDATA[
@@ -223,20 +223,20 @@ is the last instruction of the program.
 I have found this beautifully commend piece of code 
 <a href="https://en.wikibooks.org/wiki/X86_Disassembly/Windows_Executable_Files#MS-DOS_header">here</a>:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">push cs ;<span class="c"># Push CS onto the stack</span>
-pop ds  ;<span class="c"># Set DS to CS</span>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">push cs <span class="p">;</span><span class="c"># Push CS onto the stack</span>
+pop ds  <span class="p">;</span><span class="c"># Set DS to CS</span>
 
-; <span class="c"># (me) This means that Data Segment</span>
-; <span class="c"># and Code Segment point to the same</span>
-; <span class="c"># 64k byte area of memory.</span>
-; <span class="c"># Without this we would not be able</span>
-; <span class="c"># to load any data.</span>
+<span class="p">;</span> <span class="c"># (me) This means that Data Segment</span>
+<span class="p">;</span> <span class="c"># and Code Segment point to the same</span>
+<span class="p">;</span> <span class="c"># 64k byte area of memory.</span>
+<span class="p">;</span> <span class="c"># Without this we would not be able</span>
+<span class="p">;</span> <span class="c"># to load any data.</span>
 
-mov dx, message ;<span class="c"># dx will contain pointer to message</span>
+mov dx, message <span class="p">;</span><span class="c"># dx will contain pointer to message</span>
 mov ah, 09  
-int 0x21 ;<span class="c"># when AH = 9, DOS interrupt to write a string</span>
+int 0x21 <span class="p">;</span><span class="c"># when AH = 9, DOS interrupt to write a string</span>
 
-<span class="gp">;# </span>terminate the program
+<span class="p">;</span><span class="c"># terminate the program</span>
 mov ax,0x4c01 
 int 0x21
 
@@ -247,12 +247,12 @@ message db <span class="s2">"This program cannot be run in DOS mode."</span>,
 interesting e.g. printing “Nyan” 3 times?
 First we must create a valid assembly program:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">ORG 0h ;<span class="c"># Offset 0, for NASM</span>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">ORG 0h <span class="p">;</span><span class="c"># Offset 0, for NASM</span>
 
 push cs 
 pop ds 
 
-; <span class="c"># print message 3 times</span>
+<span class="p">;</span> <span class="c"># print message 3 times</span>
 mov bx, 3
 push bx
 repeat:
@@ -267,11 +267,11 @@ cmp bx, 0
 jg repeat
 pop bx
 
-; <span class="c"># terminate the program</span>
+<span class="p">;</span> <span class="c"># terminate the program</span>
 mov ax,0x4c01 
 int 0x21
 
-; ----------  D A T A  -------------
+<span class="p">;</span> <span class="nt">----------</span>  D A T A  <span class="nt">-------------</span>
 
 message: DB <span class="s2">"Nyaan."</span>, 0x0d, 0x0d, 0x0a, <span class="s1">'$'</span></code></pre></figure>
 

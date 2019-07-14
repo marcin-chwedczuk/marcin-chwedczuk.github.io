@@ -5,16 +5,16 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>https://marcin-chwedczuk.github.io/</link>
-   <description>A place where I can share my thoughts about programming</description>
+   <link>http://localhost:4000</link>
+   <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> marcin-chwedczuk</managingEditor>
+   <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Fluent Validation and complex dependencies between properties</title>
 	  <link>//fluent-validation-and-complex-dependencies-between-properties</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2018-09-18T02:00:00+02:00</pubDate>
 	  <guid>//fluent-validation-and-complex-dependencies-between-properties</guid>
 	  <description><![CDATA[
@@ -43,8 +43,8 @@ deal with recently.</p>
 
 <span class="k">public</span> <span class="k">class</span> <span class="nc">ContactInfoDto</span> <span class="p">{</span>
     <span class="k">public</span> <span class="kt">string</span> <span class="n">EmailAddress</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
-    <span class="c1">// Phone number validation depends on CountryIsoCode.
-</span>    <span class="k">public</span> <span class="kt">string</span> <span class="n">PhoneNumber</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="c1">// Phone number validation depends on CountryIsoCode.</span>
+    <span class="k">public</span> <span class="kt">string</span> <span class="n">PhoneNumber</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
 <span class="p">}</span></code></pre></figure>
 
 <p>With a small twist that <code class="highlighter-rouge">ContactInfo.PhoneNumber</code> was 
@@ -55,23 +55,23 @@ about country itself was stored in <code class="highlighter-rouge">Address.Count
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">)</span>
     <span class="p">.</span><span class="nf">Custom</span><span class="p">((</span><span class="n">dto</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
-        <span class="n">var</span> <span class="n">countryIsoCode</span> <span class="p">=</span> <span class="n">dto</span><span class="p">?.</span><span class="n">Address</span><span class="p">?.</span><span class="n">CountryIsoCode</span><span class="p">;</span>
+        <span class="kt">var</span> <span class="n">countryIsoCode</span> <span class="p">=</span> <span class="n">dto</span><span class="p">?.</span><span class="n">Address</span><span class="p">?.</span><span class="n">CountryIsoCode</span><span class="p">;</span>
         <span class="k">if</span> <span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="nf">IsNullOrEmpty</span><span class="p">(</span><span class="n">countryIsoCode</span><span class="p">))</span> 
             <span class="k">return</span><span class="p">;</span>
 
-        <span class="n">var</span> <span class="n">country</span> <span class="p">=</span> <span class="n">Countries</span><span class="p">.</span><span class="nf">FindCountryByIsoCode</span><span class="p">(</span><span class="n">countryIsoCode</span><span class="p">);</span>
-        <span class="c1">// invalid country code - cannot validate phone number
-</span>        <span class="k">if</span> <span class="p">(</span><span class="n">country</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+        <span class="kt">var</span> <span class="n">country</span> <span class="p">=</span> <span class="n">Countries</span><span class="p">.</span><span class="nf">FindCountryByIsoCode</span><span class="p">(</span><span class="n">countryIsoCode</span><span class="p">);</span>
+        <span class="c1">// invalid country code - cannot validate phone number</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">country</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
             <span class="k">return</span><span class="p">;</span>
 
-        <span class="n">var</span> <span class="n">phoneNumber</span> <span class="p">=</span> <span class="n">dto</span><span class="p">?.</span><span class="n">ContactInfo</span><span class="p">?.</span><span class="n">PhoneNumber</span><span class="p">;</span>
+        <span class="kt">var</span> <span class="n">phoneNumber</span> <span class="p">=</span> <span class="n">dto</span><span class="p">?.</span><span class="n">ContactInfo</span><span class="p">?.</span><span class="n">PhoneNumber</span><span class="p">;</span>
         <span class="k">if</span> <span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="nf">IsNullOrWhiteSpace</span><span class="p">(</span><span class="n">phoneNumber</span><span class="p">))</span>
             <span class="k">return</span><span class="p">;</span>
 
         <span class="k">if</span> <span class="p">(!</span><span class="n">country</span><span class="p">.</span><span class="n">PhoneNumberFormat</span><span class="p">.</span><span class="nf">Matches</span><span class="p">(</span><span class="n">phoneNumber</span><span class="p">))</span> <span class="p">{</span>
             <span class="n">context</span><span class="p">.</span><span class="nf">AddFailure</span><span class="p">(</span><span class="k">new</span> <span class="nf">ValidationFailure</span><span class="p">(</span>
-                <span class="err">$</span><span class="s">"ContactInfo.PhoneNumber"</span><span class="p">,</span> <span class="c1">// property name
-</span>                <span class="err">$</span><span class="s">"'{phoneNumber}' is not a valid phone number in {country.Name}."</span><span class="p">));</span>
+                <span class="s">$"ContactInfo.PhoneNumber"</span><span class="p">,</span> <span class="c1">// property name</span>
+                <span class="s">$"'</span><span class="p">{</span><span class="n">phoneNumber</span><span class="p">}</span><span class="s">' is not a valid phone number in </span><span class="p">{</span><span class="n">country</span><span class="p">.</span><span class="n">Name</span><span class="p">}</span><span class="s">."</span><span class="p">));</span>
         <span class="p">}</span>
     <span class="p">});</span></code></pre></figure>
 
@@ -95,9 +95,9 @@ a more reusable and programmer friendly solution than <code class="highlighter-r
     <span class="k">public</span> <span class="nf">AddressDtoValidator</span><span class="p">()</span> <span class="p">{</span>
         <span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">CountryIsoCode</span><span class="p">)</span>
             <span class="p">.</span><span class="nf">NotEmpty</span><span class="p">()</span>
-            <span class="p">.</span><span class="nf">CountryIsoCode</span><span class="p">();</span> <span class="c1">// custom extension
-</span>        <span class="c1">// other rules...
-</span>    <span class="p">}</span>
+            <span class="p">.</span><span class="nf">CountryIsoCode</span><span class="p">();</span> <span class="c1">// custom extension</span>
+        <span class="c1">// other rules...</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 
 <span class="k">public</span> <span class="k">class</span> <span class="nc">ContactInfoDtoValidator</span> <span class="p">:</span> <span class="n">AbstractValidator</span><span class="p">&lt;</span><span class="n">ContactInfoDto</span><span class="p">&gt;</span> <span class="p">{</span>
@@ -105,9 +105,9 @@ a more reusable and programmer friendly solution than <code class="highlighter-r
         <span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">PhoneNumber</span><span class="p">)</span>
             <span class="p">.</span><span class="nf">NotEmpty</span><span class="p">()</span>
             <span class="p">.</span><span class="nf">MaximumLength</span><span class="p">(</span><span class="m">50</span><span class="p">)</span>
-            <span class="p">.</span><span class="nf">PhoneNumber</span><span class="p">();</span> <span class="c1">// custom extension
-</span>        <span class="c1">// other rules...
-</span>    <span class="p">}</span>
+            <span class="p">.</span><span class="nf">PhoneNumber</span><span class="p">();</span> <span class="c1">// custom extension</span>
+        <span class="c1">// other rules...</span>
+    <span class="p">}</span>
 <span class="p">}</span></code></pre></figure>
 
 <p>Creating property validators like <code class="highlighter-rouge">CountryIsoCode</code> using FluentValidation
@@ -123,7 +123,7 @@ interface to make your validator behave like build-in ones.</p>
         <span class="p">:</span> <span class="k">base</span><span class="p">(</span><span class="s">"'{PropertyValue}' is not a valid country iso code."</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
 
     <span class="k">protected</span> <span class="k">override</span> <span class="kt">bool</span> <span class="nf">IsValid</span><span class="p">(</span><span class="n">PropertyValidatorContext</span> <span class="n">context</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">var</span> <span class="n">isoCode</span> <span class="p">=</span> <span class="p">(</span><span class="kt">string</span><span class="p">)</span> <span class="n">context</span><span class="p">.</span><span class="n">PropertyValue</span><span class="p">;</span>
+        <span class="kt">var</span> <span class="n">isoCode</span> <span class="p">=</span> <span class="p">(</span><span class="kt">string</span><span class="p">)</span> <span class="n">context</span><span class="p">.</span><span class="n">PropertyValue</span><span class="p">;</span>
 
         <span class="k">if</span> <span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="nf">IsNullOrEmpty</span><span class="p">(</span><span class="n">isoCode</span><span class="p">))</span> <span class="p">{</span>
             <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
@@ -154,16 +154,16 @@ in validators tree.</p>
 <p>Let’s take a look at an example from 
 <a href="https://fluentvalidation.net/start#root-context-data">official documentation</a>:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">instanceToValidate</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Person</span><span class="p">();</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">instanceToValidate</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">Person</span><span class="p">();</span>
 
-<span class="n">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ValidationContext</span><span class="p">&lt;</span><span class="n">Person</span><span class="p">&gt;(</span><span class="n">person</span><span class="p">);</span>
+<span class="kt">var</span> <span class="n">context</span> <span class="p">=</span> <span class="k">new</span> <span class="n">ValidationContext</span><span class="p">&lt;</span><span class="n">Person</span><span class="p">&gt;(</span><span class="n">person</span><span class="p">);</span>
 <span class="n">context</span><span class="p">.</span><span class="n">RootContextData</span><span class="p">[</span><span class="s">"MyCustomData"</span><span class="p">]</span> <span class="p">=</span> <span class="s">"Test"</span><span class="p">;</span>
 
-<span class="n">var</span> <span class="n">validator</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">PersonValidator</span><span class="p">();</span>
+<span class="kt">var</span> <span class="n">validator</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">PersonValidator</span><span class="p">();</span>
 <span class="n">validator</span><span class="p">.</span><span class="nf">Validate</span><span class="p">(</span><span class="n">context</span><span class="p">);</span>
 
-<span class="c1">// usage inside validator:
-</span><span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Surname</span><span class="p">).</span><span class="nf">Custom</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
+<span class="c1">// usage inside validator:</span>
+<span class="nf">RuleFor</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Surname</span><span class="p">).</span><span class="nf">Custom</span><span class="p">((</span><span class="n">x</span><span class="p">,</span> <span class="n">context</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
   <span class="k">if</span><span class="p">(</span><span class="n">context</span><span class="p">.</span><span class="n">ParentContext</span><span class="p">.</span><span class="n">RootContextData</span><span class="p">.</span><span class="nf">ContainsKey</span><span class="p">(</span><span class="s">"MyCustomData"</span><span class="p">))</span> <span class="p">{</span>
     <span class="n">context</span><span class="p">.</span><span class="nf">AddFailure</span><span class="p">(</span><span class="s">"My error message"</span><span class="p">);</span>
   <span class="p">}</span>
@@ -184,14 +184,14 @@ straight inside top-level validators by overriding <code class="highlighter-roug
     <span class="k">protected</span> <span class="k">override</span> <span class="kt">bool</span> <span class="nf">PreValidate</span><span class="p">(</span>
         <span class="n">ValidationContext</span><span class="p">&lt;</span><span class="n">SampleRequestDto</span><span class="p">&gt;</span> <span class="n">context</span><span class="p">,</span> <span class="n">ValidationResult</span> <span class="n">result</span><span class="p">)</span> 
     <span class="p">{</span>
-        <span class="n">var</span> <span class="n">contextData</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ValidationContextData</span><span class="p">(</span>
+        <span class="kt">var</span> <span class="n">contextData</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ValidationContextData</span><span class="p">(</span>
             <span class="n">context</span><span class="p">.</span><span class="n">RootContextData</span><span class="p">);</span>
 
         <span class="n">contextData</span><span class="p">.</span><span class="n">CountryIsoCode</span> <span class="p">=</span> 
             <span class="n">context</span><span class="p">.</span><span class="n">InstanceToValidate</span><span class="p">?.</span><span class="n">Address</span><span class="p">?.</span><span class="n">CountryIsoCode</span><span class="p">;</span>
 
-        <span class="k">return</span> <span class="k">true</span><span class="p">;</span> <span class="c1">// continue validation
-</span>    <span class="p">}</span>
+        <span class="k">return</span> <span class="k">true</span><span class="p">;</span> <span class="c1">// continue validation</span>
+    <span class="p">}</span>
 <span class="p">}</span></code></pre></figure>
 
 <p>To avoid dealing with <code class="highlighter-rouge">object</code>s I have also created a strongly typed
@@ -209,18 +209,18 @@ method are not considered top level.</p>
         <span class="p">:</span> <span class="k">base</span><span class="p">(</span><span class="s">"'{PropertyValue}' is not a valid phone number in {Country}."</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
 
     <span class="k">protected</span> <span class="k">override</span> <span class="kt">bool</span> <span class="nf">IsValid</span><span class="p">(</span><span class="n">PropertyValidatorContext</span> <span class="n">context</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">var</span> <span class="n">phoneNumber</span> <span class="p">=</span> <span class="p">(</span><span class="kt">string</span><span class="p">)</span> <span class="n">context</span><span class="p">.</span><span class="n">PropertyValue</span><span class="p">;</span>
+        <span class="kt">var</span> <span class="n">phoneNumber</span> <span class="p">=</span> <span class="p">(</span><span class="kt">string</span><span class="p">)</span> <span class="n">context</span><span class="p">.</span><span class="n">PropertyValue</span><span class="p">;</span>
         <span class="k">if</span> <span class="p">(</span><span class="kt">string</span><span class="p">.</span><span class="nf">IsNullOrEmpty</span><span class="p">(</span><span class="n">phoneNumber</span><span class="p">))</span> <span class="p">{</span>
             <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
         <span class="p">}</span>
 
-        <span class="n">var</span> <span class="n">contextData</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ValidationContextData</span><span class="p">(</span>
+        <span class="kt">var</span> <span class="n">contextData</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ValidationContextData</span><span class="p">(</span>
             <span class="n">context</span><span class="p">.</span><span class="n">ParentContext</span><span class="p">.</span><span class="n">RootContextData</span><span class="p">);</span>
 
-        <span class="n">var</span> <span class="n">country</span> <span class="p">=</span> <span class="nf">TryFindCountry</span><span class="p">(</span><span class="n">contextData</span><span class="p">.</span><span class="n">CountryIsoCode</span><span class="p">);</span>
+        <span class="kt">var</span> <span class="n">country</span> <span class="p">=</span> <span class="nf">TryFindCountry</span><span class="p">(</span><span class="n">contextData</span><span class="p">.</span><span class="n">CountryIsoCode</span><span class="p">);</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">country</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
-            <span class="c1">// without a country we cannot validate a phone number
-</span>            <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
+            <span class="c1">// without a country we cannot validate a phone number</span>
+            <span class="k">return</span> <span class="k">true</span><span class="p">;</span>
         <span class="p">}</span>
 
         <span class="n">context</span><span class="p">.</span><span class="n">MessageFormatter</span><span class="p">.</span><span class="nf">AppendArgument</span><span class="p">(</span><span class="s">"Country"</span><span class="p">,</span> <span class="n">country</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
@@ -263,14 +263,14 @@ make unit-testing easy, just take a look:</p>
 
     <span class="p">[</span><span class="n">Fact</span><span class="p">]</span>
     <span class="k">public</span> <span class="k">void</span> <span class="nf">Should_return_error_when_phone_number_is_invalid_and_countryIsoCode_is_set</span><span class="p">()</span> <span class="p">{</span>
-        <span class="c1">// Arrange
-</span>        <span class="n">var</span> <span class="n">invalidRequest</span> <span class="p">=</span> 
+        <span class="c1">// Arrange</span>
+        <span class="kt">var</span> <span class="n">invalidRequest</span> <span class="p">=</span> 
             <span class="n">SampleRequestDtoFixture</span><span class="p">.</span><span class="nf">CreateValidRequest</span><span class="p">();</span>
         <span class="n">invalidRequest</span><span class="p">.</span><span class="n">Address</span><span class="p">.</span><span class="n">CountryIsoCode</span> <span class="p">=</span> <span class="s">"PL"</span><span class="p">;</span>
         <span class="n">invalidRequest</span><span class="p">.</span><span class="n">ContactInfo</span><span class="p">.</span><span class="n">PhoneNumber</span> <span class="p">=</span> <span class="s">"+48 123"</span><span class="p">;</span>
 
-        <span class="c1">// Assert
-</span>        <span class="n">_validator</span>
+        <span class="c1">// Assert</span>
+        <span class="n">_validator</span>
             <span class="p">.</span><span class="nf">ShouldHaveValidationErrorFor</span><span class="p">(</span>
                 <span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">ContactInfo</span><span class="p">.</span><span class="n">PhoneNumber</span><span class="p">,</span> <span class="n">invalidRequest</span><span class="p">)</span>
             <span class="p">.</span><span class="nf">WithErrorMessage</span><span class="p">(</span>
@@ -311,7 +311,7 @@ access <code class="highlighter-rouge">RootContextData</code> and check if the p
 	<item>
 	  <title>You can live without mocking frameworks</title>
 	  <link>//you-can-live-without-your-mocking-framework</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2018-09-08T02:00:00+02:00</pubDate>
 	  <guid>//you-can-live-without-your-mocking-framework</guid>
 	  <description><![CDATA[
@@ -357,9 +357,9 @@ publishes two events (order is not important):</p>
     <span class="k">public</span> <span class="nf">EventPublishingComponent</span><span class="p">(</span><span class="n">EventPublisher</span> <span class="n">eventPublisher</span><span class="p">)</span>
         <span class="p">=&gt;</span> <span class="n">_eventPublisher</span> <span class="p">=</span> <span class="n">eventPublisher</span><span class="p">;</span>
 
-    <span class="k">public</span> <span class="n">async</span> <span class="n">Task</span> <span class="nf">Publish</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">await</span> <span class="n">_eventPublisher</span><span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="k">new</span> <span class="nf">FirstEvent</span><span class="p">(</span><span class="n">id</span><span class="p">:</span> <span class="m">3</span><span class="p">));</span>
-        <span class="n">await</span> <span class="n">_eventPublisher</span><span class="p">.</span><span class="nf">Publish</span><span class="p">(</span>
+    <span class="k">public</span> <span class="k">async</span> <span class="n">Task</span> <span class="nf">Publish</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">await</span> <span class="n">_eventPublisher</span><span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="k">new</span> <span class="nf">FirstEvent</span><span class="p">(</span><span class="n">id</span><span class="p">:</span> <span class="m">3</span><span class="p">));</span>
+        <span class="k">await</span> <span class="n">_eventPublisher</span><span class="p">.</span><span class="nf">Publish</span><span class="p">(</span>
           <span class="k">new</span> <span class="nf">SecondEvent</span><span class="p">(</span><span class="n">id</span><span class="p">:</span> <span class="s">"ZDKA9JOPCKXI7"</span><span class="p">));</span>
     <span class="p">}</span>
 <span class="p">}</span>
@@ -376,11 +376,11 @@ publishes two events (order is not important):</p>
         <span class="p">=&gt;</span> <span class="n">Id</span> <span class="p">=</span> <span class="n">id</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="k">public</span> <span class="k">interface</span> <span class="n">EventPublisher</span> <span class="p">{</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="nc">EventPublisher</span> <span class="p">{</span>
     <span class="n">Task</span> <span class="nf">Publish</span><span class="p">(</span><span class="n">Event</span> <span class="n">@event</span><span class="p">);</span>
 <span class="p">}</span>
 
-<span class="k">public</span> <span class="k">interface</span> <span class="n">Event</span> <span class="p">{</span> <span class="p">}</span></code></pre></figure>
+<span class="k">public</span> <span class="k">interface</span> <span class="nc">Event</span> <span class="p">{</span> <span class="p">}</span></code></pre></figure>
 
 <p>A “classic” unit test for this component using NSubstitute 
 could look like this:</p>
@@ -395,17 +395,17 @@ could look like this:</p>
     <span class="p">}</span>
 
     <span class="p">[</span><span class="n">Fact</span><span class="p">]</span>
-    <span class="k">public</span> <span class="n">async</span> <span class="n">Task</span> <span class="nf">Should_publish_FirstEvent</span><span class="p">()</span> <span class="p">{</span>
-        <span class="c1">// Arrange
-</span>        <span class="n">FirstEvent</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
-        <span class="n">await</span> <span class="n">_eventPublisher</span>
+    <span class="k">public</span> <span class="k">async</span> <span class="n">Task</span> <span class="nf">Should_publish_FirstEvent</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// Arrange</span>
+        <span class="n">FirstEvent</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+        <span class="k">await</span> <span class="n">_eventPublisher</span>
             <span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="n">FirstEvent</span><span class="p">&gt;(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="n">e</span><span class="p">));</span>
 
-        <span class="c1">// Act
-</span>        <span class="n">await</span> <span class="n">_component</span><span class="p">.</span><span class="nf">Publish</span><span class="p">();</span>
+        <span class="c1">// Act</span>
+        <span class="k">await</span> <span class="n">_component</span><span class="p">.</span><span class="nf">Publish</span><span class="p">();</span>
 
-        <span class="c1">// Assert
-</span>        <span class="n">await</span> <span class="n">_eventPublisher</span><span class="p">.</span><span class="nf">Received</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+        <span class="c1">// Assert</span>
+        <span class="k">await</span> <span class="n">_eventPublisher</span><span class="p">.</span><span class="nf">Received</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
             <span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">FirstEvent</span><span class="p">&gt;());</span>
 
         <span class="n">Check</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">firstEvent</span><span class="p">)</span>
@@ -424,7 +424,7 @@ behaviour using library specific syntax. Here e.g. we are capturing
 argument passed to <code class="highlighter-rouge">Publish</code> method for later use:</p>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">FirstEvent</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
-<span class="n">await</span> <span class="n">_eventPublisher</span>
+<span class="k">await</span> <span class="n">_eventPublisher</span>
     <span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="n">FirstEvent</span><span class="p">&gt;(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="n">e</span><span class="p">));</span></code></pre></figure>
 
 <p>In the assert (then) part of the test we use again library specific
@@ -463,7 +463,7 @@ was called with given set of arguments.</p>
 </ol>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">FirstEvent</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
-<span class="n">await</span> <span class="n">_eventPublisher</span>
+<span class="k">await</span> <span class="n">_eventPublisher</span>
     <span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="n">FirstEvent</span><span class="p">&gt;(</span><span class="n">e</span> <span class="p">=&gt;</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="n">e</span><span class="p">));</span></code></pre></figure>
 
 <p>Now let us see how our test can look like if we use fakes instead:</p>
@@ -478,12 +478,12 @@ was called with given set of arguments.</p>
     <span class="p">}</span>
 
     <span class="p">[</span><span class="n">Fact</span><span class="p">]</span>
-    <span class="k">public</span> <span class="n">async</span> <span class="n">Task</span> <span class="nf">Should_publish_FirstEvent</span><span class="p">()</span> <span class="p">{</span>
-        <span class="c1">// Act
-</span>        <span class="n">await</span> <span class="n">_component</span><span class="p">.</span><span class="nf">Publish</span><span class="p">();</span>
+    <span class="k">public</span> <span class="k">async</span> <span class="n">Task</span> <span class="nf">Should_publish_FirstEvent</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// Act</span>
+        <span class="k">await</span> <span class="n">_component</span><span class="p">.</span><span class="nf">Publish</span><span class="p">();</span>
 
-        <span class="c1">// Assert
-</span>        <span class="n">var</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="n">_eventPublisher</span><span class="p">.</span><span class="n">PublishedEvents</span>
+        <span class="c1">// Assert</span>
+        <span class="kt">var</span> <span class="n">firstEvent</span> <span class="p">=</span> <span class="n">_eventPublisher</span><span class="p">.</span><span class="n">PublishedEvents</span>
             <span class="p">.</span><span class="n">OfType</span><span class="p">&lt;</span><span class="n">FirstEvent</span><span class="p">&gt;()</span>
             <span class="p">.</span><span class="nf">SingleOrDefault</span><span class="p">();</span>
 
@@ -508,7 +508,7 @@ but <strong>working</strong> implementation of the interface:</p>
 
     <span class="k">public</span> <span class="n">Task</span> <span class="nf">Publish</span><span class="p">(</span><span class="n">Event</span> <span class="n">@event</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">@event</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
-            <span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentNullException</span><span class="p">(</span><span class="nf">nameof</span><span class="p">(</span><span class="n">@event</span><span class="p">));</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">ArgumentNullException</span><span class="p">(</span><span class="k">nameof</span><span class="p">(</span><span class="n">@event</span><span class="p">));</span>
 
         <span class="n">_publishedEvents</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">@event</span><span class="p">);</span>
         <span class="k">return</span> <span class="n">Task</span><span class="p">.</span><span class="n">CompletedTask</span><span class="p">;</span>
@@ -590,8 +590,8 @@ or call <code class="highlighter-rouge">formatter(state, exception)</code>.</p>
 <p>All this causes that naive testing aproachs like this fail:</p>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
-<span class="k">public</span> <span class="n">async</span> <span class="n">Task</span> <span class="nf">Naive_test</span><span class="p">()</span> <span class="p">{</span>
-  <span class="n">var</span> <span class="n">logger</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ILogger</span><span class="p">&lt;</span><span class="n">SomeClass</span><span class="p">&gt;&gt;();</span>
+<span class="k">public</span> <span class="k">async</span> <span class="n">Task</span> <span class="nf">Naive_test</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kt">var</span> <span class="n">logger</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ILogger</span><span class="p">&lt;</span><span class="n">SomeClass</span><span class="p">&gt;&gt;();</span>
       
   <span class="n">logger</span>
     <span class="p">.</span><span class="nf">LogDebug</span><span class="p">(</span><span class="s">"User '{userName}' log into application."</span><span class="p">,</span> <span class="s">"root"</span><span class="p">);</span>
@@ -616,9 +616,9 @@ Received 1 non-matching call
 <p>If you really want to test <code class="highlighter-rouge">ILogger</code> using NSubstitute you must
 use the following code:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">logger</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ILogger</span><span class="p">&lt;</span><span class="n">SomeClass</span><span class="p">&gt;&gt;();</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">logger</span> <span class="p">=</span> <span class="n">Substitute</span><span class="p">.</span><span class="n">For</span><span class="p">&lt;</span><span class="n">ILogger</span><span class="p">&lt;</span><span class="n">SomeClass</span><span class="p">&gt;&gt;();</span>
 
-<span class="n">dynamic</span> <span class="n">state</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+<span class="kt">dynamic</span> <span class="n">state</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
 <span class="n">Exception</span> <span class="n">exception</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span> 
 <span class="n">Func</span><span class="p">&lt;</span><span class="kt">object</span><span class="p">,</span> <span class="n">Exception</span><span class="p">,</span> <span class="kt">string</span><span class="p">&gt;</span> <span class="n">formatter</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
 
@@ -659,10 +659,10 @@ a fake logger:</p>
         <span class="p">=&gt;</span> <span class="n">_loggedEntries</span><span class="p">;</span>
 
     <span class="k">public</span> <span class="n">IDisposable</span> <span class="n">BeginScope</span><span class="p">&lt;</span><span class="n">TState</span><span class="p">&gt;(</span><span class="n">TState</span> <span class="n">state</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// Notice that we do not have to implement
-</span>        <span class="c1">// all methods for interfaces that are *not
-</span>        <span class="c1">// part* of our application.
-</span>        <span class="k">throw</span> <span class="k">new</span> <span class="nf">NotImplementedException</span><span class="p">();</span>
+        <span class="c1">// Notice that we do not have to implement</span>
+        <span class="c1">// all methods for interfaces that are *not</span>
+        <span class="c1">// part* of our application.</span>
+        <span class="k">throw</span> <span class="k">new</span> <span class="nf">NotImplementedException</span><span class="p">();</span>
     <span class="p">}</span>
 
     <span class="k">public</span> <span class="kt">bool</span> <span class="nf">IsEnabled</span><span class="p">(</span><span class="n">LogLevel</span> <span class="n">logLevel</span><span class="p">)</span> <span class="p">{</span>
@@ -697,9 +697,9 @@ a fake logger:</p>
   <span class="p">}</span>
 
   <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="nf">ToString</span><span class="p">()</span>
-      <span class="p">=&gt;</span> <span class="err">$</span><span class="s">"{LogLevel}: {Message}"</span> <span class="p">+</span> 
+      <span class="p">=&gt;</span> <span class="s">$"</span><span class="p">{</span><span class="n">LogLevel</span><span class="p">}</span><span class="s">: </span><span class="p">{</span><span class="n">Message</span><span class="p">}</span><span class="s">"</span> <span class="p">+</span> 
          <span class="p">(</span><span class="n">Exception</span> <span class="p">!=</span> <span class="k">null</span> 
-            <span class="p">?</span> <span class="err">$</span><span class="s">" Exception: {Exception.GetType().Name}"</span> 
+            <span class="p">?</span> <span class="s">$" Exception: </span><span class="p">{</span><span class="n">Exception</span><span class="p">.</span><span class="nf">GetType</span><span class="p">().</span><span class="n">Name</span><span class="p">}</span><span class="s">"</span> 
             <span class="p">:</span> <span class="s">""</span><span class="p">)</span> <span class="p">+</span>
          <span class="s">"."</span><span class="p">;</span>
 <span class="p">}</span></code></pre></figure>
@@ -710,7 +710,7 @@ implement just enough functionality in our fakes to make them usable.</p>
 
 <p>Now it is time for writing actual test:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">logger</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">InMemoryListOfEntriesLogger</span><span class="p">();</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">logger</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">InMemoryListOfEntriesLogger</span><span class="p">();</span>
 
 <span class="n">logger</span><span class="p">.</span><span class="nf">LogDebug</span><span class="p">(</span><span class="s">"User '{userName}' log into application."</span><span class="p">,</span> <span class="s">"root"</span><span class="p">);</span>
 

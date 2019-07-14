@@ -5,16 +5,16 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>https://marcin-chwedczuk.github.io/</link>
-   <description>A place where I can share my thoughts about programming</description>
+   <link>http://localhost:4000</link>
+   <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> marcin-chwedczuk</managingEditor>
+   <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Ray tracing a torus</title>
 	  <link>//ray-tracing-torus</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2018-05-06T02:00:00+02:00</pubDate>
 	  <guid>//ray-tracing-torus</guid>
 	  <description><![CDATA[
@@ -219,7 +219,7 @@ $ sudo npm install --global bower</code></pre></figure>
 	<item>
 	  <title>How to check if a number is a power of two</title>
 	  <link>//how-to-check-if-a-number-is-a-power-of-two</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2017-12-16T01:00:00+01:00</pubDate>
 	  <guid>//how-to-check-if-a-number-is-a-power-of-two</guid>
 	  <description><![CDATA[
@@ -243,7 +243,7 @@ then I will explain how it works:</p>
  * @return {@code true} when {@code number} is a power of two,
  *  {@code} false otherwise.
  */</span>
-<span class="kt">boolean</span> <span class="nf">isPowerOfTwo</span><span class="p">(</span><span class="kt">int</span> <span class="n">number</span><span class="o">)</span> <span class="o">{</span>
+<span class="kt">boolean</span> <span class="nf">isPowerOfTwo</span><span class="o">(</span><span class="kt">int</span> <span class="n">number</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">return</span> 
         <span class="o">(</span> <span class="o">(</span><span class="n">number</span> <span class="o">&amp;</span> <span class="o">(-</span><span class="n">number</span><span class="o">))</span> <span class="o">==</span> <span class="n">number</span> <span class="o">)</span> <span class="o">&amp;&amp;</span> 
         <span class="o">(</span><span class="n">number</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
@@ -395,7 +395,7 @@ To be consistent we again use <code class="highlighter-rouge">(number &gt; 0)</c
  * @return {@code true} when {@code number} is a power of two,
  *  {@code} false otherwise.
  */</span>
-<span class="kt">boolean</span> <span class="nf">isPowerOfTwo2</span><span class="p">(</span><span class="kt">int</span> <span class="n">number</span><span class="o">)</span> <span class="o">{</span>
+<span class="kt">boolean</span> <span class="nf">isPowerOfTwo2</span><span class="o">(</span><span class="kt">int</span> <span class="n">number</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">return</span> 
         <span class="o">(</span> <span class="o">(</span><span class="n">number</span> <span class="o">&amp;</span> <span class="o">(</span><span class="n">number</span><span class="o">-</span><span class="mi">1</span><span class="o">))</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">&amp;&amp;</span> 
         <span class="o">(</span><span class="n">number</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
@@ -457,25 +457,25 @@ instructions that we described previously.</p>
 <p>Here are versions of both algorithms that operate on unsigned
 numbers in C#:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">/// &lt;summary&gt;
-///     Checks if a &lt;paramref="number" /&gt; is a power of two.
-/// &lt;/summary&gt;
-/// &lt;remarks&gt;
-///     Zero is not considered power of two.
-/// &lt;/remarks&gt;
-/// &lt;param name="number"&gt;Any unsigned value&lt;/param&gt;
-/// &lt;returns&gt;
-///     &lt;c&gt;true&lt;/c&gt; when &lt;c&gt;number&lt;/c&gt; is a power of two,
-///     &lt;c&gt;false&lt;/c&gt; otherwise.
-/// &lt;/returns&gt;
-</span><span class="kt">bool</span> <span class="nf">IsPowerOfTwo</span><span class="p">(</span><span class="kt">uint</span> <span class="n">number</span><span class="p">)</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">/// &lt;summary&gt;</span>
+<span class="c1">///     Checks if a &lt;paramref="number" /&gt; is a power of two.</span>
+<span class="c1">/// &lt;/summary&gt;</span>
+<span class="c1">/// &lt;remarks&gt;</span>
+<span class="c1">///     Zero is not considered power of two.</span>
+<span class="c1">/// &lt;/remarks&gt;</span>
+<span class="c1">/// &lt;param name="number"&gt;Any unsigned value&lt;/param&gt;</span>
+<span class="c1">/// &lt;returns&gt;</span>
+<span class="c1">///     &lt;c&gt;true&lt;/c&gt; when &lt;c&gt;number&lt;/c&gt; is a power of two,</span>
+<span class="c1">///     &lt;c&gt;false&lt;/c&gt; otherwise.</span>
+<span class="c1">/// &lt;/returns&gt;</span>
+<span class="kt">bool</span> <span class="nf">IsPowerOfTwo</span><span class="p">(</span><span class="kt">uint</span> <span class="n">number</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">return</span>
         <span class="p">(</span> <span class="p">(</span><span class="n">number</span> <span class="p">&amp;</span> <span class="p">(-</span><span class="n">number</span><span class="p">))</span> <span class="p">==</span> <span class="n">number</span> <span class="p">)</span> <span class="p">&amp;&amp;</span>
         <span class="p">(</span><span class="n">number</span> <span class="p">!=</span> <span class="m">0</span><span class="p">);</span>
 <span class="p">}</span>
 
-<span class="c1">/// ... documentation ommited ...
-</span><span class="kt">bool</span> <span class="nf">IsPowerOfTwo2</span><span class="p">(</span><span class="kt">uint</span> <span class="n">number</span><span class="p">)</span> <span class="p">{</span>
+<span class="c1">/// ... documentation ommited ...</span>
+<span class="kt">bool</span> <span class="nf">IsPowerOfTwo2</span><span class="p">(</span><span class="kt">uint</span> <span class="n">number</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">return</span> 
         <span class="p">(</span> <span class="p">(</span><span class="n">number</span> <span class="p">&amp;</span> <span class="p">(</span><span class="n">number</span><span class="p">-</span><span class="m">1</span><span class="p">))</span> <span class="p">==</span> <span class="m">0</span> <span class="p">)</span> <span class="p">&amp;&amp;</span> 
         <span class="p">(</span><span class="n">number</span> <span class="p">!=</span> <span class="m">0</span><span class="p">);</span>
@@ -512,9 +512,286 @@ This is demonstrated by program:</p>
 	</item>
 
 	<item>
+	  <title>Iterative solution to Towers of Hanoi problem</title>
+	  <link>//iterative-solution-to-towers-of-hanoi-problem</link>
+	  <author></author>
+	  <pubDate>2016-11-26T01:00:00+01:00</pubDate>
+	  <guid>//iterative-solution-to-towers-of-hanoi-problem</guid>
+	  <description><![CDATA[
+	     <p>Towers of Hanoi is a simple programming riddle often used 
+in programming courses to
+introduce recursion.
+Not many people are aware that Towers of Hanoi has
+also a beautiful iterative solution.</p>
+
+<p>Here I assume that you already know this problem if not 
+<a href="https://en.wikipedia.org/wiki/Tower_of_Hanoi">please check Wikipedia Tower of Hanoi page</a>.</p>
+
+<p>The key to discover how iterative algorithm work is to actually observe how
+disks are moved by recursive algorithm.
+To make move patterns more visible we will put rots 
+on a circle, we will be moving discs from rot marked by FROM label to
+rot marked by TO label using third rot only to temporary store discs.
+We will use animation below to
+observe how disks move. We will start by observing how the smallest disk (red)
+is moving when total number of disk is even (so try it for 2, 4, 6 and 8 disks).
+After you find the pattern how smallest disk moves try to find out how other
+disk are moving - this should not be difficult.
+Then repeat observation for odd number of disks (1,3,5 and 7).<br />
+TIP: Patterns may be more easily revealed when you use x3 or x5 animation speed</p>
+
+<iframe src="assets/apps/hanoi/index.html" width="850" height="810" style="border:none; margin-left:-48px; margin-top:-20px;"></iframe>
+
+<p style="color: gray;">
+Scroll below when you have enough of pattern finding or if want to check if
+your patterns are correct.
+</p>
+
+<p>For any number of disks we start by moving the smallest disk.
+For even total number of disks we move the smallest disk clockwise for
+odd total number of disks we move the smallest disk counterclockwise.
+After every move that involves the smallest disk we perform one
+valid move 
+(we move smaller disk on top of bigger, or we move disk to empty rod)
+that doesn’t involve the
+smallest disk. We stop when all disks were moved to TO rod.</p>
+
+<p>Formal proof that above algorithm works can be found in 
+<a href="http://www.cs.nott.ac.uk/~psarb2/MPC/Hanoi.ps.gz">The Associativity of Equivalence and the Towers of Hanoi Problem</a>.</p>
+
+<p>Iterative algorithm implemented in JavaScript:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">generateHanoiMovesIterative</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">numberOfDisks</span><span class="p">)</span> <span class="p">{</span>
+  <span class="c1">// direction of rotation of the smallest disk</span>
+  <span class="kd">var</span> <span class="nx">dir</span> <span class="o">=</span> <span class="p">(</span><span class="nx">numberOfDisks</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">?</span> <span class="mi">1</span> <span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+  <span class="kd">var</span> <span class="nx">rods</span> <span class="o">=</span> <span class="p">[[],</span> <span class="p">[],</span> <span class="p">[]];</span>
+  <span class="kd">var</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">rodMin</span><span class="p">;</span>
+
+  <span class="c1">// push disks on our virtual rod's</span>
+  <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">numberOfDisks</span><span class="p">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">rods</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">push</span><span class="p">(</span><span class="nx">numberOfDisks</span> <span class="o">-</span> <span class="nx">i</span><span class="p">);</span>
+  <span class="p">}</span>
+
+  <span class="c1">// rodMin will point to rod with smallest disk</span>
+  <span class="nx">rodMin</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+  <span class="c1">// we need (2^numberOfDisks - 1) moves</span>
+  <span class="kd">var</span> <span class="nx">numberOfMoves</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="nx">numberOfDisks</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+  <span class="c1">// To avoid using % operator we precompute next and prev tables</span>
+  <span class="kd">var</span> <span class="nx">next</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">];</span>
+  <span class="kd">var</span> <span class="nx">prev</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">];</span>
+
+  <span class="kd">var</span> <span class="nx">moves</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="kd">var</span> <span class="nx">moveSmallest</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+  <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">numberOfMoves</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">moveSmallest</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">oldRodMin</span> <span class="o">=</span> <span class="nx">rodMin</span><span class="p">;</span>
+        <span class="c1">// in JS -1 % 3 === -1, we add 3 to get positive result</span>
+        <span class="nx">rodMin</span> <span class="o">=</span> <span class="p">(</span><span class="nx">oldRodMin</span> <span class="o">+</span> <span class="nx">dir</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span><span class="p">;</span>
+
+        <span class="nx">moveDisk</span><span class="p">(</span><span class="nx">oldRodMin</span><span class="p">,</span> <span class="nx">rodMin</span><span class="p">);</span>
+      <span class="p">}</span>
+      <span class="k">else</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">topDiskSize</span><span class="p">(</span><span class="nx">next</span><span class="p">[</span><span class="nx">rodMin</span><span class="p">])</span> <span class="o">&gt;</span> <span class="nx">topDiskSize</span><span class="p">(</span><span class="nx">prev</span><span class="p">[</span><span class="nx">rodMin</span><span class="p">]))</span> <span class="p">{</span>
+          <span class="nx">moveDisk</span><span class="p">(</span><span class="nx">prev</span><span class="p">[</span><span class="nx">rodMin</span><span class="p">],</span> <span class="nx">next</span><span class="p">[</span><span class="nx">rodMin</span><span class="p">]);</span>
+        <span class="p">}</span>
+        <span class="k">else</span> <span class="p">{</span>
+          <span class="nx">moveDisk</span><span class="p">(</span><span class="nx">next</span><span class="p">[</span><span class="nx">rodMin</span><span class="p">],</span> <span class="nx">prev</span><span class="p">[</span><span class="nx">rodMin</span><span class="p">]);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="nx">moveSmallest</span> <span class="o">=</span> <span class="o">!</span><span class="nx">moveSmallest</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">moves</span><span class="p">;</span>
+
+  <span class="kd">function</span> <span class="nx">topDiskSize</span><span class="p">(</span><span class="nx">rodIndex</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">rods</span><span class="p">[</span><span class="nx">rodIndex</span><span class="p">].</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="nb">Number</span><span class="p">.</span><span class="nx">MAX_VALUE</span><span class="p">;</span>
+
+    <span class="kd">var</span> <span class="nx">rod</span> <span class="o">=</span> <span class="nx">rods</span><span class="p">[</span><span class="nx">rodIndex</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nx">rod</span><span class="p">[</span><span class="nx">rod</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
+  <span class="p">}</span>
+
+  <span class="kd">function</span> <span class="nx">moveDisk</span><span class="p">(</span><span class="k">from</span><span class="p">,</span> <span class="nx">to</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 1-FROM ROD, 2-USING ROD, 3-TO ROD</span>
+    <span class="nx">moves</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span><span class="k">from</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nx">to</span><span class="o">+</span><span class="mi">1</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">' -&gt; '</span><span class="p">));</span>
+    <span class="nx">rods</span><span class="p">[</span><span class="nx">to</span><span class="p">].</span><span class="nx">push</span><span class="p">(</span><span class="nx">rods</span><span class="p">[</span><span class="k">from</span><span class="p">].</span><span class="nx">pop</span><span class="p">());</span>
+  <span class="p">}</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>References:</p>
+
+<ul>
+  <li>[1] <a href="http://www.cs.nott.ac.uk/~psarb2/MPC/Hanoi.ps.gz">The Associativity of Equivalence and the Towers of Hanoi Problem</a></li>
+</ul>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
+	  <title>Iterative algorithm for drawing Hilbert curve</title>
+	  <link>//iterative-algorithm-for-drawing-hilbert-curve</link>
+	  <author></author>
+	  <pubDate>2016-08-06T02:00:00+02:00</pubDate>
+	  <guid>//iterative-algorithm-for-drawing-hilbert-curve</guid>
+	  <description><![CDATA[
+	     <p>In this post I will describe how to draw Hilbert curve iteratively.
+To avoid recursion we will use <code class="highlighter-rouge">hindex2xy</code> algorithm that
+translates Hilbert curve node index to 
+Cartesian coordinates.</p>
+
+<p>To index Hilbert curve nodes we assume that
+curve starts in the left bottom corner and ends in the right bottom corner.
+Indexes start at zero. Here is example numbering of <code class="highlighter-rouge">N=8</code> Hilbert curve:
+<img src="assets/images/2016-08-13/hnumbering.svg" alt="N=8 Hilbert curve node indexing" />
+We expect that <code class="highlighter-rouge">hindex2xy(17) = (x:1, y:4)</code> and <code class="highlighter-rouge">hindex2xy(40) = (x:6, y:6)</code>.</p>
+
+<p><code class="highlighter-rouge">hindex2xy</code> algorithm uses bottom-up approach to compute node coordinates without
+using recursion. When we look at the binary representation of the node indexes we may
+notice that the last two bits represent node position inside <code class="highlighter-rouge">N=2</code> Hilbert curve.
+Next two bits represent where that <code class="highlighter-rouge">N=2</code> Hilbert curve is located inside bigger
+<code class="highlighter-rouge">N=4</code> curve etc.</p>
+
+<p>Example will show us
+how it works for <code class="highlighter-rouge">N=4</code> Hilbert curve and <code class="highlighter-rouge">index=7</code>:
+<img src="assets/images/2016-08-13/hbottomup.svg" alt="Computing coordinates bottom-up" />
+Let’s start by writing index value as binary number: 7 <sub>dec</sub> is equal 0111<sub>bin</sub>.
+The last two bits of 0111<sub>bin</sub> are
+11<sub>bin</sub>, they
+corresponds to the bottom right node of the <code class="highlighter-rouge">N=2</code> Hilbert curve (marked green on the image).
+This node has Cartesian coordinates <code class="highlighter-rouge">(x:1, y:0)</code>.
+Now let’s move to the next two bits:
+01<sub>bin</sub>, these bits corresponds to the left upper corner of <code class="highlighter-rouge">N=4</code> Hilbert curve
+(marked yellow on the image).
+To transform <code class="highlighter-rouge">N=2</code> into <code class="highlighter-rouge">N=4</code> coords we must notice that 
+left upper corner of <code class="highlighter-rouge">N=4</code> curve is just translated copy of <code class="highlighter-rouge">N=2</code> curve.
+So to get <code class="highlighter-rouge">N=4</code> coords we must apply translation <code class="highlighter-rouge">(x:0, y:2)</code> to <code class="highlighter-rouge">N=2</code> coords:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">(x:1, y:2) = (x:1, y:0) + (x:0, y:2)</code></pre></figure>
+
+<p>We end with <code class="highlighter-rouge">(x:1, y:2)</code> point that correctly 
+represent node with index 7 inside <code class="highlighter-rouge">N=4</code> curve.</p>
+
+<p>Let’s assume that we want to find out coords of node in <code class="highlighter-rouge">N=2K</code> Hilbert curve,
+given that we have coords <code class="highlighter-rouge">(x,y)</code> of node in <code class="highlighter-rouge">N=K</code> curve.
+In general when computing coords bottom-up we have four cases:
+<img src="assets/images/2016-08-13/hblocks.svg" alt="Computing coordinates bottom-up" />
+Cases B and C are really simple since <code class="highlighter-rouge">N=2K</code> curve contains copies
+of <code class="highlighter-rouge">N=K</code> curve in B and C squares. In case B we should
+transform coords using equation:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">coords_2K = coords_K + (x:0, y:K)</code></pre></figure>
+
+<p>And in case C we should use equation:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">coords_2K = coords_K + (x:K, y:K)</code></pre></figure>
+
+<p>In cases A and D we must be careful when transforming coords because we must
+preserve order of traversal of <code class="highlighter-rouge">N=K</code> curve inside <code class="highlighter-rouge">N=2K</code> curve.
+I marked each curve start and end with red and blue dots so we can
+see better how we should perform transformation.</p>
+
+<p>In case A first node of <code class="highlighter-rouge">N=K</code> curve should coincide with first node of <code class="highlighter-rouge">N=2K</code> curve
+and <code class="highlighter-rouge">N=K</code> curve should end next to the start of “case B” curve.
+We can achieve this by flipping coords around diagonal:
+<img src="assets/images/2016-08-13/casea.svg" alt="Case A transformation" /></p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">coords_2K.x = coords_K.y
+coords_2K.y = coords_K.x</code></pre></figure>
+
+<p>Case D is similar to case A, we must flip coords but around second diagonal:
+<img src="assets/images/2016-08-13/cased.svg" alt="Case D transformation" />
+In addition to that we must translate node coords to the right:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">coords_2K.x = (K-1) - coords_K.y
+coords_2K.y = (K-1) - coords_K.x
+
+coords_2K.x = coords_2K.x + K</code></pre></figure>
+
+<p>Finally let’s see full algorithm code in JavaScript:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">last2bits</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">(</span><span class="nx">x</span> <span class="o">&amp;</span> <span class="mi">3</span><span class="p">);</span> <span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">hindex2xy</span><span class="p">(</span><span class="nx">hindex</span><span class="p">,</span> <span class="nx">N</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// 1. compute position of node in N=2 curve</span>
+    <span class="kd">var</span> <span class="nx">positions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="cm">/* 0: */</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="cm">/* 1: */</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="cm">/* 2: */</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
+    <span class="cm">/* 3: */</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="p">];</span>
+
+    <span class="kd">var</span> <span class="nx">tmp</span> <span class="o">=</span> <span class="nx">positions</span><span class="p">[</span><span class="nx">last2bits</span><span class="p">(</span><span class="nx">hindex</span><span class="p">)];</span>
+    <span class="nx">hindex</span> <span class="o">=</span> <span class="p">(</span><span class="nx">hindex</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">2</span><span class="p">);</span>
+
+    <span class="c1">// 2. iteratively compute coords</span>
+    <span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="kd">var</span> <span class="nx">y</span> <span class="o">=</span> <span class="nx">tmp</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+    
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">n</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span> <span class="nx">n</span> <span class="o">&lt;=</span> <span class="nx">N</span><span class="p">;</span> <span class="nx">n</span> <span class="o">*=</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">n2</span> <span class="o">=</span> <span class="nx">n</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+
+        <span class="k">switch</span> <span class="p">(</span><span class="nx">last2bits</span><span class="p">(</span><span class="nx">hindex</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="mi">0</span><span class="p">:</span> <span class="cm">/* case A: left-bottom */</span>
+            <span class="nx">tmp</span> <span class="o">=</span> <span class="nx">x</span><span class="p">;</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">y</span><span class="p">;</span> <span class="nx">y</span> <span class="o">=</span> <span class="nx">tmp</span><span class="p">;</span>
+            <span class="k">break</span><span class="p">;</span>
+
+        <span class="k">case</span> <span class="mi">1</span><span class="p">:</span> <span class="cm">/* case B: left-upper */</span>
+            <span class="nx">x</span> <span class="o">=</span> <span class="nx">x</span><span class="p">;</span>
+            <span class="nx">y</span> <span class="o">=</span> <span class="nx">y</span> <span class="o">+</span> <span class="nx">n2</span><span class="p">;</span>
+            <span class="k">break</span><span class="p">;</span>
+
+        <span class="k">case</span> <span class="mi">2</span><span class="p">:</span> <span class="cm">/* case C: right-upper */</span>
+            <span class="nx">x</span> <span class="o">=</span> <span class="nx">x</span> <span class="o">+</span> <span class="nx">n2</span><span class="p">;</span>
+            <span class="nx">y</span> <span class="o">=</span> <span class="nx">y</span> <span class="o">+</span> <span class="nx">n2</span><span class="p">;</span>
+            <span class="k">break</span><span class="p">;</span>
+
+        <span class="k">case</span> <span class="mi">3</span><span class="p">:</span> <span class="cm">/* case D: right-bottom */</span>
+            <span class="nx">tmp</span> <span class="o">=</span> <span class="nx">y</span><span class="p">;</span>
+            <span class="nx">y</span> <span class="o">=</span> <span class="p">(</span><span class="nx">n2</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="nx">x</span><span class="p">;</span>
+            <span class="nx">x</span> <span class="o">=</span> <span class="p">(</span><span class="nx">n2</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="nx">tmp</span><span class="p">;</span>
+            <span class="nx">x</span> <span class="o">=</span> <span class="nx">x</span> <span class="o">+</span> <span class="nx">n2</span><span class="p">;</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+        
+        <span class="nx">hindex</span> <span class="o">=</span> <span class="p">(</span><span class="nx">hindex</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">2</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="p">[</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">];</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Having this algorithm we may draw Hilbert curve as follows:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">N</span> <span class="o">=</span> <span class="mi">32</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">prev</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="nx">curr</span><span class="p">;</span>
+
+<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">N</span><span class="o">*</span><span class="nx">N</span><span class="p">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">curr</span> <span class="o">=</span> <span class="nx">hindex2xy</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">N</span><span class="p">);</span>
+
+    <span class="nx">dot</span><span class="p">(</span><span class="nx">curr</span><span class="p">);</span>
+    <span class="nx">line</span><span class="p">(</span><span class="nx">prev</span><span class="p">,</span> <span class="nx">curr</span><span class="p">);</span>
+
+    <span class="nx">prev</span> <span class="o">=</span> <span class="nx">curr</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>And here are results:
+<img src="assets/images/2016-08-13/hilb.png" alt="Hilbert curve" /></p>
+
+<h5 id="github">Github</h5>
+<p>Source code: <a href="https://github.com/marcin-chwedczuk/hilbert_curve">hilbert_curve</a></p>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
 	  <title>Find cycle start in singly linked list</title>
 	  <link>//find-cycle-start-in-singly-linked-list</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2016-06-25T02:00:00+02:00</pubDate>
 	  <guid>//find-cycle-start-in-singly-linked-list</guid>
 	  <description><![CDATA[
@@ -562,15 +839,15 @@ To represent list nodes we will use following Java class:</p>
     <span class="kd">public</span> <span class="kt">int</span> <span class="n">value</span><span class="o">;</span>
     <span class="kd">public</span> <span class="n">ListNode</span> <span class="n">next</span><span class="o">;</span>
 
-    <span class="kd">public</span> <span class="n">ListNode</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">(</span><span class="n">value</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span> <span class="o">}</span>
+    <span class="kd">public</span> <span class="nf">ListNode</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">(</span><span class="n">value</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span> <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="n">ListNode</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">,</span> <span class="n">ListNode</span> <span class="n">next</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">ListNode</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">,</span> <span class="n">ListNode</span> <span class="n">next</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
         <span class="k">this</span><span class="o">.</span><span class="na">next</span> <span class="o">=</span> <span class="n">next</span><span class="o">;</span>
     <span class="o">}</span>
 
     <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="n">toString</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="s">"ListNode{"</span> <span class="o">+</span>
                 <span class="s">"value="</span> <span class="o">+</span> <span class="n">value</span> <span class="o">+</span>
                 <span class="sc">'}'</span><span class="o">;</span>
@@ -580,9 +857,9 @@ To represent list nodes we will use following Java class:</p>
 <p>Our algorithm will be represented by <code class="highlighter-rouge">CycleStart.find</code> method:</p>
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">CycleStart</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="n">CycleStart</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
+    <span class="kd">private</span> <span class="nf">CycleStart</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="n">ListNode</span> <span class="n">find</span><span class="o">(</span><span class="n">ListNode</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">ListNode</span> <span class="nf">find</span><span class="o">(</span><span class="n">ListNode</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
         <span class="c1">// TODO: Implement algorithm</span>
         <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
     <span class="o">}</span>
@@ -597,7 +874,7 @@ as an assertion library:</p>
 
     <span class="nd">@Parameterized</span><span class="o">.</span><span class="na">Parameters</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span>
         <span class="s">"testcase {index}: CycleStart_find_works_with(listSize={0}, cycleSize={1})"</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">[]&gt;</span> <span class="n">data</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">[]&gt;</span> <span class="nf">data</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="k">new</span> <span class="n">Object</span><span class="o">[][]</span> <span class="o">{</span>
         <span class="cm">/* LIST_SIZE    CYCLE_SIZE */</span>
 
@@ -624,13 +901,13 @@ as an assertion library:</p>
     <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">listSize</span><span class="o">;</span>
     <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">cycleSize</span><span class="o">;</span>
 
-    <span class="kd">public</span> <span class="n">CycleStartTest</span><span class="o">(</span><span class="kt">int</span> <span class="n">listSize</span><span class="o">,</span> <span class="kt">int</span> <span class="n">cycleSize</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">CycleStartTest</span><span class="o">(</span><span class="kt">int</span> <span class="n">listSize</span><span class="o">,</span> <span class="kt">int</span> <span class="n">cycleSize</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">listSize</span> <span class="o">=</span> <span class="n">listSize</span><span class="o">;</span>
         <span class="k">this</span><span class="o">.</span><span class="na">cycleSize</span> <span class="o">=</span> <span class="n">cycleSize</span><span class="o">;</span>
     <span class="o">}</span>
 
     <span class="nd">@Test</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">runTest</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">runTest</span><span class="o">()</span> <span class="o">{</span>
         <span class="n">ListWithCycle</span> <span class="n">testData</span> <span class="o">=</span> <span class="n">ListWithCycle</span><span class="o">.</span><span class="na">having</span><span class="o">()</span>
                 <span class="o">.</span><span class="na">listSize</span><span class="o">(</span><span class="n">listSize</span><span class="o">)</span>
                 <span class="o">.</span><span class="na">cycleSize</span><span class="o">(</span><span class="n">cycleSize</span><span class="o">)</span>
@@ -658,20 +935,20 @@ with cycle of given size:</p>
     <span class="kd">public</span> <span class="kd">final</span> <span class="n">ListNode</span> <span class="n">list</span><span class="o">;</span>
     <span class="kd">public</span> <span class="kd">final</span> <span class="n">ListNode</span> <span class="n">cycleStart</span><span class="o">;</span>
 
-    <span class="kd">private</span> <span class="n">ListWithCycle</span><span class="o">(</span><span class="n">ListNode</span> <span class="n">listHead</span><span class="o">,</span> <span class="n">ListNode</span> <span class="n">cycleStart</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">private</span> <span class="nf">ListWithCycle</span><span class="o">(</span><span class="n">ListNode</span> <span class="n">listHead</span><span class="o">,</span> <span class="n">ListNode</span> <span class="n">cycleStart</span><span class="o">)</span> <span class="o">{</span>
         <span class="k">this</span><span class="o">.</span><span class="na">list</span> <span class="o">=</span> <span class="n">listHead</span><span class="o">;</span>
         <span class="k">this</span><span class="o">.</span><span class="na">cycleStart</span> <span class="o">=</span> <span class="n">cycleStart</span><span class="o">;</span>
     <span class="o">}</span>
 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Builder</span> <span class="n">having</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="n">Builder</span><span class="o">();</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Builder</span> <span class="nf">having</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">Builder</span><span class="o">();</span>
     <span class="o">}</span>
 
     <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Builder</span> <span class="o">{</span>
         <span class="kd">private</span> <span class="kt">int</span> <span class="n">listSize</span><span class="o">;</span>
         <span class="kd">private</span> <span class="kt">int</span> <span class="n">cycleSize</span><span class="o">;</span>
 
-        <span class="kd">public</span> <span class="n">Builder</span> <span class="n">listSize</span><span class="o">(</span><span class="kt">int</span> <span class="n">listSize</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="n">Builder</span> <span class="nf">listSize</span><span class="o">(</span><span class="kt">int</span> <span class="n">listSize</span><span class="o">)</span> <span class="o">{</span>
             <span class="k">if</span> <span class="o">(</span><span class="n">listSize</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">"listSize must be &gt;= 0"</span><span class="o">);</span>
 
             <span class="k">this</span><span class="o">.</span><span class="na">listSize</span> <span class="o">=</span> <span class="n">listSize</span><span class="o">;</span>
@@ -679,7 +956,7 @@ with cycle of given size:</p>
             <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
         <span class="o">}</span>
 
-        <span class="kd">public</span> <span class="n">Builder</span> <span class="n">cycleSize</span><span class="o">(</span><span class="kt">int</span> <span class="n">cycleSize</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="n">Builder</span> <span class="nf">cycleSize</span><span class="o">(</span><span class="kt">int</span> <span class="n">cycleSize</span><span class="o">)</span> <span class="o">{</span>
             <span class="k">if</span> <span class="o">(</span><span class="n">cycleSize</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">"cycleSize must be &gt; 0"</span><span class="o">);</span>
             <span class="k">if</span> <span class="o">(</span><span class="n">cycleSize</span> <span class="o">&gt;</span> <span class="n">listSize</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">"cycleSize must be &lt;= listSize"</span><span class="o">);</span>
 
@@ -687,7 +964,7 @@ with cycle of given size:</p>
             <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
         <span class="o">}</span>
 
-        <span class="kd">public</span> <span class="n">ListWithCycle</span> <span class="n">create</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="n">ListWithCycle</span> <span class="nf">create</span><span class="o">()</span> <span class="o">{</span>
             <span class="n">List</span><span class="o">&lt;</span><span class="n">ListNode</span><span class="o">&gt;</span> <span class="n">nodes</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
             <span class="n">ListNode</span> <span class="n">prev</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
 
@@ -706,7 +983,7 @@ with cycle of given size:</p>
             <span class="n">ListNode</span> <span class="n">cycleStart</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">nodes</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">-</span> <span class="n">cycleSize</span><span class="o">);</span>
             <span class="n">tail</span><span class="o">.</span><span class="na">next</span> <span class="o">=</span> <span class="n">cycleStart</span><span class="o">;</span>
 
-            <span class="k">return</span> <span class="k">new</span> <span class="n">ListWithCycle</span><span class="o">(</span><span class="n">nodes</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="n">cycleStart</span><span class="o">);</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">ListWithCycle</span><span class="o">(</span><span class="n">nodes</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="n">cycleStart</span><span class="o">);</span>
         <span class="o">}</span>
     <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
@@ -723,7 +1000,7 @@ node N must be start of a cycle.</p>
 
 <p>This is implemented in Java as:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="n">ListNode</span> <span class="nf">find</span><span class="p">(</span><span class="n">ListNode</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="n">ListNode</span> <span class="nf">find</span><span class="o">(</span><span class="n">ListNode</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
     <span class="n">Map</span><span class="o">&lt;</span><span class="n">ListNode</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">visitedNodes</span> <span class="o">=</span>
                     <span class="k">new</span> <span class="n">IdentityHashMap</span><span class="o">&lt;</span><span class="n">ListNode</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;();</span>
 
@@ -761,7 +1038,7 @@ linked lists. The main idea is to have two pointers that traverse the same list.
 Singly linked list contains cycle if both pointers met. 
 This can be implemented in Java as:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">boolean</span> <span class="nf">hasCycle</span><span class="p">(</span><span class="n">ListNode</span> <span class="n">head</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">boolean</span> <span class="nf">hasCycle</span><span class="o">(</span><span class="n">ListNode</span> <span class="n">head</span><span class="o">)</span> <span class="o">{</span>
     <span class="n">ListNode</span> <span class="n">slow</span> <span class="o">=</span> <span class="n">head</span><span class="o">;</span>
     <span class="n">ListNode</span> <span class="n">fast</span> <span class="o">=</span> <span class="n">head</span><span class="o">;</span>
         
@@ -865,7 +1142,7 @@ First element of the cycle is a list head, so in this case our algorithm will wo
 
 <p>Now let’s move to implementation:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="n">ListNode</span> <span class="nf">find</span><span class="p">(</span><span class="n">ListNode</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="n">ListNode</span> <span class="nf">find</span><span class="o">(</span><span class="n">ListNode</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
     <span class="n">ListNode</span> <span class="n">slow</span> <span class="o">=</span> <span class="n">list</span><span class="o">;</span>
     <span class="n">ListNode</span> <span class="n">fast</span> <span class="o">=</span> <span class="n">list</span><span class="o">;</span>
 
@@ -904,7 +1181,7 @@ First element of the cycle is a list head, so in this case our algorithm will wo
 	<item>
 	  <title>Get day of week from date</title>
 	  <link>//get-day-of-week-from-date</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2016-06-15T02:00:00+02:00</pubDate>
 	  <guid>//get-day-of-week-from-date</guid>
 	  <description><![CDATA[
@@ -940,13 +1217,13 @@ account leap years.</p>
 
 <p>Testing for <a href="https://en.wikipedia.org/wiki/Leap_year#Algorithm">leap years is easy</a>:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">boolean</span> <span class="nf">isLeap</span><span class="p">(</span><span class="kt">int</span> <span class="n">year</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">boolean</span> <span class="nf">isLeap</span><span class="o">(</span><span class="kt">int</span> <span class="n">year</span><span class="o">)</span> <span class="o">{</span>
     <span class="k">return</span> <span class="o">(</span><span class="n">year</span> <span class="o">%</span> <span class="mi">4</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">year</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">||</span> <span class="o">(</span><span class="n">year</span> <span class="o">%</span> <span class="mi">400</span> <span class="o">==</span> <span class="mi">0</span><span class="o">);</span>
 <span class="o">}</span></code></pre></figure>
 
 <p>Now we can write <code class="highlighter-rouge">number_of_days_since_year_start</code> function:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">numberOfDaysSinceYearStart</span><span class="p">(</span><span class="kt">int</span> <span class="n">year</span><span class="o">,</span> <span class="kt">int</span> <span class="n">month</span><span class="o">,</span> <span class="kt">int</span> <span class="n">day</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">numberOfDaysSinceYearStart</span><span class="o">(</span><span class="kt">int</span> <span class="n">year</span><span class="o">,</span> <span class="kt">int</span> <span class="n">month</span><span class="o">,</span> <span class="kt">int</span> <span class="n">day</span><span class="o">)</span> <span class="o">{</span>
     <span class="c1">// (1) number of days in months: </span>
     <span class="c1">// [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]</span>
         
@@ -970,7 +1247,7 @@ account leap years.</p>
 
 <p>And finally we may implement <code class="highlighter-rouge">day_of_week</code> function:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeek</span><span class="p">(</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeek</span><span class="o">(</span>
     <span class="kt">int</span> <span class="n">dayOfWeek31DecPrevYear</span><span class="o">,</span> 
     <span class="kt">int</span> <span class="n">year</span><span class="o">,</span> <span class="kt">int</span> <span class="n">month</span><span class="o">,</span> <span class="kt">int</span> <span class="n">day</span><span class="o">)</span>
 <span class="o">{</span>
@@ -1016,7 +1293,7 @@ day_of_week = dayOfWeek(
 <p>Let’s start by implementing <code class="highlighter-rouge">number_of_days_in_years(year)</code> function that will return
 number of days since 31 December 1 BC up to 31 December of given <code class="highlighter-rouge">year</code>:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">numberOfDaysInYears</span><span class="p">(</span><span class="kt">int</span> <span class="n">year</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">numberOfDaysInYears</span><span class="o">(</span><span class="kt">int</span> <span class="n">year</span><span class="o">)</span> <span class="o">{</span>
     <span class="kt">int</span> <span class="n">normalDays</span> <span class="o">=</span> <span class="mi">365</span> <span class="o">*</span> <span class="n">year</span><span class="o">;</span>
 
     <span class="c1">// number of leap years = number of leap days</span>
@@ -1029,7 +1306,7 @@ number of days since 31 December 1 BC up to 31 December of given <code class="hi
 
 <p>And finally we may implement our <code class="highlighter-rouge">day_of_week</code> routine:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeek</span><span class="p">(</span><span class="kt">int</span> <span class="n">year</span><span class="o">,</span> <span class="kt">int</span> <span class="n">month</span><span class="o">,</span> <span class="kt">int</span> <span class="n">day</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeek</span><span class="o">(</span><span class="kt">int</span> <span class="n">year</span><span class="o">,</span> <span class="kt">int</span> <span class="n">month</span><span class="o">,</span> <span class="kt">int</span> <span class="n">day</span><span class="o">)</span> <span class="o">{</span>
     <span class="kt">int</span> <span class="n">dayOfWeek31Dec1BC</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="c1">// Sunday</span>
 
     <span class="kt">int</span> <span class="n">dayOfWeek31DecPrevYear</span> <span class="o">=</span> <span class="o">(</span>
@@ -1067,7 +1344,7 @@ that always uses Gregorian calendar:</p>
                         <span class="o">.</span><span class="na">getValue</span><span class="o">()</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
 
             <span class="k">if</span> <span class="o">(</span><span class="n">actual</span> <span class="o">!=</span> <span class="n">expected</span><span class="o">)</span>
-                <span class="k">throw</span> <span class="k">new</span> <span class="n">RuntimeException</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span>
+                <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span>
                         <span class="s">"failed for yyyy-mm-dd: %d-%d-%d, "</span> <span class="o">+</span> 
                         <span class="s">"expected: %d, actual: %d."</span><span class="o">,</span>
                         <span class="n">year</span><span class="o">,</span> <span class="n">m</span><span class="o">,</span> <span class="n">d</span><span class="o">,</span> <span class="n">expected</span><span class="o">,</span> <span class="n">actual</span><span class="o">));</span>
@@ -1083,7 +1360,7 @@ rest assured that our function works.</p>
 <p>Before we end this post let’s challenge ourselves one more time.
 Here is Tomohiko Sakamoto algorithm for computing day of week:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeek2</span><span class="p">(</span><span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">m</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeek2</span><span class="o">(</span><span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">m</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span>
 <span class="o">{</span>
     <span class="kt">int</span> <span class="n">t</span><span class="o">[]</span> <span class="o">=</span> <span class="o">{</span><span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">6</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">4</span><span class="o">};</span>
     <span class="n">y</span> <span class="o">-=</span> <span class="o">(</span><span class="n">m</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">)</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
@@ -1137,7 +1414,7 @@ for example:
 
 <p>Full algorithm looks like this:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeekBackwards</span><span class="p">(</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeekBackwards</span><span class="o">(</span>
         <span class="kt">int</span> <span class="n">dayOfWeek31DecCurrYear</span><span class="o">,</span> <span class="kt">int</span> <span class="n">year</span><span class="o">,</span> <span class="kt">int</span> <span class="n">month</span><span class="o">,</span> <span class="kt">int</span> <span class="n">day</span><span class="o">)</span> 
 <span class="o">{</span>
 <span class="c1">// number of days from last day of previous month to the year end</span>
@@ -1169,7 +1446,7 @@ for example:
 
 <p>Now we can combine our forward and backward approaches to create one simple algorithm:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeekComb</span><span class="p">(</span><span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">m</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeekComb</span><span class="o">(</span><span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">m</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
     <span class="kt">int</span> <span class="n">dayOfWeekDec31</span> <span class="o">=</span> <span class="o">(</span><span class="n">m</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">)</span>
             <span class="c1">// count from prev year</span>
             <span class="o">?</span> <span class="n">numberOfDaysInYears</span><span class="o">(</span><span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span>
@@ -1213,7 +1490,7 @@ Let’s start with statement:</p>
 <p>Next since <code class="highlighter-rouge">365*y % 7 == 1*y % 7</code> and <code class="highlighter-rouge">(a + b) % 7 == (a % 7 + b % 7) % 7</code> we can
 simplify further:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeekComb</span><span class="p">(</span><span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">m</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeekComb</span><span class="o">(</span><span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">m</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
     <span class="n">y</span> <span class="o">-=</span> <span class="o">(</span><span class="n">m</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">)</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
     <span class="kt">int</span> <span class="n">dayOfWeekDec31</span> <span class="o">=</span> <span class="o">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">y</span><span class="o">/</span><span class="mi">4</span> <span class="o">-</span> <span class="n">y</span><span class="o">/</span><span class="mi">100</span> <span class="o">+</span> <span class="n">y</span><span class="o">/</span><span class="mi">400</span><span class="o">)</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
 
@@ -1227,7 +1504,7 @@ simplify further:</p>
 
 <p>Finally because <code class="highlighter-rouge">31 % 7 == 3</code>, and combining all additions into single expression we get:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeekComb</span><span class="p">(</span><span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">m</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeekComb</span><span class="o">(</span><span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">m</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
     <span class="kt">int</span><span class="o">[]</span> <span class="n">days</span> <span class="o">=</span> <span class="o">{</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span>  <span class="mi">2</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">6</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">4</span> <span class="o">};</span>
 
     <span class="n">y</span> <span class="o">-=</span> <span class="o">(</span><span class="n">m</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">)</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>

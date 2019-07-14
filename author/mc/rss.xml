@@ -5,16 +5,16 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>https://marcin-chwedczuk.github.io/</link>
-   <description>A place where I can share my thoughts about programming</description>
+   <link>http://localhost:4000</link>
+   <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> marcin-chwedczuk</managingEditor>
+   <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Odroid GO Review</title>
 	  <link>//odroid-go-review</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2019-04-14T02:00:01+02:00</pubDate>
 	  <guid>//odroid-go-review</guid>
 	  <description><![CDATA[
@@ -119,7 +119,7 @@ definitely buy this device. You will not be disappointed!</p>
 	<item>
 	  <title>Kensington Orbit Trackball review</title>
 	  <link>//kensington-orbit-trackball-review</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2019-04-14T02:00:00+02:00</pubDate>
 	  <guid>//kensington-orbit-trackball-review</guid>
 	  <description><![CDATA[
@@ -179,9 +179,9 @@ Fortunately this is
 just add to your <code class="highlighter-rouge">~/.profile</code>:</p>
 
 <figure class="highlight"><pre><code class="language-bash" data-lang="bash">xinput <span class="se">\</span>
-  --set-prop <span class="se">\</span>
-  --type<span class="o">=</span>int <span class="se">\</span>
-  --format<span class="o">=</span>8 <span class="se">\</span>
+  <span class="nt">--set-prop</span> <span class="se">\</span>
+  <span class="nt">--type</span><span class="o">=</span>int <span class="se">\</span>
+  <span class="nt">--format</span><span class="o">=</span>8 <span class="se">\</span>
   <span class="s2">"Primax Kensington Eagle Trackball"</span> <span class="se">\</span>
   <span class="s2">"Evdev Middle Button Emulation"</span> <span class="se">\</span>
   1</code></pre></figure>
@@ -225,7 +225,7 @@ and I do not plan to return to a mouse anytime soon.</p>
 	<item>
 	  <title>Reduce cognitive load for readers of your code</title>
 	  <link>//reduce-cognitive-load</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2019-03-05T01:00:00+01:00</pubDate>
 	  <guid>//reduce-cognitive-load</guid>
 	  <description><![CDATA[
@@ -237,8 +237,8 @@ type for representing file sizes:</p>
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">struct</span> <span class="nc">FileSize</span> <span class="p">{</span>
    <span class="k">public</span> <span class="k">static</span> <span class="n">FileSize</span> <span class="nf">FromBytes</span><span class="p">(</span><span class="kt">ulong</span> <span class="n">bytes</span><span class="p">)</span>
        <span class="p">=&gt;</span> <span class="k">new</span> <span class="nf">FileSize</span><span class="p">(</span><span class="n">bytes</span><span class="p">);</span>
-   <span class="c1">// Other factory methods...
-</span>   
+   <span class="c1">// Other factory methods...</span>
+   
    <span class="k">private</span> <span class="kt">ulong</span> <span class="n">_bytes</span><span class="p">;</span>
    <span class="k">public</span> <span class="kt">ulong</span> <span class="n">TotalBytes</span>
        <span class="p">=&gt;</span> <span class="n">_bytes</span><span class="p">;</span>
@@ -246,27 +246,27 @@ type for representing file sizes:</p>
    <span class="k">public</span> <span class="nf">FileSize</span><span class="p">(</span><span class="kt">ulong</span> <span class="n">bytes</span><span class="p">)</span> <span class="p">{</span>
        <span class="n">_bytes</span> <span class="p">=</span> <span class="n">bytes</span><span class="p">;</span>
    <span class="p">}</span>
-   <span class="c1">// Other stuff, equatable, comparable, blah...
-</span>   
+   <span class="c1">// Other stuff, equatable, comparable, blah...</span>
+   
    <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="nf">ToString</span><span class="p">()</span>
-       <span class="p">=&gt;</span> <span class="err">$</span><span class="s">"{_bytes:##,#B}"</span><span class="p">;</span>
+       <span class="p">=&gt;</span> <span class="s">$"</span><span class="p">{</span><span class="n">_bytes</span><span class="p">:</span><span class="err">##</span><span class="p">,</span><span class="err">#</span><span class="n">B</span><span class="p">}</span><span class="s">"</span><span class="p">;</span>
    
    <span class="k">public</span> <span class="k">static</span> <span class="n">FileSize</span> <span class="k">operator</span><span class="p">+(</span><span class="n">FileSize</span> <span class="n">left</span><span class="p">,</span> <span class="n">FileSize</span> <span class="n">right</span><span class="p">)</span>
        <span class="p">=&gt;</span> <span class="k">new</span> <span class="nf">FileSize</span><span class="p">(</span><span class="k">checked</span><span class="p">(</span><span class="n">left</span><span class="p">.</span><span class="n">_bytes</span> <span class="p">+</span> <span class="n">right</span><span class="p">.</span><span class="n">_bytes</span><span class="p">));</span>
-   <span class="c1">// Other operators...
-</span><span class="p">}</span></code></pre></figure>
+   <span class="c1">// Other operators...</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>Yet when it came to computing a total size of set of files I saw
 code like this:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">totalSize</span> <span class="p">=</span> <span class="n">fileSizes</span><span class="p">.</span><span class="nf">Aggregate</span><span class="p">((</span><span class="n">acc</span><span class="p">,</span> <span class="n">curr</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">acc</span> <span class="p">+</span> <span class="n">curr</span><span class="p">);</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">totalSize</span> <span class="p">=</span> <span class="n">fileSizes</span><span class="p">.</span><span class="nf">Aggregate</span><span class="p">((</span><span class="n">acc</span><span class="p">,</span> <span class="n">curr</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">acc</span> <span class="p">+</span> <span class="n">curr</span><span class="p">);</span></code></pre></figure>
 
 <p>What is wrong with this code?
 It forces readers to concentrate on irrelevant details like how
 to sum a list of <code class="highlighter-rouge">FileSize</code>s. As a programmer, reading a lot
 of code I would prefer to see something like:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">totalSize</span> <span class="p">=</span> <span class="n">fileSizes</span><span class="p">.</span><span class="nf">Sum</span><span class="p">();</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">totalSize</span> <span class="p">=</span> <span class="n">fileSizes</span><span class="p">.</span><span class="nf">Sum</span><span class="p">();</span></code></pre></figure>
 
 <p>Which is shorter, easier to read and allows me to concentrate
 on the actual business problem that I try to solve.</p>
@@ -274,7 +274,7 @@ on the actual business problem that I try to solve.</p>
 <p>As an another example, imagine what would happen if people
 started writing:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">listOfNumbers</span> <span class="p">=</span> <span class="n">Enumerable</span><span class="p">.</span><span class="nf">Range</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">10</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">listOfNumbers</span> <span class="p">=</span> <span class="n">Enumerable</span><span class="p">.</span><span class="nf">Range</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">10</span><span class="p">)</span>
 	<span class="p">.</span><span class="nf">Aggregate</span><span class="p">(</span><span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;(),</span> <span class="p">(</span><span class="n">list</span><span class="p">,</span> <span class="n">el</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">{</span>
 		<span class="n">list</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">el</span><span class="p">);</span>
 		<span class="k">return</span> <span class="n">list</span><span class="p">;</span>
@@ -282,7 +282,7 @@ started writing:</p>
 
 <p>instead of:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">listOfNumbers</span> <span class="p">=</span> <span class="n">Enumerable</span><span class="p">.</span><span class="nf">Range</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">10</span><span class="p">)</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">listOfNumbers</span> <span class="p">=</span> <span class="n">Enumerable</span><span class="p">.</span><span class="nf">Range</span><span class="p">(</span><span class="m">0</span><span class="p">,</span> <span class="m">10</span><span class="p">)</span>
 	<span class="p">.</span><span class="nf">ToList</span><span class="p">();</span></code></pre></figure>
 
 <p>I hope that you agree with me that it would not be nice…</p>
@@ -329,7 +329,7 @@ also hides irrelevant details. Yay!</p>
 	<item>
 	  <title>Why using PESEL as a password is a very bad idea</title>
 	  <link>//why-using-pesel-as-a-password-is-a-very-bad-idea</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2019-02-25T01:00:00+01:00</pubDate>
 	  <guid>//why-using-pesel-as-a-password-is-a-very-bad-idea</guid>
 	  <description><![CDATA[
@@ -407,18 +407,18 @@ these commands on macOS or Windows.</p>
 
 <p>First we need to install <a href="https://www.7-zip.org/download.html">7-zip</a>:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">sudo apt-get install p7zip-full p7zip-rar</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">sudo </span>apt-get install p7zip-full p7zip-rar</code></pre></figure>
 
 <p>Then we can create an encrypted archive:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">7z a -m0<span class="o">=</span>lzma2 -mx<span class="o">=</span>9 -p29032502498 secret.7z secret.txt </code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">7z a <span class="nt">-m0</span><span class="o">=</span>lzma2 <span class="nt">-mx</span><span class="o">=</span>9 <span class="nt">-p29032502498</span> secret.7z secret.txt </code></pre></figure>
 
 <p>with <code class="highlighter-rouge">29032502498</code> PESEL as a password.</p>
 
 <p>Just to make sure that the archive is indeed encrypted,
 we execute:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>7z l -slt secret.7z
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>7z l <span class="nt">-slt</span> secret.7z
 
 <span class="o">(</span>... skipped ...<span class="o">)</span>
 Encrypted <span class="o">=</span> +
@@ -437,11 +437,11 @@ I compiled John without OpenCL and REXGEN support, YMMV though.</p>
 <p>To allow John to crack <code class="highlighter-rouge">7z</code> file, first we must extract a hash from
 it:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">./john/run/7z2john.pl secret.7z &gt; secret.7z.hash</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">./john/run/7z2john.pl secret.7z <span class="o">&gt;</span> secret.7z.hash</code></pre></figure>
 
 <p>To make this Perl script work, I had to install this library:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">sudo apt-get install libcompress-raw-lzma-perl</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">sudo </span>apt-get install libcompress-raw-lzma-perl</code></pre></figure>
 
 <p>Then I generated a suitable list of PESEL numbers
 (people aged 20-65, males) using
@@ -453,10 +453,10 @@ We are going to use it as a John the Ripper wordlist.</p>
 
 <p>Now we can start cracking:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">./john/run/john --wordlist<span class="o">=</span>pesels.txt secret.7z.hash
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">./john/run/john <span class="nt">--wordlist</span><span class="o">=</span>pesels.txt secret.7z.hash
 
 <span class="c"># Found passwords are saved in john.pot file</span>
-cat ./john/run/john.pot</code></pre></figure>
+<span class="nb">cat</span> ./john/run/john.pot</code></pre></figure>
 
 <p>I performed two test. First I tried to crack a small
 340B archive that you can find <a href="https://github.com/marcin-chwedczuk/blog-pesel-password-bad-idea/blob/master/secret.7z">here</a>.
@@ -503,7 +503,7 @@ I encrypted it with a random PESEL generated using <a href="https://bogus-z-pols
 	<item>
 	  <title>FluentAssertions and code formatting</title>
 	  <link>//fluent-assertions-and-code-formatting</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2019-02-10T01:00:00+01:00</pubDate>
 	  <guid>//fluent-assertions-and-code-formatting</guid>
 	  <description><![CDATA[
@@ -515,11 +515,11 @@ For example, for this failing test:</p>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">add_returns_sum_of_its_arguments</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// Arrange
-</span>    <span class="n">var</span> <span class="n">service</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ServiceA</span><span class="p">();</span>
+    <span class="c1">// Arrange</span>
+    <span class="kt">var</span> <span class="n">service</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ServiceA</span><span class="p">();</span>
     
-    <span class="c1">// Assert
-</span>    <span class="n">service</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">).</span><span class="nf">Should</span><span class="p">().</span><span class="nf">Be</span><span class="p">(</span><span class="m">3</span><span class="p">);</span>
+    <span class="c1">// Assert</span>
+    <span class="n">service</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">).</span><span class="nf">Should</span><span class="p">().</span><span class="nf">Be</span><span class="p">(</span><span class="m">3</span><span class="p">);</span>
 <span class="p">}</span></code></pre></figure>
 
 <p>FluentAssertions generates a message:</p>
@@ -534,11 +534,11 @@ broke the line because it got too long:</p>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">add_returns_sum_of_its_arguments</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// Arrange
-</span>    <span class="n">var</span> <span class="n">service</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ServiceA</span><span class="p">();</span>
+    <span class="c1">// Arrange</span>
+    <span class="kt">var</span> <span class="n">service</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ServiceA</span><span class="p">();</span>
 
-    <span class="c1">// Assert
-</span>    <span class="n">service</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">)</span>
+    <span class="c1">// Assert</span>
+    <span class="n">service</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">)</span>
         <span class="p">.</span><span class="nf">Should</span><span class="p">().</span><span class="nf">Be</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="n">because</span><span class="p">:</span> <span class="s">"three is sum of one and two"</span><span class="p">);</span>
 <span class="p">}</span></code></pre></figure>
 
@@ -555,11 +555,11 @@ tested expression:</p>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">add_returns_sum_of_arguments</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// Arrange
-</span>    <span class="n">var</span> <span class="n">service</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ServiceA</span><span class="p">();</span>
+    <span class="c1">// Arrange</span>
+    <span class="kt">var</span> <span class="n">service</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">ServiceA</span><span class="p">();</span>
 
-    <span class="c1">// Assert
-</span>    <span class="n">service</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">)</span><span class="cm">/*abra cadabra*/</span><span class="p">.</span><span class="nf">Should</span><span class="p">()</span>
+    <span class="c1">// Assert</span>
+    <span class="n">service</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">)</span><span class="cm">/*abra cadabra*/</span><span class="p">.</span><span class="nf">Should</span><span class="p">()</span>
         <span class="p">.</span><span class="nf">Be</span><span class="p">(</span><span class="m">3</span><span class="p">,</span> <span class="n">because</span><span class="p">:</span> <span class="s">"three is sum of one and two"</span><span class="p">);</span>
 <span class="p">}</span></code></pre></figure>
 
@@ -592,18 +592,18 @@ skimming it…</p>
 	<item>
 	  <title>Spy JVM network traffic with Owasp ZAP proxy</title>
 	  <link>//spy-jvm-network-traffic-with-owasp-zap</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2019-01-24T01:00:00+01:00</pubDate>
 	  <guid>//spy-jvm-network-traffic-with-owasp-zap</guid>
 	  <description><![CDATA[
 	     <p>We start by downloading <a href="https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project">Owasp ZAP proxy</a>:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span><span class="c"># Download and unpack...</span>
-<span class="gp">$ </span>curl -O -J -L https://github.com/zaproxy/zaproxy/releases/download/2.7.0/ZAP_2.7.0_Linux.tar.gz
-<span class="gp">$ </span>tar xvzf ZAP_2.7.0_Linux.tar.gz
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span><span class="c"># Download and unpack...</span>
+<span class="nv">$ </span>curl <span class="nt">-O</span> <span class="nt">-J</span> <span class="nt">-L</span> https://github.com/zaproxy/zaproxy/releases/download/2.7.0/ZAP_2.7.0_Linux.tar.gz
+<span class="nv">$ </span><span class="nb">tar </span>xvzf ZAP_2.7.0_Linux.tar.gz
 
-<span class="gp">$ </span><span class="c"># Run ZAP proxy...</span>
-<span class="gp">$ </span>./ZAP_2.7.0/zap.sh  </code></pre></figure>
+<span class="nv">$ </span><span class="c"># Run ZAP proxy...</span>
+<span class="nv">$ </span>./ZAP_2.7.0/zap.sh  </code></pre></figure>
 
 <p>By default ZAP listens on <code class="highlighter-rouge">localhost:8080</code>. You can change default address
 and port by going into Tools -&gt; Options -&gt; Local Proxies tab:
@@ -612,7 +612,7 @@ and port by going into Tools -&gt; Options -&gt; Local Proxies tab:
 <p>To test that network traffic interception works, 
 we will use a simple Java app:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
     <span class="n">CloseableHttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClientBuilder</span><span class="o">.</span><span class="na">create</span><span class="o">()</span>
             <span class="o">.</span><span class="na">useSystemProperties</span><span class="o">()</span>
             <span class="o">.</span><span class="na">build</span><span class="o">();</span>
@@ -644,18 +644,18 @@ we will use a simple Java app:</p>
 <p>If we, now, run our application, we will notice that ZAP did not
 intercept any traffic:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>java -jar ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar 
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>java <span class="nt">-jar</span> ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar 
 HTTP/1.1 200 OK</code></pre></figure>
 
 <p>Indeed right now our application does not know that it should use
 a proxy server. We may force it to use a proxy via JVM command line
 parameters:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>java -Dhttp.proxyHost<span class="o">=</span>127.0.0.1 <span class="se">\</span>
- -Dhttp.proxyPort<span class="o">=</span>8080 <span class="se">\</span>
- -Dhttps.proxyHost<span class="o">=</span>127.0.0.1 <span class="se">\</span>
- -Dhttps.proxyPort<span class="o">=</span>8080 <span class="se">\</span>
- -jar ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar </code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>java <span class="nt">-Dhttp</span>.proxyHost<span class="o">=</span>127.0.0.1 <span class="se">\</span>
+ <span class="nt">-Dhttp</span>.proxyPort<span class="o">=</span>8080 <span class="se">\</span>
+ <span class="nt">-Dhttps</span>.proxyHost<span class="o">=</span>127.0.0.1 <span class="se">\</span>
+ <span class="nt">-Dhttps</span>.proxyPort<span class="o">=</span>8080 <span class="se">\</span>
+ <span class="nt">-jar</span> ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar </code></pre></figure>
 
 <p>or by dynamicaly setting system properties in code:</p>
 
@@ -675,7 +675,7 @@ You can remove previously recorded requests in ZAP by pressing <code class="high
 proxy settings by default.
 If we create our <code class="highlighter-rouge">HttpClient</code> using <code class="highlighter-rouge">create()</code> method:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
     <span class="n">CloseableHttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClientBuilder</span><span class="o">.</span><span class="na">create</span><span class="o">()</span>
             <span class="o">.</span><span class="na">build</span><span class="o">();</span>
 
@@ -704,27 +704,27 @@ installs <code class="highlighter-rouge">proxychains</code> and not <code class=
 To install <code class="highlighter-rouge">proxychains-ng</code> I needed to download sources from GitHub
 and compile them myself:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span><span class="c"># Checkout tag v4.13</span>
-<span class="gp">$ </span>git clone --branch v4.13 git@github.com:rofl0r/proxychains-ng.git
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span><span class="c"># Checkout tag v4.13</span>
+<span class="nv">$ </span>git clone <span class="nt">--branch</span> v4.13 git@github.com:rofl0r/proxychains-ng.git
 
-<span class="gp">$ </span><span class="nb">cd </span>proxychains-ng
-<span class="gp">$ </span>./configure
-<span class="gp">$ </span><span class="c"># If there are no errors from configure script</span>
-<span class="gp">$ </span>make
-<span class="gp">$ </span>./proxychains4 --help
+<span class="nv">$ </span><span class="nb">cd </span>proxychains-ng
+<span class="nv">$ </span>./configure
+<span class="nv">$ </span><span class="c"># If there are no errors from configure script</span>
+<span class="nv">$ </span>make
+<span class="nv">$ </span>./proxychains4 <span class="nt">--help</span>
 
-Usage:  ./proxychains4 -q -f config_file program_name <span class="o">[</span>arguments]
-    -q makes proxychains quiet - this overrides the config setting
-    -f allows one to manually specify a configfile to use
+Usage:  ./proxychains4 <span class="nt">-q</span> <span class="nt">-f</span> config_file program_name <span class="o">[</span>arguments]
+    <span class="nt">-q</span> makes proxychains quiet - this overrides the config setting
+    <span class="nt">-f</span> allows one to manually specify a configfile to use
     <span class="k">for </span>example : proxychains telnet somehost.com
 More <span class="nb">help </span><span class="k">in </span>README file
 
-<span class="gp">$ </span><span class="c"># Install system wide...</span>
-<span class="gp">$ </span>sudo make install</code></pre></figure>
+<span class="nv">$ </span><span class="c"># Install system wide...</span>
+<span class="nv">$ </span><span class="nb">sudo </span>make install</code></pre></figure>
 
 <p>We also need to change default <code class="highlighter-rouge">proxychains-ng</code> configuration:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">sudo vim /etc/proxychains.conf
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">sudo </span>vim /etc/proxychains.conf
 
 <span class="c"># Comment out line:</span>
 <span class="c"># proxy_dns</span>
@@ -735,7 +735,7 @@ http 127.0.0.1 8080</code></pre></figure>
 
 <p>Now if we run our application using <code class="highlighter-rouge">proxychains</code>:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span>proxychains4 java -jar ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar 
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>proxychains4 java <span class="nt">-jar</span> ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar 
 <span class="o">[</span>proxychains] config file found: /etc/proxychains.conf
 <span class="o">[</span>proxychains] preloading /usr/local/lib/libproxychains4.so
 <span class="o">[</span>proxychains] DLL init: proxychains-ng 4.13-git-10-g1198857
@@ -753,7 +753,7 @@ not be proxied at all.</p>
 <p>So far, so good, but what will happen if we try to intercept
 HTTPS traffic from a new, more secure, example:</p>
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="p">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
     <span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"http.proxyHost"</span><span class="o">,</span> <span class="s">"127.0.0.1"</span><span class="o">);</span>
     <span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"http.proxyPort"</span><span class="o">,</span> <span class="s">"8080"</span><span class="o">);</span>
     <span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"https.proxyHost"</span><span class="o">,</span> <span class="s">"127.0.0.1"</span><span class="o">);</span>
@@ -797,21 +797,21 @@ Don’t forget to click OK.</p>
 
 <p>Then add ZAP root certificate to Java keystore:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span><span class="nb">cd</span> <span class="nv">$JAVA_HOME</span>/jre/lib/security
-<span class="gp">$ </span><span class="nb">pwd</span>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span><span class="nb">cd</span> <span class="nv">$JAVA_HOME</span>/jre/lib/security
+<span class="nv">$ </span><span class="nb">pwd</span>
 /usr/lib/jvm/java-8-oracle/jre/lib/security
-<span class="gp">$ </span><span class="c"># You should see cacerts file in this directory.</span>
+<span class="nv">$ </span><span class="c"># You should see cacerts file in this directory.</span>
 
-<span class="gp">$ </span><span class="c"># Create a backup</span>
-<span class="gp">$ </span>sudo cp cacerts cacerts.bakup2019-01-26
+<span class="nv">$ </span><span class="c"># Create a backup</span>
+<span class="nv">$ </span><span class="nb">sudo </span>cp cacerts cacerts.bakup2019-01-26
 
-<span class="gp">$ </span><span class="c"># Add certificate to the store</span>
-<span class="gp">$ </span>sudo keytool -importcert <span class="se">\</span>
- -alias zap-proxy.org <span class="se">\</span>
- -file ~/owasp_zap_root_ca.cer <span class="se">\</span>
- -keystore cacerts
-<span class="gp">$ </span><span class="c"># When asked about keystore password </span>
-<span class="gp">$ </span><span class="c"># write: changeit (the default password)</span></code></pre></figure>
+<span class="nv">$ </span><span class="c"># Add certificate to the store</span>
+<span class="nv">$ </span><span class="nb">sudo </span>keytool <span class="nt">-importcert</span> <span class="se">\</span>
+ <span class="nt">-alias</span> zap-proxy.org <span class="se">\</span>
+ <span class="nt">-file</span> ~/owasp_zap_root_ca.cer <span class="se">\</span>
+ <span class="nt">-keystore</span> cacerts
+<span class="nv">$ </span><span class="c"># When asked about keystore password </span>
+<span class="nv">$ </span><span class="c"># write: changeit (the default password)</span></code></pre></figure>
 
 <p>If we run our app again, we will be able to intercept an HTTPS request:
 <img src="assets/images/2019-01-25/intercept_https.png" alt="Intercepted HTTPS call" /></p>
@@ -825,17 +825,17 @@ it works this way…</p>
 <p><strong>For security reasons</strong> after you finished your debugging session,
 you should remove ZAP certificate from Java keystore:</p>
 
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="gp">$ </span><span class="nb">cd</span> <span class="nv">$JAVA_HOME</span>/jre/lib/security
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span><span class="nb">cd</span> <span class="nv">$JAVA_HOME</span>/jre/lib/security
 
-<span class="gp">$ </span><span class="c"># Make sure you see your cert</span>
-<span class="gp">$ </span>sudo keytool -list -v -keystore cacerts | grep zap-proxy.org
+<span class="nv">$ </span><span class="c"># Make sure you see your cert</span>
+<span class="nv">$ </span><span class="nb">sudo </span>keytool <span class="nt">-list</span> <span class="nt">-v</span> <span class="nt">-keystore</span> cacerts | <span class="nb">grep </span>zap-proxy.org
 Enter keystore password:  changeit
 
-<span class="gp">$ </span><span class="c"># Remove it</span>
-<span class="gp">$ </span>sudo keytool -delete -alias zap-proxy.org -keystore cacerts
+<span class="nv">$ </span><span class="c"># Remove it</span>
+<span class="nv">$ </span><span class="nb">sudo </span>keytool <span class="nt">-delete</span> <span class="nt">-alias</span> zap-proxy.org <span class="nt">-keystore</span> cacerts
 
-<span class="gp">$ </span><span class="c"># Make sure it's gone</span>
-<span class="gp">$ </span>sudo keytool -list -v -keystore cacerts | grep zap-proxy.org
+<span class="nv">$ </span><span class="c"># Make sure it's gone</span>
+<span class="nv">$ </span><span class="nb">sudo </span>keytool <span class="nt">-list</span> <span class="nt">-v</span> <span class="nt">-keystore</span> cacerts | <span class="nb">grep </span>zap-proxy.org
 Enter keystore password:  changeit</code></pre></figure>
 
 <p>Always generate a new ZAP proxy certificate
@@ -850,7 +850,7 @@ make entire process more convenient.</p>
 	<item>
 	  <title>ReadOnly does not mean Immutable</title>
 	  <link>//read-only-does-not-mean-immutable</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2019-01-06T01:00:00+01:00</pubDate>
 	  <guid>//read-only-does-not-mean-immutable</guid>
 	  <description><![CDATA[
@@ -863,9 +863,9 @@ value object classes:</p>
     <span class="k">public</span> <span class="nf">Method</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">Name</span> <span class="p">=</span> <span class="n">name</span><span class="p">;</span>
     <span class="p">}</span>
-    <span class="c1">// Equals, GetHashCode, ToString skipped
-</span>    <span class="c1">// to save space.
-</span><span class="p">}</span>
+    <span class="c1">// Equals, GetHashCode, ToString skipped</span>
+    <span class="c1">// to save space.</span>
+<span class="p">}</span>
 <span class="k">public</span> <span class="k">class</span> <span class="nc">TypedArgument</span> <span class="p">{</span>
     <span class="k">public</span> <span class="n">Type</span> <span class="n">Type</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
     <span class="k">public</span> <span class="kt">object</span> <span class="n">Value</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
@@ -882,8 +882,8 @@ value object classes:</p>
         <span class="n">IReadOnlyList</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;</span> <span class="n">args</span><span class="p">)</span>
     <span class="p">{</span>
         <span class="n">CalledMethod</span> <span class="p">=</span> <span class="n">calledMethod</span><span class="p">;</span>
-        <span class="c1">// NOTICE: No defensive copy.
-</span>        <span class="n">PassedArguments</span> <span class="p">=</span> <span class="n">args</span><span class="p">;</span>
+        <span class="c1">// NOTICE: No defensive copy.</span>
+        <span class="n">PassedArguments</span> <span class="p">=</span> <span class="n">args</span><span class="p">;</span>
     <span class="p">}</span>
 <span class="p">}</span></code></pre></figure>
 
@@ -913,12 +913,12 @@ called <code class="highlighter-rouge">MethodCallSpy</code>:</p>
     <span class="p">}</span>
 
     <span class="k">public</span> <span class="k">void</span> <span class="nf">AddMethodCall</span><span class="p">(</span><span class="n">Method</span> <span class="n">method</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">var</span> <span class="n">methodCall</span> <span class="p">=</span> 
+        <span class="kt">var</span> <span class="n">methodCall</span> <span class="p">=</span> 
             <span class="k">new</span> <span class="nf">MethodCall</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">_currentArguments</span><span class="p">);</span>
         <span class="n">_methodCalls</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">methodCall</span><span class="p">);</span>
 
-        <span class="c1">// NOTICE: Old List&lt;T&gt; is not modified.
-</span>        <span class="n">_currentArguments</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;();</span>
+        <span class="c1">// NOTICE: Old List&lt;T&gt; is not modified.</span>
+        <span class="n">_currentArguments</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;();</span>
     <span class="p">}</span>
 <span class="p">}</span></code></pre></figure>
 
@@ -935,19 +935,19 @@ Yes, I know, I know
 <a href="https://xkcd.com/1691/">“premature optimization is the root of all evil”</a>
 but this was my quick’n’dirty pet project and I just cannot resist:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// readonly added.
-</span><span class="k">private</span> <span class="k">readonly</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;</span> <span class="n">_currentArguments</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// readonly added.</span>
+<span class="k">private</span> <span class="k">readonly</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;</span> <span class="n">_currentArguments</span>
     <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;();</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">AddMethodCall_AfterRefactoring</span><span class="p">(</span><span class="n">Method</span> <span class="n">method</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Assumes that MethodCall will make a defensive copy
-</span>    <span class="c1">// of _currentArguments list.
-</span>    <span class="n">var</span> <span class="n">methodCall</span> <span class="p">=</span> 
+    <span class="c1">// Assumes that MethodCall will make a defensive copy</span>
+    <span class="c1">// of _currentArguments list.</span>
+    <span class="kt">var</span> <span class="n">methodCall</span> <span class="p">=</span> 
         <span class="k">new</span> <span class="nf">MethodCall</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">_currentArguments</span><span class="p">);</span>
 
     <span class="n">_methodCalls</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">methodCall</span><span class="p">);</span>
 
-    <span class="c1">// NOTICE: We use clear instead of creating a new list
-</span>    <span class="n">_currentArguments</span><span class="p">.</span><span class="nf">Clear</span><span class="p">();</span>
+    <span class="c1">// NOTICE: We use clear instead of creating a new list</span>
+    <span class="n">_currentArguments</span><span class="p">.</span><span class="nf">Clear</span><span class="p">();</span>
 <span class="p">}</span></code></pre></figure>
 
 <p>Of course I also made a lot of other refactorings without
@@ -974,9 +974,9 @@ For example if a method is declared like this:</p>
 <p>We can be sure, that it will not attempt to modify
 the list that we are going to pass to it:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span> <span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span> <span class="p">};</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span> <span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span> <span class="p">};</span>
 <span class="nf">ProcessList</span><span class="p">(</span><span class="n">list</span><span class="p">);</span>
-<span class="p">//</span> <span class="n">still</span><span class="p">:</span> <span class="n">list</span> <span class="p">==</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span> <span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span> <span class="p">}</span></code></pre></figure>
+<span class="c1">// still: list == new List&lt;string&gt; { "foo", "bar" }</span></code></pre></figure>
 
 <p>Of course <code class="highlighter-rouge">ProcessList</code> method may be
 implemented in an evil way:</p>
@@ -990,19 +990,19 @@ method, that returns a <code class="highlighter-rouge">List&lt;T&gt;</code> inst
 wrapped in a <code class="highlighter-rouge">ReadOnlyCollection&lt;T&gt;</code> object
 (<a href="https://github.com/dotnet/corefx/blob/master/src/Common/src/CoreLib/System/Collections/Generic/List.cs#L251">source code</a>).</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span> <span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span> <span class="p">};</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span> <span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span> <span class="p">};</span>
 <span class="nf">ProcessList</span><span class="p">(</span><span class="n">list</span><span class="p">.</span><span class="nf">AsReadOnly</span><span class="p">());</span>
-<span class="c1">// Our list can be modified now
-// only by using reflection
-// to get access to private fields
-</span><span class="p">//</span> <span class="n">of</span> <span class="n">ReadOnlyCollection</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="k">class</span><span class="err">.</span></code></pre></figure>
+<span class="c1">// Our list can be modified now</span>
+<span class="c1">// only by using reflection</span>
+<span class="c1">// to get access to private fields</span>
+<span class="c1">// of ReadOnlyCollection&lt;T&gt; class.</span></code></pre></figure>
 
 <p>On the other hand receivers of <code class="highlighter-rouge">IReadOnlyList&lt;T&gt;</code> arguments
 are not protected at all. Consider this short program:</p>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">ReadonlyButNotForYou</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">var</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span> <span class="p">};</span>
+    <span class="kt">var</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span> <span class="p">};</span>
 
     <span class="kt">int</span> <span class="nf">extraInt</span><span class="p">()</span> <span class="p">{</span>
         <span class="n">list</span><span class="p">[</span><span class="m">0</span><span class="p">]</span> <span class="p">=</span> <span class="m">42</span><span class="p">;</span>
@@ -1016,8 +1016,8 @@ are not protected at all. Consider this short program:</p>
     <span class="kt">int</span> <span class="n">tmp</span> <span class="p">=</span> <span class="nf">extraInt</span><span class="p">();</span>
     <span class="kt">int</span> <span class="n">firstAgain</span> <span class="p">=</span> <span class="n">ints</span><span class="p">.</span><span class="nf">First</span><span class="p">();</span>
 
-    <span class="n">Assert</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">firstAgain</span><span class="p">);</span> <span class="c1">// fails
-</span><span class="p">}</span></code></pre></figure>
+    <span class="n">Assert</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">firstAgain</span><span class="p">);</span> <span class="c1">// fails</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>It demonstrates that <code class="highlighter-rouge">IReadOnlyList&lt;T&gt;</code> can change even
 during duration of a single method!</p>
@@ -1083,7 +1083,7 @@ before using it (all links to GitHub):</p>
 	<item>
 	  <title>Random thoughts on Maybe</title>
 	  <link>//random-thoughts-on-maybe</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2019-01-01T01:00:00+01:00</pubDate>
 	  <guid>//random-thoughts-on-maybe</guid>
 	  <description><![CDATA[
@@ -1112,18 +1112,18 @@ method may return <code class="highlighter-rouge">null</code> instead of an obje
 Some of them used special naming conventions or 
 comments, for example:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// Naming convention and XML documentation
-// comments in action.
-</span><span class="k">public</span> <span class="k">interface</span> <span class="n">IUserRepository</span> <span class="p">{</span>
-    <span class="c1">/// &lt;returns&gt;
-</span>    <span class="c1">/// Returns &lt;c&gt;null&lt;/c&gt; if user is not found.
-</span>    <span class="c1">/// &lt;/returns&gt;
-</span>    <span class="n">User</span> <span class="nf">FindById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// Naming convention and XML documentation</span>
+<span class="c1">// comments in action.</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="nc">IUserRepository</span> <span class="p">{</span>
+    <span class="c1">/// &lt;returns&gt;</span>
+    <span class="c1">/// Returns &lt;c&gt;null&lt;/c&gt; if user is not found.</span>
+    <span class="c1">/// &lt;/returns&gt;</span>
+    <span class="n">User</span> <span class="nf">FindById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
 
-    <span class="c1">/// &lt;exception cref="EntityNotFound"&gt;
-</span>    <span class="c1">/// If user is not found.
-</span>    <span class="c1">/// &lt;/exception&gt;
-</span>    <span class="n">User</span> <span class="nf">FindRequiredById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
+    <span class="c1">/// &lt;exception cref="EntityNotFound"&gt;</span>
+    <span class="c1">/// If user is not found.</span>
+    <span class="c1">/// &lt;/exception&gt;</span>
+    <span class="n">User</span> <span class="nf">FindRequiredById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
 <span class="p">}</span></code></pre></figure>
 
 <p>Others resorted to using special marking attributes and
@@ -1132,12 +1132,12 @@ A good example of this category is
 <a href="https://www.nuget.org/packages/JetBrains.Annotations">JetBrains.Annotations</a> package, that can be used together with ReSharper
 to detect missing null checks:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IUserRepository</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="nc">IUserRepository</span> <span class="p">{</span>
     <span class="p">[</span><span class="n">CanBeNull</span><span class="p">]</span>
     <span class="n">User</span> <span class="nf">FindById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
 <span class="p">}</span>
 
-<span class="k">public</span> <span class="k">interface</span> <span class="n">IUserService</span> <span class="p">{</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="nc">IUserService</span> <span class="p">{</span>
     <span class="k">void</span> <span class="nf">ActivateUser</span><span class="p">([</span><span class="n">NotNull</span><span class="p">]</span> <span class="n">User</span> <span class="n">user</span><span class="p">);</span>
 <span class="p">}</span></code></pre></figure>
 
@@ -1156,11 +1156,11 @@ and <code class="highlighter-rouge">Maybe&lt;T&gt;</code> is not perfect either.
 
 <p>We can use <code class="highlighter-rouge">Maybe&lt;T&gt;</code> like this:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IUserRepository</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="nc">IUserRepository</span> <span class="p">{</span>
     <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="nf">FindById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
 <span class="p">}</span>
-<span class="c1">// and usage:
-</span><span class="n">var</span> <span class="n">user</span> <span class="p">=</span> <span class="n">usersRepository</span><span class="p">.</span><span class="nf">FindById</span><span class="p">(</span><span class="n">userId</span><span class="p">);</span>
+<span class="c1">// and usage:</span>
+<span class="kt">var</span> <span class="n">user</span> <span class="p">=</span> <span class="n">usersRepository</span><span class="p">.</span><span class="nf">FindById</span><span class="p">(</span><span class="n">userId</span><span class="p">);</span>
 <span class="k">if</span> <span class="p">(</span><span class="n">user</span><span class="p">.</span><span class="n">HasValue</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">return</span> <span class="nf">Ok</span><span class="p">(</span><span class="n">user</span><span class="p">);</span>
 <span class="p">}</span>
@@ -1186,8 +1186,8 @@ may be surprised:</p>
 <p>One small downside of using a <code class="highlighter-rouge">struct</code> is
 possibility of declaration of a nullable <code class="highlighter-rouge">Maybe&lt;T&gt;</code> type:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// Don't do this:
-</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;?</span> <span class="n">bad</span><span class="p">;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// Don't do this:</span>
+<span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;?</span> <span class="n">bad</span><span class="p">;</span></code></pre></figure>
 
 <p>When I was writing this article I tried to gather some
 best practices of using <code class="highlighter-rouge">Maybe&lt;T&gt;</code>. 
@@ -1224,14 +1224,14 @@ and design such case using method overloading.</p>
 
 <p>In other words author suggest to change:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// this ctor:
-</span><span class="k">public</span> <span class="nf">SystemMessage</span><span class="p">(</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// this ctor:</span>
+<span class="k">public</span> <span class="nf">SystemMessage</span><span class="p">(</span>
     <span class="kt">string</span> <span class="n">title</span><span class="p">,</span>
     <span class="kt">string</span> <span class="n">body</span><span class="p">,</span>
     <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">Attachment</span><span class="p">&gt;</span> <span class="n">attachment</span><span class="p">);</span>
 
-<span class="c1">// into two ctor's:
-</span><span class="k">public</span> <span class="nf">SystemMessage</span><span class="p">(</span>
+<span class="c1">// into two ctor's:</span>
+<span class="k">public</span> <span class="nf">SystemMessage</span><span class="p">(</span>
     <span class="kt">string</span> <span class="n">title</span><span class="p">,</span>
     <span class="kt">string</span> <span class="n">body</span><span class="p">,</span>
     <span class="n">Attachment</span> <span class="n">attachment</span><span class="p">);</span>
@@ -1240,13 +1240,13 @@ and design such case using method overloading.</p>
     <span class="kt">string</span> <span class="n">title</span><span class="p">,</span>
     <span class="kt">string</span> <span class="n">body</span><span class="p">);</span>
 
-<span class="c1">// Because using these ctor's would be easier for
-// the clients. Consider:
-</span><span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">Attachment</span><span class="p">&gt;.</span><span class="n">None</span><span class="p">)</span>
+<span class="c1">// Because using these ctor's would be easier for</span>
+<span class="c1">// the clients. Consider:</span>
+<span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">Attachment</span><span class="p">&gt;.</span><span class="n">None</span><span class="p">)</span>
 <span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> 
     <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">Attachment</span><span class="p">&gt;.</span><span class="nf">From</span><span class="p">(</span><span class="n">attachment</span><span class="p">))</span>
-<span class="c1">// vs
-</span><span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">);</span>
+<span class="c1">// vs</span>
+<span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">);</span>
 <span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> <span class="n">attachment</span><span class="p">);</span></code></pre></figure>
 
 <p>But this argument does not applies to C#, where we can
@@ -1308,7 +1308,7 @@ you with a list of <code class="highlighter-rouge">Maybe&lt;T&gt;</code> code sm
 </ul>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">static</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">ToMaybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="k">this</span> <span class="n">T</span><span class="p">?</span> <span class="k">value</span><span class="p">)</span>
-        <span class="n">where</span> <span class="n">T</span><span class="p">:</span> <span class="k">struct</span>
+        <span class="k">where</span> <span class="n">T</span><span class="p">:</span> <span class="k">struct</span>
     <span class="err">=&gt;</span> <span class="nc">value</span><span class="p">.</span><span class="n">HasValue</span> <span class="p">?</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;.</span><span class="nf">From</span><span class="p">(</span><span class="k">value</span><span class="p">.</span><span class="n">Value</span><span class="p">)</span> <span class="p">:</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;.</span><span class="n">None</span><span class="p">;</span></code></pre></figure>
 
 <ul>
@@ -1316,13 +1316,13 @@ you with a list of <code class="highlighter-rouge">Maybe&lt;T&gt;</code> code sm
  For example:</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// BAD Fluent interface spaghetti
-</span><span class="n">var</span> <span class="n">cultureBad</span> <span class="p">=</span> <span class="n">user</span><span class="p">.</span><span class="nf">Select</span><span class="p">(</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// BAD Fluent interface spaghetti</span>
+<span class="kt">var</span> <span class="n">cultureBad</span> <span class="p">=</span> <span class="n">user</span><span class="p">.</span><span class="nf">Select</span><span class="p">(</span>
     <span class="n">u</span> <span class="p">=&gt;</span> <span class="nf">LoadPreferences</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
         <span class="p">.</span><span class="nf">Select</span><span class="p">(</span><span class="n">prefs</span> <span class="p">=&gt;</span> <span class="n">prefs</span><span class="p">.</span><span class="n">Culture</span><span class="p">));</span>
 
-<span class="c1">// GOOD, only one operation per Select method call
-</span><span class="n">var</span> <span class="n">cultureGood</span> <span class="p">=</span> <span class="n">user</span>
+<span class="c1">// GOOD, only one operation per Select method call</span>
+<span class="kt">var</span> <span class="n">cultureGood</span> <span class="p">=</span> <span class="n">user</span>
     <span class="p">.</span><span class="nf">Select</span><span class="p">(</span><span class="n">u</span> <span class="p">=&gt;</span> <span class="nf">LoadPreferences</span><span class="p">(</span><span class="n">u</span><span class="p">))</span>
     <span class="p">.</span><span class="nf">Select</span><span class="p">(</span><span class="n">prefs</span> <span class="p">=&gt;</span> <span class="n">prefs</span><span class="p">.</span><span class="n">Culture</span><span class="p">);</span></code></pre></figure>
 
@@ -1340,8 +1340,8 @@ property should be valid:</p>
 <p>A property that can return <code class="highlighter-rouge">None</code> but must be
 set to some value should be split into a getter and a method:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// AVOID:
-</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">Culture</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// AVOID:</span>
+<span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">Culture</span> <span class="p">{</span>
     <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;.</span><span class="nf">From</span><span class="p">(</span><span class="n">_culture</span><span class="p">);</span> <span class="p">}</span>
     <span class="k">set</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="k">value</span><span class="p">.</span><span class="n">HasNoValue</span><span class="p">)</span>
@@ -1350,8 +1350,8 @@ set to some value should be split into a getter and a method:</p>
     <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="c1">// PREFER:
-</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">Culture</span>
+<span class="c1">// PREFER:</span>
+<span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">Culture</span>
     <span class="p">=&gt;</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;.</span><span class="nf">From</span><span class="p">(</span><span class="n">_culture</span><span class="p">);</span>
 
 <span class="k">void</span> <span class="nf">SetCulture</span><span class="p">(</span><span class="kt">string</span> <span class="n">culture</span><span class="p">)</span> <span class="p">{</span>
@@ -1389,8 +1389,8 @@ will be used to transform <code class="highlighter-rouge">Maybe&lt;T&gt;</code>s
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">private</span> <span class="n">UserRepository</span> <span class="n">_userRepository</span><span class="p">;</span>
 
-<span class="c1">// NOTICE: No if's in code
-</span><span class="k">public</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="nf">GetUserCulture</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span>
+<span class="c1">// NOTICE: No if's in code</span>
+<span class="k">public</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="nf">GetUserCulture</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span>
     <span class="p">=&gt;</span> <span class="n">_userRepository</span><span class="p">.</span><span class="nf">FindById</span><span class="p">(</span><span class="n">userId</span><span class="p">)</span>
         <span class="p">.</span><span class="nf">BiMap</span><span class="p">(</span>
             <span class="n">Some</span><span class="p">:</span> <span class="n">user</span> <span class="p">=&gt;</span> <span class="nf">GetUserCulture</span><span class="p">(</span><span class="n">user</span><span class="p">),</span>
@@ -1409,9 +1409,9 @@ will be used to transform <code class="highlighter-rouge">Maybe&lt;T&gt;</code>s
         <span class="p">})</span>
     <span class="p">};</span>
 
-    <span class="c1">// NOTICE: Extra extension methods for IEnumerable&lt;T&gt;
-</span>    <span class="c1">// that return Option&lt;T&gt; instead of null's.
-</span>    <span class="k">public</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="nf">FindById</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// NOTICE: Extra extension methods for IEnumerable&lt;T&gt;</span>
+    <span class="c1">// that return Option&lt;T&gt; instead of null's.</span>
+    <span class="k">public</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="nf">FindById</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">return</span> <span class="n">_users</span><span class="p">.</span><span class="nf">Find</span><span class="p">(</span><span class="n">u</span> <span class="p">=&gt;</span> <span class="n">u</span><span class="p">.</span><span class="n">UserId</span> <span class="p">==</span> <span class="n">userId</span><span class="p">);</span>
     <span class="p">}</span>
 <span class="p">}</span>
@@ -1437,9 +1437,9 @@ will be used to transform <code class="highlighter-rouge">Maybe&lt;T&gt;</code>s
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">static</span> <span class="kt">string</span> <span class="nf">GetUserCulture2</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span>
     <span class="p">=&gt;</span> <span class="n">_userRepository</span><span class="p">.</span><span class="nf">FindById</span><span class="p">(</span><span class="n">userId</span><span class="p">)</span>
-        <span class="p">.</span><span class="nf">Bind</span><span class="p">(</span><span class="n">user</span> <span class="p">=&gt;</span> <span class="n">user</span><span class="p">.</span><span class="n">Preferences</span><span class="p">)</span> <span class="c1">// FlatMap
-</span>        <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">prefs</span> <span class="p">=&gt;</span> <span class="n">prefs</span><span class="p">.</span><span class="n">Culture</span><span class="p">)</span>
-        <span class="p">.</span><span class="nf">IfNone</span><span class="p">(</span><span class="s">"en-US"</span><span class="p">);</span> <span class="p">//</span> <span class="k">default</span> <span class="n">culture</span></code></pre></figure>
+        <span class="p">.</span><span class="nf">Bind</span><span class="p">(</span><span class="n">user</span> <span class="p">=&gt;</span> <span class="n">user</span><span class="p">.</span><span class="n">Preferences</span><span class="p">)</span> <span class="c1">// FlatMap</span>
+        <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">prefs</span> <span class="p">=&gt;</span> <span class="n">prefs</span><span class="p">.</span><span class="n">Culture</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">IfNone</span><span class="p">(</span><span class="s">"en-US"</span><span class="p">);</span> <span class="c1">// default culture</span></code></pre></figure>
 
 <p>The only difference between these two methods
 is the value returned for users not present in the repository.
@@ -1451,17 +1451,17 @@ will be unpacked only on the outskirts of the application.
 For example in a typical RESTful service, <code class="highlighter-rouge">Maybe&lt;T&gt;</code> value will 
 be unpacked only in the controller:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// GET /user/{userId}/culture
-</span><span class="k">public</span> <span class="n">IActionResult</span> <span class="nf">Get</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// WARNING: In real apps do not return bare strings 
-</span>    <span class="c1">// from the REST api. 
-</span>    <span class="c1">// Always wrap them in DTOs / ViewModels / QueryResponses.
-</span>    <span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">culture</span> <span class="p">=</span> <span class="nf">GetUserCulture</span><span class="p">();</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// GET /user/{userId}/culture</span>
+<span class="k">public</span> <span class="n">IActionResult</span> <span class="nf">Get</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// WARNING: In real apps do not return bare strings </span>
+    <span class="c1">// from the REST api. </span>
+    <span class="c1">// Always wrap them in DTOs / ViewModels / QueryResponses.</span>
+    <span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">culture</span> <span class="p">=</span> <span class="nf">GetUserCulture</span><span class="p">();</span>
     <span class="k">return</span> <span class="nf">Maybe</span><span class="p">(</span><span class="n">culture</span><span class="p">);</span>
 <span class="p">}</span>
 
-<span class="c1">// Presumably in the base controller
-</span><span class="k">public</span> <span class="n">IActionResult</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">m</span><span class="p">)</span>
+<span class="c1">// Presumably in the base controller</span>
+<span class="k">public</span> <span class="n">IActionResult</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">m</span><span class="p">)</span>
     <span class="p">=&gt;</span> <span class="n">m</span><span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="k">value</span> <span class="p">=&gt;</span> <span class="nf">Ok</span><span class="p">(</span><span class="k">value</span><span class="p">))</span>
         <span class="p">.</span><span class="nf">IfNone</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nf">NotFound</span><span class="p">());</span></code></pre></figure>
 
@@ -1470,46 +1470,46 @@ of zealots, that in my opinion go a little bit to far in their cult of monads.
 They propose to use LINQ query syntax to transform monads.
 Let my explain this using an example:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// We want to sum three Option&lt;int&gt; values.
-</span><span class="k">private</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// We want to sum three Option&lt;int&gt; values.</span>
+<span class="k">private</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
     <span class="p">=&gt;</span> <span class="m">3</span><span class="p">;</span>
 
-<span class="c1">// Using fluent interface:
-</span><span class="n">var</span> <span class="n">sum</span> <span class="p">=</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+<span class="c1">// Using fluent interface:</span>
+<span class="kt">var</span> <span class="n">sum</span> <span class="p">=</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
     <span class="p">.</span><span class="nf">SelectMany</span><span class="p">(</span><span class="n">_</span> <span class="p">=&gt;</span> <span class="nf">GetOptionalInt</span><span class="p">(),</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">a</span><span class="p">+</span><span class="n">b</span><span class="p">)</span>
     <span class="p">.</span><span class="nf">SelectMany</span><span class="p">(</span><span class="n">_</span> <span class="p">=&gt;</span> <span class="nf">GetOptionalInt</span><span class="p">(),</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">a</span><span class="p">+</span><span class="n">b</span><span class="p">);</span>
 
-<span class="c1">// Using LINQ query:
-</span><span class="n">var</span> <span class="n">sum2</span> <span class="p">=</span>  <span class="n">from</span> <span class="n">n1</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
-            <span class="n">from</span> <span class="n">n2</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
-            <span class="n">from</span> <span class="n">n3</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
-            <span class="n">select</span> <span class="n">n1</span><span class="p">+</span><span class="n">n2</span><span class="p">+</span><span class="n">n3</span><span class="p">;</span></code></pre></figure>
+<span class="c1">// Using LINQ query:</span>
+<span class="kt">var</span> <span class="n">sum2</span> <span class="p">=</span>  <span class="k">from</span> <span class="n">n1</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+            <span class="k">from</span> <span class="n">n2</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+            <span class="k">from</span> <span class="n">n3</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+            <span class="k">select</span> <span class="n">n1</span><span class="p">+</span><span class="n">n2</span><span class="p">+</span><span class="n">n3</span><span class="p">;</span></code></pre></figure>
 
 <p>I must admin that LINQ query offers some advantages like
 ability to use <code class="highlighter-rouge">let</code> and <code class="highlighter-rouge">where</code> keywords. Also some transformations
 may be easier to express using LINQ query syntax, for example:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">sum2</span> <span class="p">=</span>  
-    <span class="n">from</span> <span class="n">n1</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
-    <span class="n">from</span> <span class="n">n2</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
-    <span class="n">from</span> <span class="n">n3</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
-    <span class="n">let</span> <span class="n">max</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
-    <span class="n">let</span> <span class="n">min</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
-    <span class="n">where</span> <span class="n">min</span> <span class="p">!=</span> <span class="m">0</span>
-    <span class="n">select</span> <span class="n">max</span> <span class="p">/</span> <span class="n">min</span><span class="p">;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">sum2</span> <span class="p">=</span>  
+    <span class="k">from</span> <span class="n">n1</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="k">from</span> <span class="n">n2</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="k">from</span> <span class="n">n3</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="k">let</span> <span class="n">max</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
+    <span class="k">let</span> <span class="n">min</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
+    <span class="k">where</span> <span class="n">min</span> <span class="p">!=</span> <span class="m">0</span>
+    <span class="k">select</span> <span class="n">max</span> <span class="p">/</span> <span class="n">min</span><span class="p">;</span></code></pre></figure>
 
 <p>Yet in my opinion fluent interface is in 90% of cases 
 a more readable and understandable way 
 to transform <code class="highlighter-rouge">Maybe&lt;T&gt;</code>s and other monads.
 For example we may rewrite the last code snippet to:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">res</span> <span class="p">=</span> <span class="nf">Combine</span><span class="p">(</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">res</span> <span class="p">=</span> <span class="nf">Combine</span><span class="p">(</span>
         <span class="nf">GetOptionalInt</span><span class="p">(),</span>
         <span class="nf">GetOptionalInt</span><span class="p">(),</span>
         <span class="nf">GetOptionalInt</span><span class="p">()</span>
     <span class="p">)</span>
     <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">nnn</span> <span class="p">=&gt;</span> <span class="p">{</span>
-        <span class="p">(</span><span class="n">var</span> <span class="n">n1</span><span class="p">,</span> <span class="n">var</span> <span class="n">n2</span><span class="p">,</span> <span class="n">var</span> <span class="n">n3</span><span class="p">)</span> <span class="p">=</span> <span class="n">nnn</span><span class="p">;</span>
+        <span class="p">(</span><span class="kt">var</span> <span class="n">n1</span><span class="p">,</span> <span class="kt">var</span> <span class="n">n2</span><span class="p">,</span> <span class="kt">var</span> <span class="n">n3</span><span class="p">)</span> <span class="p">=</span> <span class="n">nnn</span><span class="p">;</span>
         <span class="k">return</span> <span class="k">new</span> <span class="p">{</span> 
             <span class="n">Max</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">)),</span>
             <span class="n">Min</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
@@ -1518,8 +1518,8 @@ For example we may rewrite the last code snippet to:</p>
     <span class="p">.</span><span class="nf">Filter</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="n">m</span><span class="p">.</span><span class="n">Min</span> <span class="p">!=</span> <span class="m">0</span><span class="p">)</span>
     <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="n">m</span><span class="p">.</span><span class="n">Max</span> <span class="p">/</span> <span class="n">m</span><span class="p">.</span><span class="n">Min</span><span class="p">);</span>
 
-<span class="c1">// We need a few utils
-</span><span class="k">private</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;(</span><span class="n">T</span><span class="p">,</span><span class="n">T</span><span class="p">)&gt;</span> <span class="n">Combine</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">Option</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">a</span><span class="p">,</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">b</span><span class="p">)</span>
+<span class="c1">// We need a few utils</span>
+<span class="k">private</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;(</span><span class="n">T</span><span class="p">,</span><span class="n">T</span><span class="p">)&gt;</span> <span class="n">Combine</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">Option</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">a</span><span class="p">,</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">b</span><span class="p">)</span>
     <span class="p">=&gt;</span> <span class="n">a</span><span class="p">.</span><span class="nf">SelectMany</span><span class="p">(</span>
             <span class="n">_</span> <span class="p">=&gt;</span> <span class="n">b</span><span class="p">,</span>
             <span class="p">(</span><span class="n">aValue</span><span class="p">,</span> <span class="n">bValue</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">(</span><span class="n">aValue</span><span class="p">,</span> <span class="n">bValue</span><span class="p">));</span>
@@ -1560,28 +1560,28 @@ how it can be transformed it into other monads, in particular into <code class="
 E.g. we may make our last example more robust if we provide
 information to the user why the computation failed:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">result</span> <span class="p">=</span> <span class="nf">Combine</span><span class="p">(</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="nf">Combine</span><span class="p">(</span>
     <span class="nf">GetOptionalInt</span><span class="p">(),</span>
     <span class="nf">GetOptionalInt</span><span class="p">(),</span>
     <span class="nf">GetOptionalInt</span><span class="p">()</span>
     <span class="p">)</span>
     <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">ttt</span> <span class="p">=&gt;</span> <span class="p">{</span>
-        <span class="p">(</span><span class="n">var</span> <span class="n">n1</span><span class="p">,</span> <span class="n">var</span> <span class="n">n2</span><span class="p">,</span> <span class="n">var</span> <span class="n">n3</span><span class="p">)</span> <span class="p">=</span> <span class="n">ttt</span><span class="p">;</span>
+        <span class="p">(</span><span class="kt">var</span> <span class="n">n1</span><span class="p">,</span> <span class="kt">var</span> <span class="n">n2</span><span class="p">,</span> <span class="kt">var</span> <span class="n">n3</span><span class="p">)</span> <span class="p">=</span> <span class="n">ttt</span><span class="p">;</span>
         <span class="k">return</span> <span class="k">new</span> <span class="p">{</span> 
             <span class="n">Max</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">)),</span>
             <span class="n">Min</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
         <span class="p">};</span>
     <span class="p">})</span>
     <span class="p">.</span><span class="nf">ToEither</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nf">Error</span><span class="p">(</span><span class="s">"Not all values are available."</span><span class="p">))</span>
-    <span class="p">.</span><span class="nf">Bind</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="nf">Divide</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">Max</span><span class="p">,</span> <span class="n">m</span><span class="p">.</span><span class="n">Min</span><span class="p">));</span> <span class="c1">// FlatMap
-</span>
+    <span class="p">.</span><span class="nf">Bind</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="nf">Divide</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">Max</span><span class="p">,</span> <span class="n">m</span><span class="p">.</span><span class="n">Min</span><span class="p">));</span> <span class="c1">// FlatMap</span>
+
 <span class="n">Either</span><span class="p">&lt;</span><span class="n">Error</span><span class="p">,</span> <span class="kt">int</span><span class="p">&gt;</span> <span class="nf">Divide</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">b</span> <span class="p">==</span> <span class="m">0</span><span class="p">)</span> <span class="k">return</span> <span class="nf">Left</span><span class="p">(</span><span class="nf">Error</span><span class="p">(</span><span class="s">"Cannot divide by zero"</span><span class="p">));</span>
     <span class="k">return</span> <span class="nf">Right</span><span class="p">(</span><span class="n">a</span> <span class="p">/</span> <span class="n">b</span><span class="p">);</span>
 <span class="p">}</span>
 
-<span class="c1">// Helper classes:
-</span><span class="k">public</span> <span class="k">class</span> <span class="nc">Error</span> <span class="p">{</span>
+<span class="c1">// Helper classes:</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Error</span> <span class="p">{</span>
     <span class="k">public</span> <span class="kt">string</span> <span class="n">Message</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
 
     <span class="k">public</span> <span class="nf">Error</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">)</span> <span class="p">{</span>
@@ -1589,12 +1589,12 @@ information to the user why the computation failed:</p>
     <span class="p">}</span>
 
     <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="nf">ToString</span><span class="p">()</span>
-        <span class="p">=&gt;</span> <span class="err">$</span><span class="s">"Error({Message})"</span><span class="p">;</span>
+        <span class="p">=&gt;</span> <span class="s">$"Error(</span><span class="p">{</span><span class="n">Message</span><span class="p">}</span><span class="s">)"</span><span class="p">;</span>
 <span class="p">}</span>
 
 <span class="k">public</span> <span class="k">class</span> <span class="nc">ErrorHelpers</span> <span class="p">{</span>
-    <span class="c1">// For `using static` import...
-</span>    <span class="k">public</span> <span class="k">static</span> <span class="n">Error</span> <span class="nf">Error</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">)</span>
+    <span class="c1">// For `using static` import...</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="n">Error</span> <span class="nf">Error</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">)</span>
         <span class="p">=&gt;</span> <span class="k">new</span> <span class="nf">Error</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
 <span class="p">}</span></code></pre></figure>
 
@@ -1622,8 +1622,8 @@ is declared as <code class="highlighter-rouge">Option&lt;Email&gt;</code>:</p>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">User</span> <span class="p">{</span>
     <span class="k">public</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">Email</span><span class="p">&gt;</span> <span class="n">EmailAddress</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-    <span class="c1">// ...
-</span><span class="p">}</span></code></pre></figure>
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>Now Joe knows that for some strange reason not all users have email addresses.
 Joe logs into production DB to confirm that some email addresses are missing 
@@ -1653,7 +1653,7 @@ that it is not an easy task in C#.</p>
 	<item>
 	  <title>NSubstitute and the search for perfect error messages</title>
 	  <link>//nsubstitute-and-the-search-for-perfect-error-messages</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2018-12-15T01:00:00+01:00</pubDate>
 	  <guid>//nsubstitute-and-the-search-for-perfect-error-messages</guid>
 	  <description><![CDATA[
@@ -1698,17 +1698,17 @@ a method was called with an argument in a certain state:</p>
     <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="k">public</span> <span class="k">interface</span> <span class="n">IFooService</span> <span class="p">{</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="nc">IFooService</span> <span class="p">{</span>
     <span class="k">void</span> <span class="nf">DoStuff</span><span class="p">(</span><span class="kt">object</span> <span class="n">argument</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="na">[Fact]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">Checking_argument_using_Arg_Is</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// Act
-</span>    <span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
+    <span class="c1">// Act</span>
+    <span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
 
-    <span class="c1">// Assert
-</span>    <span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
+    <span class="c1">// Assert</span>
+    <span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
         <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="n">PlainArgument</span><span class="p">&gt;(</span>
             <span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="m">9</span> <span class="p">&amp;&amp;</span>
                  <span class="n">e</span><span class="p">.</span><span class="n">FirstName</span> <span class="p">==</span> <span class="s">"jan"</span> <span class="p">&amp;&amp;</span>
@@ -1742,14 +1742,14 @@ on <code class="highlighter-rouge">PlainArgument</code> class.
 Let’s call this new class <code class="highlighter-rouge">StringableArgument</code>:</p>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">StringableArgument</span> <span class="p">{</span>
-    <span class="c1">// the same code as in PlainArgument
-</span>    <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="nf">ToString</span><span class="p">()</span>
-        <span class="p">=&gt;</span> <span class="err">$</span><span class="s">"{nameof(StringableArgument)}(id: {Id}, firstName: \"{FirstName}\", "</span> <span class="p">+</span>
-            <span class="err">$</span><span class="s">"lastName: \"{LastName}\", emailAddres: \"{EmailAddress}\")"</span><span class="p">;</span>
+    <span class="c1">// the same code as in PlainArgument</span>
+    <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="nf">ToString</span><span class="p">()</span>
+        <span class="p">=&gt;</span> <span class="s">$"</span><span class="p">{</span><span class="k">nameof</span><span class="p">(</span><span class="n">StringableArgument</span><span class="p">)}</span><span class="s">(id: </span><span class="p">{</span><span class="n">Id</span><span class="p">}</span><span class="s">, firstName: \"</span><span class="p">{</span><span class="n">FirstName</span><span class="p">}</span><span class="s">\", "</span> <span class="p">+</span>
+            <span class="s">$"lastName: \"</span><span class="p">{</span><span class="n">LastName</span><span class="p">}</span><span class="s">\", emailAddres: \"</span><span class="p">{</span><span class="n">EmailAddress</span><span class="p">}</span><span class="s">\")"</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="c1">// in a test method:
-</span><span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
+<span class="c1">// in a test method:</span>
+<span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
     <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="n">StringableArgument</span><span class="p">&gt;(</span>
         <span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="m">9</span> <span class="p">&amp;&amp;</span>
              <span class="n">e</span><span class="p">.</span><span class="n">FirstName</span> <span class="p">==</span> <span class="s">"jan"</span> <span class="p">&amp;&amp;</span>
@@ -1815,8 +1815,8 @@ Let’s call this new class <code class="highlighter-rouge">EquotableArgument</c
     <span class="p">}</span>
 
     <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="nf">ToString</span><span class="p">()</span>
-        <span class="p">=&gt;</span> <span class="err">$</span><span class="s">"{nameof(StringableArgument)}(id: {Id}, firstName: \"{FirstName}\", "</span> <span class="p">+</span>
-            <span class="err">$</span><span class="s">"lastName: \"{LastName}\", emailAddres: \"{EmailAddress}\")"</span><span class="p">;</span>
+        <span class="p">=&gt;</span> <span class="s">$"</span><span class="p">{</span><span class="k">nameof</span><span class="p">(</span><span class="n">StringableArgument</span><span class="p">)}</span><span class="s">(id: </span><span class="p">{</span><span class="n">Id</span><span class="p">}</span><span class="s">, firstName: \"</span><span class="p">{</span><span class="n">FirstName</span><span class="p">}</span><span class="s">\", "</span> <span class="p">+</span>
+            <span class="s">$"lastName: \"</span><span class="p">{</span><span class="n">LastName</span><span class="p">}</span><span class="s">\", emailAddres: \"</span><span class="p">{</span><span class="n">EmailAddress</span><span class="p">}</span><span class="s">\")"</span><span class="p">;</span>
 
     <span class="k">public</span> <span class="kt">bool</span> <span class="nf">Equals</span><span class="p">(</span><span class="n">EquotableArgument</span> <span class="n">other</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">other</span> <span class="k">is</span> <span class="k">null</span><span class="p">)</span> <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
@@ -1840,10 +1840,10 @@ Let’s call this new class <code class="highlighter-rouge">EquotableArgument</c
     <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="c1">// in a test method:
-</span><span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
-    <span class="c1">// NOTICE: We no longer use a lambda expression.
-</span>    <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="nf">Is</span><span class="p">(</span><span class="k">new</span> <span class="nf">EquotableArgument</span><span class="p">(</span>
+<span class="c1">// in a test method:</span>
+<span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
+    <span class="c1">// NOTICE: We no longer use a lambda expression.</span>
+    <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="nf">Is</span><span class="p">(</span><span class="k">new</span> <span class="nf">EquotableArgument</span><span class="p">(</span>
         <span class="n">id</span><span class="p">:</span> <span class="m">9</span><span class="p">,</span> 
         <span class="n">firstName</span><span class="p">:</span> <span class="s">"jan"</span><span class="p">,</span> 
         <span class="n">lastName</span><span class="p">:</span> <span class="s">"kowalski"</span><span class="p">,</span>
@@ -1879,17 +1879,17 @@ and instead to use specialized assertion library like
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">Catching_argument_and_checking_manually_with_fluent_assertions</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// Arrange
-</span>    <span class="n">PlainArgument</span> <span class="n">arg</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+    <span class="c1">// Arrange</span>
+    <span class="n">PlainArgument</span> <span class="n">arg</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
 
     <span class="n">_fooService</span>
         <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="n">PlainArgument</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">arg</span> <span class="p">=</span> <span class="n">x</span><span class="p">));</span>
 
-    <span class="c1">// Act
-</span>    <span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
+    <span class="c1">// Act</span>
+    <span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
 
-    <span class="c1">// Assert
-</span>    <span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
+    <span class="c1">// Assert</span>
+    <span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
         <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">PlainArgument</span><span class="p">&gt;());</span>
 
     <span class="n">arg</span><span class="p">.</span><span class="nf">Should</span><span class="p">()</span>
@@ -1936,15 +1936,15 @@ we are now responsible for manually capturing argument’s value:</p>
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">_fooService</span>
     <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="nf">Capture</span><span class="p">(</span><span class="k">out</span> <span class="n">Arg</span><span class="p">&lt;</span><span class="n">PlainArgument</span><span class="p">&gt;</span> <span class="n">arg</span><span class="p">));</span>
 
-<span class="c1">// Act
-</span><span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
+<span class="c1">// Act</span>
+<span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
 
-<span class="c1">// Assert
-</span><span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
+<span class="c1">// Assert</span>
+<span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
     <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">PlainArgument</span><span class="p">&gt;());</span>
 
-<span class="c1">// This time we use NFluent
-</span><span class="n">Check</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">arg</span><span class="p">.</span><span class="n">Value</span><span class="p">).</span><span class="nf">HasFieldsWithSameValues</span><span class="p">(</span>
+<span class="c1">// This time we use NFluent</span>
+<span class="n">Check</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">arg</span><span class="p">.</span><span class="n">Value</span><span class="p">).</span><span class="nf">HasFieldsWithSameValues</span><span class="p">(</span>
     <span class="k">new</span> <span class="nf">PlainArgument</span><span class="p">(</span>
         <span class="n">id</span><span class="p">:</span> <span class="m">7</span><span class="p">,</span> 
         <span class="n">firstName</span><span class="p">:</span> <span class="s">"john"</span><span class="p">,</span> 
@@ -1965,13 +1965,13 @@ Here is how the test code looks like with this approach:</p>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">Checking_argument_using_custom_NSubstitute_matcher</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// Arrange
-</span>
-    <span class="c1">// Act
-</span>    <span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
+    <span class="c1">// Arrange</span>
 
-    <span class="c1">// Assert
-</span>    <span class="n">var</span> <span class="n">expected</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">PlainArgument</span><span class="p">(</span>
+    <span class="c1">// Act</span>
+    <span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
+
+    <span class="c1">// Assert</span>
+    <span class="kt">var</span> <span class="n">expected</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">PlainArgument</span><span class="p">(</span>
         <span class="n">id</span><span class="p">:</span> <span class="m">11</span><span class="p">,</span> 
         <span class="n">firstName</span><span class="p">:</span> <span class="s">"jan"</span><span class="p">,</span> 
         <span class="n">lastName</span><span class="p">:</span> <span class="s">"kowlaski"</span><span class="p">,</span> 
@@ -2022,7 +2022,7 @@ the solution presented in <code class="highlighter-rouge">Catching_argument_and_
 	<item>
 	  <title>Inheritance? Just say no!</title>
 	  <link>//inheritance-just-say-no</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2018-12-12T01:00:00+01:00</pubDate>
 	  <guid>//inheritance-just-say-no</guid>
 	  <description><![CDATA[
@@ -2098,15 +2098,15 @@ may not make sense for a cache. For example it makes no
 sense to cache a template that does not exists, yet with
 inheritance we may write:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">foo</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">TemplateName</span><span class="p">(</span><span class="s">"foo"</span><span class="p">);</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">foo</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">TemplateName</span><span class="p">(</span><span class="s">"foo"</span><span class="p">);</span>
 
 <span class="n">ConcurrentDictionary</span><span class="p">&lt;</span><span class="n">TemplateName</span><span class="p">,</span> <span class="n">Template</span><span class="p">&gt;</span> <span class="n">dict</span> 
    <span class="p">=</span> <span class="k">new</span> <span class="nf">TemplateCache</span><span class="p">();</span>
 
 <span class="n">dict</span><span class="p">.</span><span class="nf">GetOrAdd</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="p">(</span><span class="n">Template</span><span class="p">)</span><span class="k">null</span><span class="p">);</span>
 
-<span class="c1">// Ops we have a null template here...
-</span><span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"value is: "</span> <span class="p">+</span> 
+<span class="c1">// Ops we have a null template here...</span>
+<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"value is: "</span> <span class="p">+</span> 
    <span class="n">dict</span><span class="p">.</span><span class="nf">GetOrAdd</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="p">(</span><span class="n">Template</span><span class="p">)</span><span class="k">null</span><span class="p">));</span></code></pre></figure>
 
 <p>When we use inheritance we are telling the type system that

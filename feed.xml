@@ -2,9 +2,9 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Programming is Magic - Articles</title>
-    <description>A place where I can share my thoughts about programming</description>
+    <description>A place where I share my thoughts about programming.</description>
     <link>
-    https://marcin-chwedczuk.github.io/</link>
+    http://localhost:4000</link>
     
       
       <item>
@@ -30,8 +30,8 @@
         
         <pubDate>Sun, 14 Apr 2019 02:00:01 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//odroid-go-review</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//odroid-go-review</guid>
+        http://localhost:4000/odroid-go-review</link>
+        <guid isPermaLink="true">http://localhost:4000/odroid-go-review</guid>
       </item>
       
     
@@ -48,8 +48,8 @@ This is my very first trackball, I bought it for about 180PLN.&lt;/p&gt;
         
         <pubDate>Sun, 14 Apr 2019 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//kensington-orbit-trackball-review</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//kensington-orbit-trackball-review</guid>
+        http://localhost:4000/kensington-orbit-trackball-review</link>
+        <guid isPermaLink="true">http://localhost:4000/kensington-orbit-trackball-review</guid>
       </item>
       
     
@@ -65,8 +65,8 @@ type for representing file sizes:&lt;/p&gt;
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;FileSize&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FileSize&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;FromBytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;ulong&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
        &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;FileSize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-   &lt;span class=&quot;c1&quot;&gt;// Other factory methods...
-&lt;/span&gt;   
+   &lt;span class=&quot;c1&quot;&gt;// Other factory methods...&lt;/span&gt;
+   
    &lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ulong&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_bytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;ulong&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;TotalBytes&lt;/span&gt;
        &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_bytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
@@ -74,27 +74,27 @@ type for representing file sizes:&lt;/p&gt;
    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;FileSize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;ulong&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
        &lt;span class=&quot;n&quot;&gt;_bytes&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-   &lt;span class=&quot;c1&quot;&gt;// Other stuff, equatable, comparable, blah...
-&lt;/span&gt;   
+   &lt;span class=&quot;c1&quot;&gt;// Other stuff, equatable, comparable, blah...&lt;/span&gt;
+   
    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;override&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ToString&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
-       &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;err&quot;&gt;$&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;{_bytes:##,#B}&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+       &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;$&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_bytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;##&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;#&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;B&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
    
    &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FileSize&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;operator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;+(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;FileSize&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FileSize&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
        &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;FileSize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;checked&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;left&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_bytes&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;right&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_bytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
-   &lt;span class=&quot;c1&quot;&gt;// Other operators...
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+   &lt;span class=&quot;c1&quot;&gt;// Other operators...&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Yet when it came to computing a total size of set of files I saw
 code like this:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;totalSize&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fileSizes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Aggregate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;acc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;acc&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;totalSize&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fileSizes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Aggregate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;acc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;acc&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;What is wrong with this code?
 It forces readers to concentrate on irrelevant details like how
 to sum a list of &lt;code class=&quot;highlighter-rouge&quot;&gt;FileSize&lt;/code&gt;s. As a programmer, reading a lot
 of code I would prefer to see something like:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;totalSize&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fileSizes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;totalSize&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fileSizes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Sum&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Which is shorter, easier to read and allows me to concentrate
 on the actual business problem that I try to solve.&lt;/p&gt;
@@ -103,8 +103,8 @@ on the actual business problem that I try to solve.&lt;/p&gt;
         
         <pubDate>Tue, 05 Mar 2019 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//reduce-cognitive-load</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//reduce-cognitive-load</guid>
+        http://localhost:4000/reduce-cognitive-load</link>
+        <guid isPermaLink="true">http://localhost:4000/reduce-cognitive-load</guid>
       </item>
       
     
@@ -126,8 +126,8 @@ a random PESEL as a password and then we will crack it using
         
         <pubDate>Mon, 25 Feb 2019 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//why-using-pesel-as-a-password-is-a-very-bad-idea</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//why-using-pesel-as-a-password-is-a-very-bad-idea</guid>
+        http://localhost:4000/why-using-pesel-as-a-password-is-a-very-bad-idea</link>
+        <guid isPermaLink="true">http://localhost:4000/why-using-pesel-as-a-password-is-a-very-bad-idea</guid>
       </item>
       
     
@@ -143,11 +143,11 @@ For example, for this failing test:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;na&quot;&gt;[Fact]&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;add_returns_sum_of_its_arguments&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// Arrange
-&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;service&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ServiceA&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// Arrange&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;service&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;ServiceA&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt;
     
-    &lt;span class=&quot;c1&quot;&gt;// Assert
-&lt;/span&gt;    &lt;span class=&quot;n&quot;&gt;service&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Should&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Be&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// Assert&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;service&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Should&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;().&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Be&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;FluentAssertions generates a message:&lt;/p&gt;
@@ -160,8 +160,8 @@ Expected service.Add(1, 2) to be 3, but found 42.&lt;/code&gt;&lt;/pre&gt;&lt;/f
         
         <pubDate>Sun, 10 Feb 2019 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//fluent-assertions-and-code-formatting</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//fluent-assertions-and-code-formatting</guid>
+        http://localhost:4000/fluent-assertions-and-code-formatting</link>
+        <guid isPermaLink="true">http://localhost:4000/fluent-assertions-and-code-formatting</guid>
       </item>
       
     
@@ -175,8 +175,8 @@ Expected service.Add(1, 2) to be 3, but found 42.&lt;/code&gt;&lt;/pre&gt;&lt;/f
         
         <pubDate>Thu, 24 Jan 2019 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//spy-jvm-network-traffic-with-owasp-zap</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//spy-jvm-network-traffic-with-owasp-zap</guid>
+        http://localhost:4000/spy-jvm-network-traffic-with-owasp-zap</link>
+        <guid isPermaLink="true">http://localhost:4000/spy-jvm-network-traffic-with-owasp-zap</guid>
       </item>
       
     
@@ -193,9 +193,9 @@ value object classes:&lt;/p&gt;
     &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Method&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
         &lt;span class=&quot;n&quot;&gt;Name&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;name&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// Equals, GetHashCode, ToString skipped
-&lt;/span&gt;    &lt;span class=&quot;c1&quot;&gt;// to save space.
-&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// Equals, GetHashCode, ToString skipped&lt;/span&gt;
+    &lt;span class=&quot;c1&quot;&gt;// to save space.&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;TypedArgument&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Type&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Type&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;object&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Value&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;get&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
@@ -212,8 +212,8 @@ value object classes:&lt;/p&gt;
         &lt;span class=&quot;n&quot;&gt;IReadOnlyList&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TypedArgument&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
         &lt;span class=&quot;n&quot;&gt;CalledMethod&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;calledMethod&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// NOTICE: No defensive copy.
-&lt;/span&gt;        &lt;span class=&quot;n&quot;&gt;PassedArguments&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// NOTICE: No defensive copy.&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;PassedArguments&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
@@ -229,8 +229,8 @@ a readonly property named &lt;code class=&quot;highlighter-rouge&quot;&gt;Passed
         
         <pubDate>Sun, 06 Jan 2019 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//read-only-does-not-mean-immutable</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//read-only-does-not-mean-immutable</guid>
+        http://localhost:4000/read-only-does-not-mean-immutable</link>
+        <guid isPermaLink="true">http://localhost:4000/read-only-does-not-mean-immutable</guid>
       </item>
       
     
@@ -250,8 +250,8 @@ missing value.&lt;/p&gt;
         
         <pubDate>Tue, 01 Jan 2019 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//random-thoughts-on-maybe</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//random-thoughts-on-maybe</guid>
+        http://localhost:4000/random-thoughts-on-maybe</link>
+        <guid isPermaLink="true">http://localhost:4000/random-thoughts-on-maybe</guid>
       </item>
       
     
@@ -277,8 +277,8 @@ Things like good test names and proper error messages are often forgotten.&lt;/p
         
         <pubDate>Sat, 15 Dec 2018 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//nsubstitute-and-the-search-for-perfect-error-messages</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//nsubstitute-and-the-search-for-perfect-error-messages</guid>
+        http://localhost:4000/nsubstitute-and-the-search-for-perfect-error-messages</link>
+        <guid isPermaLink="true">http://localhost:4000/nsubstitute-and-the-search-for-perfect-error-messages</guid>
       </item>
       
     
@@ -299,8 +299,8 @@ of modern object oriented programming:&lt;/p&gt;
         
         <pubDate>Wed, 12 Dec 2018 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//inheritance-just-say-no</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//inheritance-just-say-no</guid>
+        http://localhost:4000/inheritance-just-say-no</link>
+        <guid isPermaLink="true">http://localhost:4000/inheritance-just-say-no</guid>
       </item>
       
     
@@ -313,11 +313,11 @@ and I saw a code similar to this:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;EnterpriseNotificationSender&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;readonly&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;IUserManagementService&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_userManagementService&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;c1&quot;&gt;// ctor and stuff...
-&lt;/span&gt;  
+    &lt;span class=&quot;c1&quot;&gt;// ctor and stuff...&lt;/span&gt;
+  
     &lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SendNotificationsToUsers&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;companyId&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;addresses&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;GetRecipientsAddresses&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;companyId&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-        &lt;span class=&quot;k&quot;&gt;foreach&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;address&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;addresses&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;addresses&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;GetRecipientsAddresses&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;companyId&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;foreach&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;address&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;addresses&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
             &lt;span class=&quot;nf&quot;&gt;SendNotification&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;address&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
         &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
     &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
@@ -338,8 +338,8 @@ and I saw a code similar to this:&lt;/p&gt;
     &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
   
     &lt;span class=&quot;k&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;SendNotification&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EmailAddress&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;address&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-        &lt;span class=&quot;c1&quot;&gt;// do stuff...
-&lt;/span&gt;    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;c1&quot;&gt;// do stuff...&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Especially &lt;code class=&quot;highlighter-rouge&quot;&gt;GetRecipientsAddresses&lt;/code&gt; method draw my attention.
@@ -355,8 +355,8 @@ instead of long lambdas.&lt;/p&gt;
         
         <pubDate>Mon, 08 Oct 2018 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//abusing-local-functions-to-hide-design-problems</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//abusing-local-functions-to-hide-design-problems</guid>
+        http://localhost:4000/abusing-local-functions-to-hide-design-problems</link>
+        <guid isPermaLink="true">http://localhost:4000/abusing-local-functions-to-hide-design-problems</guid>
       </item>
       
     
@@ -379,8 +379,8 @@ Fortunately for us this can be automated using Postman pre-request scripts.&lt;/
         
         <pubDate>Sat, 29 Sep 2018 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//automatically-generate-new-oauth2-tokens-when-using-postman</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//automatically-generate-new-oauth2-tokens-when-using-postman</guid>
+        http://localhost:4000/automatically-generate-new-oauth2-tokens-when-using-postman</link>
+        <guid isPermaLink="true">http://localhost:4000/automatically-generate-new-oauth2-tokens-when-using-postman</guid>
       </item>
       
     
@@ -391,10 +391,10 @@ Fortunately for us this can be automated using Postman pre-request scripts.&lt;/
           <description>&lt;p&gt;A few days ago I was reviewing a pull request at work and
 one line of code catch my eye:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;n&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;@event&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;CupOfCoffeeReadyEvent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;cm&quot;&gt;/* ... */&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;@event&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;CupOfCoffeeReadyEvent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;cm&quot;&gt;/* ... */&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
 &lt;span class=&quot;n&quot;&gt;_logger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;LogInformation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
-    &lt;span class=&quot;s&quot;&gt;&quot;Publishing cup of coffee event: {@Event}.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;@event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;== this one
-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_mediator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Publish&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;@event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;Publishing cup of coffee event: {@Event}.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;@event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;c1&quot;&gt;// &amp;lt;== this one&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;_mediator&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;Publish&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;@event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;At my workplace we are using standard &lt;code class=&quot;highlighter-rouge&quot;&gt;ILogger&lt;/code&gt; interface from 
 &lt;code class=&quot;highlighter-rouge&quot;&gt;Microsoft.Extensions.Logging.Abstractions&lt;/code&gt;
@@ -402,8 +402,8 @@ package. Also logged variable name starts with &lt;code class=&quot;highlighter-
 And so I started to suspect that 
 the log statement contains an error and instead it should be written as:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// {@Event} -&amp;gt; {Event}
-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;_logger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;LogInformation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;c1&quot;&gt;// {@Event} -&amp;gt; {Event}&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;_logger&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;LogInformation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
     &lt;span class=&quot;s&quot;&gt;&quot;Publishing cup of coffee event: {Event}.&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;@event&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Without thinking any further I put a friendly comment, that 
@@ -414,8 +414,8 @@ After half an hour, instead of a fix I get the following response:&lt;/p&gt;
         
         <pubDate>Fri, 21 Sep 2018 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//avoid-hidden-coupling-to-interface-implementation</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//avoid-hidden-coupling-to-interface-implementation</guid>
+        http://localhost:4000/avoid-hidden-coupling-to-interface-implementation</link>
+        <guid isPermaLink="true">http://localhost:4000/avoid-hidden-coupling-to-interface-implementation</guid>
       </item>
       
     
@@ -435,8 +435,8 @@ deal with recently.&lt;/p&gt;
         
         <pubDate>Tue, 18 Sep 2018 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//fluent-validation-and-complex-dependencies-between-properties</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//fluent-validation-and-complex-dependencies-between-properties</guid>
+        http://localhost:4000/fluent-validation-and-complex-dependencies-between-properties</link>
+        <guid isPermaLink="true">http://localhost:4000/fluent-validation-and-complex-dependencies-between-properties</guid>
       </item>
       
     
@@ -455,8 +455,8 @@ certain interaction between components took place.&lt;/p&gt;
         
         <pubDate>Sat, 08 Sep 2018 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//you-can-live-without-your-mocking-framework</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//you-can-live-without-your-mocking-framework</guid>
+        http://localhost:4000/you-can-live-without-your-mocking-framework</link>
+        <guid isPermaLink="true">http://localhost:4000/you-can-live-without-your-mocking-framework</guid>
       </item>
       
     
@@ -470,8 +470,8 @@ certain interaction between components took place.&lt;/p&gt;
         
         <pubDate>Sun, 08 Jul 2018 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//repository-pattern-my-way</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//repository-pattern-my-way</guid>
+        http://localhost:4000/repository-pattern-my-way</link>
+        <guid isPermaLink="true">http://localhost:4000/repository-pattern-my-way</guid>
       </item>
       
     
@@ -486,8 +486,8 @@ in main conference room.]&lt;/p&gt;
         
         <pubDate>Mon, 25 Jun 2018 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//devoxx-poland-2018</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//devoxx-poland-2018</guid>
+        http://localhost:4000/devoxx-poland-2018</link>
+        <guid isPermaLink="true">http://localhost:4000/devoxx-poland-2018</guid>
       </item>
       
     
@@ -504,8 +504,8 @@ with shading and ray tracing in general.&lt;/p&gt;
         
         <pubDate>Sun, 06 May 2018 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//ray-tracing-torus</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//ray-tracing-torus</guid>
+        http://localhost:4000/ray-tracing-torus</link>
+        <guid isPermaLink="true">http://localhost:4000/ray-tracing-torus</guid>
       </item>
       
     
@@ -521,8 +521,8 @@ though.&lt;/p&gt;
         
         <pubDate>Thu, 03 May 2018 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//dotnet-core-http-client-proxy-and-localhost</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//dotnet-core-http-client-proxy-and-localhost</guid>
+        http://localhost:4000/dotnet-core-http-client-proxy-and-localhost</link>
+        <guid isPermaLink="true">http://localhost:4000/dotnet-core-http-client-proxy-and-localhost</guid>
       </item>
       
     
@@ -540,8 +540,8 @@ very efficient.&lt;/p&gt;
         
         <pubDate>Sat, 16 Dec 2017 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//how-to-check-if-a-number-is-a-power-of-two</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//how-to-check-if-a-number-is-a-power-of-two</guid>
+        http://localhost:4000/how-to-check-if-a-number-is-a-power-of-two</link>
+        <guid isPermaLink="true">http://localhost:4000/how-to-check-if-a-number-is-a-power-of-two</guid>
       </item>
       
     
@@ -563,8 +563,8 @@ investigate using only Linux.&lt;/p&gt;
         
         <pubDate>Sat, 18 Nov 2017 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//a-closer-look-at-portable-executable-msdos-stub</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//a-closer-look-at-portable-executable-msdos-stub</guid>
+        http://localhost:4000/a-closer-look-at-portable-executable-msdos-stub</link>
+        <guid isPermaLink="true">http://localhost:4000/a-closer-look-at-portable-executable-msdos-stub</guid>
       </item>
       
     
@@ -580,14 +580,14 @@ learned from my colleagues.&lt;/p&gt;
         
         <pubDate>Wed, 08 Nov 2017 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//java-streams-best-practices</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//java-streams-best-practices</guid>
+        http://localhost:4000/java-streams-best-practices</link>
+        <guid isPermaLink="true">http://localhost:4000/java-streams-best-practices</guid>
       </item>
       
     
       
       <item>
-        <title>Don&#39;t ask me about Singletons</title>
+        <title>Don't ask me about Singletons</title>
         
           <description>&lt;p&gt;Some time ago I attended a job interview for C# developer position in Warsaw.
 One of the tasks that I had to perform was to implement a singleton pattern
@@ -626,8 +626,8 @@ and we moved to other questions.&lt;/p&gt;
         
         <pubDate>Sat, 30 Sep 2017 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//dont-ask-me-about-singletons</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//dont-ask-me-about-singletons</guid>
+        http://localhost:4000/dont-ask-me-about-singletons</link>
+        <guid isPermaLink="true">http://localhost:4000/dont-ask-me-about-singletons</guid>
       </item>
       
     
@@ -642,8 +642,8 @@ warning and when ignoring it may introduce bugs in your code.&lt;/p&gt;
         
         <pubDate>Sun, 30 Jul 2017 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</guid>
+        http://localhost:4000/HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</link>
+        <guid isPermaLink="true">http://localhost:4000/HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</guid>
       </item>
       
     
@@ -658,8 +658,8 @@ using Ubuntu and NetBeans IDE.&lt;/p&gt;
         
         <pubDate>Sat, 24 Jun 2017 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//debugging-openjdk8-with-netbeans-on-ubuntu</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//debugging-openjdk8-with-netbeans-on-ubuntu</guid>
+        http://localhost:4000/debugging-openjdk8-with-netbeans-on-ubuntu</link>
+        <guid isPermaLink="true">http://localhost:4000/debugging-openjdk8-with-netbeans-on-ubuntu</guid>
       </item>
       
     
@@ -674,8 +674,8 @@ and how they are compiled to JVM bytecode.&lt;/p&gt;
         
         <pubDate>Sat, 10 Jun 2017 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//lambda-expressions-in-kotlin</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//lambda-expressions-in-kotlin</guid>
+        http://localhost:4000/lambda-expressions-in-kotlin</link>
+        <guid isPermaLink="true">http://localhost:4000/lambda-expressions-in-kotlin</guid>
       </item>
       
     
@@ -697,8 +697,8 @@ to pass data between GUI and application services.&lt;/p&gt;
         
         <pubDate>Sun, 19 Feb 2017 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//zen-and-the-art-of-unit-testing</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//zen-and-the-art-of-unit-testing</guid>
+        http://localhost:4000/zen-and-the-art-of-unit-testing</link>
+        <guid isPermaLink="true">http://localhost:4000/zen-and-the-art-of-unit-testing</guid>
       </item>
       
     
@@ -715,8 +715,8 @@ other system, or your own entities before saving them to database.&lt;/p&gt;
         
         <pubDate>Sun, 05 Feb 2017 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//hello-hibernate-validator</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//hello-hibernate-validator</guid>
+        http://localhost:4000/hello-hibernate-validator</link>
+        <guid isPermaLink="true">http://localhost:4000/hello-hibernate-validator</guid>
       </item>
       
     
@@ -728,22 +728,22 @@ other system, or your own entities before saving them to database.&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Data&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;kd&quot;&gt;private&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
         &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;value&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
  
-    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;getValue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;getValue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
  
-    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;toString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nd&quot;&gt;@Override&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;toString&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
         &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;format&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Data(%s)&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;this&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
     &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
 &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
  
-&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
    &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;listOfData&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Arrays&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
-          &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;foo&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
-          &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;bar&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
-          &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;nyu&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+          &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;foo&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+          &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;bar&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+          &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;nyu&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
  
    &lt;span class=&quot;n&quot;&gt;listOfData&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;comparing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;Data:&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getValue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
    &lt;span class=&quot;n&quot;&gt;listOfData&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
@@ -756,10 +756,10 @@ other system, or your own entities before saving them to database.&lt;/p&gt;
 &lt;p&gt;…unless we try to sort a collection containing null values:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;listOfData&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Arrays&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
-       &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;foo&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+       &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;foo&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
        &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
-       &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;bar&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
-       &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;nyu&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+       &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;bar&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+       &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;nyu&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
  
 &lt;span class=&quot;n&quot;&gt;listOfData&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;comparing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;Data:&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getValue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
 &lt;span class=&quot;n&quot;&gt;listOfData&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
@@ -775,10 +775,10 @@ decorators provided by &lt;code class=&quot;highlighter-rouge&quot;&gt;Comparato
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;java&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;util&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;Comparator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.*;&lt;/span&gt;
  
 &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;listOfData&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Arrays&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
-       &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;foo&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+       &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;foo&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
        &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;
-       &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;bar&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
-       &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;nyu&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
+       &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;bar&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+       &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Data&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;nyu&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;));&lt;/span&gt;
  
 &lt;span class=&quot;n&quot;&gt;listOfData&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;sort&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nullsFirst&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;comparing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nl&quot;&gt;Data:&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;getValue&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)));&lt;/span&gt;
 &lt;span class=&quot;n&quot;&gt;listOfData&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
@@ -792,7 +792,7 @@ decorators provided by &lt;code class=&quot;highlighter-rouge&quot;&gt;Comparato
 (it adds functionality but doesn’t change interface).
 &lt;code class=&quot;highlighter-rouge&quot;&gt;nullsFirst&lt;/code&gt; works by wrapping provided comparator in code similar to:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Comparator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nullsFirst&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Comparator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;comparator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Comparator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;nullsFirst&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Comparator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;T&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;comparator&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
   &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;a&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
         &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
@@ -809,8 +809,8 @@ decorators provided by &lt;code class=&quot;highlighter-rouge&quot;&gt;Comparato
         
         <pubDate>Sat, 14 Jan 2017 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//comparing-with-nullsFirst-and-nullsLast</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//comparing-with-nullsFirst-and-nullsLast</guid>
+        http://localhost:4000/comparing-with-nullsFirst-and-nullsLast</link>
+        <guid isPermaLink="true">http://localhost:4000/comparing-with-nullsFirst-and-nullsLast</guid>
       </item>
       
     
@@ -824,8 +824,8 @@ decorators provided by &lt;code class=&quot;highlighter-rouge&quot;&gt;Comparato
         
         <pubDate>Sat, 07 Jan 2017 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//spring-transactional-cheat-sheet</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//spring-transactional-cheat-sheet</guid>
+        http://localhost:4000/spring-transactional-cheat-sheet</link>
+        <guid isPermaLink="true">http://localhost:4000/spring-transactional-cheat-sheet</guid>
       </item>
       
     
@@ -842,8 +842,8 @@ For more info see reddit comment discussion &lt;a href=&quot;https://www.reddit.
         
         <pubDate>Tue, 27 Dec 2016 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//crudest-curd-using-spring</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//crudest-curd-using-spring</guid>
+        http://localhost:4000/crudest-curd-using-spring</link>
+        <guid isPermaLink="true">http://localhost:4000/crudest-curd-using-spring</guid>
       </item>
       
     
@@ -862,8 +862,8 @@ your code.&lt;/p&gt;
         
         <pubDate>Tue, 27 Dec 2016 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//generics-in-java</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//generics-in-java</guid>
+        http://localhost:4000/generics-in-java</link>
+        <guid isPermaLink="true">http://localhost:4000/generics-in-java</guid>
       </item>
       
     
@@ -883,8 +883,8 @@ the main disadvantage is reduced functionality of aspects
         
         <pubDate>Sat, 03 Dec 2016 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//overview-of-spring-annotation-driven-aop</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//overview-of-spring-annotation-driven-aop</guid>
+        http://localhost:4000/overview-of-spring-annotation-driven-aop</link>
+        <guid isPermaLink="true">http://localhost:4000/overview-of-spring-annotation-driven-aop</guid>
       </item>
       
     
@@ -902,8 +902,8 @@ also a beautiful iterative solution.&lt;/p&gt;
         
         <pubDate>Sat, 26 Nov 2016 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//iterative-solution-to-towers-of-hanoi-problem</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//iterative-solution-to-towers-of-hanoi-problem</guid>
+        http://localhost:4000/iterative-solution-to-towers-of-hanoi-problem</link>
+        <guid isPermaLink="true">http://localhost:4000/iterative-solution-to-towers-of-hanoi-problem</guid>
       </item>
       
     
@@ -917,8 +917,8 @@ also a beautiful iterative solution.&lt;/p&gt;
         
         <pubDate>Sat, 12 Nov 2016 01:00:01 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//JavaScript-in-and-delete-operators</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//JavaScript-in-and-delete-operators</guid>
+        http://localhost:4000/JavaScript-in-and-delete-operators</link>
+        <guid isPermaLink="true">http://localhost:4000/JavaScript-in-and-delete-operators</guid>
       </item>
       
     
@@ -940,8 +940,8 @@ appreciate their beauty).&lt;/p&gt;
         
         <pubDate>Sat, 12 Nov 2016 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//method-references-in-java-8</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//method-references-in-java-8</guid>
+        http://localhost:4000/method-references-in-java-8</link>
+        <guid isPermaLink="true">http://localhost:4000/method-references-in-java-8</guid>
       </item>
       
     
@@ -957,8 +957,8 @@ This tutorial will help you setup your development environment.&lt;/p&gt;
         
         <pubDate>Mon, 31 Oct 2016 01:00:00 +0100</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//using-tomcat-8.5-with-eclipse-neon</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//using-tomcat-8.5-with-eclipse-neon</guid>
+        http://localhost:4000/using-tomcat-8.5-with-eclipse-neon</link>
+        <guid isPermaLink="true">http://localhost:4000/using-tomcat-8.5-with-eclipse-neon</guid>
       </item>
       
     
@@ -974,8 +974,8 @@ a few code examples.&lt;/p&gt;
         
         <pubDate>Sun, 30 Oct 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//hoisting-in-javascript</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//hoisting-in-javascript</guid>
+        http://localhost:4000/hoisting-in-javascript</link>
+        <guid isPermaLink="true">http://localhost:4000/hoisting-in-javascript</guid>
       </item>
       
     
@@ -998,8 +998,8 @@ while wiring beans via SpEL - Spring Expression Language.&lt;/p&gt;
         
         <pubDate>Sat, 22 Oct 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//introduction-to-spring-expression-language</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//introduction-to-spring-expression-language</guid>
+        http://localhost:4000/introduction-to-spring-expression-language</link>
+        <guid isPermaLink="true">http://localhost:4000/introduction-to-spring-expression-language</guid>
       </item>
       
     
@@ -1016,8 +1016,8 @@ find it helpful too.&lt;/p&gt;
         
         <pubDate>Sun, 16 Oct 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//notes-on-spring-xml-configuration</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//notes-on-spring-xml-configuration</guid>
+        http://localhost:4000/notes-on-spring-xml-configuration</link>
+        <guid isPermaLink="true">http://localhost:4000/notes-on-spring-xml-configuration</guid>
       </item>
       
     
@@ -1032,8 +1032,8 @@ with Java 8 Stream API.&lt;/p&gt;
         
         <pubDate>Sun, 09 Oct 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//java-8-how-to-write-custom-collector</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//java-8-how-to-write-custom-collector</guid>
+        http://localhost:4000/java-8-how-to-write-custom-collector</link>
+        <guid isPermaLink="true">http://localhost:4000/java-8-how-to-write-custom-collector</guid>
       </item>
       
     
@@ -1057,21 +1057,21 @@ We will be working with the following list of students:&lt;/p&gt;
         
 &lt;span class=&quot;n&quot;&gt;List&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;students&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Arrays&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;asList&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
     &lt;span class=&quot;cm&quot;&gt;/*          NAME       AGE COUNTRY          SCORE */&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Jan&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;     &lt;span class=&quot;mi&quot;&gt;13&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;POLAND&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;92&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Anna&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;    &lt;span class=&quot;mi&quot;&gt;15&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;POLAND&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;95&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Helga&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;14&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;GERMANY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;93&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Leon&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;    &lt;span class=&quot;mi&quot;&gt;14&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;GERMANY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;97&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Michael&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;14&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;UK&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;      &lt;span class=&quot;mi&quot;&gt;90&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Tim&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;     &lt;span class=&quot;mi&quot;&gt;15&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;UK&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;      &lt;span class=&quot;mi&quot;&gt;91&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;George&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;14&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;UK&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;      &lt;span class=&quot;mi&quot;&gt;98&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Jan&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;     &lt;span class=&quot;mi&quot;&gt;13&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;POLAND&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;92&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Anna&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;    &lt;span class=&quot;mi&quot;&gt;15&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;POLAND&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;95&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Helga&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;   &lt;span class=&quot;mi&quot;&gt;14&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;GERMANY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;93&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Leon&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;    &lt;span class=&quot;mi&quot;&gt;14&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;GERMANY&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;97&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Michael&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;14&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;UK&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;      &lt;span class=&quot;mi&quot;&gt;90&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Tim&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;     &lt;span class=&quot;mi&quot;&gt;15&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;UK&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;      &lt;span class=&quot;mi&quot;&gt;91&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;),&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;Student&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;George&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;  &lt;span class=&quot;mi&quot;&gt;14&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Country&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;UK&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt;      &lt;span class=&quot;mi&quot;&gt;98&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
 &lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 </description>
         
         <pubDate>Sun, 02 Oct 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//grouping-using-java-8-streams</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//grouping-using-java-8-streams</guid>
+        http://localhost:4000/grouping-using-java-8-streams</link>
+        <guid isPermaLink="true">http://localhost:4000/grouping-using-java-8-streams</guid>
       </item>
       
     
@@ -1086,8 +1086,8 @@ a nice and fresh looking GUI so I decided to give it a chance and replace my old
         
         <pubDate>Tue, 27 Sep 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//use-meld-as-git-merge-diff-tool</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//use-meld-as-git-merge-diff-tool</guid>
+        http://localhost:4000/use-meld-as-git-merge-diff-tool</link>
+        <guid isPermaLink="true">http://localhost:4000/use-meld-as-git-merge-diff-tool</guid>
       </item>
       
     
@@ -1104,8 +1104,8 @@ of Windows up to Windows 10.&lt;/p&gt;
         
         <pubDate>Mon, 26 Sep 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//obfuscating-windows-batch-files</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//obfuscating-windows-batch-files</guid>
+        http://localhost:4000/obfuscating-windows-batch-files</link>
+        <guid isPermaLink="true">http://localhost:4000/obfuscating-windows-batch-files</guid>
       </item>
       
     
@@ -1121,8 +1121,8 @@ encountered in typical enterprise applications.&lt;/p&gt;
         
         <pubDate>Sun, 11 Sep 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//castle-windsor-most-popular-features</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//castle-windsor-most-popular-features</guid>
+        http://localhost:4000/castle-windsor-most-popular-features</link>
+        <guid isPermaLink="true">http://localhost:4000/castle-windsor-most-popular-features</guid>
       </item>
       
     
@@ -1140,7 +1140,7 @@ eth0      Link encap:Ethernet  HWaddr xx:xx:xx:xx:xx:xx
         
 $ cat /usr/share/dict/words | grep nerd
 nerd
-nerd&#39;s
+nerd's
 nerdier
 (...)&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
@@ -1175,15 +1175,15 @@ bar.txt:foobar&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 &lt;p&gt;NOTE: In the last example I used 
 &lt;a href=&quot;http://tldp.org/LDP/abs/html/here-docs.html&quot;&gt;heredoc’s&lt;/a&gt; to create &lt;code class=&quot;highlighter-rouge&quot;&gt;foo.txt&lt;/code&gt; and
 &lt;code class=&quot;highlighter-rouge&quot;&gt;bar.txt&lt;/code&gt; files. &lt;br /&gt;
-NOTE: &lt;code class=&quot;highlighter-rouge&quot;&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;foo,bar&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;.txt&lt;/span&gt;&lt;/code&gt; is expanded by bash into &lt;code class=&quot;highlighter-rouge&quot;&gt;foo.txt bar.txt&lt;/code&gt;, this is
+NOTE: &lt;code class=&quot;highlighter-rouge&quot;&gt;{foo,bar}.txt&lt;/code&gt; is expanded by bash into &lt;code class=&quot;highlighter-rouge&quot;&gt;foo.txt bar.txt&lt;/code&gt;, this is
 called &lt;a href=&quot;https://en.wikipedia.org/wiki/Bash_(Unix_shell)#Brace_expansion&quot;&gt;brace expansion&lt;/a&gt;.&lt;/p&gt;
 
 </description>
         
         <pubDate>Sat, 20 Aug 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//how-to-use-grep-command</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//how-to-use-grep-command</guid>
+        http://localhost:4000/how-to-use-grep-command</link>
+        <guid isPermaLink="true">http://localhost:4000/how-to-use-grep-command</guid>
       </item>
       
     
@@ -1200,8 +1200,8 @@ Cartesian coordinates.&lt;/p&gt;
         
         <pubDate>Sat, 06 Aug 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//iterative-algorithm-for-drawing-hilbert-curve</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//iterative-algorithm-for-drawing-hilbert-curve</guid>
+        http://localhost:4000/iterative-algorithm-for-drawing-hilbert-curve</link>
+        <guid isPermaLink="true">http://localhost:4000/iterative-algorithm-for-drawing-hilbert-curve</guid>
       </item>
       
     
@@ -1215,8 +1215,8 @@ Cartesian coordinates.&lt;/p&gt;
         
         <pubDate>Sat, 06 Aug 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//indexes-in-postgresql</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//indexes-in-postgresql</guid>
+        http://localhost:4000/indexes-in-postgresql</link>
+        <guid isPermaLink="true">http://localhost:4000/indexes-in-postgresql</guid>
       </item>
       
     
@@ -1237,8 +1237,8 @@ search conditions, so let’s begin.&lt;/p&gt;
         
         <pubDate>Tue, 26 Jul 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//how-to-use-find-command</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//how-to-use-find-command</guid>
+        http://localhost:4000/how-to-use-find-command</link>
+        <guid isPermaLink="true">http://localhost:4000/how-to-use-find-command</guid>
       </item>
       
     
@@ -1252,8 +1252,8 @@ search conditions, so let’s begin.&lt;/p&gt;
         
         <pubDate>Sat, 16 Jul 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//introduction-to-hibernate-embeddable-types</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//introduction-to-hibernate-embeddable-types</guid>
+        http://localhost:4000/introduction-to-hibernate-embeddable-types</link>
+        <guid isPermaLink="true">http://localhost:4000/introduction-to-hibernate-embeddable-types</guid>
       </item>
       
     
@@ -1271,8 +1271,8 @@ Vim is not as good as they say.&lt;/p&gt;
         
         <pubDate>Sat, 16 Jul 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//how-to-fix-vim-freezes</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//how-to-fix-vim-freezes</guid>
+        http://localhost:4000/how-to-fix-vim-freezes</link>
+        <guid isPermaLink="true">http://localhost:4000/how-to-fix-vim-freezes</guid>
       </item>
       
     
@@ -1295,13 +1295,13 @@ that taken or returned single value:&lt;/p&gt;
 
 &lt;p&gt;Of course they worked brilliantly:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;printArg&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; printArg&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
 printArg: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1
     
-&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;printArg&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;foo&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; printArg&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;foo&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
 printArg: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;foo
     
-&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;write-host&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;$(&lt;/span&gt;transformArg&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3&lt;span class=&quot;k&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;write-host&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;$(&lt;/span&gt;transformArg&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3&lt;span class=&quot;k&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
 9&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;But then I needed to declare function that takes three arguments,
@@ -1313,26 +1313,26 @@ I started with code:&lt;/p&gt;
 
 &lt;p&gt;Unfortunatelly it didn’t work as expected:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;manyArgs&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1, 2, 3&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; manyArgs&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1, 2, 3&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
 manyArgs: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1 2 3, &lt;span class=&quot;nv&quot;&gt;arg2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;, &lt;span class=&quot;nv&quot;&gt;arg3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;After a bit of research
 it turned out that PowerShell &lt;strong&gt;&lt;em&gt;uses space as argument separator&lt;/em&gt;&lt;/strong&gt;.
 So to pass three arguments we need to write:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;manyArgs 1 2 3
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; manyArgs 1 2 3
 manyArgs: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1, &lt;span class=&quot;nv&quot;&gt;arg2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;2, &lt;span class=&quot;nv&quot;&gt;arg3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;3
     
 &lt;span class=&quot;c1&quot;&gt;# or using more verbose syntax:&lt;/span&gt;
-&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;manyArgs -arg1 1 -arg2 2 -arg3 3
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; manyArgs -arg1 1 -arg2 2 -arg3 3
 manyArgs: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1, &lt;span class=&quot;nv&quot;&gt;arg2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;2, &lt;span class=&quot;nv&quot;&gt;arg3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;3&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;This also works with single argument functions:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;printArg 1
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; printArg 1
 printArg: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1
     
-&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;printArg -arg1 1
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; printArg -arg1 1
 printArg: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;Before we end let’s find out what exactly is &lt;code class=&quot;highlighter-rouge&quot;&gt;(1, 2, 3)&lt;/code&gt; 
@@ -1340,12 +1340,12 @@ and why calling &lt;code class=&quot;highlighter-rouge&quot;&gt;printArg(1)&lt;/
 It turns out that
 &lt;code class=&quot;highlighter-rouge&quot;&gt;(a, b, ..., z)&lt;/code&gt; expression represents array of objects in PowerShell:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1, 2, 3&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getType&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;.name
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1, 2, 3&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getType&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;.name
 &lt;span class=&quot;kt&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;And &lt;code class=&quot;highlighter-rouge&quot;&gt;(x)&lt;/code&gt; expression represents just &lt;code class=&quot;highlighter-rouge&quot;&gt;x&lt;/code&gt; value :&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;gp&quot;&gt;&amp;gt; &lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getType&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;.name
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getType&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;.name
 Int32&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
 &lt;p&gt;and thats explain outputs of &lt;code class=&quot;highlighter-rouge&quot;&gt;printArg(1)&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;manyArgs(1, 2, 3)&lt;/code&gt; command.&lt;/p&gt;
@@ -1354,8 +1354,8 @@ Int32&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
         
         <pubDate>Fri, 15 Jul 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//powershell-function-declaration-pitfall</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//powershell-function-declaration-pitfall</guid>
+        http://localhost:4000/powershell-function-declaration-pitfall</link>
+        <guid isPermaLink="true">http://localhost:4000/powershell-function-declaration-pitfall</guid>
       </item>
       
     
@@ -1369,14 +1369,14 @@ Int32&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
         
         <pubDate>Sat, 09 Jul 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//how-to-use-xargs</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//how-to-use-xargs</guid>
+        http://localhost:4000/how-to-use-xargs</link>
+        <guid isPermaLink="true">http://localhost:4000/how-to-use-xargs</guid>
       </item>
       
     
       
       <item>
-        <title>How null&#39;s are handled in switch statement in C#, Java and JavaScript</title>
+        <title>How null's are handled in switch statement in C#, Java and JavaScript</title>
         
           <description>&lt;p&gt;Let’s start with C#. In C# &lt;code class=&quot;highlighter-rouge&quot;&gt;null&lt;/code&gt;s may show up in &lt;code class=&quot;highlighter-rouge&quot;&gt;switch&lt;/code&gt; statement in two cases:&lt;/p&gt;
 
@@ -1384,8 +1384,8 @@ Int32&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
         
         <pubDate>Sat, 09 Jul 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//how-nulls-are-handled-in-switch-statement</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//how-nulls-are-handled-in-switch-statement</guid>
+        http://localhost:4000/how-nulls-are-handled-in-switch-statement</link>
+        <guid isPermaLink="true">http://localhost:4000/how-nulls-are-handled-in-switch-statement</guid>
       </item>
       
     
@@ -1400,8 +1400,8 @@ in Hibernate:&lt;/p&gt;
         
         <pubDate>Thu, 30 Jun 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//mapping-inheritance-in-hibernate</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//mapping-inheritance-in-hibernate</guid>
+        http://localhost:4000/mapping-inheritance-in-hibernate</link>
+        <guid isPermaLink="true">http://localhost:4000/mapping-inheritance-in-hibernate</guid>
       </item>
       
     
@@ -1415,8 +1415,8 @@ in Hibernate:&lt;/p&gt;
         
         <pubDate>Sat, 25 Jun 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//find-cycle-start-in-singly-linked-list</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//find-cycle-start-in-singly-linked-list</guid>
+        http://localhost:4000/find-cycle-start-in-singly-linked-list</link>
+        <guid isPermaLink="true">http://localhost:4000/find-cycle-start-in-singly-linked-list</guid>
       </item>
       
     
@@ -1433,8 +1433,8 @@ We will use:&lt;/p&gt;
         
         <pubDate>Wed, 22 Jun 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//hibernate-hello-world-app</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//hibernate-hello-world-app</guid>
+        http://localhost:4000/hibernate-hello-world-app</link>
+        <guid isPermaLink="true">http://localhost:4000/hibernate-hello-world-app</guid>
       </item>
       
     
@@ -1448,8 +1448,8 @@ We will use:&lt;/p&gt;
         
         <pubDate>Wed, 15 Jun 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//get-day-of-week-from-date</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//get-day-of-week-from-date</guid>
+        http://localhost:4000/get-day-of-week-from-date</link>
+        <guid isPermaLink="true">http://localhost:4000/get-day-of-week-from-date</guid>
       </item>
       
     
@@ -1472,7 +1472,7 @@ $ xxd -g1 hello_ru.txt
 &lt;p&gt;Let’s say that we want to print contents of this file to standard output, we can read
 &lt;em&gt;bytes&lt;/em&gt; contained in the file using the following code:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;FileInputStream&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
     
     &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
@@ -1499,12 +1499,12 @@ told stream to read next single &lt;em&gt;byte&lt;/em&gt; from file. But wait ou
 some bytes. To read text we must use another kind of stream called character stream, here is next
 program that correctly prints “Привет мир!” to standard output:&lt;/p&gt;
 
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
     &lt;span class=&quot;n&quot;&gt;InputStreamReader&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;characterStream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;null&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
         
     &lt;span class=&quot;k&quot;&gt;try&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
         &lt;span class=&quot;n&quot;&gt;FileInputStream&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;byteStream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; 
-            &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;FileInputStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;hello_ru.txt&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;FileInputStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;hello_ru.txt&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
                 
         &lt;span class=&quot;n&quot;&gt;characterStream&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;InputStreamReader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;byteStream&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;UTF8&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
         
@@ -1530,8 +1530,8 @@ parameter to &lt;code class=&quot;highlighter-rouge&quot;&gt;InputStreamReader&l
         
         <pubDate>Mon, 13 Jun 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//reading-and-writing-files-in-java</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//reading-and-writing-files-in-java</guid>
+        http://localhost:4000/reading-and-writing-files-in-java</link>
+        <guid isPermaLink="true">http://localhost:4000/reading-and-writing-files-in-java</guid>
       </item>
       
     
@@ -1546,8 +1546,8 @@ initializers.&lt;/p&gt;
         
         <pubDate>Sun, 12 Jun 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//object-and-collection-initializers-in-csharp</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//object-and-collection-initializers-in-csharp</guid>
+        http://localhost:4000/object-and-collection-initializers-in-csharp</link>
+        <guid isPermaLink="true">http://localhost:4000/object-and-collection-initializers-in-csharp</guid>
       </item>
       
     
@@ -1562,8 +1562,8 @@ used by JavaScript interpreter when converting objects to primitive types.&lt;/p
         
         <pubDate>Thu, 09 Jun 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//augmenting-JavaScript-objects-with-toString-and-valueOf</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//augmenting-JavaScript-objects-with-toString-and-valueOf</guid>
+        http://localhost:4000/augmenting-JavaScript-objects-with-toString-and-valueOf</link>
+        <guid isPermaLink="true">http://localhost:4000/augmenting-JavaScript-objects-with-toString-and-valueOf</guid>
       </item>
       
     
@@ -1584,8 +1584,8 @@ element).&lt;/p&gt;
         
         <pubDate>Mon, 06 Jun 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//creating-and-using-adnotations-in-java</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//creating-and-using-adnotations-in-java</guid>
+        http://localhost:4000/creating-and-using-adnotations-in-java</link>
+        <guid isPermaLink="true">http://localhost:4000/creating-and-using-adnotations-in-java</guid>
       </item>
       
     
@@ -1610,8 +1610,8 @@ nested loops, e.g. in Java we may write:&lt;/p&gt;
         
         <pubDate>Sat, 04 Jun 2016 02:00:00 +0200</pubDate>
         <link>
-        https://marcin-chwedczuk.github.io//break-out-of-code-block-in-java-and-javascript</link>
-        <guid isPermaLink="true">https://marcin-chwedczuk.github.io//break-out-of-code-block-in-java-and-javascript</guid>
+        http://localhost:4000/break-out-of-code-block-in-java-and-javascript</link>
+        <guid isPermaLink="true">http://localhost:4000/break-out-of-code-block-in-java-and-javascript</guid>
       </item>
       
     

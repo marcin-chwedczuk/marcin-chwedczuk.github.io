@@ -5,16 +5,16 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>https://marcin-chwedczuk.github.io/</link>
-   <description>A place where I can share my thoughts about programming</description>
+   <link>http://localhost:4000</link>
+   <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> marcin-chwedczuk</managingEditor>
+   <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>ReadOnly does not mean Immutable</title>
 	  <link>//read-only-does-not-mean-immutable</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2019-01-06T01:00:00+01:00</pubDate>
 	  <guid>//read-only-does-not-mean-immutable</guid>
 	  <description><![CDATA[
@@ -27,9 +27,9 @@ value object classes:</p>
     <span class="k">public</span> <span class="nf">Method</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">Name</span> <span class="p">=</span> <span class="n">name</span><span class="p">;</span>
     <span class="p">}</span>
-    <span class="c1">// Equals, GetHashCode, ToString skipped
-</span>    <span class="c1">// to save space.
-</span><span class="p">}</span>
+    <span class="c1">// Equals, GetHashCode, ToString skipped</span>
+    <span class="c1">// to save space.</span>
+<span class="p">}</span>
 <span class="k">public</span> <span class="k">class</span> <span class="nc">TypedArgument</span> <span class="p">{</span>
     <span class="k">public</span> <span class="n">Type</span> <span class="n">Type</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
     <span class="k">public</span> <span class="kt">object</span> <span class="n">Value</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
@@ -46,8 +46,8 @@ value object classes:</p>
         <span class="n">IReadOnlyList</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;</span> <span class="n">args</span><span class="p">)</span>
     <span class="p">{</span>
         <span class="n">CalledMethod</span> <span class="p">=</span> <span class="n">calledMethod</span><span class="p">;</span>
-        <span class="c1">// NOTICE: No defensive copy.
-</span>        <span class="n">PassedArguments</span> <span class="p">=</span> <span class="n">args</span><span class="p">;</span>
+        <span class="c1">// NOTICE: No defensive copy.</span>
+        <span class="n">PassedArguments</span> <span class="p">=</span> <span class="n">args</span><span class="p">;</span>
     <span class="p">}</span>
 <span class="p">}</span></code></pre></figure>
 
@@ -77,12 +77,12 @@ called <code class="highlighter-rouge">MethodCallSpy</code>:</p>
     <span class="p">}</span>
 
     <span class="k">public</span> <span class="k">void</span> <span class="nf">AddMethodCall</span><span class="p">(</span><span class="n">Method</span> <span class="n">method</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">var</span> <span class="n">methodCall</span> <span class="p">=</span> 
+        <span class="kt">var</span> <span class="n">methodCall</span> <span class="p">=</span> 
             <span class="k">new</span> <span class="nf">MethodCall</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">_currentArguments</span><span class="p">);</span>
         <span class="n">_methodCalls</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">methodCall</span><span class="p">);</span>
 
-        <span class="c1">// NOTICE: Old List&lt;T&gt; is not modified.
-</span>        <span class="n">_currentArguments</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;();</span>
+        <span class="c1">// NOTICE: Old List&lt;T&gt; is not modified.</span>
+        <span class="n">_currentArguments</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;();</span>
     <span class="p">}</span>
 <span class="p">}</span></code></pre></figure>
 
@@ -99,19 +99,19 @@ Yes, I know, I know
 <a href="https://xkcd.com/1691/">“premature optimization is the root of all evil”</a>
 but this was my quick’n’dirty pet project and I just cannot resist:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// readonly added.
-</span><span class="k">private</span> <span class="k">readonly</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;</span> <span class="n">_currentArguments</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// readonly added.</span>
+<span class="k">private</span> <span class="k">readonly</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;</span> <span class="n">_currentArguments</span>
     <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;();</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">AddMethodCall_AfterRefactoring</span><span class="p">(</span><span class="n">Method</span> <span class="n">method</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Assumes that MethodCall will make a defensive copy
-</span>    <span class="c1">// of _currentArguments list.
-</span>    <span class="n">var</span> <span class="n">methodCall</span> <span class="p">=</span> 
+    <span class="c1">// Assumes that MethodCall will make a defensive copy</span>
+    <span class="c1">// of _currentArguments list.</span>
+    <span class="kt">var</span> <span class="n">methodCall</span> <span class="p">=</span> 
         <span class="k">new</span> <span class="nf">MethodCall</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">_currentArguments</span><span class="p">);</span>
 
     <span class="n">_methodCalls</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">methodCall</span><span class="p">);</span>
 
-    <span class="c1">// NOTICE: We use clear instead of creating a new list
-</span>    <span class="n">_currentArguments</span><span class="p">.</span><span class="nf">Clear</span><span class="p">();</span>
+    <span class="c1">// NOTICE: We use clear instead of creating a new list</span>
+    <span class="n">_currentArguments</span><span class="p">.</span><span class="nf">Clear</span><span class="p">();</span>
 <span class="p">}</span></code></pre></figure>
 
 <p>Of course I also made a lot of other refactorings without
@@ -138,9 +138,9 @@ For example if a method is declared like this:</p>
 <p>We can be sure, that it will not attempt to modify
 the list that we are going to pass to it:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span> <span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span> <span class="p">};</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span> <span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span> <span class="p">};</span>
 <span class="nf">ProcessList</span><span class="p">(</span><span class="n">list</span><span class="p">);</span>
-<span class="p">//</span> <span class="n">still</span><span class="p">:</span> <span class="n">list</span> <span class="p">==</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span> <span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span> <span class="p">}</span></code></pre></figure>
+<span class="c1">// still: list == new List&lt;string&gt; { "foo", "bar" }</span></code></pre></figure>
 
 <p>Of course <code class="highlighter-rouge">ProcessList</code> method may be
 implemented in an evil way:</p>
@@ -154,19 +154,19 @@ method, that returns a <code class="highlighter-rouge">List&lt;T&gt;</code> inst
 wrapped in a <code class="highlighter-rouge">ReadOnlyCollection&lt;T&gt;</code> object
 (<a href="https://github.com/dotnet/corefx/blob/master/src/Common/src/CoreLib/System/Collections/Generic/List.cs#L251">source code</a>).</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span> <span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span> <span class="p">};</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span> <span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span> <span class="p">};</span>
 <span class="nf">ProcessList</span><span class="p">(</span><span class="n">list</span><span class="p">.</span><span class="nf">AsReadOnly</span><span class="p">());</span>
-<span class="c1">// Our list can be modified now
-// only by using reflection
-// to get access to private fields
-</span><span class="p">//</span> <span class="n">of</span> <span class="n">ReadOnlyCollection</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="k">class</span><span class="err">.</span></code></pre></figure>
+<span class="c1">// Our list can be modified now</span>
+<span class="c1">// only by using reflection</span>
+<span class="c1">// to get access to private fields</span>
+<span class="c1">// of ReadOnlyCollection&lt;T&gt; class.</span></code></pre></figure>
 
 <p>On the other hand receivers of <code class="highlighter-rouge">IReadOnlyList&lt;T&gt;</code> arguments
 are not protected at all. Consider this short program:</p>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">ReadonlyButNotForYou</span><span class="p">()</span> <span class="p">{</span>
-    <span class="n">var</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span> <span class="p">};</span>
+    <span class="kt">var</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span> <span class="p">};</span>
 
     <span class="kt">int</span> <span class="nf">extraInt</span><span class="p">()</span> <span class="p">{</span>
         <span class="n">list</span><span class="p">[</span><span class="m">0</span><span class="p">]</span> <span class="p">=</span> <span class="m">42</span><span class="p">;</span>
@@ -180,8 +180,8 @@ are not protected at all. Consider this short program:</p>
     <span class="kt">int</span> <span class="n">tmp</span> <span class="p">=</span> <span class="nf">extraInt</span><span class="p">();</span>
     <span class="kt">int</span> <span class="n">firstAgain</span> <span class="p">=</span> <span class="n">ints</span><span class="p">.</span><span class="nf">First</span><span class="p">();</span>
 
-    <span class="n">Assert</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">firstAgain</span><span class="p">);</span> <span class="c1">// fails
-</span><span class="p">}</span></code></pre></figure>
+    <span class="n">Assert</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">firstAgain</span><span class="p">);</span> <span class="c1">// fails</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>It demonstrates that <code class="highlighter-rouge">IReadOnlyList&lt;T&gt;</code> can change even
 during duration of a single method!</p>
@@ -247,7 +247,7 @@ before using it (all links to GitHub):</p>
 	<item>
 	  <title>Random thoughts on Maybe</title>
 	  <link>//random-thoughts-on-maybe</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2019-01-01T01:00:00+01:00</pubDate>
 	  <guid>//random-thoughts-on-maybe</guid>
 	  <description><![CDATA[
@@ -276,18 +276,18 @@ method may return <code class="highlighter-rouge">null</code> instead of an obje
 Some of them used special naming conventions or 
 comments, for example:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// Naming convention and XML documentation
-// comments in action.
-</span><span class="k">public</span> <span class="k">interface</span> <span class="n">IUserRepository</span> <span class="p">{</span>
-    <span class="c1">/// &lt;returns&gt;
-</span>    <span class="c1">/// Returns &lt;c&gt;null&lt;/c&gt; if user is not found.
-</span>    <span class="c1">/// &lt;/returns&gt;
-</span>    <span class="n">User</span> <span class="nf">FindById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// Naming convention and XML documentation</span>
+<span class="c1">// comments in action.</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="nc">IUserRepository</span> <span class="p">{</span>
+    <span class="c1">/// &lt;returns&gt;</span>
+    <span class="c1">/// Returns &lt;c&gt;null&lt;/c&gt; if user is not found.</span>
+    <span class="c1">/// &lt;/returns&gt;</span>
+    <span class="n">User</span> <span class="nf">FindById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
 
-    <span class="c1">/// &lt;exception cref="EntityNotFound"&gt;
-</span>    <span class="c1">/// If user is not found.
-</span>    <span class="c1">/// &lt;/exception&gt;
-</span>    <span class="n">User</span> <span class="nf">FindRequiredById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
+    <span class="c1">/// &lt;exception cref="EntityNotFound"&gt;</span>
+    <span class="c1">/// If user is not found.</span>
+    <span class="c1">/// &lt;/exception&gt;</span>
+    <span class="n">User</span> <span class="nf">FindRequiredById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
 <span class="p">}</span></code></pre></figure>
 
 <p>Others resorted to using special marking attributes and
@@ -296,12 +296,12 @@ A good example of this category is
 <a href="https://www.nuget.org/packages/JetBrains.Annotations">JetBrains.Annotations</a> package, that can be used together with ReSharper
 to detect missing null checks:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IUserRepository</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="nc">IUserRepository</span> <span class="p">{</span>
     <span class="p">[</span><span class="n">CanBeNull</span><span class="p">]</span>
     <span class="n">User</span> <span class="nf">FindById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
 <span class="p">}</span>
 
-<span class="k">public</span> <span class="k">interface</span> <span class="n">IUserService</span> <span class="p">{</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="nc">IUserService</span> <span class="p">{</span>
     <span class="k">void</span> <span class="nf">ActivateUser</span><span class="p">([</span><span class="n">NotNull</span><span class="p">]</span> <span class="n">User</span> <span class="n">user</span><span class="p">);</span>
 <span class="p">}</span></code></pre></figure>
 
@@ -320,11 +320,11 @@ and <code class="highlighter-rouge">Maybe&lt;T&gt;</code> is not perfect either.
 
 <p>We can use <code class="highlighter-rouge">Maybe&lt;T&gt;</code> like this:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IUserRepository</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="nc">IUserRepository</span> <span class="p">{</span>
     <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="nf">FindById</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span>
 <span class="p">}</span>
-<span class="c1">// and usage:
-</span><span class="n">var</span> <span class="n">user</span> <span class="p">=</span> <span class="n">usersRepository</span><span class="p">.</span><span class="nf">FindById</span><span class="p">(</span><span class="n">userId</span><span class="p">);</span>
+<span class="c1">// and usage:</span>
+<span class="kt">var</span> <span class="n">user</span> <span class="p">=</span> <span class="n">usersRepository</span><span class="p">.</span><span class="nf">FindById</span><span class="p">(</span><span class="n">userId</span><span class="p">);</span>
 <span class="k">if</span> <span class="p">(</span><span class="n">user</span><span class="p">.</span><span class="n">HasValue</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">return</span> <span class="nf">Ok</span><span class="p">(</span><span class="n">user</span><span class="p">);</span>
 <span class="p">}</span>
@@ -350,8 +350,8 @@ may be surprised:</p>
 <p>One small downside of using a <code class="highlighter-rouge">struct</code> is
 possibility of declaration of a nullable <code class="highlighter-rouge">Maybe&lt;T&gt;</code> type:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// Don't do this:
-</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;?</span> <span class="n">bad</span><span class="p">;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// Don't do this:</span>
+<span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;?</span> <span class="n">bad</span><span class="p">;</span></code></pre></figure>
 
 <p>When I was writing this article I tried to gather some
 best practices of using <code class="highlighter-rouge">Maybe&lt;T&gt;</code>. 
@@ -388,14 +388,14 @@ and design such case using method overloading.</p>
 
 <p>In other words author suggest to change:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// this ctor:
-</span><span class="k">public</span> <span class="nf">SystemMessage</span><span class="p">(</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// this ctor:</span>
+<span class="k">public</span> <span class="nf">SystemMessage</span><span class="p">(</span>
     <span class="kt">string</span> <span class="n">title</span><span class="p">,</span>
     <span class="kt">string</span> <span class="n">body</span><span class="p">,</span>
     <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">Attachment</span><span class="p">&gt;</span> <span class="n">attachment</span><span class="p">);</span>
 
-<span class="c1">// into two ctor's:
-</span><span class="k">public</span> <span class="nf">SystemMessage</span><span class="p">(</span>
+<span class="c1">// into two ctor's:</span>
+<span class="k">public</span> <span class="nf">SystemMessage</span><span class="p">(</span>
     <span class="kt">string</span> <span class="n">title</span><span class="p">,</span>
     <span class="kt">string</span> <span class="n">body</span><span class="p">,</span>
     <span class="n">Attachment</span> <span class="n">attachment</span><span class="p">);</span>
@@ -404,13 +404,13 @@ and design such case using method overloading.</p>
     <span class="kt">string</span> <span class="n">title</span><span class="p">,</span>
     <span class="kt">string</span> <span class="n">body</span><span class="p">);</span>
 
-<span class="c1">// Because using these ctor's would be easier for
-// the clients. Consider:
-</span><span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">Attachment</span><span class="p">&gt;.</span><span class="n">None</span><span class="p">)</span>
+<span class="c1">// Because using these ctor's would be easier for</span>
+<span class="c1">// the clients. Consider:</span>
+<span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">Attachment</span><span class="p">&gt;.</span><span class="n">None</span><span class="p">)</span>
 <span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> 
     <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">Attachment</span><span class="p">&gt;.</span><span class="nf">From</span><span class="p">(</span><span class="n">attachment</span><span class="p">))</span>
-<span class="c1">// vs
-</span><span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">);</span>
+<span class="c1">// vs</span>
+<span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">);</span>
 <span class="k">new</span> <span class="nf">SystemMessage</span><span class="p">(</span><span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span><span class="p">,</span> <span class="n">attachment</span><span class="p">);</span></code></pre></figure>
 
 <p>But this argument does not applies to C#, where we can
@@ -472,7 +472,7 @@ you with a list of <code class="highlighter-rouge">Maybe&lt;T&gt;</code> code sm
 </ul>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">static</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">ToMaybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="k">this</span> <span class="n">T</span><span class="p">?</span> <span class="k">value</span><span class="p">)</span>
-        <span class="n">where</span> <span class="n">T</span><span class="p">:</span> <span class="k">struct</span>
+        <span class="k">where</span> <span class="n">T</span><span class="p">:</span> <span class="k">struct</span>
     <span class="err">=&gt;</span> <span class="nc">value</span><span class="p">.</span><span class="n">HasValue</span> <span class="p">?</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;.</span><span class="nf">From</span><span class="p">(</span><span class="k">value</span><span class="p">.</span><span class="n">Value</span><span class="p">)</span> <span class="p">:</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;.</span><span class="n">None</span><span class="p">;</span></code></pre></figure>
 
 <ul>
@@ -480,13 +480,13 @@ you with a list of <code class="highlighter-rouge">Maybe&lt;T&gt;</code> code sm
  For example:</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// BAD Fluent interface spaghetti
-</span><span class="n">var</span> <span class="n">cultureBad</span> <span class="p">=</span> <span class="n">user</span><span class="p">.</span><span class="nf">Select</span><span class="p">(</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// BAD Fluent interface spaghetti</span>
+<span class="kt">var</span> <span class="n">cultureBad</span> <span class="p">=</span> <span class="n">user</span><span class="p">.</span><span class="nf">Select</span><span class="p">(</span>
     <span class="n">u</span> <span class="p">=&gt;</span> <span class="nf">LoadPreferences</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
         <span class="p">.</span><span class="nf">Select</span><span class="p">(</span><span class="n">prefs</span> <span class="p">=&gt;</span> <span class="n">prefs</span><span class="p">.</span><span class="n">Culture</span><span class="p">));</span>
 
-<span class="c1">// GOOD, only one operation per Select method call
-</span><span class="n">var</span> <span class="n">cultureGood</span> <span class="p">=</span> <span class="n">user</span>
+<span class="c1">// GOOD, only one operation per Select method call</span>
+<span class="kt">var</span> <span class="n">cultureGood</span> <span class="p">=</span> <span class="n">user</span>
     <span class="p">.</span><span class="nf">Select</span><span class="p">(</span><span class="n">u</span> <span class="p">=&gt;</span> <span class="nf">LoadPreferences</span><span class="p">(</span><span class="n">u</span><span class="p">))</span>
     <span class="p">.</span><span class="nf">Select</span><span class="p">(</span><span class="n">prefs</span> <span class="p">=&gt;</span> <span class="n">prefs</span><span class="p">.</span><span class="n">Culture</span><span class="p">);</span></code></pre></figure>
 
@@ -504,8 +504,8 @@ property should be valid:</p>
 <p>A property that can return <code class="highlighter-rouge">None</code> but must be
 set to some value should be split into a getter and a method:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// AVOID:
-</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">Culture</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// AVOID:</span>
+<span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">Culture</span> <span class="p">{</span>
     <span class="k">get</span> <span class="p">{</span> <span class="k">return</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;.</span><span class="nf">From</span><span class="p">(</span><span class="n">_culture</span><span class="p">);</span> <span class="p">}</span>
     <span class="k">set</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="k">value</span><span class="p">.</span><span class="n">HasNoValue</span><span class="p">)</span>
@@ -514,8 +514,8 @@ set to some value should be split into a getter and a method:</p>
     <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="c1">// PREFER:
-</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">Culture</span>
+<span class="c1">// PREFER:</span>
+<span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">Culture</span>
     <span class="p">=&gt;</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;.</span><span class="nf">From</span><span class="p">(</span><span class="n">_culture</span><span class="p">);</span>
 
 <span class="k">void</span> <span class="nf">SetCulture</span><span class="p">(</span><span class="kt">string</span> <span class="n">culture</span><span class="p">)</span> <span class="p">{</span>
@@ -553,8 +553,8 @@ will be used to transform <code class="highlighter-rouge">Maybe&lt;T&gt;</code>s
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">private</span> <span class="n">UserRepository</span> <span class="n">_userRepository</span><span class="p">;</span>
 
-<span class="c1">// NOTICE: No if's in code
-</span><span class="k">public</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="nf">GetUserCulture</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span>
+<span class="c1">// NOTICE: No if's in code</span>
+<span class="k">public</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="nf">GetUserCulture</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span>
     <span class="p">=&gt;</span> <span class="n">_userRepository</span><span class="p">.</span><span class="nf">FindById</span><span class="p">(</span><span class="n">userId</span><span class="p">)</span>
         <span class="p">.</span><span class="nf">BiMap</span><span class="p">(</span>
             <span class="n">Some</span><span class="p">:</span> <span class="n">user</span> <span class="p">=&gt;</span> <span class="nf">GetUserCulture</span><span class="p">(</span><span class="n">user</span><span class="p">),</span>
@@ -573,9 +573,9 @@ will be used to transform <code class="highlighter-rouge">Maybe&lt;T&gt;</code>s
         <span class="p">})</span>
     <span class="p">};</span>
 
-    <span class="c1">// NOTICE: Extra extension methods for IEnumerable&lt;T&gt;
-</span>    <span class="c1">// that return Option&lt;T&gt; instead of null's.
-</span>    <span class="k">public</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="nf">FindById</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// NOTICE: Extra extension methods for IEnumerable&lt;T&gt;</span>
+    <span class="c1">// that return Option&lt;T&gt; instead of null's.</span>
+    <span class="k">public</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">User</span><span class="p">&gt;</span> <span class="nf">FindById</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">return</span> <span class="n">_users</span><span class="p">.</span><span class="nf">Find</span><span class="p">(</span><span class="n">u</span> <span class="p">=&gt;</span> <span class="n">u</span><span class="p">.</span><span class="n">UserId</span> <span class="p">==</span> <span class="n">userId</span><span class="p">);</span>
     <span class="p">}</span>
 <span class="p">}</span>
@@ -601,9 +601,9 @@ will be used to transform <code class="highlighter-rouge">Maybe&lt;T&gt;</code>s
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">static</span> <span class="kt">string</span> <span class="nf">GetUserCulture2</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span>
     <span class="p">=&gt;</span> <span class="n">_userRepository</span><span class="p">.</span><span class="nf">FindById</span><span class="p">(</span><span class="n">userId</span><span class="p">)</span>
-        <span class="p">.</span><span class="nf">Bind</span><span class="p">(</span><span class="n">user</span> <span class="p">=&gt;</span> <span class="n">user</span><span class="p">.</span><span class="n">Preferences</span><span class="p">)</span> <span class="c1">// FlatMap
-</span>        <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">prefs</span> <span class="p">=&gt;</span> <span class="n">prefs</span><span class="p">.</span><span class="n">Culture</span><span class="p">)</span>
-        <span class="p">.</span><span class="nf">IfNone</span><span class="p">(</span><span class="s">"en-US"</span><span class="p">);</span> <span class="p">//</span> <span class="k">default</span> <span class="n">culture</span></code></pre></figure>
+        <span class="p">.</span><span class="nf">Bind</span><span class="p">(</span><span class="n">user</span> <span class="p">=&gt;</span> <span class="n">user</span><span class="p">.</span><span class="n">Preferences</span><span class="p">)</span> <span class="c1">// FlatMap</span>
+        <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">prefs</span> <span class="p">=&gt;</span> <span class="n">prefs</span><span class="p">.</span><span class="n">Culture</span><span class="p">)</span>
+        <span class="p">.</span><span class="nf">IfNone</span><span class="p">(</span><span class="s">"en-US"</span><span class="p">);</span> <span class="c1">// default culture</span></code></pre></figure>
 
 <p>The only difference between these two methods
 is the value returned for users not present in the repository.
@@ -615,17 +615,17 @@ will be unpacked only on the outskirts of the application.
 For example in a typical RESTful service, <code class="highlighter-rouge">Maybe&lt;T&gt;</code> value will 
 be unpacked only in the controller:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// GET /user/{userId}/culture
-</span><span class="k">public</span> <span class="n">IActionResult</span> <span class="nf">Get</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// WARNING: In real apps do not return bare strings 
-</span>    <span class="c1">// from the REST api. 
-</span>    <span class="c1">// Always wrap them in DTOs / ViewModels / QueryResponses.
-</span>    <span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">culture</span> <span class="p">=</span> <span class="nf">GetUserCulture</span><span class="p">();</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// GET /user/{userId}/culture</span>
+<span class="k">public</span> <span class="n">IActionResult</span> <span class="nf">Get</span><span class="p">(</span><span class="kt">int</span> <span class="n">userId</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// WARNING: In real apps do not return bare strings </span>
+    <span class="c1">// from the REST api. </span>
+    <span class="c1">// Always wrap them in DTOs / ViewModels / QueryResponses.</span>
+    <span class="n">Maybe</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="n">culture</span> <span class="p">=</span> <span class="nf">GetUserCulture</span><span class="p">();</span>
     <span class="k">return</span> <span class="nf">Maybe</span><span class="p">(</span><span class="n">culture</span><span class="p">);</span>
 <span class="p">}</span>
 
-<span class="c1">// Presumably in the base controller
-</span><span class="k">public</span> <span class="n">IActionResult</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">m</span><span class="p">)</span>
+<span class="c1">// Presumably in the base controller</span>
+<span class="k">public</span> <span class="n">IActionResult</span> <span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">Maybe</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">m</span><span class="p">)</span>
     <span class="p">=&gt;</span> <span class="n">m</span><span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="k">value</span> <span class="p">=&gt;</span> <span class="nf">Ok</span><span class="p">(</span><span class="k">value</span><span class="p">))</span>
         <span class="p">.</span><span class="nf">IfNone</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nf">NotFound</span><span class="p">());</span></code></pre></figure>
 
@@ -634,46 +634,46 @@ of zealots, that in my opinion go a little bit to far in their cult of monads.
 They propose to use LINQ query syntax to transform monads.
 Let my explain this using an example:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// We want to sum three Option&lt;int&gt; values.
-</span><span class="k">private</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// We want to sum three Option&lt;int&gt; values.</span>
+<span class="k">private</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
     <span class="p">=&gt;</span> <span class="m">3</span><span class="p">;</span>
 
-<span class="c1">// Using fluent interface:
-</span><span class="n">var</span> <span class="n">sum</span> <span class="p">=</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+<span class="c1">// Using fluent interface:</span>
+<span class="kt">var</span> <span class="n">sum</span> <span class="p">=</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
     <span class="p">.</span><span class="nf">SelectMany</span><span class="p">(</span><span class="n">_</span> <span class="p">=&gt;</span> <span class="nf">GetOptionalInt</span><span class="p">(),</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">a</span><span class="p">+</span><span class="n">b</span><span class="p">)</span>
     <span class="p">.</span><span class="nf">SelectMany</span><span class="p">(</span><span class="n">_</span> <span class="p">=&gt;</span> <span class="nf">GetOptionalInt</span><span class="p">(),</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">a</span><span class="p">+</span><span class="n">b</span><span class="p">);</span>
 
-<span class="c1">// Using LINQ query:
-</span><span class="n">var</span> <span class="n">sum2</span> <span class="p">=</span>  <span class="n">from</span> <span class="n">n1</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
-            <span class="n">from</span> <span class="n">n2</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
-            <span class="n">from</span> <span class="n">n3</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
-            <span class="n">select</span> <span class="n">n1</span><span class="p">+</span><span class="n">n2</span><span class="p">+</span><span class="n">n3</span><span class="p">;</span></code></pre></figure>
+<span class="c1">// Using LINQ query:</span>
+<span class="kt">var</span> <span class="n">sum2</span> <span class="p">=</span>  <span class="k">from</span> <span class="n">n1</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+            <span class="k">from</span> <span class="n">n2</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+            <span class="k">from</span> <span class="n">n3</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+            <span class="k">select</span> <span class="n">n1</span><span class="p">+</span><span class="n">n2</span><span class="p">+</span><span class="n">n3</span><span class="p">;</span></code></pre></figure>
 
 <p>I must admin that LINQ query offers some advantages like
 ability to use <code class="highlighter-rouge">let</code> and <code class="highlighter-rouge">where</code> keywords. Also some transformations
 may be easier to express using LINQ query syntax, for example:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">sum2</span> <span class="p">=</span>  
-    <span class="n">from</span> <span class="n">n1</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
-    <span class="n">from</span> <span class="n">n2</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
-    <span class="n">from</span> <span class="n">n3</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
-    <span class="n">let</span> <span class="n">max</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
-    <span class="n">let</span> <span class="n">min</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
-    <span class="n">where</span> <span class="n">min</span> <span class="p">!=</span> <span class="m">0</span>
-    <span class="n">select</span> <span class="n">max</span> <span class="p">/</span> <span class="n">min</span><span class="p">;</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">sum2</span> <span class="p">=</span>  
+    <span class="k">from</span> <span class="n">n1</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="k">from</span> <span class="n">n2</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="k">from</span> <span class="n">n3</span> <span class="k">in</span> <span class="nf">GetOptionalInt</span><span class="p">()</span>
+    <span class="k">let</span> <span class="n">max</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
+    <span class="k">let</span> <span class="n">min</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
+    <span class="k">where</span> <span class="n">min</span> <span class="p">!=</span> <span class="m">0</span>
+    <span class="k">select</span> <span class="n">max</span> <span class="p">/</span> <span class="n">min</span><span class="p">;</span></code></pre></figure>
 
 <p>Yet in my opinion fluent interface is in 90% of cases 
 a more readable and understandable way 
 to transform <code class="highlighter-rouge">Maybe&lt;T&gt;</code>s and other monads.
 For example we may rewrite the last code snippet to:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">res</span> <span class="p">=</span> <span class="nf">Combine</span><span class="p">(</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">res</span> <span class="p">=</span> <span class="nf">Combine</span><span class="p">(</span>
         <span class="nf">GetOptionalInt</span><span class="p">(),</span>
         <span class="nf">GetOptionalInt</span><span class="p">(),</span>
         <span class="nf">GetOptionalInt</span><span class="p">()</span>
     <span class="p">)</span>
     <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">nnn</span> <span class="p">=&gt;</span> <span class="p">{</span>
-        <span class="p">(</span><span class="n">var</span> <span class="n">n1</span><span class="p">,</span> <span class="n">var</span> <span class="n">n2</span><span class="p">,</span> <span class="n">var</span> <span class="n">n3</span><span class="p">)</span> <span class="p">=</span> <span class="n">nnn</span><span class="p">;</span>
+        <span class="p">(</span><span class="kt">var</span> <span class="n">n1</span><span class="p">,</span> <span class="kt">var</span> <span class="n">n2</span><span class="p">,</span> <span class="kt">var</span> <span class="n">n3</span><span class="p">)</span> <span class="p">=</span> <span class="n">nnn</span><span class="p">;</span>
         <span class="k">return</span> <span class="k">new</span> <span class="p">{</span> 
             <span class="n">Max</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">)),</span>
             <span class="n">Min</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
@@ -682,8 +682,8 @@ For example we may rewrite the last code snippet to:</p>
     <span class="p">.</span><span class="nf">Filter</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="n">m</span><span class="p">.</span><span class="n">Min</span> <span class="p">!=</span> <span class="m">0</span><span class="p">)</span>
     <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="n">m</span><span class="p">.</span><span class="n">Max</span> <span class="p">/</span> <span class="n">m</span><span class="p">.</span><span class="n">Min</span><span class="p">);</span>
 
-<span class="c1">// We need a few utils
-</span><span class="k">private</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;(</span><span class="n">T</span><span class="p">,</span><span class="n">T</span><span class="p">)&gt;</span> <span class="n">Combine</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">Option</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">a</span><span class="p">,</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">b</span><span class="p">)</span>
+<span class="c1">// We need a few utils</span>
+<span class="k">private</span> <span class="k">static</span> <span class="n">Option</span><span class="p">&lt;(</span><span class="n">T</span><span class="p">,</span><span class="n">T</span><span class="p">)&gt;</span> <span class="n">Combine</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">Option</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">a</span><span class="p">,</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">b</span><span class="p">)</span>
     <span class="p">=&gt;</span> <span class="n">a</span><span class="p">.</span><span class="nf">SelectMany</span><span class="p">(</span>
             <span class="n">_</span> <span class="p">=&gt;</span> <span class="n">b</span><span class="p">,</span>
             <span class="p">(</span><span class="n">aValue</span><span class="p">,</span> <span class="n">bValue</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="p">(</span><span class="n">aValue</span><span class="p">,</span> <span class="n">bValue</span><span class="p">));</span>
@@ -724,28 +724,28 @@ how it can be transformed it into other monads, in particular into <code class="
 E.g. we may make our last example more robust if we provide
 information to the user why the computation failed:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">result</span> <span class="p">=</span> <span class="nf">Combine</span><span class="p">(</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="nf">Combine</span><span class="p">(</span>
     <span class="nf">GetOptionalInt</span><span class="p">(),</span>
     <span class="nf">GetOptionalInt</span><span class="p">(),</span>
     <span class="nf">GetOptionalInt</span><span class="p">()</span>
     <span class="p">)</span>
     <span class="p">.</span><span class="nf">Map</span><span class="p">(</span><span class="n">ttt</span> <span class="p">=&gt;</span> <span class="p">{</span>
-        <span class="p">(</span><span class="n">var</span> <span class="n">n1</span><span class="p">,</span> <span class="n">var</span> <span class="n">n2</span><span class="p">,</span> <span class="n">var</span> <span class="n">n3</span><span class="p">)</span> <span class="p">=</span> <span class="n">ttt</span><span class="p">;</span>
+        <span class="p">(</span><span class="kt">var</span> <span class="n">n1</span><span class="p">,</span> <span class="kt">var</span> <span class="n">n2</span><span class="p">,</span> <span class="kt">var</span> <span class="n">n3</span><span class="p">)</span> <span class="p">=</span> <span class="n">ttt</span><span class="p">;</span>
         <span class="k">return</span> <span class="k">new</span> <span class="p">{</span> 
             <span class="n">Max</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Max</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">)),</span>
             <span class="n">Min</span> <span class="p">=</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">Math</span><span class="p">.</span><span class="nf">Min</span><span class="p">(</span><span class="n">n2</span><span class="p">,</span> <span class="n">n3</span><span class="p">))</span>
         <span class="p">};</span>
     <span class="p">})</span>
     <span class="p">.</span><span class="nf">ToEither</span><span class="p">(()</span> <span class="p">=&gt;</span> <span class="nf">Error</span><span class="p">(</span><span class="s">"Not all values are available."</span><span class="p">))</span>
-    <span class="p">.</span><span class="nf">Bind</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="nf">Divide</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">Max</span><span class="p">,</span> <span class="n">m</span><span class="p">.</span><span class="n">Min</span><span class="p">));</span> <span class="c1">// FlatMap
-</span>
+    <span class="p">.</span><span class="nf">Bind</span><span class="p">(</span><span class="n">m</span> <span class="p">=&gt;</span> <span class="nf">Divide</span><span class="p">(</span><span class="n">m</span><span class="p">.</span><span class="n">Max</span><span class="p">,</span> <span class="n">m</span><span class="p">.</span><span class="n">Min</span><span class="p">));</span> <span class="c1">// FlatMap</span>
+
 <span class="n">Either</span><span class="p">&lt;</span><span class="n">Error</span><span class="p">,</span> <span class="kt">int</span><span class="p">&gt;</span> <span class="nf">Divide</span><span class="p">(</span><span class="kt">int</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">b</span> <span class="p">==</span> <span class="m">0</span><span class="p">)</span> <span class="k">return</span> <span class="nf">Left</span><span class="p">(</span><span class="nf">Error</span><span class="p">(</span><span class="s">"Cannot divide by zero"</span><span class="p">));</span>
     <span class="k">return</span> <span class="nf">Right</span><span class="p">(</span><span class="n">a</span> <span class="p">/</span> <span class="n">b</span><span class="p">);</span>
 <span class="p">}</span>
 
-<span class="c1">// Helper classes:
-</span><span class="k">public</span> <span class="k">class</span> <span class="nc">Error</span> <span class="p">{</span>
+<span class="c1">// Helper classes:</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Error</span> <span class="p">{</span>
     <span class="k">public</span> <span class="kt">string</span> <span class="n">Message</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
 
     <span class="k">public</span> <span class="nf">Error</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">)</span> <span class="p">{</span>
@@ -753,12 +753,12 @@ information to the user why the computation failed:</p>
     <span class="p">}</span>
 
     <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="nf">ToString</span><span class="p">()</span>
-        <span class="p">=&gt;</span> <span class="err">$</span><span class="s">"Error({Message})"</span><span class="p">;</span>
+        <span class="p">=&gt;</span> <span class="s">$"Error(</span><span class="p">{</span><span class="n">Message</span><span class="p">}</span><span class="s">)"</span><span class="p">;</span>
 <span class="p">}</span>
 
 <span class="k">public</span> <span class="k">class</span> <span class="nc">ErrorHelpers</span> <span class="p">{</span>
-    <span class="c1">// For `using static` import...
-</span>    <span class="k">public</span> <span class="k">static</span> <span class="n">Error</span> <span class="nf">Error</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">)</span>
+    <span class="c1">// For `using static` import...</span>
+    <span class="k">public</span> <span class="k">static</span> <span class="n">Error</span> <span class="nf">Error</span><span class="p">(</span><span class="kt">string</span> <span class="n">message</span><span class="p">)</span>
         <span class="p">=&gt;</span> <span class="k">new</span> <span class="nf">Error</span><span class="p">(</span><span class="n">message</span><span class="p">);</span>
 <span class="p">}</span></code></pre></figure>
 
@@ -786,8 +786,8 @@ is declared as <code class="highlighter-rouge">Option&lt;Email&gt;</code>:</p>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">User</span> <span class="p">{</span>
     <span class="k">public</span> <span class="n">Option</span><span class="p">&lt;</span><span class="n">Email</span><span class="p">&gt;</span> <span class="n">EmailAddress</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-    <span class="c1">// ...
-</span><span class="p">}</span></code></pre></figure>
+    <span class="c1">// ...</span>
+<span class="p">}</span></code></pre></figure>
 
 <p>Now Joe knows that for some strange reason not all users have email addresses.
 Joe logs into production DB to confirm that some email addresses are missing 
@@ -817,7 +817,7 @@ that it is not an easy task in C#.</p>
 	<item>
 	  <title>NSubstitute and the search for perfect error messages</title>
 	  <link>//nsubstitute-and-the-search-for-perfect-error-messages</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2018-12-15T01:00:00+01:00</pubDate>
 	  <guid>//nsubstitute-and-the-search-for-perfect-error-messages</guid>
 	  <description><![CDATA[
@@ -862,17 +862,17 @@ a method was called with an argument in a certain state:</p>
     <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="k">public</span> <span class="k">interface</span> <span class="n">IFooService</span> <span class="p">{</span>
+<span class="k">public</span> <span class="k">interface</span> <span class="nc">IFooService</span> <span class="p">{</span>
     <span class="k">void</span> <span class="nf">DoStuff</span><span class="p">(</span><span class="kt">object</span> <span class="n">argument</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="na">[Fact]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">Checking_argument_using_Arg_Is</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// Act
-</span>    <span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
+    <span class="c1">// Act</span>
+    <span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
 
-    <span class="c1">// Assert
-</span>    <span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
+    <span class="c1">// Assert</span>
+    <span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
         <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="n">PlainArgument</span><span class="p">&gt;(</span>
             <span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="m">9</span> <span class="p">&amp;&amp;</span>
                  <span class="n">e</span><span class="p">.</span><span class="n">FirstName</span> <span class="p">==</span> <span class="s">"jan"</span> <span class="p">&amp;&amp;</span>
@@ -906,14 +906,14 @@ on <code class="highlighter-rouge">PlainArgument</code> class.
 Let’s call this new class <code class="highlighter-rouge">StringableArgument</code>:</p>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">StringableArgument</span> <span class="p">{</span>
-    <span class="c1">// the same code as in PlainArgument
-</span>    <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="nf">ToString</span><span class="p">()</span>
-        <span class="p">=&gt;</span> <span class="err">$</span><span class="s">"{nameof(StringableArgument)}(id: {Id}, firstName: \"{FirstName}\", "</span> <span class="p">+</span>
-            <span class="err">$</span><span class="s">"lastName: \"{LastName}\", emailAddres: \"{EmailAddress}\")"</span><span class="p">;</span>
+    <span class="c1">// the same code as in PlainArgument</span>
+    <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="nf">ToString</span><span class="p">()</span>
+        <span class="p">=&gt;</span> <span class="s">$"</span><span class="p">{</span><span class="k">nameof</span><span class="p">(</span><span class="n">StringableArgument</span><span class="p">)}</span><span class="s">(id: </span><span class="p">{</span><span class="n">Id</span><span class="p">}</span><span class="s">, firstName: \"</span><span class="p">{</span><span class="n">FirstName</span><span class="p">}</span><span class="s">\", "</span> <span class="p">+</span>
+            <span class="s">$"lastName: \"</span><span class="p">{</span><span class="n">LastName</span><span class="p">}</span><span class="s">\", emailAddres: \"</span><span class="p">{</span><span class="n">EmailAddress</span><span class="p">}</span><span class="s">\")"</span><span class="p">;</span>
 <span class="p">}</span>
 
-<span class="c1">// in a test method:
-</span><span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
+<span class="c1">// in a test method:</span>
+<span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
     <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="n">StringableArgument</span><span class="p">&gt;(</span>
         <span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="m">9</span> <span class="p">&amp;&amp;</span>
              <span class="n">e</span><span class="p">.</span><span class="n">FirstName</span> <span class="p">==</span> <span class="s">"jan"</span> <span class="p">&amp;&amp;</span>
@@ -979,8 +979,8 @@ Let’s call this new class <code class="highlighter-rouge">EquotableArgument</c
     <span class="p">}</span>
 
     <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="nf">ToString</span><span class="p">()</span>
-        <span class="p">=&gt;</span> <span class="err">$</span><span class="s">"{nameof(StringableArgument)}(id: {Id}, firstName: \"{FirstName}\", "</span> <span class="p">+</span>
-            <span class="err">$</span><span class="s">"lastName: \"{LastName}\", emailAddres: \"{EmailAddress}\")"</span><span class="p">;</span>
+        <span class="p">=&gt;</span> <span class="s">$"</span><span class="p">{</span><span class="k">nameof</span><span class="p">(</span><span class="n">StringableArgument</span><span class="p">)}</span><span class="s">(id: </span><span class="p">{</span><span class="n">Id</span><span class="p">}</span><span class="s">, firstName: \"</span><span class="p">{</span><span class="n">FirstName</span><span class="p">}</span><span class="s">\", "</span> <span class="p">+</span>
+            <span class="s">$"lastName: \"</span><span class="p">{</span><span class="n">LastName</span><span class="p">}</span><span class="s">\", emailAddres: \"</span><span class="p">{</span><span class="n">EmailAddress</span><span class="p">}</span><span class="s">\")"</span><span class="p">;</span>
 
     <span class="k">public</span> <span class="kt">bool</span> <span class="nf">Equals</span><span class="p">(</span><span class="n">EquotableArgument</span> <span class="n">other</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">other</span> <span class="k">is</span> <span class="k">null</span><span class="p">)</span> <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
@@ -1004,10 +1004,10 @@ Let’s call this new class <code class="highlighter-rouge">EquotableArgument</c
     <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="c1">// in a test method:
-</span><span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
-    <span class="c1">// NOTICE: We no longer use a lambda expression.
-</span>    <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="nf">Is</span><span class="p">(</span><span class="k">new</span> <span class="nf">EquotableArgument</span><span class="p">(</span>
+<span class="c1">// in a test method:</span>
+<span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
+    <span class="c1">// NOTICE: We no longer use a lambda expression.</span>
+    <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="nf">Is</span><span class="p">(</span><span class="k">new</span> <span class="nf">EquotableArgument</span><span class="p">(</span>
         <span class="n">id</span><span class="p">:</span> <span class="m">9</span><span class="p">,</span> 
         <span class="n">firstName</span><span class="p">:</span> <span class="s">"jan"</span><span class="p">,</span> 
         <span class="n">lastName</span><span class="p">:</span> <span class="s">"kowalski"</span><span class="p">,</span>
@@ -1043,17 +1043,17 @@ and instead to use specialized assertion library like
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">Catching_argument_and_checking_manually_with_fluent_assertions</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// Arrange
-</span>    <span class="n">PlainArgument</span> <span class="n">arg</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
+    <span class="c1">// Arrange</span>
+    <span class="n">PlainArgument</span> <span class="n">arg</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
 
     <span class="n">_fooService</span>
         <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="n">PlainArgument</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">arg</span> <span class="p">=</span> <span class="n">x</span><span class="p">));</span>
 
-    <span class="c1">// Act
-</span>    <span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
+    <span class="c1">// Act</span>
+    <span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
 
-    <span class="c1">// Assert
-</span>    <span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
+    <span class="c1">// Assert</span>
+    <span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
         <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">PlainArgument</span><span class="p">&gt;());</span>
 
     <span class="n">arg</span><span class="p">.</span><span class="nf">Should</span><span class="p">()</span>
@@ -1100,15 +1100,15 @@ we are now responsible for manually capturing argument’s value:</p>
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">_fooService</span>
     <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="nf">Capture</span><span class="p">(</span><span class="k">out</span> <span class="n">Arg</span><span class="p">&lt;</span><span class="n">PlainArgument</span><span class="p">&gt;</span> <span class="n">arg</span><span class="p">));</span>
 
-<span class="c1">// Act
-</span><span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
+<span class="c1">// Act</span>
+<span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
 
-<span class="c1">// Assert
-</span><span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
+<span class="c1">// Assert</span>
+<span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
     <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">PlainArgument</span><span class="p">&gt;());</span>
 
-<span class="c1">// This time we use NFluent
-</span><span class="n">Check</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">arg</span><span class="p">.</span><span class="n">Value</span><span class="p">).</span><span class="nf">HasFieldsWithSameValues</span><span class="p">(</span>
+<span class="c1">// This time we use NFluent</span>
+<span class="n">Check</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">arg</span><span class="p">.</span><span class="n">Value</span><span class="p">).</span><span class="nf">HasFieldsWithSameValues</span><span class="p">(</span>
     <span class="k">new</span> <span class="nf">PlainArgument</span><span class="p">(</span>
         <span class="n">id</span><span class="p">:</span> <span class="m">7</span><span class="p">,</span> 
         <span class="n">firstName</span><span class="p">:</span> <span class="s">"john"</span><span class="p">,</span> 
@@ -1129,13 +1129,13 @@ Here is how the test code looks like with this approach:</p>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
 <span class="k">public</span> <span class="k">void</span> <span class="nf">Checking_argument_using_custom_NSubstitute_matcher</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// Arrange
-</span>
-    <span class="c1">// Act
-</span>    <span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
+    <span class="c1">// Arrange</span>
 
-    <span class="c1">// Assert
-</span>    <span class="n">var</span> <span class="n">expected</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">PlainArgument</span><span class="p">(</span>
+    <span class="c1">// Act</span>
+    <span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
+
+    <span class="c1">// Assert</span>
+    <span class="kt">var</span> <span class="n">expected</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">PlainArgument</span><span class="p">(</span>
         <span class="n">id</span><span class="p">:</span> <span class="m">11</span><span class="p">,</span> 
         <span class="n">firstName</span><span class="p">:</span> <span class="s">"jan"</span><span class="p">,</span> 
         <span class="n">lastName</span><span class="p">:</span> <span class="s">"kowlaski"</span><span class="p">,</span> 
@@ -1186,7 +1186,7 @@ the solution presented in <code class="highlighter-rouge">Catching_argument_and_
 	<item>
 	  <title>Inheritance? Just say no!</title>
 	  <link>//inheritance-just-say-no</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2018-12-12T01:00:00+01:00</pubDate>
 	  <guid>//inheritance-just-say-no</guid>
 	  <description><![CDATA[
@@ -1262,15 +1262,15 @@ may not make sense for a cache. For example it makes no
 sense to cache a template that does not exists, yet with
 inheritance we may write:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">foo</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">TemplateName</span><span class="p">(</span><span class="s">"foo"</span><span class="p">);</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">foo</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">TemplateName</span><span class="p">(</span><span class="s">"foo"</span><span class="p">);</span>
 
 <span class="n">ConcurrentDictionary</span><span class="p">&lt;</span><span class="n">TemplateName</span><span class="p">,</span> <span class="n">Template</span><span class="p">&gt;</span> <span class="n">dict</span> 
    <span class="p">=</span> <span class="k">new</span> <span class="nf">TemplateCache</span><span class="p">();</span>
 
 <span class="n">dict</span><span class="p">.</span><span class="nf">GetOrAdd</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="p">(</span><span class="n">Template</span><span class="p">)</span><span class="k">null</span><span class="p">);</span>
 
-<span class="c1">// Ops we have a null template here...
-</span><span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"value is: "</span> <span class="p">+</span> 
+<span class="c1">// Ops we have a null template here...</span>
+<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"value is: "</span> <span class="p">+</span> 
    <span class="n">dict</span><span class="p">.</span><span class="nf">GetOrAdd</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="p">(</span><span class="n">Template</span><span class="p">)</span><span class="k">null</span><span class="p">));</span></code></pre></figure>
 
 <p>When we use inheritance we are telling the type system that
@@ -1308,7 +1308,7 @@ to improve our <code class="highlighter-rouge">TemplateCache</code> component:</
 	<item>
 	  <title>Abusing local functions to hide design problems</title>
 	  <link>//abusing-local-functions-to-hide-design-problems</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2018-10-08T02:00:00+02:00</pubDate>
 	  <guid>//abusing-local-functions-to-hide-design-problems</guid>
 	  <description><![CDATA[
@@ -1317,11 +1317,11 @@ and I saw a code similar to this:</p>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">EnterpriseNotificationSender</span> <span class="p">{</span>
     <span class="k">private</span> <span class="k">readonly</span> <span class="n">IUserManagementService</span> <span class="n">_userManagementService</span><span class="p">;</span>
-    <span class="c1">// ctor and stuff...
-</span>  
+    <span class="c1">// ctor and stuff...</span>
+  
     <span class="k">public</span> <span class="k">void</span> <span class="nf">SendNotificationsToUsers</span><span class="p">(</span><span class="kt">string</span> <span class="n">companyId</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">var</span> <span class="n">addresses</span> <span class="p">=</span> <span class="nf">GetRecipientsAddresses</span><span class="p">(</span><span class="n">companyId</span><span class="p">);</span>
-        <span class="k">foreach</span><span class="p">(</span><span class="n">var</span> <span class="n">address</span> <span class="k">in</span> <span class="n">addresses</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">var</span> <span class="n">addresses</span> <span class="p">=</span> <span class="nf">GetRecipientsAddresses</span><span class="p">(</span><span class="n">companyId</span><span class="p">);</span>
+        <span class="k">foreach</span><span class="p">(</span><span class="kt">var</span> <span class="n">address</span> <span class="k">in</span> <span class="n">addresses</span><span class="p">)</span> <span class="p">{</span>
             <span class="nf">SendNotification</span><span class="p">(</span><span class="n">address</span><span class="p">);</span>
         <span class="p">}</span>
     <span class="p">}</span>
@@ -1342,8 +1342,8 @@ and I saw a code similar to this:</p>
     <span class="p">}</span>
   
     <span class="k">private</span> <span class="k">void</span> <span class="nf">SendNotification</span><span class="p">(</span><span class="n">EmailAddress</span> <span class="n">address</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">// do stuff...
-</span>    <span class="p">}</span>
+        <span class="c1">// do stuff...</span>
+    <span class="p">}</span>
 <span class="p">}</span></code></pre></figure>
 
 <p>Especially <code class="highlighter-rouge">GetRecipientsAddresses</code> method draw my attention.
@@ -1416,17 +1416,17 @@ into new methods and properties on processed objects.</p>
 	<item>
 	  <title>Avoid hidden coupling to interface implementation</title>
 	  <link>//avoid-hidden-coupling-to-interface-implementation</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2018-09-21T02:00:00+02:00</pubDate>
 	  <guid>//avoid-hidden-coupling-to-interface-implementation</guid>
 	  <description><![CDATA[
 	     <p>A few days ago I was reviewing a pull request at work and
 one line of code catch my eye:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">@event</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">CupOfCoffeeReadyEvent</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">);</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">@event</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">CupOfCoffeeReadyEvent</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">);</span>
 <span class="n">_logger</span><span class="p">.</span><span class="nf">LogInformation</span><span class="p">(</span>
-    <span class="s">"Publishing cup of coffee event: {@Event}."</span><span class="p">,</span> <span class="n">@event</span><span class="p">);</span> <span class="c1">// &lt;== this one
-</span><span class="n">_mediator</span><span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="n">@event</span><span class="p">);</span></code></pre></figure>
+    <span class="s">"Publishing cup of coffee event: {@Event}."</span><span class="p">,</span> <span class="n">@event</span><span class="p">);</span> <span class="c1">// &lt;== this one</span>
+<span class="n">_mediator</span><span class="p">.</span><span class="nf">Publish</span><span class="p">(</span><span class="n">@event</span><span class="p">);</span></code></pre></figure>
 
 <p>At my workplace we are using standard <code class="highlighter-rouge">ILogger</code> interface from 
 <code class="highlighter-rouge">Microsoft.Extensions.Logging.Abstractions</code>
@@ -1434,8 +1434,8 @@ package. Also logged variable name starts with <code class="highlighter-rouge">@
 And so I started to suspect that 
 the log statement contains an error and instead it should be written as:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// {@Event} -&gt; {Event}
-</span><span class="n">_logger</span><span class="p">.</span><span class="nf">LogInformation</span><span class="p">(</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// {@Event} -&gt; {Event}</span>
+<span class="n">_logger</span><span class="p">.</span><span class="nf">LogInformation</span><span class="p">(</span>
     <span class="s">"Publishing cup of coffee event: {Event}."</span><span class="p">,</span> <span class="n">@event</span><span class="p">);</span></code></pre></figure>
 
 <p>Without thinking any further I put a friendly comment, that 
@@ -1492,8 +1492,8 @@ ourselves by e.g. creating wrappers around parameters:</p>
 How many times have you seen a code similar to:</p>
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">void</span> <span class="nf">SomeMethod</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// IEnumerable&lt;User&gt;
-</span>    <span class="n">var</span> <span class="n">users</span> <span class="p">=</span> <span class="n">userService</span><span class="p">.</span><span class="nf">FindAllUsers</span><span class="p">();</span>
+    <span class="c1">// IEnumerable&lt;User&gt;</span>
+    <span class="kt">var</span> <span class="n">users</span> <span class="p">=</span> <span class="n">userService</span><span class="p">.</span><span class="nf">FindAllUsers</span><span class="p">();</span>
     
     <span class="n">users</span>
         <span class="p">.</span><span class="nf">ToList</span><span class="p">()</span>
@@ -1509,7 +1509,7 @@ How many times have you seen a code similar to:</p>
         <span class="p">};</span>
     <span class="p">}</span>
     <span class="k">public</span> <span class="k">void</span> <span class="nf">SaveAll</span><span class="p">(</span><span class="k">params</span> <span class="n">User</span><span class="p">[]</span> <span class="n">users</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">foreach</span> <span class="p">(</span><span class="n">var</span> <span class="n">user</span> <span class="k">in</span> <span class="n">users</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">foreach</span> <span class="p">(</span><span class="kt">var</span> <span class="n">user</span> <span class="k">in</span> <span class="n">users</span><span class="p">)</span> <span class="p">{</span>
             <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="n">user</span><span class="p">.</span><span class="n">IsActive</span><span class="p">);</span>
         <span class="p">}</span>
     <span class="p">}</span>
@@ -1551,7 +1551,7 @@ maybe even something from <code class="highlighter-rouge">System.Collections.Imm
 	<item>
 	  <title>How NOT to use the repository pattern</title>
 	  <link>//repository-pattern-my-way</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2018-07-08T02:00:00+02:00</pubDate>
 	  <guid>//repository-pattern-my-way</guid>
 	  <description><![CDATA[
@@ -1560,8 +1560,8 @@ maybe even something from <code class="highlighter-rouge">System.Collections.Imm
 <p>First, to avoid misunderstandings, let me explain what I understand
 by generic repository. Have your ever seen an interface like this:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IGenericRepository</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> 
-    <span class="n">where</span> <span class="n">TEntity</span> <span class="p">:</span> <span class="k">class</span> 
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="nc">IGenericRepository</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> 
+    <span class="k">where</span> <span class="n">TEntity</span> <span class="p">:</span> <span class="k">class</span> 
 <span class="err">{</span>
     <span class="nc">IEnumerable</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="nf">Get</span><span class="p">(</span>
         <span class="n">Expression</span><span class="p">&lt;</span><span class="n">Func</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">,</span> <span class="kt">bool</span><span class="p">&gt;&gt;</span> <span class="n">filter</span> <span class="p">=</span> <span class="k">null</span><span class="p">,</span>
@@ -1613,7 +1613,7 @@ one for reading, one for updating and one for deleting entities.</p>
 usage. The original idea behind them is that they should be used as a base
 interfaces for your custom repository interfaces, just like this:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IFooRepository</span> <span class="p">:</span> <span class="n">IGenericRepository</span><span class="p">&lt;</span><span class="n">Foo</span><span class="p">&gt;</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="nc">IFooRepository</span> <span class="p">:</span> <span class="n">IGenericRepository</span><span class="p">&lt;</span><span class="n">Foo</span><span class="p">&gt;</span> <span class="p">{</span>
     <span class="n">Foo</span> <span class="nf">FindNewest</span><span class="p">();</span>
     <span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Foo</span><span class="p">&gt;</span> <span class="nf">FindAllOutdated</span><span class="p">();</span>
 <span class="p">}</span></code></pre></figure>
@@ -1626,10 +1626,10 @@ needed and should be put on your custom repository interfaces.</p>
 <p>That is the theory. Unfortunately what I already saw a few times in my career 
 instead is this:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// notice: this is NOT an abstract class
-</span><span class="k">public</span> <span class="k">class</span> <span class="nc">GenericRepostiory</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IGenericRepository</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="p">{</span>
-    <span class="c1">// implementation details skiped
-</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// notice: this is NOT an abstract class</span>
+<span class="k">public</span> <span class="k">class</span> <span class="nc">GenericRepostiory</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="p">:</span> <span class="n">IGenericRepository</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="p">{</span>
+    <span class="c1">// implementation details skiped</span>
+
     <span class="k">public</span> <span class="n">IQueryable</span><span class="p">&lt;</span><span class="n">TEntity</span><span class="p">&gt;</span> <span class="nf">GetAll</span><span class="p">()</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
     <span class="k">public</span> <span class="n">TEntity</span> <span class="nf">GetById</span><span class="p">(</span><span class="kt">object</span> <span class="n">id</span><span class="p">)</span> <span class="p">{</span> <span class="cm">/* code */</span> <span class="p">}</span>
 
@@ -1648,10 +1648,10 @@ services like any other dependency:</p>
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">OrderService</span> <span class="p">{</span>
     <span class="k">private</span> <span class="k">readonly</span> <span class="n">IGenericRepository</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="n">_orderRepository</span><span class="p">;</span>
 
-    <span class="c1">// ctor and other stuff...
-</span>
+    <span class="c1">// ctor and other stuff...</span>
+
     <span class="k">public</span> <span class="n">NewestOrderDto</span> <span class="nf">FindNewestOrderForCurrentUser</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">var</span> <span class="n">newestOrders</span> <span class="p">=</span> <span class="n">_orderRepository</span><span class="p">.</span><span class="nf">GetAll</span><span class="p">()</span>
+        <span class="kt">var</span> <span class="n">newestOrders</span> <span class="p">=</span> <span class="n">_orderRepository</span><span class="p">.</span><span class="nf">GetAll</span><span class="p">()</span>
             <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">AssignedTo</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">_currentUser</span><span class="p">.</span><span class="n">Id</span><span class="p">)</span>
             <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Closed</span><span class="p">)</span>
             <span class="p">.</span><span class="nf">OrderByDescending</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">CreationDate</span><span class="p">)</span>
@@ -1695,7 +1695,7 @@ and use <code class="highlighter-rouge">DbSet</code> in your services). And why?
 
 <figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">if</span> <span class="p">(</span><span class="cm">/* some complicated condition */</span><span class="p">)</span> <span class="p">{</span>
 	<span class="k">if</span> <span class="p">(</span><span class="cm">/* some other complicated condition */</span><span class="p">)</span> <span class="p">{</span>
-		 <span class="n">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">_orderRepository</span><span class="p">.</span><span class="nf">GetAll</span><span class="p">()</span>
+		 <span class="kt">var</span> <span class="n">result</span> <span class="p">=</span> <span class="n">_orderRepository</span><span class="p">.</span><span class="nf">GetAll</span><span class="p">()</span>
 			  <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">AssignedTo</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="n">_currentUser</span><span class="p">.</span><span class="n">Id</span><span class="p">)</span>
 			  <span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">State</span> <span class="p">!=</span> <span class="n">OrderState</span><span class="p">.</span><span class="n">Closed</span><span class="p">)</span>
 			  <span class="p">.</span><span class="nf">OrderByDescending</span><span class="p">(</span><span class="n">order</span> <span class="p">=&gt;</span> <span class="n">order</span><span class="p">.</span><span class="n">CreationDate</span><span class="p">)</span>
@@ -1704,9 +1704,9 @@ and use <code class="highlighter-rouge">DbSet</code> in your services). And why?
 
 		 <span class="k">return</span> <span class="n">_mapper</span><span class="p">.</span><span class="n">MapTo</span><span class="p">&lt;</span><span class="n">NewestOrderDto</span><span class="p">&gt;(</span><span class="n">newestOrders</span><span class="p">);</span>
 	<span class="p">}</span>
-	<span class="c1">// some code here
-</span><span class="p">}</span>
-<span class="p">//</span> <span class="n">more</span> <span class="n">code</span> <span class="n">here</span></code></pre></figure>
+	<span class="c1">// some code here</span>
+<span class="p">}</span>
+<span class="c1">// more code here</span></code></pre></figure>
 
 <p>To execute above query you must fulfill two if’s conditions. This will make
 an integration test for the above query less readable and more fragile. 
@@ -1786,9 +1786,9 @@ This pattern is already implemented by both <code class="highlighter-rouge">ISes
 (think change tracking and dirty checking),
 we only need a better interface over them:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IUnitOfWork</span> <span class="p">{</span>
-    <span class="c1">// or just Begin()
-</span>    <span class="k">void</span> <span class="nf">BeginTransaction</span><span class="p">();</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="nc">IUnitOfWork</span> <span class="p">{</span>
+    <span class="c1">// or just Begin()</span>
+    <span class="k">void</span> <span class="nf">BeginTransaction</span><span class="p">();</span>
 
     <span class="k">void</span> <span class="nf">Commit</span><span class="p">();</span>
     <span class="k">void</span> <span class="nf">Rollback</span><span class="p">();</span>
@@ -1801,9 +1801,9 @@ or a decorator around command handlers and/or services.</p>
 
 <p>Example repository created using the above guidelines:</p>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="n">IOrderRepository</span> <span class="p">{</span>
-	<span class="c1">// We do not need FindById so we do not included it
-</span>	<span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="nf">FindActiveOrdersAssignedToUser</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span> 
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">interface</span> <span class="nc">IOrderRepository</span> <span class="p">{</span>
+	<span class="c1">// We do not need FindById so we do not included it</span>
+	<span class="n">IEnumerable</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;</span> <span class="nf">FindActiveOrdersAssignedToUser</span><span class="p">(</span><span class="n">UserId</span> <span class="n">id</span><span class="p">);</span> 
 <span class="p">}</span>
 
 <span class="k">public</span> <span class="k">class</span> <span class="nc">OrderRepository</span> <span class="p">:</span> <span class="n">GenericRepository</span><span class="p">&lt;</span><span class="n">Order</span><span class="p">&gt;,</span> <span class="n">IOrderRepository</span> <span class="p">{</span>
@@ -1837,10 +1837,10 @@ Most common problems with “specific” repositories are as follows:</p>
  represent a query criteria. For example:</li>
 </ul>
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">var</span> <span class="n">ordersToCancel</span> <span class="p">=</span> <span class="n">_orderRepository</span><span class="p">.</span><span class="nf">FindAllMatching</span><span class="p">(</span>
-	<span class="c1">// Alternatively you may use the builder pattern
-</span>	<span class="c1">// to create a criteria object.
-</span>	<span class="k">new</span> <span class="n">OrderCriteria</span> <span class="p">{</span>
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">ordersToCancel</span> <span class="p">=</span> <span class="n">_orderRepository</span><span class="p">.</span><span class="nf">FindAllMatching</span><span class="p">(</span>
+	<span class="c1">// Alternatively you may use the builder pattern</span>
+	<span class="c1">// to create a criteria object.</span>
+	<span class="k">new</span> <span class="n">OrderCriteria</span> <span class="p">{</span>
 		<span class="n">StatusIsIn</span> <span class="p">=</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="n">OrderStatus</span><span class="p">.</span><span class="n">New</span><span class="p">,</span> <span class="n">OrderStatus</span><span class="p">.</span><span class="n">InProgres</span> <span class="p">},</span>
 		<span class="n">OrderedItemsContainAll</span> <span class="p">=</span> <span class="k">new</span><span class="p">[]</span> <span class="p">{</span> <span class="n">searchedItem</span> <span class="p">},</span>
 		<span class="n">CustomerIs</span> <span class="p">=</span> <span class="nf">GetCurrentCustomer</span><span class="p">()</span>
@@ -1855,8 +1855,8 @@ build query step-by-step:</p>
 	<span class="n">q</span> <span class="p">=</span> <span class="n">q</span><span class="p">.</span><span class="nf">Where</span><span class="p">(</span><span class="n">o</span> <span class="p">=&gt;</span> <span class="n">criteria</span><span class="p">.</span><span class="n">StatusIsIn</span><span class="p">.</span><span class="nf">Contains</span><span class="p">(</span><span class="n">o</span><span class="p">.</span><span class="n">Status</span><span class="p">));</span>
 <span class="p">}</span>
 
-<span class="c1">// A long list of other conditions here..
-</span>
+<span class="c1">// A long list of other conditions here..</span>
+
 <span class="k">return</span> <span class="n">q</span><span class="p">.</span><span class="nf">ToList</span><span class="p">();</span></code></pre></figure>
 
 <p>A closely related yet different aproach is to use the query object pattern (see 

@@ -5,16 +5,16 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>https://marcin-chwedczuk.github.io/</link>
-   <description>A place where I can share my thoughts about programming</description>
+   <link>http://localhost:4000</link>
+   <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> marcin-chwedczuk</managingEditor>
+   <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Devoxx Poland 2018</title>
 	  <link>//devoxx-poland-2018</link>
-	  <author>marcin-chwedczuk</author>
+	  <author></author>
 	  <pubDate>2018-06-25T02:00:00+02:00</pubDate>
 	  <guid>//devoxx-poland-2018</guid>
 	  <description><![CDATA[
@@ -73,16 +73,16 @@ my colleagues that couldn’t attend the conference. Use them at your own risk.<
 
 <figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyAggregate</span> <span class="o">{</span>
     <span class="kd">private</span> <span class="kd">final</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">DomainEvent</span><span class="o">&gt;</span> <span class="n">pendingEvents</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
-    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">DomainEvent</span><span class="o">&gt;</span> <span class="n">getPendingEvents</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">DomainEvent</span><span class="o">&gt;</span> <span class="nf">getPendingEvents</span><span class="o">()</span> <span class="o">{</span>
         <span class="k">return</span> <span class="n">pendingEvents</span><span class="o">;</span>
     <span class="o">}</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">flushEvents</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">flushEvents</span><span class="o">()</span> <span class="o">{</span>
         <span class="n">pendingEvents</span><span class="o">.</span><span class="na">clear</span><span class="o">();</span>
     <span class="o">}</span>
-    <span class="kd">public</span> <span class="n">performOperation</span><span class="o">()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nf">performOperation</span><span class="o">()</span> <span class="o">{</span>
         <span class="c1">// do some stuff</span>
         <span class="n">NameChangedEvent</span> <span class="n">event</span> <span class="o">=</span> 
-           <span class="k">new</span> <span class="n">NameChangedEvent</span><span class="o">(</span><span class="s">"old-name"</span><span class="o">,</span> <span class="s">"new-name"</span><span class="o">);</span>
+           <span class="k">new</span> <span class="nf">NameChangedEvent</span><span class="o">(</span><span class="s">"old-name"</span><span class="o">,</span> <span class="s">"new-name"</span><span class="o">);</span>
 
         <span class="n">pendingEvents</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">event</span><span class="o">);</span>
         <span class="n">applyEvent</span><span class="o">(</span><span class="n">event</span><span class="o">);</span>
@@ -91,12 +91,12 @@ my colleagues that couldn’t attend the conference. Use them at your own risk.<
 <span class="o">}</span>
 
 <span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyAggregateRepository</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="n">MyAggregate</span> <span class="n">load</span><span class="o">(</span><span class="n">UUID</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="n">MyAggregate</span> <span class="nf">load</span><span class="o">(</span><span class="n">UUID</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">List</span><span class="o">&lt;</span><span class="n">DomainEvents</span><span class="o">&gt;</span> <span class="n">events</span> <span class="o">=</span> <span class="n">eventStore</span><span class="o">.</span><span class="na">loadEventsById</span><span class="o">(</span><span class="n">id</span><span class="o">);</span>
         <span class="n">MyAggregate</span> <span class="n">aggr</span> <span class="o">=</span> <span class="n">MyAggregate</span><span class="o">.</span><span class="na">recreateFrom</span><span class="o">(</span><span class="n">id</span><span class="o">,</span> <span class="n">events</span><span class="o">);</span>
         <span class="k">return</span> <span class="n">aggr</span><span class="o">;</span>
     <span class="o">}</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="n">save</span><span class="o">(</span><span class="n">MyAggregate</span> <span class="n">aggr</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">save</span><span class="o">(</span><span class="n">MyAggregate</span> <span class="n">aggr</span><span class="o">)</span> <span class="o">{</span>
         <span class="n">eventStore</span><span class="o">.</span><span class="na">appendEvents</span><span class="o">(</span><span class="n">aggr</span><span class="o">.</span><span class="na">getId</span><span class="o">(),</span> <span class="n">aggr</span><span class="o">.</span><span class="na">getPendingEvents</span><span class="o">());</span>
         <span class="n">aggr</span><span class="o">.</span><span class="na">flushEvents</span><span class="o">();</span>
     <span class="o">}</span>
