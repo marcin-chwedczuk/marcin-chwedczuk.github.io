@@ -12,6 +12,167 @@
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
+	  <title>Doubles and Unit Testing</title>
+	  <link>//doubles-and-unit-testing</link>
+	  <author></author>
+	  <pubDate>2019-09-18T02:00:01+02:00</pubDate>
+	  <guid>//doubles-and-unit-testing</guid>
+	  <description><![CDATA[
+	     <p>Floating point numbers are inherently imprecise.
+This can be problematic when we try to unit test
+numerical algorithms.
+Let’s see this on an example
+(JVM/Scala, ScalaTest used as a testing framework):</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="s">"squaring should work"</span> <span class="n">in</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">d</span> <span class="k">=</span> <span class="mf">0.6168705534069904</span>
+
+    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">d</span><span class="o">*</span><span class="n">d</span>
+
+    <span class="n">result</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="mf">0.3805292796606466</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This test works just fine… until someone decides to
+do a “harmless refactoring” and replaces <code class="highlighter-rouge">d*d</code> by <code class="highlighter-rouge">Math.pow(d, 2)</code>:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="s">"squaring should work"</span> <span class="n">in</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">d</span> <span class="k">=</span> <span class="mf">0.6168705534069904</span>
+
+    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">Math</span><span class="o">.</span><span class="n">pow</span><span class="o">(</span><span class="n">d</span><span class="o">,</span> <span class="mi">2</span><span class="o">)</span>
+
+    <span class="n">result</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="mf">0.3805292796606466</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Now the test fails with the following message:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">0.38052927966064654 was not equal to 0.3805292796606466</code></pre></figure>
+
+<p>The expected and the actual values differ by ~5.6E-17.
+Doubles offer precision of about 15 significant digits in a result.
+All the other digits after 15th digit are just noise that should be
+ignored.</p>
+
+<p>To make our unit-test more robust we have two strategies.
+The first strategy is to know the precision that is guaranteed by the algorithm
+that we are using, and to round the result to that
+precision before returning it to the client:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">square</span><span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">d2</span> <span class="k">=</span> <span class="nc">Math</span><span class="o">.</span><span class="n">pow</span><span class="o">(</span><span class="n">d</span><span class="o">,</span> <span class="mi">2</span><span class="o">)</span>
+    <span class="c1">// Precision from org.apache.commons:commons-math3:3.6.1
+</span>    <span class="k">return</span> <span class="nc">Precision</span><span class="o">.</span><span class="n">round</span><span class="o">(</span><span class="n">d2</span><span class="o">,</span> <span class="mi">8</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="s">"squaring should work"</span> <span class="n">in</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">d</span> <span class="k">=</span> <span class="mf">0.6168705534069904</span>
+
+    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">square</span><span class="o">(</span><span class="n">d</span><span class="o">)</span>
+
+    <span class="n">result</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="mf">0.38052928</span><span class="o">)</span> <span class="c1">// rounded
+</span><span class="o">}</span></code></pre></figure>
+
+<p>The second strategy is to use assertions intended to work
+with floating point numbers. Again to use them correctly we need to
+be aware of the precision of our algorithm:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="s">"squaring should work"</span> <span class="n">in</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">d</span> <span class="k">=</span> <span class="mf">0.6168705534069904</span>
+
+    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">d</span><span class="o">*</span><span class="n">d</span>
+
+    <span class="n">result</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="mf">0.3805292796606466</span> <span class="o">+-</span> <span class="mf">0.000000005</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Personally I prefer the first strategy, but with
+either of them our tests will be more robust and
+refactoring-friendly.</p>
+
+<h4 id="troubles-with-nan">Troubles with NaN</h4>
+
+<p>Totally different set of problems are connected to <code class="highlighter-rouge">NaN</code> values.
+On JVM operator <code class="highlighter-rouge">==</code> and <code class="highlighter-rouge">equals</code> behave 
+inconsistently when comparing <code class="highlighter-rouge">NaN</code>s:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="s">"Jvm's Double"</span> <span class="n">should</span> <span class="o">{</span>
+    <span class="s">"follow JVM spec"</span> <span class="n">in</span> <span class="o">{</span>
+        <span class="k">val</span> <span class="n">nan</span> <span class="k">=</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span><span class="o">;</span>
+
+        <span class="c1">// Required by IEEE 754 Standard
+</span>        <span class="o">(</span><span class="n">nan</span> <span class="o">==</span> <span class="n">nan</span><span class="o">)</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="kc">false</span><span class="o">)</span>
+
+        <span class="c1">// Required by JVM Object#equals contract:
+</span>        <span class="c1">// "for any non-null reference value x,
+</span>        <span class="c1">//  x.equals(x) should return true"
+</span>        <span class="n">nan</span><span class="o">.</span><span class="n">equals</span><span class="o">(</span><span class="n">nan</span><span class="o">)</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Unit testing frameworks often do not help here much.
+For example the following test (ScalaTest):</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="s">"how to check that a value is NaN?"</span> <span class="n">in</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">nan</span> <span class="k">=</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span><span class="o">;</span>
+    <span class="n">nan</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="n">nan</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>will fail with a rather unhelpful message:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">NaN was not equal to NaN</code></pre></figure>
+
+<p>According to ScalaTest guidelines we should use <code class="highlighter-rouge">Double#isNaN</code>
+to check if a value is <code class="highlighter-rouge">NaN</code>:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="s">"how to check that a value is NaN?"</span> <span class="n">in</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">nan</span> <span class="k">=</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span><span class="o">;</span>
+    <span class="n">nan</span><span class="o">.</span><span class="n">isNaN</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>We experience similar troubles when we try to
+compare case classes containing double fields with <code class="highlighter-rouge">NaN</code> values:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">CaseClass</span><span class="o">(</span><span class="n">d1</span><span class="k">:</span> <span class="kt">Double</span><span class="o">,</span>
+                     <span class="n">d2</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span>
+
+<span class="c1">// In test code:
+</span><span class="k">val</span> <span class="n">inf</span> <span class="k">=</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">PositiveInfinity</span>
+<span class="k">val</span> <span class="n">nan</span> <span class="k">=</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span>
+
+<span class="nc">CaseClass</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">)</span> <span class="n">shouldBe</span><span class="o">(</span><span class="nc">CaseClass</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">))</span>
+<span class="nc">CaseClass</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="o">+</span><span class="mf">0.0</span><span class="o">)</span> <span class="n">shouldBe</span><span class="o">(</span><span class="nc">CaseClass</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="o">-</span><span class="mf">0.0</span><span class="o">))</span>
+<span class="nc">CaseClass</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">inf</span><span class="o">)</span> <span class="n">shouldBe</span><span class="o">(</span><span class="nc">CaseClass</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">inf</span><span class="o">))</span>
+
+<span class="c1">// fails: CaseData(1.0,NaN) was not equal to CaseData(1.0,NaN)
+</span><span class="nc">CaseClass</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">nan</span><span class="o">)</span> <span class="n">shouldBe</span><span class="o">(</span><span class="nc">CaseClass</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">nan</span><span class="o">))</span></code></pre></figure>
+
+<p>I do not have a good solution for this problem.
+We can either create a custom assertion for a given case class ourselves,
+define a custom equality using 
+<a href="http://www.scalactic.org/user_guide/CustomEquality">Scalactic</a>
+or we can use <code class="highlighter-rouge">Option[Double]</code> and
+somehow map <code class="highlighter-rouge">NaN</code>s to <code class="highlighter-rouge">Option</code>s <code class="highlighter-rouge">None</code>.
+None of the solutions is great.</p>
+
+<p>The last thing to remember is that we cannot <code class="highlighter-rouge">match</code> <code class="highlighter-rouge">NaN</code> values:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">x</span> <span class="k">=</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span>
+
+<span class="c1">// will fail
+</span><span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span> <span class="k">=&gt;</span> <span class="n">doStuff</span><span class="o">()</span>
+    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="n">fail</span><span class="o">(</span><span class="s">"NaN not matched!"</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="c1">// how to do it properly
+</span><span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="n">value</span><span class="nd">@_</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">isNaN</span> <span class="k">=&gt;</span> <span class="n">doStuff</span><span class="o">()</span>
+    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="n">fail</span><span class="o">(</span><span class="s">"NaN not matched!"</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
 	  <title>Odroid GO Review</title>
 	  <link>//odroid-go-review</link>
 	  <author></author>
@@ -2014,128 +2175,6 @@ I personally suggest to use either the last solution or
 the solution presented in <code class="highlighter-rouge">Catching_argument_and_checking_manually_with_fluent_assertions</code> test.</p>
 
 <p>Source code and examples: <a href="https://github.com/marcin-chwedczuk/blog-nsubstitute-error-messages">GitHub</a></p>
-
-
-	  ]]></description>
-	</item>
-
-	<item>
-	  <title>Inheritance? Just say no!</title>
-	  <link>//inheritance-just-say-no</link>
-	  <author></author>
-	  <pubDate>2018-12-12T01:00:00+01:00</pubDate>
-	  <guid>//inheritance-just-say-no</guid>
-	  <description><![CDATA[
-	     <p>Recently during a code review I have found the following piece
-of code:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">TemplateCache</span> 
-    <span class="p">:</span> <span class="n">ConcurrentDictionary</span><span class="p">&lt;</span><span class="n">TemplateName</span><span class="p">,</span> <span class="n">Template</span><span class="p">&gt;</span> <span class="p">{</span> <span class="p">}</span></code></pre></figure>
-
-<p>Here the programmer broke one of the most fundamental principles
-of modern object oriented programming:</p>
-
-<blockquote>
-  <p>Prefer composition over inheritance</p>
-</blockquote>
-
-<p>Why inheritance is bad in most of the cases? Here are the reasons:</p>
-
-<h6 id="watered-down-component-api">Watered down component API</h6>
-
-<p>What methods would you expect on a cache? Something that gets
-values from the cache if they are already there. Let us call 
-this operation <code class="highlighter-rouge">TryGetValue(cacheKey, out value)</code>. 
-And of course a method to
-add a new or overwrite an existing cache entry, let’s call it
-<code class="highlighter-rouge">SetValue(cacheKey, value)</code>. Do we need more methods on a cache
-from the client point of view? Maybe in the future we will want to
-extend <code class="highlighter-rouge">SetValue</code> operation to allow client to specify for how
-long items added to the cache should be stored? Who knows. 
-But still we would end up with only two operations.</p>
-
-<blockquote>
-  <p>NOTE A truly generic and reusable cache 
-is usually slightly more complicated - instead of two
-we have three methods! For example please see
-<a href="https://github.com/aspnet/Caching/blob/master/src/Microsoft.Extensions.Caching.Abstractions/IMemoryCache.cs">IMemoryCache</a> interface.</p>
-</blockquote>
-
-<p>On the other hand if we use inheritance we end up with something 
-like this:
-<img src="assets/images/2018-12-12/cache_api.png" alt="Cache API when we use inheritance" />
-This is much more than we asked for. We actually get operations
-that make no sense for a cache like <code class="highlighter-rouge">IsEmpty</code>. I mean either an item
-that we are looking for is in the cache or it is not - who cares
-if the cache is empty itself?</p>
-
-<p>I hope that I managed to persuade you that a good component
-API should be small, focused and easy to use. We get none of these 
-if we use inheritance.</p>
-
-<h6 id="broken-encapsulation">Broken encapsulation</h6>
-
-<p>By using inheritance we are making it clear to the clients of
-our component that it is implemented using <code class="highlighter-rouge">ConcurrentDictionary</code> class.
-If we wait long enough we will notice that some of them 
-will start relaying on that knowledge in their code. 
-For example they may use <code class="highlighter-rouge">ContainsKey</code> method for checking if
-the cache contains a given entry. 
-What will happen later, when we decide that we want to change 
-the cache implementation and use for example 
-<a href="https://dotnetcoretutorials.com/2017/03/05/using-inmemory-cache-net-core/">IMemoryCache</a> instead?
-Clients of our component will get angry, because
-our new version of the cache<br />
-introduced a breaking change into their code.</p>
-
-<p>Just to sum up: Inheritance both exposes implementation
-details of components and makes evolution of their APIs more difficult.</p>
-
-<h6 id="liskov-substitution-principle-is-violated">Liskov substitution principle is violated</h6>
-
-<p>In short some operations that make sense for a dictionary
-may not make sense for a cache. For example it makes no
-sense to cache a template that does not exists, yet with
-inheritance we may write:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">foo</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">TemplateName</span><span class="p">(</span><span class="s">"foo"</span><span class="p">);</span>
-
-<span class="n">ConcurrentDictionary</span><span class="p">&lt;</span><span class="n">TemplateName</span><span class="p">,</span> <span class="n">Template</span><span class="p">&gt;</span> <span class="n">dict</span> 
-   <span class="p">=</span> <span class="k">new</span> <span class="nf">TemplateCache</span><span class="p">();</span>
-
-<span class="n">dict</span><span class="p">.</span><span class="nf">GetOrAdd</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="p">(</span><span class="n">Template</span><span class="p">)</span><span class="k">null</span><span class="p">);</span>
-
-<span class="c1">// Ops we have a null template here...</span>
-<span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"value is: "</span> <span class="p">+</span> 
-   <span class="n">dict</span><span class="p">.</span><span class="nf">GetOrAdd</span><span class="p">(</span><span class="n">foo</span><span class="p">,</span> <span class="p">(</span><span class="n">Template</span><span class="p">)</span><span class="k">null</span><span class="p">));</span></code></pre></figure>
-
-<p>When we use inheritance we are telling the type system that
-<code class="highlighter-rouge">TemplateCache</code> <em>is a</em> <code class="highlighter-rouge">ConcurrentDictionary</code>. 
-From logical point of view this makes no sense. They are two
-different components that have two different purposes and also
-different usage patterns. 
-They should have nothing in common.</p>
-
-<blockquote>
-  <p>BTW You should avoid putting <code class="highlighter-rouge">null</code>s into collection classes of any sort.</p>
-</blockquote>
-
-<p>Let’s finish this post by seeing how composition can be used
-to improve our <code class="highlighter-rouge">TemplateCache</code> component:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">TemplateCache</span> <span class="p">{</span>
-  <span class="k">private</span> <span class="k">readonly</span> <span class="n">ConcurrentDictionary</span><span class="p">&lt;</span><span class="n">TemplateName</span><span class="p">,</span> <span class="n">Template</span><span class="p">&gt;</span> <span class="n">_cache</span> 
-      <span class="p">=</span> <span class="k">new</span> <span class="n">ConcurrentDictionary</span><span class="p">&lt;</span><span class="n">TemplateName</span><span class="p">,</span> <span class="n">Template</span><span class="p">&gt;();</span>
-
-  <span class="k">public</span> <span class="kt">bool</span> <span class="nf">TryGetTemplate</span><span class="p">(</span><span class="n">TemplateName</span> <span class="n">name</span><span class="p">,</span> <span class="k">out</span> <span class="n">Template</span> <span class="n">template</span><span class="p">)</span>
-      <span class="p">=&gt;</span> <span class="n">_cache</span><span class="p">.</span><span class="nf">TryGetValue</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="k">out</span> <span class="n">template</span><span class="p">);</span>
-
-  <span class="k">public</span> <span class="k">void</span> <span class="nf">AddTemplate</span><span class="p">(</span><span class="n">Template</span> <span class="n">template</span><span class="p">)</span>
-      <span class="p">=&gt;</span> <span class="n">_cache</span><span class="p">.</span><span class="nf">AddOrUpdate</span><span class="p">(</span>
-          <span class="n">template</span><span class="p">.</span><span class="n">Name</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">existing</span><span class="p">)</span> <span class="p">=&gt;</span> <span class="n">template</span><span class="p">);</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>Yep, simple, clean and easy to use!</p>
 
 
 	  ]]></description>

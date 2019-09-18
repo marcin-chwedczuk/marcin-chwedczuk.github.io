@@ -12,6 +12,167 @@
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
+	  <title>Doubles and Unit Testing</title>
+	  <link>//doubles-and-unit-testing</link>
+	  <author></author>
+	  <pubDate>2019-09-18T02:00:01+02:00</pubDate>
+	  <guid>//doubles-and-unit-testing</guid>
+	  <description><![CDATA[
+	     <p>Floating point numbers are inherently imprecise.
+This can be problematic when we try to unit test
+numerical algorithms.
+Let’s see this on an example
+(JVM/Scala, ScalaTest used as a testing framework):</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="s">"squaring should work"</span> <span class="n">in</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">d</span> <span class="k">=</span> <span class="mf">0.6168705534069904</span>
+
+    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">d</span><span class="o">*</span><span class="n">d</span>
+
+    <span class="n">result</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="mf">0.3805292796606466</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This test works just fine… until someone decides to
+do a “harmless refactoring” and replaces <code class="highlighter-rouge">d*d</code> by <code class="highlighter-rouge">Math.pow(d, 2)</code>:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="s">"squaring should work"</span> <span class="n">in</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">d</span> <span class="k">=</span> <span class="mf">0.6168705534069904</span>
+
+    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="nc">Math</span><span class="o">.</span><span class="n">pow</span><span class="o">(</span><span class="n">d</span><span class="o">,</span> <span class="mi">2</span><span class="o">)</span>
+
+    <span class="n">result</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="mf">0.3805292796606466</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Now the test fails with the following message:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">0.38052927966064654 was not equal to 0.3805292796606466</code></pre></figure>
+
+<p>The expected and the actual values differ by ~5.6E-17.
+Doubles offer precision of about 15 significant digits in a result.
+All the other digits after 15th digit are just noise that should be
+ignored.</p>
+
+<p>To make our unit-test more robust we have two strategies.
+The first strategy is to know the precision that is guaranteed by the algorithm
+that we are using, and to round the result to that
+precision before returning it to the client:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">square</span><span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">d2</span> <span class="k">=</span> <span class="nc">Math</span><span class="o">.</span><span class="n">pow</span><span class="o">(</span><span class="n">d</span><span class="o">,</span> <span class="mi">2</span><span class="o">)</span>
+    <span class="c1">// Precision from org.apache.commons:commons-math3:3.6.1
+</span>    <span class="k">return</span> <span class="nc">Precision</span><span class="o">.</span><span class="n">round</span><span class="o">(</span><span class="n">d2</span><span class="o">,</span> <span class="mi">8</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="s">"squaring should work"</span> <span class="n">in</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">d</span> <span class="k">=</span> <span class="mf">0.6168705534069904</span>
+
+    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">square</span><span class="o">(</span><span class="n">d</span><span class="o">)</span>
+
+    <span class="n">result</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="mf">0.38052928</span><span class="o">)</span> <span class="c1">// rounded
+</span><span class="o">}</span></code></pre></figure>
+
+<p>The second strategy is to use assertions intended to work
+with floating point numbers. Again to use them correctly we need to
+be aware of the precision of our algorithm:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="s">"squaring should work"</span> <span class="n">in</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">d</span> <span class="k">=</span> <span class="mf">0.6168705534069904</span>
+
+    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">d</span><span class="o">*</span><span class="n">d</span>
+
+    <span class="n">result</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="mf">0.3805292796606466</span> <span class="o">+-</span> <span class="mf">0.000000005</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Personally I prefer the first strategy, but with
+either of them our tests will be more robust and
+refactoring-friendly.</p>
+
+<h4 id="troubles-with-nan">Troubles with NaN</h4>
+
+<p>Totally different set of problems are connected to <code class="highlighter-rouge">NaN</code> values.
+On JVM operator <code class="highlighter-rouge">==</code> and <code class="highlighter-rouge">equals</code> behave 
+inconsistently when comparing <code class="highlighter-rouge">NaN</code>s:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="s">"Jvm's Double"</span> <span class="n">should</span> <span class="o">{</span>
+    <span class="s">"follow JVM spec"</span> <span class="n">in</span> <span class="o">{</span>
+        <span class="k">val</span> <span class="n">nan</span> <span class="k">=</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span><span class="o">;</span>
+
+        <span class="c1">// Required by IEEE 754 Standard
+</span>        <span class="o">(</span><span class="n">nan</span> <span class="o">==</span> <span class="n">nan</span><span class="o">)</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="kc">false</span><span class="o">)</span>
+
+        <span class="c1">// Required by JVM Object#equals contract:
+</span>        <span class="c1">// "for any non-null reference value x,
+</span>        <span class="c1">//  x.equals(x) should return true"
+</span>        <span class="n">nan</span><span class="o">.</span><span class="n">equals</span><span class="o">(</span><span class="n">nan</span><span class="o">)</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Unit testing frameworks often do not help here much.
+For example the following test (ScalaTest):</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="s">"how to check that a value is NaN?"</span> <span class="n">in</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">nan</span> <span class="k">=</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span><span class="o">;</span>
+    <span class="n">nan</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="n">nan</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>will fail with a rather unhelpful message:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">NaN was not equal to NaN</code></pre></figure>
+
+<p>According to ScalaTest guidelines we should use <code class="highlighter-rouge">Double#isNaN</code>
+to check if a value is <code class="highlighter-rouge">NaN</code>:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="s">"how to check that a value is NaN?"</span> <span class="n">in</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">nan</span> <span class="k">=</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span><span class="o">;</span>
+    <span class="n">nan</span><span class="o">.</span><span class="n">isNaN</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>We experience similar troubles when we try to
+compare case classes containing double fields with <code class="highlighter-rouge">NaN</code> values:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">CaseClass</span><span class="o">(</span><span class="n">d1</span><span class="k">:</span> <span class="kt">Double</span><span class="o">,</span>
+                     <span class="n">d2</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span>
+
+<span class="c1">// In test code:
+</span><span class="k">val</span> <span class="n">inf</span> <span class="k">=</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">PositiveInfinity</span>
+<span class="k">val</span> <span class="n">nan</span> <span class="k">=</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span>
+
+<span class="nc">CaseClass</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">)</span> <span class="n">shouldBe</span><span class="o">(</span><span class="nc">CaseClass</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">))</span>
+<span class="nc">CaseClass</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="o">+</span><span class="mf">0.0</span><span class="o">)</span> <span class="n">shouldBe</span><span class="o">(</span><span class="nc">CaseClass</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="o">-</span><span class="mf">0.0</span><span class="o">))</span>
+<span class="nc">CaseClass</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">inf</span><span class="o">)</span> <span class="n">shouldBe</span><span class="o">(</span><span class="nc">CaseClass</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">inf</span><span class="o">))</span>
+
+<span class="c1">// fails: CaseData(1.0,NaN) was not equal to CaseData(1.0,NaN)
+</span><span class="nc">CaseClass</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">nan</span><span class="o">)</span> <span class="n">shouldBe</span><span class="o">(</span><span class="nc">CaseClass</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">nan</span><span class="o">))</span></code></pre></figure>
+
+<p>I do not have a good solution for this problem.
+We can either create a custom assertion for a given case class ourselves,
+define a custom equality using 
+<a href="http://www.scalactic.org/user_guide/CustomEquality">Scalactic</a>
+or we can use <code class="highlighter-rouge">Option[Double]</code> and
+somehow map <code class="highlighter-rouge">NaN</code>s to <code class="highlighter-rouge">Option</code>s <code class="highlighter-rouge">None</code>.
+None of the solutions is great.</p>
+
+<p>The last thing to remember is that we cannot <code class="highlighter-rouge">match</code> <code class="highlighter-rouge">NaN</code> values:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">x</span> <span class="k">=</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span>
+
+<span class="c1">// will fail
+</span><span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span> <span class="k">=&gt;</span> <span class="n">doStuff</span><span class="o">()</span>
+    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="n">fail</span><span class="o">(</span><span class="s">"NaN not matched!"</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="c1">// how to do it properly
+</span><span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="n">value</span><span class="nd">@_</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">isNaN</span> <span class="k">=&gt;</span> <span class="n">doStuff</span><span class="o">()</span>
+    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="n">fail</span><span class="o">(</span><span class="s">"NaN not matched!"</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
 	  <title>Fluent Validation and complex dependencies between properties</title>
 	  <link>//fluent-validation-and-complex-dependencies-between-properties</link>
 	  <author></author>
