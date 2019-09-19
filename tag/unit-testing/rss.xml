@@ -5,14 +5,14 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>http://localhost:4000</link>
+   <link></link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
-	  <title>Doubles and Unit Testing</title>
+	  <title>Floating point numbers and Unit Testing</title>
 	  <link>//doubles-and-unit-testing</link>
 	  <author></author>
 	  <pubDate>2019-09-18T02:00:01+02:00</pubDate>
@@ -57,7 +57,7 @@ The first strategy is to know the precision that is guaranteed by the algorithm
 that we are using, and to round the result to that
 precision before returning it to the client:</p>
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">square</span><span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">square</span><span class="o">(</span><span class="n">d</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=</span> <span class="o">{</span>
     <span class="k">val</span> <span class="n">d2</span> <span class="k">=</span> <span class="nc">Math</span><span class="o">.</span><span class="n">pow</span><span class="o">(</span><span class="n">d</span><span class="o">,</span> <span class="mi">2</span><span class="o">)</span>
     <span class="c1">// Precision from org.apache.commons:commons-math3:3.6.1
 </span>    <span class="k">return</span> <span class="nc">Precision</span><span class="o">.</span><span class="n">round</span><span class="o">(</span><span class="n">d2</span><span class="o">,</span> <span class="mi">8</span><span class="o">)</span>
@@ -82,6 +82,9 @@ be aware of the precision of our algorithm:</p>
 
     <span class="n">result</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="mf">0.3805292796606466</span> <span class="o">+-</span> <span class="mf">0.000000005</span><span class="o">)</span>
 <span class="o">}</span></code></pre></figure>
+
+<p>In this case it is good to define the precision
+as a global constant (or as a constant per algorithm).</p>
 
 <p>Personally I prefer the first strategy, but with
 either of them our tests will be more robust and
@@ -108,7 +111,7 @@ inconsistently when comparing <code class="highlighter-rouge">NaN</code>s:</p>
 <span class="o">}</span></code></pre></figure>
 
 <p>Unit testing frameworks often do not help here much.
-For example the following test (ScalaTest):</p>
+For example the following test:</p>
 
 <figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="s">"how to check that a value is NaN?"</span> <span class="n">in</span> <span class="o">{</span>
     <span class="k">val</span> <span class="n">nan</span> <span class="k">=</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span><span class="o">;</span>

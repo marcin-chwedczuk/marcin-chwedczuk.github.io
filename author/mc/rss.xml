@@ -5,14 +5,343 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>http://localhost:4000</link>
+   <link></link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
-	  <title>Doubles and Unit Testing</title>
+	  <title>WIP Ultimate guide to Scala's match expression</title>
+	  <link>//ultimate-guide-to-scalas-match-expression</link>
+	  <author></author>
+	  <pubDate>2019-09-18T02:00:01+02:00</pubDate>
+	  <guid>//ultimate-guide-to-scalas-match-expression</guid>
+	  <description><![CDATA[
+	     <p><strong>WORK IN PROGRESS</strong></p>
+
+<p>Scala <code class="highlighter-rouge">match</code> expression is a very powerful tool.
+In hands of an experienced programmer it can be used to
+create concise and easy to understand code,
+yet novice programmers are often intimidated by it.
+In this blog post I will describe how <code class="highlighter-rouge">match</code> expression
+work. We will start with the basics and end up with extractors.
+After reading this post you will know how <code class="highlighter-rouge">case List(a, b, c)</code>
+works and you should be able to write your own extractors.</p>
+
+<h4 id="pattern-matching-values">Pattern matching values</h4>
+
+<p><code class="highlighter-rouge">match</code> expression can be used (just like Java’s <code class="highlighter-rouge">switch</code>)
+as a more robust <code class="highlighter-rouge">if</code> statement replacement.
+For example we can write:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">command</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">fetchNextCommand</span><span class="o">()</span>
+
+<span class="n">command</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="s">"ls"</span> <span class="k">=&gt;</span> <span class="n">printDirectoryContents</span><span class="o">()</span>
+  <span class="k">case</span> <span class="s">"ps"</span> <span class="k">=&gt;</span> <span class="n">printProcesses</span><span class="o">()</span>
+  <span class="k">case</span> <span class="s">"exit"</span> <span class="k">=&gt;</span> <span class="n">exitShell</span><span class="o">()</span>
+<span class="o">}</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">match</code> expression, in opposite to Java’s <code class="highlighter-rouge">switch</code> is not
+limited to strings, Enums and numeric types, but can also match
+booleans, floating point numbers (although this makes little sense)
+and <code class="highlighter-rouge">null</code>. We can also mix multiple types in a single <code class="highlighter-rouge">match</code>
+expression:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">x</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="mf">3.1415</span>
+
+<span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="kc">true</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"it's true"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="mi">3</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"integer 3"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="mf">3.1415</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"pi approximation"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="kc">null</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"null"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="s">"foo"</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"this 'foo' again!"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="sc">'a'</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"character 'a'"</span><span class="o">)</span>
+<span class="o">}</span>
+<span class="c1">// Prints:
+</span><span class="o">//</span> <span class="n">pi</span> <span class="n">approximation</span></code></pre></figure>
+
+<p>When we match an Enum value we are not required to
+provide cases for all possible values of the Enum:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">object</span> <span class="nc">Color</span> <span class="k">extends</span> <span class="nc">Enumeration</span> <span class="o">{</span>
+  <span class="k">type</span> <span class="kt">Color</span> <span class="o">=</span> <span class="nc">Value</span>
+  <span class="k">val</span> <span class="nc">White</span><span class="o">,</span> <span class="nc">Red</span><span class="o">,</span> <span class="nc">Green</span><span class="o">,</span> <span class="nc">Blue</span><span class="o">,</span> <span class="nc">Black</span> <span class="k">=</span> <span class="nc">Value</span>
+<span class="o">}</span>
+
+<span class="k">val</span> <span class="n">skyColor</span> <span class="k">=</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Blue</span>
+
+<span class="k">val</span> <span class="n">weatherWildGuess</span> <span class="k">=</span> <span class="n">skyColor</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">White</span> <span class="k">=&gt;</span> <span class="s">"snow?"</span>
+  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Blue</span> <span class="k">=&gt;</span> <span class="s">"rain?"</span>
+  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Black</span> <span class="k">=&gt;</span> <span class="s">"a volcano eruption?"</span>
+<span class="o">}</span>
+
+<span class="n">println</span><span class="o">(</span><span class="n">weatherWildGuess</span><span class="o">)</span>
+<span class="c1">// Prints:
+</span><span class="o">//</span> <span class="n">rain</span><span class="o">?</span></code></pre></figure>
+
+<p>When a value cannot be matched with any of the <code class="highlighter-rouge">case</code> clauses
+a <code class="highlighter-rouge">scala.MatchError</code> runtime exception is thrown.
+A special “catch all” case can be
+provided to handle all previously unmatched values 
+(Scala’s <code class="highlighter-rouge">case _</code> is a counterpart to Java’s <code class="highlighter-rouge">switch</code> <code class="highlighter-rouge">default</code> label):</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">weatherWildGuess</span> <span class="k">=</span> <span class="n">skyColor</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">White</span> <span class="k">=&gt;</span> <span class="s">"snow?"</span>
+  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Blue</span> <span class="k">=&gt;</span> <span class="s">"rain?"</span>
+  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Black</span> <span class="k">=&gt;</span> <span class="s">"a volcano eruption?"</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="s">"I don't know"</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>“catch all” case should be the last one. 
+Patterns are matched from top to bottom and the procedure
+stops on the first matching <code class="highlighter-rouge">case</code> clause.</p>
+
+<p>Sometimes we want to access the value matched by “catch all” case.
+This is very simple we just need to replace wildcard pattern (<code class="highlighter-rouge">_</code>)
+with a variable name:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">weatherWildGuess</span> <span class="k">=</span> <span class="n">skyColor</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">White</span> <span class="k">=&gt;</span> <span class="s">"snow?"</span>
+  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Blue</span> <span class="k">=&gt;</span> <span class="s">"rain?"</span>
+  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Black</span> <span class="k">=&gt;</span> <span class="s">"a volcano eruption?"</span>
+  <span class="k">case</span> <span class="n">unknownColor</span> <span class="k">=&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nc">IllegalArgumentException</span><span class="o">(</span>
+      <span class="n">s</span><span class="s">"Cannot guess weather for sky color: "</span> <span class="o">+</span> <span class="n">unknownColor</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Often it is required to execute the same code for multiple values.
+With <code class="highlighter-rouge">match</code> this can be done using <code class="highlighter-rouge">|</code> operator:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">answer</span><span class="o">.</span><span class="n">toLowerCase</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="s">"y"</span> <span class="o">|</span> <span class="s">"yes"</span> <span class="o">|</span> <span class="s">"ok"</span> <span class="o">|</span> <span class="s">"proceed"</span> <span class="k">=&gt;</span>
+    <span class="n">executeOperation</span><span class="o">()</span>
+  <span class="k">case</span> <span class="s">"n"</span> <span class="o">|</span> <span class="s">"no"</span> <span class="o">|</span> <span class="s">"abort"</span> <span class="k">=&gt;</span>
+    <span class="n">abortOperation</span><span class="o">()</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
+    <span class="n">askAgain</span><span class="o">()</span>
+<span class="o">}</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">match</code> can also be used to match against <code class="highlighter-rouge">null</code>:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">nullableValue</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kc">null</span> 
+
+<span class="k">val</span> <span class="n">option</span> <span class="k">=</span> <span class="n">nullableValue</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="kc">null</span> <span class="k">=&gt;</span> <span class="nc">None</span>
+  <span class="k">case</span> <span class="n">s</span> <span class="k">=&gt;</span> <span class="nc">Some</span><span class="o">(</span><span class="n">s</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="n">println</span><span class="o">(</span><span class="n">option</span><span class="o">)</span></code></pre></figure>
+
+<p>Matching against Double <code class="highlighter-rouge">NaN</code> value is more problematic, since
+<code class="highlighter-rouge">NaN == NaN</code> must always return <code class="highlighter-rouge">false</code> according to IEEE 754
+Standard. To match against <code class="highlighter-rouge">NaN</code> we need to use a pattern guard:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">d</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span>
+
+<span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">d</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">PositiveInfinity</span> <span class="k">=&gt;</span> <span class="s">"+∞"</span>
+
+  <span class="c1">// WRONG way to match NaN
+</span>  <span class="k">case</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span> <span class="k">=&gt;</span> <span class="s">"this does not work"</span>
+  <span class="c1">// RIGHT way to match NaN
+</span>  <span class="k">case</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">isNaN</span> <span class="k">=&gt;</span> <span class="s">"NaN"</span>
+
+  <span class="c1">// catch-all
+</span>  <span class="k">case</span> <span class="n">value</span> <span class="k">=&gt;</span> <span class="n">value</span><span class="o">.</span><span class="n">toString</span>
+<span class="o">}</span>
+
+<span class="n">println</span><span class="o">(</span><span class="n">result</span><span class="o">)</span></code></pre></figure>
+
+<p>We will return to pattern guards later.</p>
+
+<h4 id="pattern-matching-types">Pattern matching types</h4>
+
+<p>Besides matching values <code class="highlighter-rouge">match</code> can also perform <code class="highlighter-rouge">instanceof</code> tests:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">something</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="k">new</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Random</span><span class="o">()</span>
+
+<span class="n">something</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="k">_:</span> <span class="kt">String</span> <span class="o">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"a string!"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="k">_:</span> <span class="kt">Int</span> <span class="o">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"an int!"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="k">_:</span> <span class="kt">java.util.Random</span> <span class="o">=&gt;</span>
+    <span class="n">println</span><span class="o">(</span><span class="s">"A Random instance!"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"type unknown!"</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>As usual on JVM <code class="highlighter-rouge">instanceof</code> tests will not work with
+parametrized types 
+(while <code class="highlighter-rouge">class List&lt;T&gt;</code> is a generic type, 
+<code class="highlighter-rouge">List&lt;T&gt;</code> usage like <code class="highlighter-rouge">List&lt;String&gt;</code> is
+called a parametetrized type). 
+<a href="https://en.wikipedia.org/wiki/Generics_in_Java#Problems_with_type_erasure">Type erasure</a>
+is here to blame:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="c1">// DO NOT WORK
+</span><span class="k">val</span> <span class="n">x</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="nc">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">3</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="k">_:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="s">"string list"</span> <span class="c1">// unreachable code warning
+</span>  <span class="k">case</span> <span class="k">_:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="s">"int list"</span> <span class="c1">// unreachable code warning
+</span><span class="o">}</span>
+
+<span class="n">println</span><span class="o">(</span><span class="n">result</span><span class="o">)</span>
+<span class="c1">// Prints:
+</span><span class="o">//</span> <span class="n">string</span> <span class="n">list</span> <span class="o">(</span><span class="n">sic</span><span class="o">!)</span></code></pre></figure>
+
+<p>But not all is lost, we can still preform type tests
+on generic types using wildcards (Scala <code class="highlighter-rouge">_</code> is a conterpart of Java <code class="highlighter-rouge">?</code>,
+consider Scala’s <code class="highlighter-rouge">List[_]</code> and Java’s <code class="highlighter-rouge">List&lt;?&gt;</code>):</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">x</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="nc">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">3</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="k">_:</span> <span class="kt">Map</span><span class="o">[</span><span class="k">_</span>, <span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="s">"a map"</span>
+  <span class="k">case</span> <span class="k">_:</span> <span class="kt">List</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="s">"a list"</span>
+  <span class="k">case</span> <span class="k">_:</span> <span class="kt">java.util.List</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="s">"a java's list"</span>
+<span class="o">}</span>
+
+<span class="n">println</span><span class="o">(</span><span class="n">result</span><span class="o">)</span>
+<span class="c1">// Prints:
+</span><span class="o">//</span> <span class="n">a</span> <span class="n">list</span></code></pre></figure>
+
+<p>So far we where not interested in the actual value of the variable,
+but only in it’s type and so we just discarded the value using <code class="highlighter-rouge">case _: Type</code>
+clause.
+But nothing prevents us from assigning the already type checked
+value to a variable of the target type:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="n">map</span><span class="k">:</span> <span class="kt">Map</span><span class="o">[</span><span class="k">_</span>, <span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="n">map</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="mi">2</span>
+  <span class="k">case</span> <span class="n">list</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="n">list</span><span class="o">.</span><span class="n">size</span>
+  <span class="k">case</span> <span class="n">jlist</span><span class="k">:</span> <span class="kt">java.util.List</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="n">jlist</span><span class="o">.</span><span class="n">size</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="mi">0</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Actually every <code class="highlighter-rouge">case</code> clause creates it’s own lexical scope.
+This means that we can reuse variable names across different <code class="highlighter-rouge">case</code>es:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="n">list</span><span class="k">:</span> <span class="kt">java.util.List</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span>
+    <span class="k">val</span> <span class="n">tmp</span> <span class="k">=</span> <span class="mi">10</span>
+    <span class="n">list</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="n">tmp</span>
+
+  <span class="k">case</span> <span class="n">list</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span>
+    <span class="k">val</span> <span class="n">tmp</span> <span class="k">=</span> <span class="mi">1</span>
+    <span class="n">list</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="n">tmp</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Pipe operator can be used with type checks too, but the
+resulting code isn’t very readable:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="k">_:</span><span class="kt">Short</span> <span class="kt">|</span> <span class="k">_</span><span class="kt">:Int</span> <span class="kt">|</span> <span class="k">_</span><span class="kt">:Long</span> <span class="o">=&gt;</span>
+    <span class="n">println</span><span class="o">(</span><span class="s">"a number!"</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>If we want to use the value matched by this
+pattern we need to use a pattern binder:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="n">num</span><span class="o">@(</span><span class="k">_:</span><span class="kt">Short</span> <span class="kt">|</span> <span class="k">_</span><span class="kt">:Int</span> <span class="kt">|</span> <span class="k">_</span><span class="kt">:Long</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="n">println</span><span class="o">(</span><span class="n">num</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">Number</span><span class="o">].</span><span class="n">doubleValue</span><span class="o">())</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Pattern binders allow us to assign a value
+that matches a <em>subpattern</em> to a variable.
+In the extreme case this <em>subpattern</em> can be the entire
+pattern, as it is in our case. We will return to
+the pattern binders later.</p>
+
+<h4 id="pattern-guards">Pattern guards</h4>
+
+<p>When pattern matching values, we often need to preform
+some additional checks e.g. say we want to match all odd
+or even integers. We can use pattern guards for this purpose:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">for</span> <span class="o">(</span><span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="mi">10</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">i</span> <span class="k">match</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="n">i</span> <span class="k">if</span> <span class="o">(</span><span class="n">i</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="k">=&gt;</span>
+      <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$i is even"</span><span class="o">)</span>
+    <span class="k">case</span> <span class="n">i</span> <span class="k">if</span> <span class="o">(</span><span class="n">i</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="k">=&gt;</span>
+      <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$i is odd"</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Since pattern guards use predicates (expressions that
+return either <code class="highlighter-rouge">true</code> or <code class="highlighter-rouge">false</code>) they are very flexible.
+We can express both value and type checks using only
+pattern guards:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">x</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s">"foo"</span> <span class="k">=&gt;</span>
+    <span class="s">"it's this 'foo' again!"</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">=&gt;</span>
+    <span class="s">"it's three!"</span>
+<span class="o">}</span>
+
+<span class="k">val</span> <span class="n">t</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="s">"foo"</span>
+<span class="n">t</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="n">tmp</span> <span class="k">if</span> <span class="n">tmp</span><span class="o">.</span><span class="n">isInstanceOf</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=&gt;</span>
+    <span class="k">val</span> <span class="n">ss</span> <span class="k">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+    <span class="n">println</span><span class="o">(</span><span class="s">"it's a string: "</span> <span class="o">+</span> <span class="n">ss</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The problem with pattern guards is that they are
+imperative. We should try to avoid them
+as much as possible. Later we will learn about
+extractors, that roughly speaking do the same
+job as guards but in a more declarative way.</p>
+
+<p>TODO:</p>
+
+<p>Extractors:</p>
+<ul>
+  <li>Boolean extractors (IsOdd, IsEven)
+    <ul>
+      <li>Can I use variable alias?</li>
+    </ul>
+  </li>
+  <li>Single value extractors (String -&gt; Integer)</li>
+  <li>Multiple (fixed) value extractors (JavaList)
+    <ul>
+      <li>Discards with <code class="highlighter-rouge">_</code></li>
+    </ul>
+  </li>
+  <li>Extractor nesting (JavaList + EmptyList)
+    <ul>
+      <li>Example with monadic for - how the code looks like</li>
+    </ul>
+  </li>
+  <li>Multiple seq value extractors JavaList2
+    <ul>
+      <li><code class="highlighter-rouge">foo @ _*</code> binding</li>
+    </ul>
+  </li>
+  <li>Variable aliases</li>
+</ul>
+
+<p>Extractor real-world usage:</p>
+<ul>
+  <li>Case class alias (extractor)</li>
+  <li>Matching tuples</li>
+  <li>Matching Lists (extractor)</li>
+  <li>Regex extractors</li>
+</ul>
+
+<p>Trouble shooting:</p>
+<ul>
+  <li>https://stackoverflow.com/a/6173342/1779504 <code class="highlighter-rouge">foo</code></li>
+</ul>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
+	  <title>Floating point numbers and Unit Testing</title>
 	  <link>//doubles-and-unit-testing</link>
 	  <author></author>
 	  <pubDate>2019-09-18T02:00:01+02:00</pubDate>
@@ -57,7 +386,7 @@ The first strategy is to know the precision that is guaranteed by the algorithm
 that we are using, and to round the result to that
 precision before returning it to the client:</p>
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">square</span><span class="o">(</span><span class="n">x</span><span class="o">)</span> <span class="k">=</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">square</span><span class="o">(</span><span class="n">d</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=</span> <span class="o">{</span>
     <span class="k">val</span> <span class="n">d2</span> <span class="k">=</span> <span class="nc">Math</span><span class="o">.</span><span class="n">pow</span><span class="o">(</span><span class="n">d</span><span class="o">,</span> <span class="mi">2</span><span class="o">)</span>
     <span class="c1">// Precision from org.apache.commons:commons-math3:3.6.1
 </span>    <span class="k">return</span> <span class="nc">Precision</span><span class="o">.</span><span class="n">round</span><span class="o">(</span><span class="n">d2</span><span class="o">,</span> <span class="mi">8</span><span class="o">)</span>
@@ -82,6 +411,9 @@ be aware of the precision of our algorithm:</p>
 
     <span class="n">result</span> <span class="n">should</span> <span class="n">be</span><span class="o">(</span><span class="mf">0.3805292796606466</span> <span class="o">+-</span> <span class="mf">0.000000005</span><span class="o">)</span>
 <span class="o">}</span></code></pre></figure>
+
+<p>In this case it is good to define the precision
+as a global constant (or as a constant per algorithm).</p>
 
 <p>Personally I prefer the first strategy, but with
 either of them our tests will be more robust and
@@ -108,7 +440,7 @@ inconsistently when comparing <code class="highlighter-rouge">NaN</code>s:</p>
 <span class="o">}</span></code></pre></figure>
 
 <p>Unit testing frameworks often do not help here much.
-For example the following test (ScalaTest):</p>
+For example the following test:</p>
 
 <figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="s">"how to check that a value is NaN?"</span> <span class="n">in</span> <span class="o">{</span>
     <span class="k">val</span> <span class="n">nan</span> <span class="k">=</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span><span class="o">;</span>
@@ -1806,375 +2138,6 @@ without telling anyone from the business side?</p>
 <p>Soon I will write a follow up to this post in which 
 we will try to implement a perfect <code class="highlighter-rouge">Maybe&lt;T&gt;</code> type on our own and we will see
 that it is not an easy task in C#.</p>
-
-
-	  ]]></description>
-	</item>
-
-	<item>
-	  <title>NSubstitute and the search for perfect error messages</title>
-	  <link>//nsubstitute-and-the-search-for-perfect-error-messages</link>
-	  <author></author>
-	  <pubDate>2018-12-15T01:00:00+01:00</pubDate>
-	  <guid>//nsubstitute-and-the-search-for-perfect-error-messages</guid>
-	  <description><![CDATA[
-	     <p>Those of us that practice TDD daily already know how important good
-error messages in tests are. After all writing a failing test that
-<em>clearly</em> states what functionality the program 
-is missing is the first step in TDD cycle.
-The rest of us that either can’t or simply don’t want to practice TDD
-must put extra effort to ensure that tests always fail
-with meaningful error messages.
-Unfortunately, according to what I have learned from my personal experience, 
-the most devs either don’t have
-enough time or simply don’t bother to check if their tests fail with
-something meaningful. For average Joe developer writing tests and
-making them green is already a lot of work. 
-Things like good test names and proper error messages are often forgotten.</p>
-
-<p>But the developers are not the only one here to blame. 
-Too often tools and libraries that supposedly should make unit testing
-simpler and easier, generate horrible and often cryptic error messages.</p>
-
-<p>In this post we will take a close look at 
-<a href="http://nsubstitute.github.io/">NSubstitute</a>,
-a modern and popular mocking libary for .NET and see 
-how we can improve messages generated by its argument matchers.</p>
-
-<p>Let’s start by looking at a simple test. 
-It demonstrates how NSubstitute is often used to assert that 
-a method was called with an argument in a certain state:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">PlainArgument</span> <span class="p">{</span>
-    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-    <span class="k">public</span> <span class="kt">string</span> <span class="n">FirstName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-    <span class="k">public</span> <span class="kt">string</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-    <span class="k">public</span> <span class="kt">string</span> <span class="n">EmailAddress</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-
-    <span class="k">public</span> <span class="nf">PlainArgument</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">,</span> <span class="kt">string</span> <span class="n">firstName</span><span class="p">,</span> <span class="kt">string</span> <span class="n">lastName</span><span class="p">,</span> <span class="kt">string</span> <span class="n">emailAddress</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">Id</span> <span class="p">=</span> <span class="n">id</span><span class="p">;</span>
-        <span class="n">FirstName</span> <span class="p">=</span> <span class="n">firstName</span><span class="p">;</span>
-        <span class="n">LastName</span> <span class="p">=</span> <span class="n">lastName</span><span class="p">;</span>
-        <span class="n">EmailAddress</span> <span class="p">=</span> <span class="n">emailAddress</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="k">public</span> <span class="k">interface</span> <span class="nc">IFooService</span> <span class="p">{</span>
-    <span class="k">void</span> <span class="nf">DoStuff</span><span class="p">(</span><span class="kt">object</span> <span class="n">argument</span><span class="p">);</span>
-<span class="p">}</span>
-
-<span class="na">[Fact]</span>
-<span class="k">public</span> <span class="k">void</span> <span class="nf">Checking_argument_using_Arg_Is</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// Act</span>
-    <span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
-
-    <span class="c1">// Assert</span>
-    <span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
-        <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="n">PlainArgument</span><span class="p">&gt;(</span>
-            <span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="m">9</span> <span class="p">&amp;&amp;</span>
-                 <span class="n">e</span><span class="p">.</span><span class="n">FirstName</span> <span class="p">==</span> <span class="s">"jan"</span> <span class="p">&amp;&amp;</span>
-                 <span class="n">e</span><span class="p">.</span><span class="n">LastName</span> <span class="p">==</span> <span class="s">"kowalski"</span> <span class="p">&amp;&amp;</span>
-                 <span class="n">e</span><span class="p">.</span><span class="n">EmailAddress</span> <span class="p">==</span> <span class="s">"jan.kowalski@gmail.com"</span>
-                 <span class="p">));</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>When the argument passed to the checked method
-was in an unexpected state (e.g. first name was not “jan” but “john”),
-we get an error message similar to (formatting added):</p>
-
-<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">Expected to receive a call matching:
-    DoStuff(e =&gt; ((((e.Id == 9) AndAlso 
-        (e.FirstName == "jan")) AndAlso 
-        (e.LastName == "kowalski")) AndAlso 
-        (e.EmailAddress == "jan.kowalski@gmail.com")))
-Actually received no matching calls.
-Received 1 non-matching call (non-matching arguments indicated 
-with '*' characters):
-    DoStuff(*PlainArgument*)</code></pre></figure>
-
-<p>This error message is terrible.
-It contains a lot of informations that are easily obtainable by looking at the
-test method’s source code. Yet it does not contain
-the most important piece of information that we need: which properties 
-have unexpected values and what these values are.</p>
-
-<p>We can slightly improve this error message by overloading <code class="highlighter-rouge">ToString</code> method
-on <code class="highlighter-rouge">PlainArgument</code> class. 
-Let’s call this new class <code class="highlighter-rouge">StringableArgument</code>:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">StringableArgument</span> <span class="p">{</span>
-    <span class="c1">// the same code as in PlainArgument</span>
-    <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="nf">ToString</span><span class="p">()</span>
-        <span class="p">=&gt;</span> <span class="s">$"</span><span class="p">{</span><span class="k">nameof</span><span class="p">(</span><span class="n">StringableArgument</span><span class="p">)}</span><span class="s">(id: </span><span class="p">{</span><span class="n">Id</span><span class="p">}</span><span class="s">, firstName: \"</span><span class="p">{</span><span class="n">FirstName</span><span class="p">}</span><span class="s">\", "</span> <span class="p">+</span>
-            <span class="s">$"lastName: \"</span><span class="p">{</span><span class="n">LastName</span><span class="p">}</span><span class="s">\", emailAddres: \"</span><span class="p">{</span><span class="n">EmailAddress</span><span class="p">}</span><span class="s">\")"</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="c1">// in a test method:</span>
-<span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
-    <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Is</span><span class="p">&lt;</span><span class="n">StringableArgument</span><span class="p">&gt;(</span>
-        <span class="n">e</span> <span class="p">=&gt;</span> <span class="n">e</span><span class="p">.</span><span class="n">Id</span> <span class="p">==</span> <span class="m">9</span> <span class="p">&amp;&amp;</span>
-             <span class="n">e</span><span class="p">.</span><span class="n">FirstName</span> <span class="p">==</span> <span class="s">"jan"</span> <span class="p">&amp;&amp;</span>
-             <span class="n">e</span><span class="p">.</span><span class="n">LastName</span> <span class="p">==</span> <span class="s">"kowalski"</span> <span class="p">&amp;&amp;</span>
-             <span class="n">e</span><span class="p">.</span><span class="n">EmailAddress</span> <span class="p">==</span> <span class="s">"jan.kowalski@gmail.com"</span>
-             <span class="p">));</span></code></pre></figure>
-
-<p>Now the error message looks similar to (formatting added):</p>
-
-<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">Expected to receive a call matching:
-    DoStuff(e =&gt; ((((e.Id == 9) AndAlso 
-        (e.FirstName == "jan")) AndAlso 
-        (e.LastName == "kowalski")) AndAlso 
-        (e.EmailAddress == "jan.kowalski@gmail.com")))
-Actually received no matching calls.
-Received 1 non-matching call (non-matching arguments indicated 
-with '*' characters):
-    DoStuff(*StringableArgument(
-        id: 7, firstName: "john", 
-        lastName: "doe", 
-        emailAddres: "john.doe@gmail.com")*)</code></pre></figure>
-
-<p>This is better than before. 
-Now we can see both expected and actual values of the 
-matched argument’s properties.</p>
-
-<p>One drawback of this approach is that 
-the quality of the error message depends on the quality of
-<code class="highlighter-rouge">ToString</code> implementation. 
-If we are using AOP solution like
-<a href="https://github.com/Fody/Fody">Fody</a> to generate <code class="highlighter-rouge">ToString</code> implementations
-for most of our classes, then this solution may be good enough. 
-On the other hand if we are generating and updating our <code class="highlighter-rouge">ToString</code> methods
-manually (even if this means pressing a shortcut in our IDE)
-then I would prefer to look for a better solution that is totally automatic.</p>
-
-<p>There is also another problem that we were ignoring so far.
-Consider what will happen if we add a new field to our <code class="highlighter-rouge">StringableArgument</code>
-class. 
-Because we are using property access syntax inside of a lambda expression,
-our existing matchers will not only compile without any problems when
-we add a new field, they will also pass!
-In order to ensure that our matchers and tests remain valid,
-we must go through all argument matchers 
-for <code class="highlighter-rouge">StringableArgument</code> class and make sure that they use 
-the newly added field.</p>
-
-<p>The above problem may be solved by moving equality checking
-to the <code class="highlighter-rouge">StringableArgument</code> class itself. 
-Let’s call this new class <code class="highlighter-rouge">EquotableArgument</code>:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">EquotableArgument</span> <span class="p">:</span> <span class="n">IEquatable</span><span class="p">&lt;</span><span class="n">EquotableArgument</span><span class="p">&gt;</span> <span class="p">{</span>
-    <span class="k">public</span> <span class="kt">int</span> <span class="n">Id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-    <span class="k">public</span> <span class="kt">string</span> <span class="n">FirstName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-    <span class="k">public</span> <span class="kt">string</span> <span class="n">LastName</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-    <span class="k">public</span> <span class="kt">string</span> <span class="n">EmailAddress</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-
-    <span class="k">public</span> <span class="nf">EquotableArgument</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">,</span> <span class="kt">string</span> <span class="n">firstName</span><span class="p">,</span> <span class="kt">string</span> <span class="n">lastName</span><span class="p">,</span> <span class="kt">string</span> <span class="n">emailAddress</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">Id</span> <span class="p">=</span> <span class="n">id</span><span class="p">;</span>
-        <span class="n">FirstName</span> <span class="p">=</span> <span class="n">firstName</span><span class="p">;</span>
-        <span class="n">LastName</span> <span class="p">=</span> <span class="n">lastName</span><span class="p">;</span>
-        <span class="n">EmailAddress</span> <span class="p">=</span> <span class="n">emailAddress</span><span class="p">;</span>
-    <span class="p">}</span>
-
-    <span class="k">public</span> <span class="k">override</span> <span class="kt">string</span> <span class="nf">ToString</span><span class="p">()</span>
-        <span class="p">=&gt;</span> <span class="s">$"</span><span class="p">{</span><span class="k">nameof</span><span class="p">(</span><span class="n">StringableArgument</span><span class="p">)}</span><span class="s">(id: </span><span class="p">{</span><span class="n">Id</span><span class="p">}</span><span class="s">, firstName: \"</span><span class="p">{</span><span class="n">FirstName</span><span class="p">}</span><span class="s">\", "</span> <span class="p">+</span>
-            <span class="s">$"lastName: \"</span><span class="p">{</span><span class="n">LastName</span><span class="p">}</span><span class="s">\", emailAddres: \"</span><span class="p">{</span><span class="n">EmailAddress</span><span class="p">}</span><span class="s">\")"</span><span class="p">;</span>
-
-    <span class="k">public</span> <span class="kt">bool</span> <span class="nf">Equals</span><span class="p">(</span><span class="n">EquotableArgument</span> <span class="n">other</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">other</span> <span class="k">is</span> <span class="k">null</span><span class="p">)</span> <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
-
-        <span class="k">return</span> <span class="nf">ToTuple</span><span class="p">(</span><span class="k">this</span><span class="p">)</span> <span class="p">==</span> <span class="nf">ToTuple</span><span class="p">(</span><span class="n">other</span><span class="p">);</span>
-    <span class="p">}</span>
-
-    <span class="k">public</span> <span class="k">override</span> <span class="kt">bool</span> <span class="nf">Equals</span><span class="p">(</span><span class="kt">object</span> <span class="n">obj</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="n">obj</span> <span class="k">is</span> <span class="n">EquotableArgument</span> <span class="n">other</span><span class="p">)</span> <span class="p">{</span>
-            <span class="k">return</span> <span class="nf">Equals</span><span class="p">(</span><span class="n">other</span><span class="p">);</span>
-        <span class="p">}</span>
-
-        <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
-    <span class="p">}</span>
-
-    <span class="k">public</span> <span class="k">override</span> <span class="kt">int</span> <span class="nf">GetHashCode</span><span class="p">()</span>
-        <span class="p">=&gt;</span> <span class="nf">ToTuple</span><span class="p">(</span><span class="k">this</span><span class="p">).</span><span class="nf">GetHashCode</span><span class="p">();</span>
-
-    <span class="k">private</span> <span class="k">static</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">string</span><span class="p">,</span> <span class="kt">string</span><span class="p">,</span> <span class="kt">string</span><span class="p">)</span> <span class="nf">ToTuple</span><span class="p">(</span><span class="n">EquotableArgument</span> <span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">arg</span><span class="p">.</span><span class="n">Id</span><span class="p">,</span> <span class="n">arg</span><span class="p">.</span><span class="n">FirstName</span><span class="p">,</span> <span class="n">arg</span><span class="p">.</span><span class="n">LastName</span><span class="p">,</span> <span class="n">arg</span><span class="p">.</span><span class="n">EmailAddress</span><span class="p">);</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-
-<span class="c1">// in a test method:</span>
-<span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
-    <span class="c1">// NOTICE: We no longer use a lambda expression.</span>
-    <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="nf">Is</span><span class="p">(</span><span class="k">new</span> <span class="nf">EquotableArgument</span><span class="p">(</span>
-        <span class="n">id</span><span class="p">:</span> <span class="m">9</span><span class="p">,</span> 
-        <span class="n">firstName</span><span class="p">:</span> <span class="s">"jan"</span><span class="p">,</span> 
-        <span class="n">lastName</span><span class="p">:</span> <span class="s">"kowalski"</span><span class="p">,</span>
-        <span class="n">emailAddress</span><span class="p">:</span> <span class="s">"jan.kowalski@gmail.com"</span><span class="p">)));</span></code></pre></figure>
-
-<p>With this solution it is impossible to forget to update our matchers
-when we add a new field.
-We also get a slightly better error message (formatting added):</p>
-
-<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">Expected to receive a call matching:
-    DoStuff(StringableArgument(
-        id: 9, firstName: "jan", 
-        lastName: "kowalski", 
-        emailAddres: "jan.kowalski@gmail.com"))
-Actually received no matching calls.
-Received 1 non-matching call (non-matching arguments 
-indicated with '*' characters):
-    DoStuff(*StringableArgument(
-        id: 7, firstName: "john", 
-        lastName: "doe", 
-        emailAddres: "john.doe@gmail.com")*)</code></pre></figure>
-
-<p>So far so good. But what if our argument has ten or more properties.
-With complex arguments looking for a one property with
-unexpected value may quickly change into “Where’s Wally?” game.
-The only way to further improve error messages is to stop relaying on
-NSubstitute/hand-carfted <code class="highlighter-rouge">Equals</code> implementation 
-and instead to use specialized assertion library like
-<a href="https://fluentassertions.com/">FluentAssertions</a> or
-<a href="http://www.n-fluent.net/">NFluent</a>.</p>
-
-<p>Here is how our test would look like if we decide to use FluentAssertions:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
-<span class="k">public</span> <span class="k">void</span> <span class="nf">Catching_argument_and_checking_manually_with_fluent_assertions</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// Arrange</span>
-    <span class="n">PlainArgument</span> <span class="n">arg</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
-
-    <span class="n">_fooService</span>
-        <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="n">PlainArgument</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">arg</span> <span class="p">=</span> <span class="n">x</span><span class="p">));</span>
-
-    <span class="c1">// Act</span>
-    <span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
-
-    <span class="c1">// Assert</span>
-    <span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
-        <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">PlainArgument</span><span class="p">&gt;());</span>
-
-    <span class="n">arg</span><span class="p">.</span><span class="nf">Should</span><span class="p">()</span>
-        <span class="p">.</span><span class="nf">BeEquivalentTo</span><span class="p">(</span><span class="k">new</span> <span class="nf">PlainArgument</span><span class="p">(</span>
-            <span class="n">id</span><span class="p">:</span> <span class="m">11</span><span class="p">,</span> 
-            <span class="n">firstName</span><span class="p">:</span> <span class="s">"jan"</span><span class="p">,</span> 
-            <span class="n">lastName</span><span class="p">:</span> <span class="s">"kowlaski"</span><span class="p">,</span> 
-            <span class="n">emailAddress</span><span class="p">:</span> <span class="s">"jan.kowalski@gmail.com"</span><span class="p">));</span>        
-<span class="p">}</span></code></pre></figure>
-
-<p>The error message is:</p>
-
-<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">Expected member Id to be 11, but found 7.
-Expected member FirstName to be "jan" with a length of 3, but "john" has a length of 4, differs near "ohn" (index 1).
-Expected member LastName to be "kowlaski" with a length of 8, but "doe" has a length of 3, differs near "doe" (index 0).
-Expected member EmailAddress to be 
-"jan.kowalski@gmail.com" with a length of 22, but 
-"john.doe@gmail.com" has a length of 18, differs near "ohn" (index 1).
-
-With configuration:
-// (skipped)
-// Here FluentAssertions describes configuration
-// that it used to compare the two objects.</code></pre></figure>
-
-<p>Not bad, I must say. We get a list of only these properties that have
-unexpected values. Certain messages seem a little bit too verbose for me
-e.g. <code class="highlighter-rouge">Expected member FirstName to be "jan" with a length of 3</code>,
- <code class="highlighter-rouge">but "john" has a length of 4, differs near "ohn" (index 1).</code>
-Maybe <code class="highlighter-rouge">Expected FirstName to be "jan" but was "john".</code> would be
-just enough?
-Still it is the best solution that we have so far.</p>
-
-<p>The only downside that I see 
-is that the test code is now a little more verbose and less readable.
-Mainly because 
-we are now responsible for manually capturing argument’s value:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">PlainArgument</span> <span class="n">arg</span> <span class="p">=</span> <span class="k">null</span><span class="p">;</span>
-<span class="n">_fooService</span>
-    <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Do</span><span class="p">&lt;</span><span class="n">PlainArgument</span><span class="p">&gt;(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">arg</span> <span class="p">=</span> <span class="n">x</span><span class="p">));</span></code></pre></figure>
-
-<p>With a bit of C# magic we may make argument capturing less painful:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="n">_fooService</span>
-    <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="nf">Capture</span><span class="p">(</span><span class="k">out</span> <span class="n">Arg</span><span class="p">&lt;</span><span class="n">PlainArgument</span><span class="p">&gt;</span> <span class="n">arg</span><span class="p">));</span>
-
-<span class="c1">// Act</span>
-<span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
-
-<span class="c1">// Assert</span>
-<span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
-    <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">Arg</span><span class="p">.</span><span class="n">Any</span><span class="p">&lt;</span><span class="n">PlainArgument</span><span class="p">&gt;());</span>
-
-<span class="c1">// This time we use NFluent</span>
-<span class="n">Check</span><span class="p">.</span><span class="nf">That</span><span class="p">(</span><span class="n">arg</span><span class="p">.</span><span class="n">Value</span><span class="p">).</span><span class="nf">HasFieldsWithSameValues</span><span class="p">(</span>
-    <span class="k">new</span> <span class="nf">PlainArgument</span><span class="p">(</span>
-        <span class="n">id</span><span class="p">:</span> <span class="m">7</span><span class="p">,</span> 
-        <span class="n">firstName</span><span class="p">:</span> <span class="s">"john"</span><span class="p">,</span> 
-        <span class="n">lastName</span><span class="p">:</span> <span class="s">"doe"</span><span class="p">,</span> 
-        <span class="n">emailAddress</span><span class="p">:</span> <span class="s">"john.doe@gmail.com"</span><span class="p">));</span> </code></pre></figure>
-
-<p>To see how it works please check <a href="https://github.com/marcin-chwedczuk/blog-nsubstitute-error-messages/blob/master/Library.Test/ArgCapture.cs">ArgCapture.cs</a> file.</p>
-
-<p>Catching argument’s value manually is cumbersome and 
-makes tests less readable. On the other hand using some “magical”
-syntactic sugar also does not looks like a good idea. 
-After all our code should be simple. If we can avoid using “magic”
-we should do it!</p>
-
-<p>Our final solution is to create a custom NSubstitute argument matcher.
-The matcher uses undercover FluentAssertions library to perform the check.
-Here is how the test code looks like with this approach:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
-<span class="k">public</span> <span class="k">void</span> <span class="nf">Checking_argument_using_custom_NSubstitute_matcher</span><span class="p">()</span> <span class="p">{</span>
-    <span class="c1">// Arrange</span>
-
-    <span class="c1">// Act</span>
-    <span class="n">_component</span><span class="p">.</span><span class="nf">DoStuff</span><span class="p">();</span>
-
-    <span class="c1">// Assert</span>
-    <span class="kt">var</span> <span class="n">expected</span> <span class="p">=</span> <span class="k">new</span> <span class="nf">PlainArgument</span><span class="p">(</span>
-        <span class="n">id</span><span class="p">:</span> <span class="m">11</span><span class="p">,</span> 
-        <span class="n">firstName</span><span class="p">:</span> <span class="s">"jan"</span><span class="p">,</span> 
-        <span class="n">lastName</span><span class="p">:</span> <span class="s">"kowlaski"</span><span class="p">,</span> 
-        <span class="n">emailAddress</span><span class="p">:</span> <span class="s">"jan.kowalski@gmail.com"</span><span class="p">);</span>
-
-    <span class="n">_fooService</span><span class="p">.</span><span class="nf">Received</span><span class="p">()</span>
-        <span class="p">.</span><span class="nf">DoStuff</span><span class="p">(</span><span class="n">WithArg</span><span class="p">.</span><span class="nf">EquivalentTo</span><span class="p">(</span><span class="n">expected</span><span class="p">));</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>The error message generated for an argument that does
-not overload <code class="highlighter-rouge">ToString</code> looks like this (formatting added):</p>
-
-<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">Expected to receive a call matching:
-    DoStuff(PlainArgument)
-Actually received no matching calls.
-Received 1 non-matching call (non-matching arguments indicated 
-with '*' characters):
-    DoStuff(*PlainArgument*)
-        arg[0]: Expected member Id to be 11, but found 7.
-                Expected member FirstName to be "jan" with a length of 3, 
-                but "john" has a length of 4, differs near "ohn" (index 1).
-                Expected member LastName to be "kowlaski" with a length of 8, 
-                but "doe" has a length of 3, differs near "doe" (index 0).
-                Expected member EmailAddress to be 
-                "jan.kowalski@gmail.com" with a length of 22, but 
-                "john.doe@gmail.com" has a length of 18, differs near "ohn" 
-                (index 1).</code></pre></figure>
-
-<p>It is clear that the problem occurred at the first argument (<code class="highlighter-rouge">arg[0]</code>). 
-Also we can see the actual and expected values of the argument’s 
-fields and properties.
-And the test code is simple and clean.
-If you are interested how it is implemented please see
-<a href="https://github.com/marcin-chwedczuk/blog-nsubstitute-error-messages/blob/master/Library.Test/CustomMatcher.cs">CustomMatcher.cs</a>
-file.</p>
-
-<p>As we can see there exists no perfect solution. Still with a little effort
-we can make our error messages much more readable and pleasurable to work with.
-I personally suggest to use either the last solution or 
-the solution presented in <code class="highlighter-rouge">Catching_argument_and_checking_manually_with_fluent_assertions</code> test.</p>
-
-<p>Source code and examples: <a href="https://github.com/marcin-chwedczuk/blog-nsubstitute-error-messages">GitHub</a></p>
 
 
 	  ]]></description>

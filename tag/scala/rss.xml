@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+   
+      <title>marcin-chwedczuk.github.io/</title>
+   
+   <link></link>
+   <description>A place where I share my thoughts about programming.</description>
+   <language>en-uk</language>
+   <managingEditor> </managingEditor>
+   <atom:link href="rss" rel="self" type="application/rss+xml" />
+   
+	<item>
+	  <title>WIP Ultimate guide to Scala's match expression</title>
+	  <link>//ultimate-guide-to-scalas-match-expression</link>
+	  <author></author>
+	  <pubDate>2019-09-18T02:00:01+02:00</pubDate>
+	  <guid>//ultimate-guide-to-scalas-match-expression</guid>
+	  <description><![CDATA[
+	     <p><strong>WORK IN PROGRESS</strong></p>
+
+<p>Scala <code class="highlighter-rouge">match</code> expression is a very powerful tool.
+In hands of an experienced programmer it can be used to
+create concise and easy to understand code,
+yet novice programmers are often intimidated by it.
+In this blog post I will describe how <code class="highlighter-rouge">match</code> expression
+work. We will start with the basics and end up with extractors.
+After reading this post you will know how <code class="highlighter-rouge">case List(a, b, c)</code>
+works and you should be able to write your own extractors.</p>
+
+<h4 id="pattern-matching-values">Pattern matching values</h4>
+
+<p><code class="highlighter-rouge">match</code> expression can be used (just like Java’s <code class="highlighter-rouge">switch</code>)
+as a more robust <code class="highlighter-rouge">if</code> statement replacement.
+For example we can write:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">command</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">fetchNextCommand</span><span class="o">()</span>
+
+<span class="n">command</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="s">"ls"</span> <span class="k">=&gt;</span> <span class="n">printDirectoryContents</span><span class="o">()</span>
+  <span class="k">case</span> <span class="s">"ps"</span> <span class="k">=&gt;</span> <span class="n">printProcesses</span><span class="o">()</span>
+  <span class="k">case</span> <span class="s">"exit"</span> <span class="k">=&gt;</span> <span class="n">exitShell</span><span class="o">()</span>
+<span class="o">}</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">match</code> expression, in opposite to Java’s <code class="highlighter-rouge">switch</code> is not
+limited to strings, Enums and numeric types, but can also match
+booleans, floating point numbers (although this makes little sense)
+and <code class="highlighter-rouge">null</code>. We can also mix multiple types in a single <code class="highlighter-rouge">match</code>
+expression:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">x</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="mf">3.1415</span>
+
+<span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="kc">true</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"it's true"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="mi">3</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"integer 3"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="mf">3.1415</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"pi approximation"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="kc">null</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"null"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="s">"foo"</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"this 'foo' again!"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="sc">'a'</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"character 'a'"</span><span class="o">)</span>
+<span class="o">}</span>
+<span class="c1">// Prints:
+</span><span class="o">//</span> <span class="n">pi</span> <span class="n">approximation</span></code></pre></figure>
+
+<p>When we match an Enum value we are not required to
+provide cases for all possible values of the Enum:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">object</span> <span class="nc">Color</span> <span class="k">extends</span> <span class="nc">Enumeration</span> <span class="o">{</span>
+  <span class="k">type</span> <span class="kt">Color</span> <span class="o">=</span> <span class="nc">Value</span>
+  <span class="k">val</span> <span class="nc">White</span><span class="o">,</span> <span class="nc">Red</span><span class="o">,</span> <span class="nc">Green</span><span class="o">,</span> <span class="nc">Blue</span><span class="o">,</span> <span class="nc">Black</span> <span class="k">=</span> <span class="nc">Value</span>
+<span class="o">}</span>
+
+<span class="k">val</span> <span class="n">skyColor</span> <span class="k">=</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Blue</span>
+
+<span class="k">val</span> <span class="n">weatherWildGuess</span> <span class="k">=</span> <span class="n">skyColor</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">White</span> <span class="k">=&gt;</span> <span class="s">"snow?"</span>
+  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Blue</span> <span class="k">=&gt;</span> <span class="s">"rain?"</span>
+  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Black</span> <span class="k">=&gt;</span> <span class="s">"a volcano eruption?"</span>
+<span class="o">}</span>
+
+<span class="n">println</span><span class="o">(</span><span class="n">weatherWildGuess</span><span class="o">)</span>
+<span class="c1">// Prints:
+</span><span class="o">//</span> <span class="n">rain</span><span class="o">?</span></code></pre></figure>
+
+<p>When a value cannot be matched with any of the <code class="highlighter-rouge">case</code> clauses
+a <code class="highlighter-rouge">scala.MatchError</code> runtime exception is thrown.
+A special “catch all” case can be
+provided to handle all previously unmatched values 
+(Scala’s <code class="highlighter-rouge">case _</code> is a counterpart to Java’s <code class="highlighter-rouge">switch</code> <code class="highlighter-rouge">default</code> label):</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">weatherWildGuess</span> <span class="k">=</span> <span class="n">skyColor</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">White</span> <span class="k">=&gt;</span> <span class="s">"snow?"</span>
+  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Blue</span> <span class="k">=&gt;</span> <span class="s">"rain?"</span>
+  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Black</span> <span class="k">=&gt;</span> <span class="s">"a volcano eruption?"</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="s">"I don't know"</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>“catch all” case should be the last one. 
+Patterns are matched from top to bottom and the procedure
+stops on the first matching <code class="highlighter-rouge">case</code> clause.</p>
+
+<p>Sometimes we want to access the value matched by “catch all” case.
+This is very simple we just need to replace wildcard pattern (<code class="highlighter-rouge">_</code>)
+with a variable name:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">weatherWildGuess</span> <span class="k">=</span> <span class="n">skyColor</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">White</span> <span class="k">=&gt;</span> <span class="s">"snow?"</span>
+  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Blue</span> <span class="k">=&gt;</span> <span class="s">"rain?"</span>
+  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Black</span> <span class="k">=&gt;</span> <span class="s">"a volcano eruption?"</span>
+  <span class="k">case</span> <span class="n">unknownColor</span> <span class="k">=&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nc">IllegalArgumentException</span><span class="o">(</span>
+      <span class="n">s</span><span class="s">"Cannot guess weather for sky color: "</span> <span class="o">+</span> <span class="n">unknownColor</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Often it is required to execute the same code for multiple values.
+With <code class="highlighter-rouge">match</code> this can be done using <code class="highlighter-rouge">|</code> operator:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">answer</span><span class="o">.</span><span class="n">toLowerCase</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="s">"y"</span> <span class="o">|</span> <span class="s">"yes"</span> <span class="o">|</span> <span class="s">"ok"</span> <span class="o">|</span> <span class="s">"proceed"</span> <span class="k">=&gt;</span>
+    <span class="n">executeOperation</span><span class="o">()</span>
+  <span class="k">case</span> <span class="s">"n"</span> <span class="o">|</span> <span class="s">"no"</span> <span class="o">|</span> <span class="s">"abort"</span> <span class="k">=&gt;</span>
+    <span class="n">abortOperation</span><span class="o">()</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
+    <span class="n">askAgain</span><span class="o">()</span>
+<span class="o">}</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">match</code> can also be used to match against <code class="highlighter-rouge">null</code>:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">nullableValue</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kc">null</span> 
+
+<span class="k">val</span> <span class="n">option</span> <span class="k">=</span> <span class="n">nullableValue</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="kc">null</span> <span class="k">=&gt;</span> <span class="nc">None</span>
+  <span class="k">case</span> <span class="n">s</span> <span class="k">=&gt;</span> <span class="nc">Some</span><span class="o">(</span><span class="n">s</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="n">println</span><span class="o">(</span><span class="n">option</span><span class="o">)</span></code></pre></figure>
+
+<p>Matching against Double <code class="highlighter-rouge">NaN</code> value is more problematic, since
+<code class="highlighter-rouge">NaN == NaN</code> must always return <code class="highlighter-rouge">false</code> according to IEEE 754
+Standard. To match against <code class="highlighter-rouge">NaN</code> we need to use a pattern guard:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">d</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span>
+
+<span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">d</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">PositiveInfinity</span> <span class="k">=&gt;</span> <span class="s">"+∞"</span>
+
+  <span class="c1">// WRONG way to match NaN
+</span>  <span class="k">case</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span> <span class="k">=&gt;</span> <span class="s">"this does not work"</span>
+  <span class="c1">// RIGHT way to match NaN
+</span>  <span class="k">case</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">isNaN</span> <span class="k">=&gt;</span> <span class="s">"NaN"</span>
+
+  <span class="c1">// catch-all
+</span>  <span class="k">case</span> <span class="n">value</span> <span class="k">=&gt;</span> <span class="n">value</span><span class="o">.</span><span class="n">toString</span>
+<span class="o">}</span>
+
+<span class="n">println</span><span class="o">(</span><span class="n">result</span><span class="o">)</span></code></pre></figure>
+
+<p>We will return to pattern guards later.</p>
+
+<h4 id="pattern-matching-types">Pattern matching types</h4>
+
+<p>Besides matching values <code class="highlighter-rouge">match</code> can also perform <code class="highlighter-rouge">instanceof</code> tests:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">something</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="k">new</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Random</span><span class="o">()</span>
+
+<span class="n">something</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="k">_:</span> <span class="kt">String</span> <span class="o">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"a string!"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="k">_:</span> <span class="kt">Int</span> <span class="o">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"an int!"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="k">_:</span> <span class="kt">java.util.Random</span> <span class="o">=&gt;</span>
+    <span class="n">println</span><span class="o">(</span><span class="s">"A Random instance!"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"type unknown!"</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>As usual on JVM <code class="highlighter-rouge">instanceof</code> tests will not work with
+parametrized types 
+(while <code class="highlighter-rouge">class List&lt;T&gt;</code> is a generic type, 
+<code class="highlighter-rouge">List&lt;T&gt;</code> usage like <code class="highlighter-rouge">List&lt;String&gt;</code> is
+called a parametetrized type). 
+<a href="https://en.wikipedia.org/wiki/Generics_in_Java#Problems_with_type_erasure">Type erasure</a>
+is here to blame:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="c1">// DO NOT WORK
+</span><span class="k">val</span> <span class="n">x</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="nc">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">3</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="k">_:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="s">"string list"</span> <span class="c1">// unreachable code warning
+</span>  <span class="k">case</span> <span class="k">_:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="s">"int list"</span> <span class="c1">// unreachable code warning
+</span><span class="o">}</span>
+
+<span class="n">println</span><span class="o">(</span><span class="n">result</span><span class="o">)</span>
+<span class="c1">// Prints:
+</span><span class="o">//</span> <span class="n">string</span> <span class="n">list</span> <span class="o">(</span><span class="n">sic</span><span class="o">!)</span></code></pre></figure>
+
+<p>But not all is lost, we can still preform type tests
+on generic types using wildcards (Scala <code class="highlighter-rouge">_</code> is a conterpart of Java <code class="highlighter-rouge">?</code>,
+consider Scala’s <code class="highlighter-rouge">List[_]</code> and Java’s <code class="highlighter-rouge">List&lt;?&gt;</code>):</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">x</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="nc">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">3</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="k">_:</span> <span class="kt">Map</span><span class="o">[</span><span class="k">_</span>, <span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="s">"a map"</span>
+  <span class="k">case</span> <span class="k">_:</span> <span class="kt">List</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="s">"a list"</span>
+  <span class="k">case</span> <span class="k">_:</span> <span class="kt">java.util.List</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="s">"a java's list"</span>
+<span class="o">}</span>
+
+<span class="n">println</span><span class="o">(</span><span class="n">result</span><span class="o">)</span>
+<span class="c1">// Prints:
+</span><span class="o">//</span> <span class="n">a</span> <span class="n">list</span></code></pre></figure>
+
+<p>So far we where not interested in the actual value of the variable,
+but only in it’s type and so we just discarded the value using <code class="highlighter-rouge">case _: Type</code>
+clause.
+But nothing prevents us from assigning the already type checked
+value to a variable of the target type:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="n">map</span><span class="k">:</span> <span class="kt">Map</span><span class="o">[</span><span class="k">_</span>, <span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="n">map</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="mi">2</span>
+  <span class="k">case</span> <span class="n">list</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="n">list</span><span class="o">.</span><span class="n">size</span>
+  <span class="k">case</span> <span class="n">jlist</span><span class="k">:</span> <span class="kt">java.util.List</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="n">jlist</span><span class="o">.</span><span class="n">size</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="mi">0</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Actually every <code class="highlighter-rouge">case</code> clause creates it’s own lexical scope.
+This means that we can reuse variable names across different <code class="highlighter-rouge">case</code>es:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="n">list</span><span class="k">:</span> <span class="kt">java.util.List</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span>
+    <span class="k">val</span> <span class="n">tmp</span> <span class="k">=</span> <span class="mi">10</span>
+    <span class="n">list</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="n">tmp</span>
+
+  <span class="k">case</span> <span class="n">list</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span>
+    <span class="k">val</span> <span class="n">tmp</span> <span class="k">=</span> <span class="mi">1</span>
+    <span class="n">list</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="n">tmp</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Pipe operator can be used with type checks too, but the
+resulting code isn’t very readable:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="k">_:</span><span class="kt">Short</span> <span class="kt">|</span> <span class="k">_</span><span class="kt">:Int</span> <span class="kt">|</span> <span class="k">_</span><span class="kt">:Long</span> <span class="o">=&gt;</span>
+    <span class="n">println</span><span class="o">(</span><span class="s">"a number!"</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>If we want to use the value matched by this
+pattern we need to use a pattern binder:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="n">num</span><span class="o">@(</span><span class="k">_:</span><span class="kt">Short</span> <span class="kt">|</span> <span class="k">_</span><span class="kt">:Int</span> <span class="kt">|</span> <span class="k">_</span><span class="kt">:Long</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="n">println</span><span class="o">(</span><span class="n">num</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">Number</span><span class="o">].</span><span class="n">doubleValue</span><span class="o">())</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Pattern binders allow us to assign a value
+that matches a <em>subpattern</em> to a variable.
+In the extreme case this <em>subpattern</em> can be the entire
+pattern, as it is in our case. We will return to
+the pattern binders later.</p>
+
+<h4 id="pattern-guards">Pattern guards</h4>
+
+<p>When pattern matching values, we often need to preform
+some additional checks e.g. say we want to match all odd
+or even integers. We can use pattern guards for this purpose:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">for</span> <span class="o">(</span><span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="mi">10</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">i</span> <span class="k">match</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="n">i</span> <span class="k">if</span> <span class="o">(</span><span class="n">i</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="k">=&gt;</span>
+      <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$i is even"</span><span class="o">)</span>
+    <span class="k">case</span> <span class="n">i</span> <span class="k">if</span> <span class="o">(</span><span class="n">i</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="k">=&gt;</span>
+      <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$i is odd"</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Since pattern guards use predicates (expressions that
+return either <code class="highlighter-rouge">true</code> or <code class="highlighter-rouge">false</code>) they are very flexible.
+We can express both value and type checks using only
+pattern guards:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">x</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s">"foo"</span> <span class="k">=&gt;</span>
+    <span class="s">"it's this 'foo' again!"</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">=&gt;</span>
+    <span class="s">"it's three!"</span>
+<span class="o">}</span>
+
+<span class="k">val</span> <span class="n">t</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="s">"foo"</span>
+<span class="n">t</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="n">tmp</span> <span class="k">if</span> <span class="n">tmp</span><span class="o">.</span><span class="n">isInstanceOf</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=&gt;</span>
+    <span class="k">val</span> <span class="n">ss</span> <span class="k">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
+    <span class="n">println</span><span class="o">(</span><span class="s">"it's a string: "</span> <span class="o">+</span> <span class="n">ss</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The problem with pattern guards is that they are
+imperative. We should try to avoid them
+as much as possible. Later we will learn about
+extractors, that roughly speaking do the same
+job as guards but in a more declarative way.</p>
+
+<p>TODO:</p>
+
+<p>Extractors:</p>
+<ul>
+  <li>Boolean extractors (IsOdd, IsEven)
+    <ul>
+      <li>Can I use variable alias?</li>
+    </ul>
+  </li>
+  <li>Single value extractors (String -&gt; Integer)</li>
+  <li>Multiple (fixed) value extractors (JavaList)
+    <ul>
+      <li>Discards with <code class="highlighter-rouge">_</code></li>
+    </ul>
+  </li>
+  <li>Extractor nesting (JavaList + EmptyList)
+    <ul>
+      <li>Example with monadic for - how the code looks like</li>
+    </ul>
+  </li>
+  <li>Multiple seq value extractors JavaList2
+    <ul>
+      <li><code class="highlighter-rouge">foo @ _*</code> binding</li>
+    </ul>
+  </li>
+  <li>Variable aliases</li>
+</ul>
+
+<p>Extractor real-world usage:</p>
+<ul>
+  <li>Case class alias (extractor)</li>
+  <li>Matching tuples</li>
+  <li>Matching Lists (extractor)</li>
+  <li>Regex extractors</li>
+</ul>
+
+<p>Trouble shooting:</p>
+<ul>
+  <li>https://stackoverflow.com/a/6173342/1779504 <code class="highlighter-rouge">foo</code></li>
+</ul>
+
+
+	  ]]></description>
+	</item>
+
+
+</channel>
+</rss>
