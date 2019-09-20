@@ -5,7 +5,7 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://localhost:4000</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor> </managingEditor>
@@ -45,8 +45,9 @@ For example we can write:</p>
 
 <p><code class="highlighter-rouge">match</code> expression, in opposite to Java’s <code class="highlighter-rouge">switch</code> is not
 limited to strings, Enums and numeric types, but can also match
-booleans, floating point numbers (although this makes little sense)
-and <code class="highlighter-rouge">null</code>. We can also mix multiple types in a single <code class="highlighter-rouge">match</code>
+booleans, floating point numbers (although this isn’t a good idea)
+<code class="highlighter-rouge">null</code> literal.
+We can also mix multiple types in a single <code class="highlighter-rouge">match</code>
 expression:</p>
 
 <figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">x</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="mf">3.1415</span>
@@ -156,6 +157,90 @@ Standard. To match against <code class="highlighter-rouge">NaN</code> we need to
 
 <p>We will return to pattern guards later.</p>
 
+<h4 id="pattern-matching-class-instances">Pattern matching class instances</h4>
+
+<p>Besides pattern matching primitive types, <code class="highlighter-rouge">match</code> can be used
+to compare normal class instances.
+For this to work, a matched class must provide a sensible
+override for <code class="highlighter-rouge">equals</code> and <code class="highlighter-rouge">hashCode</code> methods.</p>
+
+<p>Before we’ll see an example, we need to learn about
+a certain pitfall of Scala, illustated by the following code:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">NotEqualToAnything</span> <span class="o">{</span>
+  <span class="k">override</span> <span class="k">def</span> <span class="n">equals</span><span class="o">(</span><span class="n">obj</span><span class="k">:</span> <span class="kt">Any</span><span class="o">)</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">false</span>
+<span class="o">}</span>
+
+<span class="k">val</span> <span class="n">x</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">NotEqualToAnything</span><span class="o">()</span>
+<span class="k">val</span> <span class="n">y</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">NotEqualToAnything</span><span class="o">()</span>
+
+<span class="n">println</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="n">equals</span><span class="o">(</span><span class="n">y</span><span class="o">))</span>
+
+<span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="n">y</span> <span class="k">=&gt;</span>
+    <span class="n">println</span><span class="o">(</span><span class="s">"Whaaaaa! What has just happened?"</span><span class="o">)</span>
+<span class="o">}</span>
+<span class="c1">// Prints:
+// false
+</span><span class="o">//</span> <span class="nc">Whaaaaa</span><span class="o">!</span> <span class="nc">What</span> <span class="n">has</span> <span class="n">just</span> <span class="n">happened</span><span class="o">?</span></code></pre></figure>
+
+<p>Why was <code class="highlighter-rouge">x</code> matched with <code class="highlighter-rouge">case y</code> despite <code class="highlighter-rouge">x.equals(y)</code> returning <code class="highlighter-rouge">false</code>?
+Because the <code class="highlighter-rouge">y</code> in <code class="highlighter-rouge">case y</code> is a new variable introduced by “catch-all” clause 
+to keep the matched value. It’s the same construct that we used
+ealier to catch unknown colors (<code class="highlighter-rouge">case unknownColor</code>).
+To tell Scala compiler that we want to use the value kept in
+a variable instead of introducing a new one,
+we just need to quote variable name using <code>&#96;</code> character:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="n">`y`</span> <span class="k">=&gt;</span>
+    <span class="n">println</span><span class="o">(</span><span class="s">"Whaaaaa! What has just happened?"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
+    <span class="n">println</span><span class="o">(</span><span class="s">"no-match"</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Returning to matching instances, here a working example:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">JustInt</span><span class="o">(</span><span class="k">val</span> <span class="n">n</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>
+  <span class="c1">// hashCode() omitted for brevity
+</span>  <span class="k">override</span> <span class="k">def</span> <span class="n">equals</span><span class="o">(</span><span class="n">obj</span><span class="k">:</span> <span class="kt">Any</span><span class="o">)</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="n">obj</span> <span class="k">match</span> <span class="o">{</span>
+      <span class="k">case</span> <span class="n">other</span><span class="k">:</span> <span class="kt">JustInt</span> <span class="o">=&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">n</span> <span class="o">==</span> <span class="k">this</span><span class="o">.</span><span class="n">n</span>
+      <span class="k">case</span> <span class="k">_</span>              <span class="k">=&gt;</span> <span class="kc">false</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="k">val</span> <span class="n">j2</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">JustInt</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">j3</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">JustInt</span><span class="o">(</span><span class="mi">3</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">j4</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">JustInt</span><span class="o">(</span><span class="mi">4</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">just3</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">JustInt</span><span class="o">(</span><span class="mi">3</span><span class="o">)</span>
+
+<span class="n">just3</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="n">`j2`</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"just 2!"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="n">`j3`</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"just 3!"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="n">`j4`</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"just 4!"</span><span class="o">)</span>
+<span class="o">}</span>
+<span class="c1">// Prints:
+</span><span class="o">//</span> <span class="n">just</span> <span class="mi">3</span><span class="o">!</span></code></pre></figure>
+
+<p>One more example before we move on. When we attempt to
+match <code class="highlighter-rouge">object</code>s we do not need to use <code>&#96;</code> esaping:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">object</span> <span class="nc">X</span> <span class="o">{</span> <span class="o">}</span>
+<span class="k">object</span> <span class="nc">Y</span> <span class="o">{</span> <span class="o">}</span>
+
+<span class="k">val</span> <span class="n">x</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="n">X</span>
+<span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="n">Y</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"it's Y!"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="n">X</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"it's X!"</span><span class="o">)</span>
+<span class="o">}</span>
+<span class="c1">// Prints:
+</span><span class="o">//</span> <span class="n">it</span><span class="ss">'s </span><span class="n">X</span><span class="o">!</span></code></pre></figure>
+
+<p>will work just fine!</p>
+
 <h4 id="pattern-matching-types">Pattern matching types</h4>
 
 <p>Besides matching values <code class="highlighter-rouge">match</code> can also perform <code class="highlighter-rouge">instanceof</code> tests:</p>
@@ -254,6 +339,50 @@ In the extreme case this <em>subpattern</em> can be the entire
 pattern, as it is in our case. We will return to
 the pattern binders later.</p>
 
+<h4 id="pattern-matching-tuples">Pattern matching tuples</h4>
+
+<p>Pattern matching on tuples is supported out-of-the-box.
+We can match on tuple elements using all previously
+described matchers. We can ignore a tuple element
+by using match all wildcard (<code class="highlighter-rouge">_</code>):</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="c1">// unpacking tuple
+</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span> <span class="n">c</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$a $b $c"</span><span class="o">)</span>
+<span class="o">}</span>
+<span class="c1">// ignoring certain elements
+</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="k">_</span><span class="o">,</span> <span class="k">_</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$a"</span><span class="o">)</span>
+<span class="o">}</span>
+<span class="c1">// matching values of the tuple
+</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">e</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$e"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nc">RuntimeException</span><span class="o">()</span>
+<span class="o">}</span>
+<span class="c1">// matching types of the tuple
+</span><span class="k">val</span> <span class="n">t</span> <span class="k">=</span> <span class="o">(</span><span class="s">"foo"</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">Any</span><span class="o">],</span>
+         <span class="mf">1.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">Any</span><span class="o">],</span>
+         <span class="kc">true</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">Any</span><span class="o">])</span>
+
+<span class="n">t</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="o">(</span><span class="n">s</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">n</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">b</span><span class="k">:</span> <span class="kt">Boolean</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$s $n $b"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nc">RuntimeException</span><span class="o">()</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>We can also match nested tuple structures:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">t</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="o">(</span><span class="s">"foo"</span><span class="o">,</span> <span class="s">"bar"</span><span class="o">))</span>
+
+<span class="n">t</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span> <span class="o">(</span><span class="n">c</span><span class="o">,</span> <span class="n">d</span><span class="o">))</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$a $b $c $d"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nc">RuntimeException</span><span class="o">()</span>
+<span class="o">}</span>
+<span class="c1">// and with other constraints:
+</span><span class="n">t</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="o">(</span><span class="k">_:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">d</span><span class="o">))</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$a $d"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nc">RuntimeException</span><span class="o">()</span>
+<span class="o">}</span></code></pre></figure>
+
 <h4 id="pattern-guards">Pattern guards</h4>
 
 <p>When pattern matching values, we often need to preform
@@ -295,47 +424,234 @@ as much as possible. Later we will learn about
 extractors, that roughly speaking do the same
 job as guards but in a more declarative way.</p>
 
-<p>TODO:</p>
+<h4 id="extractors">Extractors</h4>
 
-<p>Extractors:</p>
-<ul>
-  <li>Boolean extractors (IsOdd, IsEven)
-    <ul>
-      <li>Can I use variable alias?</li>
-    </ul>
-  </li>
-  <li>Single value extractors (String -&gt; Integer)</li>
-  <li>Multiple (fixed) value extractors (JavaList)
-    <ul>
-      <li>Discards with <code class="highlighter-rouge">_</code></li>
-    </ul>
-  </li>
-  <li>Extractor nesting (JavaList + EmptyList)
-    <ul>
-      <li>Example with monadic for - how the code looks like</li>
-    </ul>
-  </li>
-  <li>Multiple seq value extractors JavaList2
-    <ul>
-      <li><code class="highlighter-rouge">foo @ _*</code> binding</li>
-    </ul>
-  </li>
-  <li>Variable aliases</li>
-</ul>
+<p>Extractors are pattern guards on steroids.
+They allow us to build highly readable DSLs and provide
+a functional way to match, extract and transform program data.</p>
 
-<p>Extractor real-world usage:</p>
-<ul>
-  <li>Case class alias (extractor)</li>
-  <li>Matching tuples</li>
-  <li>Matching Lists (extractor)</li>
-  <li>Regex extractors</li>
-</ul>
+<p>The simplest extractor return just a <code class="highlighter-rouge">Boolean</code> value and
+can be used as a pattern guard replacement:</p>
 
-<p>Trouble shooting:</p>
-<ul>
-  <li>https://stackoverflow.com/a/6173342/1779504 <code class="highlighter-rouge">foo</code></li>
-</ul>
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">object</span> <span class="nc">Odd</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">unapply</span><span class="o">(</span><span class="n">n</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="o">(</span><span class="n">n</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+<span class="k">object</span> <span class="nc">Even</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">unapply</span><span class="o">(</span><span class="n">n</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="o">(</span><span class="n">n</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
 
+<span class="k">for</span> <span class="o">(</span><span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="mi">10</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">i</span> <span class="k">match</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">Odd</span><span class="o">()</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$i is odd"</span><span class="o">)</span>
+    <span class="k">case</span> <span class="nc">Even</span><span class="o">()</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$i is even"</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Generally speaking extractor is just a value with <code class="highlighter-rouge">unapply</code> method.
+In the last example we used <code class="highlighter-rouge">object</code>s but extractor can also be kept in variables:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">MultipleOf</span><span class="o">(</span><span class="n">m</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">unapply</span><span class="o">(</span><span class="n">n</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="o">(</span><span class="n">n</span> <span class="o">%</span> <span class="n">m</span><span class="o">)</span> <span class="o">==</span> <span class="mi">0</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="k">val</span> <span class="n">multipleOf2</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">MultipleOf</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">multipleOf5</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">MultipleOf</span><span class="o">(</span><span class="mi">5</span><span class="o">)</span>
+
+<span class="k">for</span> <span class="o">(</span><span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="mi">10</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">i</span> <span class="k">match</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="n">m5</span> <span class="k">@</span> <span class="n">multipleOf5</span><span class="o">()</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$m5 is multiple of 5"</span><span class="o">)</span>
+    <span class="k">case</span> <span class="n">m2</span> <span class="k">@</span> <span class="n">multipleOf2</span><span class="o">()</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$m2 is multiple of 2"</span><span class="o">)</span>
+    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Here we also used pattern binders to name the values that where matched
+by <code class="highlighter-rouge">multipleOf</code> extractors.</p>
+
+<p>Unfortunatelly in current version of Scala we cannot create parametrized
+extractors. In other words we cannot create a universal <code class="highlighter-rouge">multipleOf(n)</code> extractor.
+This also means that pattern guards are not 100% replacable by extractors.</p>
+
+<p>As the name suggest extractors main purpose is to extract the
+data from matched values.
+Our next extractor will extract non-null values from nullable reference:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">object</span> <span class="nc">NonNull</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">unapply</span><span class="o">[</span><span class="kt">R</span><span class="o">](</span><span class="n">arg</span><span class="k">:</span> <span class="kt">R</span><span class="o">)</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">R</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">arg</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="nc">None</span>
+    <span class="k">else</span> <span class="nc">Some</span><span class="o">(</span><span class="n">arg</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="k">val</span> <span class="n">strings</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="s">"foo"</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="s">"bar"</span><span class="o">,</span> <span class="kc">null</span><span class="o">)</span>
+<span class="k">for</span> <span class="o">(</span><span class="n">string</span> <span class="k">&lt;-</span> <span class="n">strings</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">string</span> <span class="k">match</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">NonNull</span><span class="o">(</span><span class="n">s</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">print</span><span class="o">(</span><span class="n">s</span><span class="o">)</span>
+    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="n">print</span><span class="o">(</span><span class="s">"placeholder"</span><span class="o">)</span>
+  <span class="o">}</span>
+  <span class="n">print</span><span class="o">(</span><span class="s">" "</span><span class="o">)</span>
+<span class="o">}</span>
+<span class="c1">// Prints:
+</span><span class="o">//</span> <span class="n">foo</span> <span class="n">placeholder</span> <span class="n">bar</span> <span class="n">placeholder</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">unapply</code> method can be generic, and should return <code class="highlighter-rouge">Some(value)</code> in
+case of match and <code class="highlighter-rouge">None</code> when there is not match.</p>
+
+<p>But extractors are not limited to returning only a single value.
+In our next example we will learn how to extract <code class="highlighter-rouge">head</code> and <code class="highlighter-rouge">tail</code> from
+<code class="highlighter-rouge">java.util.List[E]</code>:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">type</span> <span class="kt">JList</span><span class="o">[</span><span class="kt">E</span><span class="o">]</span> <span class="k">=</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">List</span><span class="o">[</span><span class="kt">E</span><span class="o">]</span>
+
+<span class="k">object</span> <span class="nc">JList</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">unapply</span><span class="o">[</span><span class="kt">E</span><span class="o">](</span><span class="n">list</span><span class="k">:</span> <span class="kt">JList</span><span class="o">[</span><span class="kt">E</span><span class="o">])</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[(</span><span class="kt">E</span>, <span class="kt">JList</span><span class="o">[</span><span class="kt">E</span><span class="o">])]</span> <span class="k">=</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">list</span><span class="o">.</span><span class="n">isEmpty</span><span class="o">)</span> <span class="o">{</span>
+      <span class="nc">None</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+      <span class="k">val</span> <span class="n">head</span> <span class="k">=</span> <span class="n">list</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span>
+      <span class="k">val</span> <span class="n">tail</span> <span class="k">=</span> <span class="n">list</span><span class="o">.</span><span class="n">subList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">list</span><span class="o">.</span><span class="n">size</span><span class="o">())</span>
+      <span class="nc">Some</span><span class="o">((</span><span class="n">head</span><span class="o">,</span> <span class="n">tail</span><span class="o">))</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="k">val</span> <span class="n">lists</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span>
+  <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Collections</span><span class="o">.</span><span class="n">emptyList</span><span class="o">[</span><span class="kt">Int</span><span class="o">](),</span>
+  <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Arrays</span><span class="o">.</span><span class="n">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span>
+  <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Arrays</span><span class="o">.</span><span class="n">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span>
+<span class="o">)</span>
+
+<span class="k">for</span> <span class="o">(</span><span class="n">list</span> <span class="k">&lt;-</span> <span class="n">lists</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">list</span> <span class="k">match</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nc">JList</span><span class="o">(</span><span class="n">head</span><span class="o">,</span> <span class="n">tail</span><span class="o">)</span> <span class="k">=&gt;</span>
+      <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"head: $head, tail: $tail"</span><span class="o">)</span>
+    <span class="k">case</span> <span class="n">emptyList</span> <span class="k">=&gt;</span>
+      <span class="n">println</span><span class="o">(</span><span class="s">"empty list"</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>To return multiple values from the extractor we just need to return a
+tuple instead of a single value wrapped in <code class="highlighter-rouge">Option[A]</code>.</p>
+
+<p>Extractors can be nested, this is a really powerfull feature.
+Given our previous <code class="highlighter-rouge">JList</code> extractor we can extract not only
+the first element but any finite number of starting elements from a list:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">list</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">JList</span><span class="o">(</span><span class="n">e1</span><span class="o">,</span> <span class="nc">JList</span><span class="o">(</span><span class="n">e2</span><span class="o">,</span> <span class="nc">JList</span><span class="o">(</span><span class="n">e3</span><span class="o">,</span> <span class="n">tail</span><span class="o">)))</span> <span class="k">=&gt;</span>
+	 <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"[$e1, $e2, $e3], tail: $tail"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>To understand how this pattern works it’s helpful to look at the equivalent
+for comprehension:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">for</span> <span class="o">{</span>
+  <span class="o">(</span><span class="n">e1</span><span class="o">,</span> <span class="n">tmp1</span><span class="o">)</span> <span class="k">&lt;-</span> <span class="nc">JList</span><span class="o">.</span><span class="n">unapply</span><span class="o">(</span><span class="n">list</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">e2</span><span class="o">,</span> <span class="n">tmp2</span><span class="o">)</span> <span class="k">&lt;-</span> <span class="nc">JList</span><span class="o">.</span><span class="n">unapply</span><span class="o">(</span><span class="n">tmp1</span><span class="o">)</span>
+  <span class="o">(</span><span class="n">e3</span><span class="o">,</span> <span class="n">tail</span><span class="o">)</span> <span class="k">&lt;-</span> <span class="nc">JList</span><span class="o">.</span><span class="n">unapply</span><span class="o">(</span><span class="n">tmp2</span><span class="o">)</span>
+<span class="o">}</span> <span class="o">{</span>
+  <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"[$e1, $e2, $e3], tail: $tail"</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>When we extract multiple values, sometimes we want to
+ignore some of them.
+We can use <code class="highlighter-rouge">_</code> wildcard, that matches any value, for this purpose:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">list</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">JList</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="nc">JList</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="nc">JList</span><span class="o">(</span><span class="n">e3</span><span class="o">,</span> <span class="k">_</span><span class="o">)))</span> <span class="k">=&gt;</span>
+    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"3rd element is $e3"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>We can also use pattern binders to assign names to
+subpatterns, for example:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">list</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">JList</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="n">tail</span> <span class="k">@</span> <span class="nc">JList</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="nc">JList</span><span class="o">(</span><span class="n">e3</span><span class="o">,</span> <span class="k">_</span><span class="o">)))</span> <span class="k">=&gt;</span>
+    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"3rd element is $e3"</span><span class="o">)</span>
+    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"tail: $tail"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Matching Java’s <code class="highlighter-rouge">List[E]</code> using nested patterns is not
+very comforable. 
+In reality we would much prefer a syntax like <code class="highlighter-rouge">case JList(e1, e2, e3)</code>.
+Fortunatelly this can be done in Scala using extrators that return <code class="highlighter-rouge">Option[Seq[E]]</code>:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">object</span> <span class="nc">JList2</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">unapplySeq</span><span class="o">[</span><span class="kt">E</span><span class="o">](</span><span class="n">list</span><span class="k">:</span> <span class="kt">JList</span><span class="o">[</span><span class="kt">E</span><span class="o">])</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Seq</span><span class="o">[</span><span class="kt">E</span><span class="o">]]</span> <span class="k">=</span> <span class="o">{</span>
+    <span class="k">import</span> <span class="nn">scala.jdk.CollectionConverters._</span>
+    <span class="nc">Some</span><span class="o">(</span><span class="n">list</span><span class="o">.</span><span class="n">asScala</span><span class="o">.</span><span class="n">toSeq</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="k">val</span> <span class="n">list</span> <span class="k">=</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Arrays</span><span class="o">.</span><span class="n">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">)</span>
+
+<span class="n">list</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">JList2</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="k">_</span><span class="o">,</span> <span class="n">c</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"only 3 elements"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="nc">JList2</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="k">_</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"only 2 elements"</span><span class="o">)</span>
+  <span class="k">case</span> <span class="nc">JList2</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span> <span class="n">c</span><span class="o">,</span> <span class="n">d</span><span class="o">)</span> <span class="k">=&gt;</span>
+    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"4 elements: $a, $b, $c, $d"</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Notice that we used <code class="highlighter-rouge">unapplySeq</code> instead of <code class="highlighter-rouge">unapply</code>.</p>
+
+<p>With <code class="highlighter-rouge">Seq</code> extractor we are also able to match “tail” of
+the list using <code class="highlighter-rouge">_*</code> pattern:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">list</span> <span class="k">match</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="nc">JList2</span><span class="o">(</span><span class="n">head</span><span class="o">,</span> <span class="n">tail</span> <span class="k">@</span> <span class="k">_</span><span class="o">*)</span> <span class="k">=&gt;</span>
+    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"head $head, tail $tail"</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The last thing that may come handy is ability to write
+extractor expression using etiher call notation <code class="highlighter-rouge">JList2(head, tail)</code>
+or using operator notation <code class="highlighter-rouge">head JList2 tail</code>:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">for</span> <span class="o">(</span><span class="n">list</span> <span class="k">&lt;-</span> <span class="n">lists</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">list</span> <span class="k">match</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="n">head</span> <span class="nc">JList</span> <span class="n">tail</span> <span class="k">=&gt;</span>
+      <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"head: $head, tail: $tail"</span><span class="o">)</span>
+    <span class="k">case</span> <span class="n">emptyList</span> <span class="k">=&gt;</span>
+      <span class="n">println</span><span class="o">(</span><span class="s">"empty list"</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This is mostly usefull when we want to use operators as extractors.</p>
+
+<h4 id="scala-buildin-extractors">Scala buildin extractors</h4>
+
+<p>Let’s finish this post with a tour of Scala buildin extractors.</p>
+
+<h5 id="case-classes">Case classes</h5>
+
+<p>When you declare a case class in Scala:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">Point</span><span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Double</span><span class="o">,</span>
+                 <span class="n">y</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span></code></pre></figure>
+
+<p>compiler, among other things, adds appropriate
+<code class="highlighter-rouge">apply</code> and <code class="highlighter-rouge">unapply</code> methods to the case class companion object.
+Thanks to this pattern matching works with case classes out-of-the-box:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">p</span> <span class="k">match</span> <span class="o">{</span>
+	<span class="k">case</span> <span class="nc">Point</span><span class="o">(</span><span class="n">x</span><span class="o">,</span> <span class="n">y</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="o">???</span>
+<span class="o">}</span></code></pre></figure>
+
+<h5 id="list">List</h5>
+
+<p>TODO</p>
+
+<h5 id="regexes">Regexes</h5>
+
+<p>TODO</p>
 
 	  ]]></description>
 	</item>
