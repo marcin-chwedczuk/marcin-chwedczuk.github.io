@@ -8,13 +8,20 @@
     
       
       <item>
-        <title>WIP Ultimate guide to Scala's match expression</title>
+        <title>Ultimate guide to Scala's match expression</title>
         
-          <description>&lt;p&gt;&lt;strong&gt;WORK IN PROGRESS&lt;/strong&gt;&lt;/p&gt;
+          <description>&lt;p&gt;Scala &lt;code class=&quot;highlighter-rouge&quot;&gt;match&lt;/code&gt; expression is a very powerful tool.
+In hands of an experienced developer it can be used to
+create concise and easy to understand code,
+yet novice programmers are often intimidated by it.
+In this blog post I will describe how &lt;code class=&quot;highlighter-rouge&quot;&gt;match&lt;/code&gt; expression
+work. We will start with the basics and finish with the extractors.
+After reading this post you will know how &lt;code class=&quot;highlighter-rouge&quot;&gt;case List(a, b, c)&lt;/code&gt;
+works and you will be able to write your own extractors.&lt;/p&gt;
 
 </description>
         
-        <pubDate>Wed, 18 Sep 2019 02:00:01 +0200</pubDate>
+        <pubDate>Thu, 19 Sep 2019 02:00:01 +0200</pubDate>
         <link>
         http://localhost:4000/ultimate-guide-to-scalas-match-expression</link>
         <guid isPermaLink="true">http://localhost:4000/ultimate-guide-to-scalas-match-expression</guid>
