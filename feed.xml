@@ -8,6 +8,29 @@
     
       
       <item>
+        <title>Fun with AT commands and an old modem</title>
+        
+          <description>&lt;p&gt;Recently, while cleaning my flat, I found an old Huawei E3131
+USB modem. I planed to throw it away, but then I reminded myself
+that this simple device, as virtually all modems, supports a
+primitive text based interface known as “AT commands”.
+And so I started thinking about
+spending a few hours of my time
+sending AT commands and figuring out what is actually
+possible.
+This post is the result of this few hours of hacking. Enjoy!&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sat, 21 Sep 2019 02:00:01 +0200</pubDate>
+        <link>
+        http://localhost:4000/fun-with-at-commands-and-old-modem</link>
+        <guid isPermaLink="true">http://localhost:4000/fun-with-at-commands-and-old-modem</guid>
+      </item>
+      
+    
+      
+      <item>
         <title>Ultimate guide to Scala's match expression</title>
         
           <description>&lt;p&gt;Scala &lt;code class=&quot;highlighter-rouge&quot;&gt;match&lt;/code&gt; expression is a very powerful tool.
