@@ -12,6 +12,212 @@
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
+	  <title>Converting .dsl files to Kindle dictionaries</title>
+	  <link>//converting-dsl-files-to-kindle-dictionary</link>
+	  <author></author>
+	  <pubDate>2019-12-02T01:00:01+01:00</pubDate>
+	  <guid>//converting-dsl-files-to-kindle-dictionary</guid>
+	  <description><![CDATA[
+	     <p>In this post, I will describe how to convert dictionaries
+in <a href="http://lingvo.helpmax.net/en/troubleshooting/dsl-compiler/dsl-dictionary-structure/">ABBYY Lingvo’s format</a>
+to <code class="highlighter-rouge">mobi</code> dictionaries that can work with Kindle.</p>
+
+<p>I will assume that you already have appropriate <code class="highlighter-rouge">.dsl</code> files.
+The first step is to make sure that <code class="highlighter-rouge">.dsl</code> files use UTF-8 encoding.
+We may check a file encoding using <code class="highlighter-rouge">file</code> command:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>file dict.dsl 
+dict.dsl: Little-endian UTF-16 Unicode text, with CRLF line terminators</code></pre></figure>
+
+<p>If you see something different than <code class="highlighter-rouge">UTF-8 Unicode (with BOM)</code>,
+as in the above example, then you have to convert the files to UTF-8
+first. We may use <code class="highlighter-rouge">iconv</code> for this purpose:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">iconv <span class="nt">-f</span> UTF-16LE <span class="nt">-t</span> UTF-8 dict.dsl <span class="nt">-o</span> dict-utf8.dsl</code></pre></figure>
+
+<p>We need to make sure that <code class="highlighter-rouge">.dsl</code> files does not
+contain metadata info (lines starting with <code class="highlighter-rouge">#</code> at the
+beginning of the file):</p>
+
+<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">#NAME "Foo Dictionary"                                        
+#INDEX_LANGUAGE "Russian"                                                
+#CONTENTS_LANGUAGE  "Polish"                                             
+а
+...</code></pre></figure>
+
+<p>If you see lines starting with <code class="highlighter-rouge">#</code> as in the above example, please
+remove them.</p>
+
+<p>Next we need to grab <code class="highlighter-rouge">dsl2mobi</code>:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">git clone https://github.com/Tvangeste/dsl2mobi.git
+
+<span class="c"># Do I have ruby?</span>
+ruby <span class="nt">-v</span>
+<span class="nb">sudo </span>apt install ruby</code></pre></figure>
+
+<p>You need to have <code class="highlighter-rouge">ruby</code> installed on your machine for the script
+to work. Actually I don’t like running someone else’s code
+on my machine, so I ran the script inside a virtual machine
+(which, for security reasons, I also recommend you to do).</p>
+
+<p>Now we can execute the script:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">cd </span>dsl2mobi
+chmod +x ./dsl2mobi.rb
+
+./dsl2mobi.rb <span class="nt">-w</span> ./wordforms/forms-RU.txt <span class="se">\</span>
+ <span class="nt">-i</span> ~/path-to/dict-utf8.dsl <span class="se">\</span>
+ <span class="nt">-o</span> ~/output-dir</code></pre></figure>
+
+<p>In a lot of languages, the same word can occur in 
+different forms, for example 
+in English the word “write” can occur in forms: wrote, written, writes.
+We want our dictionary to recognize all these variations,
+and for this reason we need the so called <em>wordforms</em>.
+Fortunately for us <code class="highlighter-rouge">dsl2mobi</code> comes with a buildin
+wordforms files for several languages.
+If you want to create a dictionary from e.g. Russian to
+Polish you need to use Russian wordforms (as in our example).
+If you want to create a dictionary from English to Russian
+you would need to use English wordforms, etc.</p>
+
+<p><code class="highlighter-rouge">dsl2mobi</code> should create at least two files in the
+<code class="highlighter-rouge">output-dir</code>, one with <code class="highlighter-rouge">.html</code> extension (containing
+actual content) and one with <code class="highlighter-rouge">.opf</code>
+extension (containing metadata).</p>
+
+<p>Next we need to 
+<a href="https://www.amazon.com/gp/feature.html?ie=UTF8&amp;docId=1000765211">grab KindleGen from Amazon</a>
+to actually generate <code class="highlighter-rouge">mobi</code> files:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">./kindlegen  ~/output-dir/dict.opf <span class="nt">-o</span> dict.mobi <span class="nt">-verbose</span> <span class="nt">-c2</span></code></pre></figure>
+
+<p>We use <code class="highlighter-rouge">-c2</code> option to compress the dictionary.</p>
+
+<p>Unfortunately, in my case <code class="highlighter-rouge">kindlegen</code> does not wanted to
+convert <code class="highlighter-rouge">.opf</code> file generated by <code class="highlighter-rouge">dsl2mobi</code>.
+To make it work, I needed to edit my <code class="highlighter-rouge">.opf</code> file to:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0"?&gt;&lt;!DOCTYPE package SYSTEM "oeb1.ent"&gt;</span>
+<span class="nt">&lt;package</span> <span class="na">unique-identifier=</span><span class="s">"uid"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;metadata&gt;</span>
+    <span class="nt">&lt;dc-metadata</span> <span class="na">xmlns:dc=</span><span class="s">"http://purl.org/metadata/dublin_core"</span> <span class="na">xmlns:oebpackage=</span><span class="s">"http://openebook.org/namespaces/oeb-package/1.0/"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;dc:Identifier</span> <span class="na">id=</span><span class="s">"uid"</span><span class="nt">&gt;</span>dic<span class="nt">&lt;/dc:Identifier&gt;</span>
+      <span class="c">&lt;!-- Title of the document --&gt;</span>
+      <span class="nt">&lt;dc:Title&gt;</span>Ru-Pl Dictionary<span class="nt">&lt;/dc:Title&gt;</span>
+      <span class="nt">&lt;dc:Language&gt;</span>ru<span class="nt">&lt;/dc:Language&gt;</span>
+      <span class="nt">&lt;dc:Subject</span> <span class="na">BASICCode=</span><span class="s">"REF008000"</span><span class="nt">&gt;</span>Dictionaries<span class="nt">&lt;/dc:Subject&gt;</span>
+      <span class="nt">&lt;dc:Creator&gt;</span>linuxboy<span class="nt">&lt;/dc:Creator&gt;</span>
+      <span class="nt">&lt;dc:Publisher&gt;</span>pinguin<span class="nt">&lt;/dc:Publisher&gt;</span>
+      <span class="nt">&lt;dc:Description&gt;</span>Generated by Dsl2Mobi-1.2-dev on 2019-11-28.<span class="nt">&lt;/dc:Description&gt;</span>
+    <span class="nt">&lt;/dc-metadata&gt;</span>
+    <span class="nt">&lt;x-metadata&gt;</span>
+      <span class="nt">&lt;output</span> <span class="na">encoding=</span><span class="s">"utf-8"</span> <span class="na">content-type=</span><span class="s">"text/x-oeb1-document"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;DictionaryInLanguage&gt;</span>ru<span class="nt">&lt;/DictionaryInLanguage&gt;</span>
+      <span class="nt">&lt;DictionaryOutLanguage&gt;</span>pl<span class="nt">&lt;/DictionaryOutLanguage&gt;</span>
+    <span class="nt">&lt;/x-metadata&gt;</span>
+  <span class="nt">&lt;/metadata&gt;</span>
+
+  <span class="c">&lt;!-- list of all the files needed to produce the .mobi file --&gt;</span>
+  <span class="nt">&lt;manifest&gt;</span>
+    <span class="nt">&lt;item</span> <span class="na">id=</span><span class="s">"item1"</span> <span class="na">media-type=</span><span class="s">"text/x-oeb1-document"</span> <span class="na">href=</span><span class="s">"dict.html"</span><span class="nt">&gt;&lt;/item&gt;</span>
+  <span class="nt">&lt;/manifest&gt;</span>
+
+  <span class="c">&lt;!-- list of the html files in the correct order  --&gt;</span>
+  <span class="nt">&lt;spine&gt;</span>
+    <span class="nt">&lt;itemref</span> <span class="na">idref=</span><span class="s">"item1"</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/spine&gt;</span>
+
+  <span class="nt">&lt;tours/&gt;</span>
+  <span class="nt">&lt;guide&gt;</span>
+   <span class="nt">&lt;reference</span> <span class="na">type=</span><span class="s">"toc"</span> <span class="na">title=</span><span class="s">"Table of Contents"</span> <span class="na">href=</span><span class="s">"dict.html#toc"</span><span class="nt">&gt;&lt;/reference&gt;</span>
+  <span class="nt">&lt;/guide&gt;</span>
+<span class="nt">&lt;/package&gt;</span></code></pre></figure>
+
+<p>Also make that <code class="highlighter-rouge">DictionaryInLanguage</code> and <code class="highlighter-rouge">DictionaryOutLanguage</code>
+tags have proper values, otherwise your dict may not work
+on Kindle.</p>
+
+<p>I also had to change the beginning of the <code class="highlighter-rouge">dict.html</code> file to:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span>
+<span class="nt">&lt;html</span> <span class="na">xmlns:idx=</span><span class="s">"www.mobipocket.com"</span> <span class="na">xmlns:mbp=</span><span class="s">"www.mobipocket.com"</span> <span class="na">xmlns:xlink=</span><span class="s">"http://www.w3.org/1999/xlink"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">type=</span><span class="s">"text/css"</span> <span class="na">href=</span><span class="s">"dic.css"</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">"Content-Type"</span> <span class="na">content=</span><span class="s">"text/html;charset=UTF-8"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;title&gt;&lt;/title&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+  <span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;center&gt;</span>
+      <span class="nt">&lt;h1&gt;</span>Generated by Dsl2Mobi-1.2-dev<span class="nt">&lt;/h1&gt;</span>
+      <span class="nt">&lt;hr</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/center&gt;</span>
+    <span class="nt">&lt;mbp:pagebreak</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;a</span> <span class="na">name=</span><span class="s">"toc"</span><span class="nt">&gt;&lt;/a&gt;</span>
+    <span class="nt">&lt;mbp:pagebreak</span> <span class="nt">/&gt;</span>
+
+<span class="c">&lt;!-- DICTIONARY ENTRIES --&gt;</span>
+<span class="nt">&lt;a</span> <span class="na">name=</span><span class="s">"#а"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;idx:entry</span> <span class="na">name=</span><span class="s">"word"</span> <span class="na">scriptable=</span><span class="s">"yes"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;font</span> <span class="na">size=</span><span class="s">"6"</span> <span class="na">color=</span><span class="s">"#002984"</span><span class="nt">&gt;&lt;b&gt;&lt;idx:orth&gt;</span>а
+<span class="nt">&lt;/idx:orth&gt;&lt;/b&gt;&lt;/font&gt;</span>
+<span class="nt">&lt;idx:orth</span> <span class="na">value=</span><span class="s">"a"</span><span class="nt">/&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"dsl_m0"</span><span class="nt">&gt;&lt;span</span> <span class="na">class=</span><span class="s">"dsl_p"</span><span class="nt">&gt;&lt;i&gt;&lt;font</span> <span class="na">color=</span><span class="s">"green"</span><span class="nt">&gt;</span>Spójnik<span class="nt">&lt;/font&gt;&lt;/i&gt;&lt;/span&gt;&lt;/div&gt;</span>
+...</code></pre></figure>
+
+<p>After these changes I was able to generate a <code class="highlighter-rouge">.mobi</code> file that
+worked perfectly with my Kindle.</p>
+
+<p>If your dictionary is really huge (the <code class="highlighter-rouge">.html</code> file bigger than 20MB),
+KindleGen may either take a lot of time (a few hours) or
+it may not finish at all.
+In this case I advice you to split, the single <code class="highlighter-rouge">.html</code> files
+into three or four smaller files (each should be less than 20MB),
+and then to add them as “chapters” to the <code class="highlighter-rouge">.opf</code> file:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml">  <span class="c">&lt;!-- list of all the files needed to produce the .mobi file --&gt;</span>
+  <span class="nt">&lt;manifest&gt;</span>
+    <span class="nt">&lt;item</span> <span class="na">id=</span><span class="s">"item1"</span> <span class="na">media-type=</span><span class="s">"text/x-oeb1-document"</span> <span class="na">href=</span><span class="s">"dict-1.html"</span><span class="nt">&gt;&lt;/item&gt;</span>
+    <span class="nt">&lt;item</span> <span class="na">id=</span><span class="s">"item2"</span> <span class="na">media-type=</span><span class="s">"text/x-oeb1-document"</span> <span class="na">href=</span><span class="s">"dict-2.html"</span><span class="nt">&gt;&lt;/item&gt;</span>
+    <span class="nt">&lt;item</span> <span class="na">id=</span><span class="s">"item3"</span> <span class="na">media-type=</span><span class="s">"text/x-oeb1-document"</span> <span class="na">href=</span><span class="s">"dict-3.html"</span><span class="nt">&gt;&lt;/item&gt;</span>
+    <span class="nt">&lt;item</span> <span class="na">id=</span><span class="s">"item4"</span> <span class="na">media-type=</span><span class="s">"text/x-oeb1-document"</span> <span class="na">href=</span><span class="s">"dict-4.html"</span><span class="nt">&gt;&lt;/item&gt;</span>
+  <span class="nt">&lt;/manifest&gt;</span>
+
+  <span class="c">&lt;!-- list of the html files in the correct order  --&gt;</span>
+  <span class="nt">&lt;spine&gt;</span>
+    <span class="nt">&lt;itemref</span> <span class="na">idref=</span><span class="s">"item1"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;itemref</span> <span class="na">idref=</span><span class="s">"item2"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;itemref</span> <span class="na">idref=</span><span class="s">"item3"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;itemref</span> <span class="na">idref=</span><span class="s">"item4"</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/spine&gt;</span></code></pre></figure>
+
+<p>You can use <code class="highlighter-rouge">wc</code>, <code class="highlighter-rouge">head</code> and <code class="highlighter-rouge">tail</code> for the splitting:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span><span class="nb">cat </span>dict.html | wc <span class="nt">-l</span>
+1792747
+<span class="nv">$ </span><span class="nb">echo</span> <span class="k">$((</span><span class="m">1792747</span> <span class="o">/</span> <span class="m">2</span><span class="k">))</span>
+896373
+<span class="nv">$ </span><span class="nb">cat </span>dict.html | head <span class="nt">-n</span> 896373 <span class="o">&gt;</span> dict-1-2.html
+<span class="nv">$ </span><span class="nb">cat </span>dict.html | tail <span class="nt">-n</span> +896373 <span class="o">&gt;</span> dict-3-4.html
+<span class="c"># Split files one more time to have four parts</span></code></pre></figure>
+
+<p>Then you have to use <code class="highlighter-rouge">vim</code> or other editor to make sure that
+all files have proper <code class="highlighter-rouge">&lt;head&gt;</code> sections, and
+are properly ended with <code class="highlighter-rouge">&lt;/body&gt;&lt;/html&gt;</code>.
+You will also have to make sure that dictionary
+entries are not split across the files.
+They are quite easy to recognize, as they
+usually start with <code class="highlighter-rouge">&lt;a&gt;</code> tag followed by <code class="highlighter-rouge">&lt;idx:entry&gt;</code> tag.</p>
+
+<p>KindleGen needed around 1h of time to convert 80MB
+split into four parts, so be prepared to wait for a bit.</p>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
 	  <title>Fun with AT commands and an old modem</title>
 	  <link>//fun-with-at-commands-and-old-modem</link>
 	  <author></author>
@@ -2107,239 +2313,6 @@ Enter keystore password:  changeit</code></pre></figure>
 before adding it to Java keystore. If you must do this
 often, I can advice you to create a script and/or bash alias to
 make entire process more convenient.</p>
-
-
-	  ]]></description>
-	</item>
-
-	<item>
-	  <title>ReadOnly does not mean Immutable</title>
-	  <link>//read-only-does-not-mean-immutable</link>
-	  <author></author>
-	  <pubDate>2019-01-06T01:00:00+01:00</pubDate>
-	  <guid>//read-only-does-not-mean-immutable</guid>
-	  <description><![CDATA[
-	     <p>Recently I have introduced a subtle bug into my code.
-It all started when I was creating a few
-value object classes:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">Method</span> <span class="p">{</span>
-    <span class="k">public</span> <span class="kt">string</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-    <span class="k">public</span> <span class="nf">Method</span><span class="p">(</span><span class="kt">string</span> <span class="n">name</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">Name</span> <span class="p">=</span> <span class="n">name</span><span class="p">;</span>
-    <span class="p">}</span>
-    <span class="c1">// Equals, GetHashCode, ToString skipped</span>
-    <span class="c1">// to save space.</span>
-<span class="p">}</span>
-<span class="k">public</span> <span class="k">class</span> <span class="nc">TypedArgument</span> <span class="p">{</span>
-    <span class="k">public</span> <span class="n">Type</span> <span class="n">Type</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-    <span class="k">public</span> <span class="kt">object</span> <span class="n">Value</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-    <span class="k">public</span> <span class="nf">TypedArgument</span><span class="p">(</span><span class="n">Type</span> <span class="n">type</span><span class="p">,</span> <span class="kt">object</span> <span class="k">value</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">Type</span> <span class="p">=</span> <span class="n">type</span><span class="p">;</span>
-        <span class="n">Value</span> <span class="p">=</span> <span class="k">value</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-<span class="k">public</span> <span class="k">class</span> <span class="nc">MethodCall</span> <span class="p">{</span>
-    <span class="k">public</span> <span class="n">Method</span> <span class="n">CalledMethod</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-    <span class="k">public</span> <span class="n">IReadOnlyList</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;</span> <span class="n">PassedArguments</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="p">}</span>
-    <span class="k">public</span> <span class="nf">MethodCall</span><span class="p">(</span>
-        <span class="n">Method</span> <span class="n">calledMethod</span><span class="p">,</span>
-        <span class="n">IReadOnlyList</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;</span> <span class="n">args</span><span class="p">)</span>
-    <span class="p">{</span>
-        <span class="n">CalledMethod</span> <span class="p">=</span> <span class="n">calledMethod</span><span class="p">;</span>
-        <span class="c1">// NOTICE: No defensive copy.</span>
-        <span class="n">PassedArguments</span> <span class="p">=</span> <span class="n">args</span><span class="p">;</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>While implementing <code class="highlighter-rouge">MethodCall</code> class constructor, I wrongly assumed
-that <code class="highlighter-rouge">IReadOnlyList&lt;T&gt;</code> behaves like an immutable list.
-In other words that its content never changes.
-Due to this wrong assumption I did not create a defensive copy,
-that I usually do for collection arguments.
-Instead I just assigned <code class="highlighter-rouge">args</code> parameter to
-a readonly property named <code class="highlighter-rouge">PassedArguments</code>.</p>
-
-<p><code class="highlighter-rouge">MethodCall</code> object was then used by another component
-called <code class="highlighter-rouge">MethodCallSpy</code>:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="k">class</span> <span class="nc">MethodCallSpy</span> <span class="p">{</span>
-    <span class="k">private</span> <span class="k">readonly</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">MethodCall</span><span class="p">&gt;</span> <span class="n">_methodCalls</span>
-        <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">MethodCall</span><span class="p">&gt;();</span>
-
-    <span class="k">public</span> <span class="n">IReadOnlyList</span><span class="p">&lt;</span><span class="n">MethodCall</span><span class="p">&gt;</span> <span class="n">MethodCalls</span>
-        <span class="p">=&gt;</span> <span class="n">_methodCalls</span><span class="p">;</span>
-
-    <span class="k">private</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;</span> <span class="n">_currentArguments</span>
-        <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;();</span>
-
-    <span class="k">public</span> <span class="k">void</span> <span class="nf">AddArgument</span><span class="p">(</span><span class="n">TypedArgument</span> <span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">_currentArguments</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">arg</span><span class="p">);</span>
-    <span class="p">}</span>
-
-    <span class="k">public</span> <span class="k">void</span> <span class="nf">AddMethodCall</span><span class="p">(</span><span class="n">Method</span> <span class="n">method</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kt">var</span> <span class="n">methodCall</span> <span class="p">=</span> 
-            <span class="k">new</span> <span class="nf">MethodCall</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">_currentArguments</span><span class="p">);</span>
-        <span class="n">_methodCalls</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">methodCall</span><span class="p">);</span>
-
-        <span class="c1">// NOTICE: Old List&lt;T&gt; is not modified.</span>
-        <span class="n">_currentArguments</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;();</span>
-    <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
-
-<p><code class="highlighter-rouge">MethodCallSpy</code>
-gathers <code class="highlighter-rouge">TypedArgument</code>s passed to it via <code class="highlighter-rouge">AddArgument</code> calls
-in <code class="highlighter-rouge">_currentArguments</code> list. 
-Then when someone calls <code class="highlighter-rouge">AddMethodCall</code> method, it uses stored
-<code class="highlighter-rouge">TypedArgument</code>s and a value of <code class="highlighter-rouge">method</code> parameter to construct
-a new <code class="highlighter-rouge">MethodCall</code> object and adds it to <code class="highlighter-rouge">_methodCalls</code> list.</p>
-
-<p><code class="highlighter-rouge">MethodCallSpy</code> class worked perfectly, at least until I
-returned to it a few days later to make some improvements.
-Yes, I know, I know
-<a href="https://xkcd.com/1691/">“premature optimization is the root of all evil”</a>
-but this was my quick’n’dirty pet project and I just cannot resist:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">// readonly added.</span>
-<span class="k">private</span> <span class="k">readonly</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;</span> <span class="n">_currentArguments</span>
-    <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;();</span>
-<span class="k">public</span> <span class="k">void</span> <span class="nf">AddMethodCall_AfterRefactoring</span><span class="p">(</span><span class="n">Method</span> <span class="n">method</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// Assumes that MethodCall will make a defensive copy</span>
-    <span class="c1">// of _currentArguments list.</span>
-    <span class="kt">var</span> <span class="n">methodCall</span> <span class="p">=</span> 
-        <span class="k">new</span> <span class="nf">MethodCall</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">_currentArguments</span><span class="p">);</span>
-
-    <span class="n">_methodCalls</span><span class="p">.</span><span class="nf">Add</span><span class="p">(</span><span class="n">methodCall</span><span class="p">);</span>
-
-    <span class="c1">// NOTICE: We use clear instead of creating a new list</span>
-    <span class="n">_currentArguments</span><span class="p">.</span><span class="nf">Clear</span><span class="p">();</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>Of course I also made a lot of other refactorings without
-running my tests (I had only a few integration tests).
-This was another mistake of mine. Looks like good
-programming practices help even if you are building
-quickly a Proof Of Concept solution.</p>
-
-<p>When I finally ran my tests, they all have failed. For some reason
-<code class="highlighter-rouge">MethodCall</code> objects did not contain any <code class="highlighter-rouge">TypedArgument</code>s.
-Strange, isn’t it…</p>
-
-<p>After a quarter of debugging, I have found that the bug was
-introduced by my wrong assumptions about <code class="highlighter-rouge">IReadOnlyList&lt;T&gt;</code>
-interface.</p>
-
-<p><code class="highlighter-rouge">IReadOnlyList&lt;T&gt;</code>, <code class="highlighter-rouge">IReadOnlyCollection&lt;T&gt;</code> interfaces and
-<code class="highlighter-rouge">ReadOnlyCollection&lt;T&gt;</code> class where introduced
-to protect owners of the collections, not the receivers.
-For example if a method is declared like this:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">void</span> <span class="n">ProcessList</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">IReadOnlyList</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">list</span><span class="p">);</span></code></pre></figure>
-
-<p>We can be sure, that it will not attempt to modify
-the list that we are going to pass to it:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span> <span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span> <span class="p">};</span>
-<span class="nf">ProcessList</span><span class="p">(</span><span class="n">list</span><span class="p">);</span>
-<span class="c1">// still: list == new List&lt;string&gt; { "foo", "bar" }</span></code></pre></figure>
-
-<p>Of course <code class="highlighter-rouge">ProcessList</code> method may be
-implemented in an evil way:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">private</span> <span class="k">void</span> <span class="n">ProcessList</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;(</span><span class="n">IReadOnlyList</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="n">list</span><span class="p">)</span> <span class="p">{</span>
-    <span class="p">(</span><span class="n">list</span> <span class="k">as</span> <span class="n">IList</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;)[</span><span class="m">0</span><span class="p">]</span> <span class="p">=</span> <span class="k">default</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>But we can protect our lists from evil code by using <code class="highlighter-rouge">AsReadOnly</code>
-method, that returns a <code class="highlighter-rouge">List&lt;T&gt;</code> instance
-wrapped in a <code class="highlighter-rouge">ReadOnlyCollection&lt;T&gt;</code> object
-(<a href="https://github.com/dotnet/corefx/blob/master/src/Common/src/CoreLib/System/Collections/Generic/List.cs#L251">source code</a>).</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="kt">var</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;</span> <span class="p">{</span> <span class="s">"foo"</span><span class="p">,</span> <span class="s">"bar"</span> <span class="p">};</span>
-<span class="nf">ProcessList</span><span class="p">(</span><span class="n">list</span><span class="p">.</span><span class="nf">AsReadOnly</span><span class="p">());</span>
-<span class="c1">// Our list can be modified now</span>
-<span class="c1">// only by using reflection</span>
-<span class="c1">// to get access to private fields</span>
-<span class="c1">// of ReadOnlyCollection&lt;T&gt; class.</span></code></pre></figure>
-
-<p>On the other hand receivers of <code class="highlighter-rouge">IReadOnlyList&lt;T&gt;</code> arguments
-are not protected at all. Consider this short program:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="na">[Fact]</span>
-<span class="k">public</span> <span class="k">void</span> <span class="nf">ReadonlyButNotForYou</span><span class="p">()</span> <span class="p">{</span>
-    <span class="kt">var</span> <span class="n">list</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="p">{</span> <span class="m">1</span><span class="p">,</span> <span class="m">2</span><span class="p">,</span> <span class="m">3</span> <span class="p">};</span>
-
-    <span class="kt">int</span> <span class="nf">extraInt</span><span class="p">()</span> <span class="p">{</span>
-        <span class="n">list</span><span class="p">[</span><span class="m">0</span><span class="p">]</span> <span class="p">=</span> <span class="m">42</span><span class="p">;</span>
-        <span class="k">return</span> <span class="n">list</span><span class="p">[</span><span class="m">0</span><span class="p">];</span>
-    <span class="p">}</span>
-
-    <span class="nf">ProcessList</span><span class="p">(</span><span class="n">list</span><span class="p">,</span> <span class="n">extraInt</span><span class="p">);</span>
-<span class="p">}</span>
-<span class="k">private</span> <span class="k">void</span> <span class="nf">ProcessList</span><span class="p">(</span><span class="n">IReadOnlyList</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">ints</span><span class="p">,</span> <span class="n">Func</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">&gt;</span> <span class="n">extraInt</span><span class="p">)</span> <span class="p">{</span>
-    <span class="kt">int</span> <span class="n">first</span> <span class="p">=</span> <span class="n">ints</span><span class="p">.</span><span class="nf">First</span><span class="p">();</span>
-    <span class="kt">int</span> <span class="n">tmp</span> <span class="p">=</span> <span class="nf">extraInt</span><span class="p">();</span>
-    <span class="kt">int</span> <span class="n">firstAgain</span> <span class="p">=</span> <span class="n">ints</span><span class="p">.</span><span class="nf">First</span><span class="p">();</span>
-
-    <span class="n">Assert</span><span class="p">.</span><span class="nf">Equal</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">firstAgain</span><span class="p">);</span> <span class="c1">// fails</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>It demonstrates that <code class="highlighter-rouge">IReadOnlyList&lt;T&gt;</code> can change even
-during duration of a single method!</p>
-
-<p>So what should we do to avoid this class of bugs?
-Option one is to use old and proven defensive copy
-technique:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="nf">MethodCall</span><span class="p">(</span>
-    <span class="n">Method</span> <span class="n">calledMethod</span><span class="p">,</span> 
-    <span class="n">IReadOnlyList</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;</span> <span class="n">args</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="n">CalledMethod</span> <span class="p">=</span> <span class="n">calledMethod</span><span class="p">;</span>
-    <span class="n">PassedArguments</span> <span class="p">=</span> 
-        <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;(</span><span class="n">args</span><span class="p">);</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>Remember not to use <code class="highlighter-rouge">ReadOnlyCollection&lt;T&gt;</code> class to create
-a defensive copy. This class is only a wrapper - it
-does not copy the actual data.</p>
-
-<p>The second option is to use truly immutable
-data structures, for example from
-<a href="https://www.nuget.org/packages/System.Collections.Immutable">System.Collections.Immutable</a>
-package:</p>
-
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">public</span> <span class="nf">MethodCall</span><span class="p">(</span>
-    <span class="n">Method</span> <span class="n">calledMethod</span><span class="p">,</span> 
-    <span class="n">IImmutableList</span><span class="p">&lt;</span><span class="n">TypedArgument</span><span class="p">&gt;</span> <span class="n">args</span><span class="p">)</span>
-<span class="p">{</span>
-    <span class="n">CalledMethod</span> <span class="p">=</span> <span class="n">calledMethod</span><span class="p">;</span>
-    <span class="n">PassedArguments</span> <span class="p">=</span> <span class="n">args</span><span class="p">;</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>These types are truly immutable, they never change their
-contents after they are created.</p>
-
-<p>One problem that I have with <code class="highlighter-rouge">System.Collections.Immutable</code>
-is that immutable types have often different performance
-characteristics than their mutable counterparts.
-For example <code class="highlighter-rouge">ImmutableList</code> is implemented using,
-guess what, a good old AVL tree
-(<a href="https://github.com/dotnet/corefx/blob/master/src/System.Collections.Immutable/src/System/Collections/Immutable/ImmutableList_1.cs#L28">source code</a>).</p>
-
-<p>On the other hand <code class="highlighter-rouge">ImmutableArray</code> that is backed by a
-regular array, seems like a perfect candidate for making
-defensive copies. You can read more about <code class="highlighter-rouge">ImmutableArray</code>
-in <a href="https://blogs.msdn.microsoft.com/dotnet/2013/06/24/please-welcome-immutablearrayt/">this MSDN article</a>.</p>
-
-<p>It is never wrong to take a look at the collection source code
-before using it (all links to GitHub):</p>
-
-<ul>
-  <li><a href="https://github.com/dotnet/corefx/blob/master/src/Common/src/CoreLib/System/Collections/ObjectModel/ReadOnlyCollection.cs">ReadOnlyCollection</a></li>
-  <li><a href="https://github.com/dotnet/corefx/blob/master/src/System.Collections.Immutable/src/System/Collections/Immutable/ImmutableList_1.cs">ImmutableList</a></li>
-  <li><a href="https://github.com/dotnet/corefx/blob/master/src/System.Collections.Immutable/src/System/Collections/Immutable/ImmutableArray_1.cs">ImmutableArray</a></li>
-</ul>
 
 
 	  ]]></description>
