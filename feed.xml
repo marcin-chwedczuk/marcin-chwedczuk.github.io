@@ -8,6 +8,34 @@
     
       
       <item>
+        <title>Binary to Gray algorithm explained</title>
+        
+          <description>&lt;p&gt;Binary to Gray code conversion algorithm is deceptively simple:&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span class=&quot;cm&quot;&gt;/* This function converts an unsigned binary
+ * number to reflected binary Gray code.
+ *
+ * The operator &amp;gt;&amp;gt; is shift right. The operator ^ is exclusive or.
+ *
+ * Source: https://en.wikipedia.org/wiki/Gray_code
+ */&lt;/span&gt;
+&lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;binaryToGray&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;unsigned&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+   &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;^&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;in this article I will explain how it works.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Tue, 17 Dec 2019 01:00:01 +0100</pubDate>
+        <link>
+        http://localhost:4000/binary-to-gray-algorithm-explained</link>
+        <guid isPermaLink="true">http://localhost:4000/binary-to-gray-algorithm-explained</guid>
+      </item>
+      
+    
+      
+      <item>
         <title>Converting .dsl files to Kindle dictionaries</title>
         
           <description>&lt;p&gt;In this post, I will describe how to convert dictionaries

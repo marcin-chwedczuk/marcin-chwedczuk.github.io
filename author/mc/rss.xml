@@ -12,6 +12,268 @@
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
+	  <title>Binary to Gray algorithm explained</title>
+	  <link>//binary-to-gray-algorithm-explained</link>
+	  <author></author>
+	  <pubDate>2019-12-17T01:00:01+01:00</pubDate>
+	  <guid>//binary-to-gray-algorithm-explained</guid>
+	  <description><![CDATA[
+	     <p>Binary to Gray code conversion algorithm is deceptively simple:</p>
+
+<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="cm">/* This function converts an unsigned binary
+ * number to reflected binary Gray code.
+ *
+ * The operator &gt;&gt; is shift right. The operator ^ is exclusive or.
+ *
+ * Source: https://en.wikipedia.org/wiki/Gray_code
+ */</span>
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">binaryToGray</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">num</span><span class="p">)</span> <span class="p">{</span>
+   <span class="k">return</span> <span class="n">num</span> <span class="o">^</span> <span class="p">(</span><span class="n">num</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>in this article I will explain how it works.</p>
+
+<h4 id="gray-code">Gray code</h4>
+
+<p>Gray code is a binary code in which two consecutive
+values differ only by a single bit.
+Three-bit Gray code, along its binary counterpart,
+looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">|         BINARY|           GRAY|
+|            000|            000|
+|            001|            001|
+|            010|            011|
+|            011|            010|
+|            100|            110|
+|            101|            111|
+|            110|            101|
+|            111|            100|</code></pre></figure>
+
+<p><code class="highlighter-rouge">N+1</code>-bit Gray code can be easily constructed
+from <code class="highlighter-rouge">N</code>-bit Gray code using the following process:</p>
+
+<p><img src="assets/images/2019-12-17/gn1.svg" alt="Making N+1-bit Gray code from N-bit Gray code" /></p>
+
+<p>This variant of Gray code is often called reflected binary Gray code.
+The “Vertical Flip” step is nothing else than creating
+a mirror image of the code in vertical direction.</p>
+
+<p>The above process, with the fact that <code class="highlighter-rouge">1</code>-bit Gray code
+consists just of values <code class="highlighter-rouge">0</code> and <code class="highlighter-rouge">1</code>,
+allows us to write a recursive algorithm for converting 
+between corresponding binary and Gray code values.</p>
+
+<h4 id="recursive-algorithm">Recursive algorithm</h4>
+
+<p>We will define a function <code class="highlighter-rouge">G(nbits, n)</code> that returns
+<code class="highlighter-rouge">n</code>th <code class="highlighter-rouge">nbits</code>-bit Gray code value.
+<code class="highlighter-rouge">n</code> must be in range <code class="highlighter-rouge">0</code> .. <code class="highlighter-rouge">2**nbits - 1</code>
+(where <code class="highlighter-rouge">**</code> means power).</p>
+
+<p>For <code class="highlighter-rouge">nbits</code> equal to 1 this is trivial:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">func G(nbits, n) {
+   if (nbits &lt;= 1) return n;
+   ???
+}</code></pre></figure>
+
+<p>we return <code class="highlighter-rouge">0</code> when <code class="highlighter-rouge">n</code> is zero, and one when
+<code class="highlighter-rouge">n</code> is one.</p>
+
+<p>Next we need to translate the process from the first picture
+into code:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">var msbBit = msb(nbits, n)
+
+if (msbBit == 0) {
+   return msbBit | G(nbits-1, n); 
+}
+else {
+   // clear MSB bit
+   var nWithoutMsb = n &amp; ~msbBit;
+   var nonReflectedPos = pow(2, nbits-1)-1 - nWithoutMsb;
+
+   return msbBit | G(nbits-1, nonReflectedPos)
+}</code></pre></figure>
+
+<p>Where <code class="highlighter-rouge">msb</code> is a simple function that returns
+the <em>most significant bit</em> (MSB for short) of
+an <code class="highlighter-rouge">nbits</code>-bit number <code class="highlighter-rouge">n</code>:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">func msb(nbits, n) {
+   return n &amp; (1 &lt;&lt; (nbits-1));
+}</code></pre></figure>
+
+<p>Similarly we will use LSB term to refer to
+the <em>least significant bit</em> of a number.</p>
+
+<p>There are two key observations that we must make to
+understand how the algorithm works.
+First observation is that binary values
+share the same value of MSB bit with the corresponding
+Gray code values.
+<img src="assets/images/2019-12-17/g2.svg" alt="MSB and LSB in our algorithm" />
+This is the result of the construction process,
+that adds leading zeros to the upper half (blue) of the Gray code,
+and leading ones to the lower half (red) of the code.</p>
+
+<p>When <code class="highlighter-rouge">MSB = 0</code> we are in the upper half (blue) of the <code class="highlighter-rouge">nbits</code>-bit
+Gray code, which was constructed from the <code class="highlighter-rouge">nbits-1</code>-bit Gray
+code by adding extra <code class="highlighter-rouge">0</code> as a prefix to its values.
+In this case we just call recursively <code class="highlighter-rouge">G(nbits-1, n)</code>
+(<code class="highlighter-rouge">n</code> is in this case <code class="highlighter-rouge">&lt; 2**nbits/2 = 2**(nbits-1)</code>),
+and add a <code class="highlighter-rouge">0</code> as a prefix to the result to
+finish the conversion to <code class="highlighter-rouge">nbits</code>-bit code.</p>
+
+<p>When <code class="highlighter-rouge">MSB = 1</code> we are in the lower half (red) of the code, that
+was constructed by vertically flipping <code class="highlighter-rouge">nbits-1</code>-bit Gray
+code and adding <code class="highlighter-rouge">1</code> as a prefix to its values.
+<img src="assets/images/2019-12-17/g3.svg" alt="Relation between simple and reflected code" />
+The second key observation here, is the relationship between
+reflected <code class="highlighter-rouge">nbits-1</code>-bit Gray code and its non-reflected counterpart.
+<code class="highlighter-rouge">nbits-1</code>-bit Gray value that is located
+at <code class="highlighter-rouge">x</code>th position in the red (reflected)
+area is exactly the same as 
+<code class="highlighter-rouge">2**(nbits-1)-1 - x</code>th value located in the blue area.
+To convert <code class="highlighter-rouge">n</code> into <code class="highlighter-rouge">nbits-1</code> Gray code, first
+we remove <code class="highlighter-rouge">1</code> MSB bit from it, converting
+it basically into our <code class="highlighter-rouge">x</code>
+(zero-based offset from the beginning of the red area; see the picture above).
+Then we compute position of <code class="highlighter-rouge">x</code>s counterpart in
+the non-reflected (blue) area of the code, by using expression:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">var nonReflectedPos = pow(2, nbits-1)-1 - nWithoutMsb;</code></pre></figure>
+
+<p>Then we call <code class="highlighter-rouge">G(nbits-1, nonReflectedPos)</code> to
+compute <code class="highlighter-rouge">nbits-1</code>-bit Gray code value
+and finally we restore <code class="highlighter-rouge">1</code> bit prefix to it.</p>
+
+<p>The above algorithm expressed in Java:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">msb</span><span class="o">(</span><span class="kt">int</span> <span class="n">nbits</span><span class="o">,</span> <span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
+   <span class="k">return</span> <span class="n">n</span> <span class="o">&amp;</span> <span class="o">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="o">(</span><span class="n">nbits</span><span class="o">-</span><span class="mi">1</span><span class="o">));</span>
+<span class="o">}</span>
+
+<span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">G</span><span class="o">(</span><span class="kt">int</span> <span class="n">nbits</span><span class="o">,</span> <span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
+   <span class="k">if</span> <span class="o">(</span><span class="n">nbits</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="o">)</span> <span class="k">return</span> <span class="n">n</span><span class="o">;</span>
+
+   <span class="kt">int</span> <span class="n">msbBit</span> <span class="o">=</span> <span class="n">msb</span><span class="o">(</span><span class="n">nbits</span><span class="o">,</span> <span class="n">n</span><span class="o">);</span>
+   <span class="k">if</span> <span class="o">(</span><span class="n">msbBit</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
+      <span class="c1">// We can skip 'msbBit |' part because</span>
+      <span class="c1">// '(0 | x) == x'</span>
+      <span class="k">return</span> <span class="n">msbBit</span> <span class="o">|</span> <span class="n">G</span><span class="o">(</span><span class="n">nbits</span><span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">n</span><span class="o">);</span>
+   <span class="o">}</span>
+   <span class="k">else</span> <span class="o">{</span>
+      <span class="kt">int</span> <span class="n">nWithoutMsb</span> <span class="o">=</span> <span class="n">n</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">msbBit</span><span class="o">;</span>
+      <span class="kt">int</span> <span class="n">nonReflectedPos</span> <span class="o">=</span> 
+         <span class="o">(</span><span class="kt">int</span><span class="o">)</span><span class="n">Math</span><span class="o">.</span><span class="na">pow</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="n">nbits</span><span class="o">-</span><span class="mi">1</span><span class="o">)-</span><span class="mi">1</span> <span class="o">-</span> <span class="n">nWithoutMsb</span><span class="o">;</span>
+      <span class="k">return</span> <span class="n">msbBit</span> <span class="o">|</span> <span class="n">G</span><span class="o">(</span><span class="n">nbits</span><span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">nonReflectedPos</span><span class="o">);</span>
+   <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<h4 id="using-strings-to-represent-binary-values">Using Strings to represent binary values</h4>
+
+<p>To further improve our algorithm we need to change
+our representation of binary values from 32-bit integers
+to strings. For example a string <code class="highlighter-rouge">"110"</code> will represent
+a <code class="highlighter-rouge">3</code>-bit binary value. We will also use empty string
+<code class="highlighter-rouge">""</code> to represent a sole zero-bit binary value
+(after all <code class="highlighter-rouge">2**0 = 1</code>, so there is one such value).</p>
+
+<p>To proceed further, we need two simple facts.
+Fact 1: Numbers in form <code class="highlighter-rouge">2**k - 1</code> are represented in
+binary by sequence of <code class="highlighter-rouge">k</code> ones.
+For example <code class="highlighter-rouge">2**3-1 = 7</code> is <code class="highlighter-rouge">111</code> in binary.</p>
+
+<p>Fact 2: Substracting <code class="highlighter-rouge">k</code>-bit value <code class="highlighter-rouge">p</code> from <code class="highlighter-rouge">1...1</code> (<code class="highlighter-rouge">k</code> ones)
+is equal to negating <code class="highlighter-rouge">p</code>:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">  11111111
+- 01010011
+----------
+  10101100</code></pre></figure>
+
+<p>These both facts will allow us to rewrite
+the expression for computing <code class="highlighter-rouge">nonReflectedPos</code> value from:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">// n is a nbits-bit number
+// nWithoutMsb is a (nbits-1)-bit number
+// 2**(nbits-1)-1 = 1...1 (nbits-1 ones in binary)
+int nonReflectedPos = 
+   (int)Math.pow(2, nbits-1)-1 - nWithoutMsb;</code></pre></figure>
+
+<p>to</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">// Simple binary negation
+String nonReflectedPos = not(nWithoutMsb);</code></pre></figure>
+
+<p>Our previous algorithm changed to use strings
+and expressed in JavaScript:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">not</span><span class="p">(</span><span class="nx">bits</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">bits</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">''</span><span class="p">).</span>
+    <span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">c</span> <span class="o">==</span> <span class="s1">'0'</span> <span class="p">?</span> <span class="s1">'1'</span> <span class="p">:</span> <span class="s1">'0'</span><span class="p">;</span> <span class="p">}).</span>
+    <span class="nx">join</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nx">G</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">b</span> <span class="o">===</span> <span class="s1">''</span><span class="p">)</span> <span class="k">return</span> <span class="s1">''</span><span class="p">;</span> <span class="c1">// zero bit code</span>
+  
+  <span class="kd">var</span> <span class="nx">firstBit</span> <span class="o">=</span> <span class="nx">b</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">firstBit</span> <span class="o">==</span> <span class="s1">'0'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s1">'0'</span> <span class="o">+</span> <span class="nx">G</span><span class="p">(</span><span class="nx">b</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+  <span class="p">}</span>
+  <span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s1">'1'</span> <span class="o">+</span> <span class="nx">G</span><span class="p">(</span><span class="nx">not</span><span class="p">(</span><span class="nx">b</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">)));</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<h4 id="the-single-line-algorithm">The single-line algorithm</h4>
+
+<p>If we now look at the code of our algorithm, we
+may see that all it does is to negate the unseen part of the
+input every time we encounter <code class="highlighter-rouge">1</code> bit:
+<img src="assets/images/2019-12-17/g4.svg" alt="Workings of the string based algorithm" /></p>
+
+<p>Let us consider how our algorithm will transform
+groups of ones followed by a single zero bit (<code class="highlighter-rouge">11...110</code>):
+<img src="assets/images/2019-12-17/g5.svg" alt="How groups of 11...110 are transformed" />
+As we can see group of <code class="highlighter-rouge">11...110</code> bits is transformed into <code class="highlighter-rouge">10...01</code>,
+but what is more important: bits that are after this group remain unchanged.
+Similarly groups of ones without trailing zero (<code class="highlighter-rouge">1...1</code>),
+which may only occur at the end of the input are transformed into <code class="highlighter-rouge">10...0</code>.</p>
+
+<p>Now is the time for another key observation: the above
+transformations can be performed by XORing value with
+itself shifted right by one:</p>
+
+<p><img src="assets/images/2019-12-17/g6.svg" alt="Transforming groups of ones using XOR" /></p>
+
+<p>This works because after the shift every group of ones must
+be preceded by at least a single zero bit. 
+Additionally every group of ones
+(except when the ones occur at the end of the input)
+must be followed by at least one zero bit.
+In other words different groups of ones are not interfering with
+each other while XORing.</p>
+
+<p>Also notice that we must use right-shift operation that always
+shifts-in a zero bit.
+In Java this means using <code class="highlighter-rouge">&gt;&gt;&gt;</code> (unsigned right shift) 
+instead of <code class="highlighter-rouge">&gt;&gt;</code> operator.</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">binaryToGray</span><span class="o">(</span><span class="kt">int</span> <span class="n">num</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">num</span> <span class="o">^</span> <span class="o">(</span><span class="n">num</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">1</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Source code (GitHub Gist): <a href="https://gist.github.com/marcin-chwedczuk/efc4df9fbc1928afcb0466e34b3d94c3">grayBin.js</a></p>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
 	  <title>Converting .dsl files to Kindle dictionaries</title>
 	  <link>//converting-dsl-files-to-kindle-dictionary</link>
 	  <author></author>
@@ -2055,264 +2317,6 @@ If only I have spend ten minutes reading the friendly docs instead of
 skimming it…</p>
 
 <p>From now on I will follow “Read The Friendly Manual” (RTFM) advice!!!</p>
-
-
-	  ]]></description>
-	</item>
-
-	<item>
-	  <title>Spy JVM network traffic with Owasp ZAP proxy</title>
-	  <link>//spy-jvm-network-traffic-with-owasp-zap</link>
-	  <author></author>
-	  <pubDate>2019-01-24T01:00:00+01:00</pubDate>
-	  <guid>//spy-jvm-network-traffic-with-owasp-zap</guid>
-	  <description><![CDATA[
-	     <p>We start by downloading <a href="https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project">Owasp ZAP proxy</a>:</p>
-
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span><span class="c"># Download and unpack...</span>
-<span class="nv">$ </span>curl <span class="nt">-O</span> <span class="nt">-J</span> <span class="nt">-L</span> https://github.com/zaproxy/zaproxy/releases/download/2.7.0/ZAP_2.7.0_Linux.tar.gz
-<span class="nv">$ </span><span class="nb">tar </span>xvzf ZAP_2.7.0_Linux.tar.gz
-
-<span class="nv">$ </span><span class="c"># Run ZAP proxy...</span>
-<span class="nv">$ </span>./ZAP_2.7.0/zap.sh  </code></pre></figure>
-
-<p>By default ZAP listens on <code class="highlighter-rouge">localhost:8080</code>. You can change default address
-and port by going into Tools -&gt; Options -&gt; Local Proxies tab:
-<img src="assets/images/2019-01-25/zap_options.png" alt="ZAP Local Proxies tab" /></p>
-
-<p>To test that network traffic interception works, 
-we will use a simple Java app:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-    <span class="n">CloseableHttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClientBuilder</span><span class="o">.</span><span class="na">create</span><span class="o">()</span>
-            <span class="o">.</span><span class="na">useSystemProperties</span><span class="o">()</span>
-            <span class="o">.</span><span class="na">build</span><span class="o">();</span>
-    <span class="k">try</span> <span class="o">{</span>
-        <span class="n">String</span> <span class="n">status</span> <span class="o">=</span> <span class="n">client</span>
-            <span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">HttpGet</span><span class="o">(</span><span class="s">"http://httpstat.us/200"</span><span class="o">))</span>
-            <span class="o">.</span><span class="na">getStatusLine</span><span class="o">()</span>
-            <span class="o">.</span><span class="na">toString</span><span class="o">();</span>
-
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">status</span><span class="o">);</span>
-    <span class="o">}</span>
-    <span class="k">finally</span> <span class="o">{</span>
-        <span class="n">client</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>There are few things to notice:</p>
-
-<ul>
-  <li>We use Apache HttpClient to perform http requests.</li>
-  <li>By default Apache HttpClient do not use proxy servers,
- even if you set ZAP as a system wide proxy. We will deal
- with this problem later. For now we will use <code class="highlighter-rouge">useSystemProperties()</code> method
- on <code class="highlighter-rouge">HttpClientBuilder</code> class that will enable proxy support.</li>
-  <li>Right now we will concentrate on intercepting HTTP traffic.
- I will show you how to deal with HTTPS connections later.</li>
-</ul>
-
-<p>If we, now, run our application, we will notice that ZAP did not
-intercept any traffic:</p>
-
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>java <span class="nt">-jar</span> ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar 
-HTTP/1.1 200 OK</code></pre></figure>
-
-<p>Indeed right now our application does not know that it should use
-a proxy server. We may force it to use a proxy via JVM command line
-parameters:</p>
-
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>java <span class="nt">-Dhttp</span>.proxyHost<span class="o">=</span>127.0.0.1 <span class="se">\</span>
- <span class="nt">-Dhttp</span>.proxyPort<span class="o">=</span>8080 <span class="se">\</span>
- <span class="nt">-Dhttps</span>.proxyHost<span class="o">=</span>127.0.0.1 <span class="se">\</span>
- <span class="nt">-Dhttps</span>.proxyPort<span class="o">=</span>8080 <span class="se">\</span>
- <span class="nt">-jar</span> ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar </code></pre></figure>
-
-<p>or by dynamicaly setting system properties in code:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"http.proxyHost"</span><span class="o">,</span> <span class="s">"127.0.0.1"</span><span class="o">);</span>
-<span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"http.proxyPort"</span><span class="o">,</span> <span class="s">"8080"</span><span class="o">);</span>
-<span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"https.proxyHost"</span><span class="o">,</span> <span class="s">"127.0.0.1"</span><span class="o">);</span>
-<span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"https.proxyPort"</span><span class="o">,</span> <span class="s">"8080"</span><span class="o">);</span></code></pre></figure>
-
-<p>Whatever method you use, if you run the application again,
-you should be able to see now a single intercepted request in ZAP:
-<img src="assets/images/2019-01-25/intercepted_request.png" alt="Intercepted request in ZAP" />
-You can remove previously recorded requests in ZAP by pressing <code class="highlighter-rouge">Ctrl+N</code>.</p>
-
-<h4 id="intercepting-traffic-from-proxy-unfriendly-apps">Intercepting traffic from proxy unfriendly apps</h4>
-
-<p>As I mentioned previously, Apache HttpClient ignores
-proxy settings by default.
-If we create our <code class="highlighter-rouge">HttpClient</code> using <code class="highlighter-rouge">create()</code> method:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-    <span class="n">CloseableHttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClientBuilder</span><span class="o">.</span><span class="na">create</span><span class="o">()</span>
-            <span class="o">.</span><span class="na">build</span><span class="o">();</span>
-
-    <span class="k">try</span> <span class="o">{</span>
-        <span class="n">String</span> <span class="n">status</span> <span class="o">=</span> <span class="n">client</span>
-            <span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">HttpGet</span><span class="o">(</span><span class="s">"http://httpstat.us/200"</span><span class="o">))</span>
-            <span class="o">.</span><span class="na">getStatusLine</span><span class="o">()</span>
-            <span class="o">.</span><span class="na">toString</span><span class="o">();</span>
-
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">status</span><span class="o">);</span>
-    <span class="o">}</span>
-    <span class="k">finally</span> <span class="o">{</span>
-        <span class="n">client</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p><code class="highlighter-rouge">HttpClient</code> will ignore proxy settings no matter how we set them.</p>
-
-<p>For dealing with cases like this, we may use
-<a href="https://github.com/rofl0r/proxychains-ng/tree/v4.13">proxychains-ng</a>.
-This project is a new reincarnation of old
-<a href="https://github.com/haad/proxychains">proxychains</a> util which is no
-longer maintained.
-Please be aware of this difference. On my system <code class="highlighter-rouge">apt-get install proxychains</code>
-installs <code class="highlighter-rouge">proxychains</code> and not <code class="highlighter-rouge">proxychains-ng</code> that we need here.
-To install <code class="highlighter-rouge">proxychains-ng</code> I needed to download sources from GitHub
-and compile them myself:</p>
-
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span><span class="c"># Checkout tag v4.13</span>
-<span class="nv">$ </span>git clone <span class="nt">--branch</span> v4.13 git@github.com:rofl0r/proxychains-ng.git
-
-<span class="nv">$ </span><span class="nb">cd </span>proxychains-ng
-<span class="nv">$ </span>./configure
-<span class="nv">$ </span><span class="c"># If there are no errors from configure script</span>
-<span class="nv">$ </span>make
-<span class="nv">$ </span>./proxychains4 <span class="nt">--help</span>
-
-Usage:  ./proxychains4 <span class="nt">-q</span> <span class="nt">-f</span> config_file program_name <span class="o">[</span>arguments]
-    <span class="nt">-q</span> makes proxychains quiet - this overrides the config setting
-    <span class="nt">-f</span> allows one to manually specify a configfile to use
-    <span class="k">for </span>example : proxychains telnet somehost.com
-More <span class="nb">help </span><span class="k">in </span>README file
-
-<span class="nv">$ </span><span class="c"># Install system wide...</span>
-<span class="nv">$ </span><span class="nb">sudo </span>make install</code></pre></figure>
-
-<p>We also need to change default <code class="highlighter-rouge">proxychains-ng</code> configuration:</p>
-
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">sudo </span>vim /etc/proxychains.conf
-
-<span class="c"># Comment out line:</span>
-<span class="c"># proxy_dns</span>
-
-<span class="c"># Change ProxyList to:</span>
-<span class="o">[</span>ProxyList]
-http 127.0.0.1 8080</code></pre></figure>
-
-<p>Now if we run our application using <code class="highlighter-rouge">proxychains</code>:</p>
-
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>proxychains4 java <span class="nt">-jar</span> ./build/libs/zapproxydemo-1.0-SNAPSHOT.jar 
-<span class="o">[</span>proxychains] config file found: /etc/proxychains.conf
-<span class="o">[</span>proxychains] preloading /usr/local/lib/libproxychains4.so
-<span class="o">[</span>proxychains] DLL init: proxychains-ng 4.13-git-10-g1198857
-<span class="o">[</span>proxychains] Strict chain  ...  127.0.0.1:8080  ...  23.99.0.12:80  ...  OK
-HTTP/1.1 200 OK</code></pre></figure>
-
-<p>We will be able to intercept traffic using ZAP.</p>
-
-<p>One of the limitations of proxychains is that it may not work for
-subprocesses. If you app launches other applications they may
-not be proxied at all.</p>
-
-<h4 id="intercepting-https-traffic">Intercepting HTTPS traffic</h4>
-
-<p>So far, so good, but what will happen if we try to intercept
-HTTPS traffic from a new, more secure, example:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">IOException</span> <span class="o">{</span>
-    <span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"http.proxyHost"</span><span class="o">,</span> <span class="s">"127.0.0.1"</span><span class="o">);</span>
-    <span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"http.proxyPort"</span><span class="o">,</span> <span class="s">"8080"</span><span class="o">);</span>
-    <span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"https.proxyHost"</span><span class="o">,</span> <span class="s">"127.0.0.1"</span><span class="o">);</span>
-    <span class="n">System</span><span class="o">.</span><span class="na">setProperty</span><span class="o">(</span><span class="s">"https.proxyPort"</span><span class="o">,</span> <span class="s">"8080"</span><span class="o">);</span>
-
-    <span class="n">CloseableHttpClient</span> <span class="n">client</span> <span class="o">=</span> <span class="n">HttpClientBuilder</span><span class="o">.</span><span class="na">create</span><span class="o">()</span>
-            <span class="o">.</span><span class="na">useSystemProperties</span><span class="o">()</span>
-            <span class="o">.</span><span class="na">build</span><span class="o">();</span>
-
-    <span class="n">String</span> <span class="n">url</span> <span class="o">=</span> <span class="s">"https://www.random.org/integers/?num=12&amp;min=1&amp;max=100&amp;col=3&amp;base=10&amp;format=plain&amp;rnd=new"</span><span class="o">;</span>
-
-    <span class="k">try</span> <span class="o">{</span>
-        <span class="n">HttpEntity</span> <span class="n">entity</span> <span class="o">=</span> <span class="n">client</span>
-            <span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="k">new</span> <span class="n">HttpGet</span><span class="o">(</span><span class="n">url</span><span class="o">))</span>
-            <span class="o">.</span><span class="na">getEntity</span><span class="o">();</span>
-
-        <span class="n">String</span> <span class="n">responseBody</span> <span class="o">=</span> <span class="n">EntityUtils</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="n">entity</span><span class="o">);</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">responseBody</span><span class="o">);</span>
-    <span class="o">}</span>
-    <span class="k">finally</span> <span class="o">{</span>
-        <span class="n">client</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>We will get an exception similar to:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">Exception in thread "main" javax.net.ssl.SSLHandshakeException:
-sun.security.validator.ValidatorException: PKIX path building failed:
-sun.security.provider.certpath.SunCertPathBuilderException: unable
-to find valid certification path to requested target</code></pre></figure>
-
-<p>We get this exception because certificate returned by ZAP
-proxy is not trusted.
-To fix this problem we must generate a new ZAP root cert and add it
-(temporarily) to Java keystore.</p>
-
-<p>Generate a new cert and save it somewhere
-(Tools -&gt; Options -&gt; Dynamic SSL Certificates):
-<img src="assets/images/2019-01-25/gen_cert.png" alt="ZAP generate a new root certificate" />
-Don’t forget to click OK.</p>
-
-<p>Then add ZAP root certificate to Java keystore:</p>
-
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span><span class="nb">cd</span> <span class="nv">$JAVA_HOME</span>/jre/lib/security
-<span class="nv">$ </span><span class="nb">pwd</span>
-/usr/lib/jvm/java-8-oracle/jre/lib/security
-<span class="nv">$ </span><span class="c"># You should see cacerts file in this directory.</span>
-
-<span class="nv">$ </span><span class="c"># Create a backup</span>
-<span class="nv">$ </span><span class="nb">sudo </span>cp cacerts cacerts.bakup2019-01-26
-
-<span class="nv">$ </span><span class="c"># Add certificate to the store</span>
-<span class="nv">$ </span><span class="nb">sudo </span>keytool <span class="nt">-importcert</span> <span class="se">\</span>
- <span class="nt">-alias</span> zap-proxy.org <span class="se">\</span>
- <span class="nt">-file</span> ~/owasp_zap_root_ca.cer <span class="se">\</span>
- <span class="nt">-keystore</span> cacerts
-<span class="nv">$ </span><span class="c"># When asked about keystore password </span>
-<span class="nv">$ </span><span class="c"># write: changeit (the default password)</span></code></pre></figure>
-
-<p>If we run our app again, we will be able to intercept an HTTPS request:
-<img src="assets/images/2019-01-25/intercept_https.png" alt="Intercepted HTTPS call" /></p>
-
-<p>This again should work with <code class="highlighter-rouge">proxychains-ng</code>.
-Sometimes to make it work you will have to <strong>uncommend</strong> <code class="highlighter-rouge">proxy_dns</code>
-option in <code class="highlighter-rouge">/etc/proxychains.conf</code> file, that I earlier said to
-comment out. Why is this sometimes needed, to be honest, I don’t know but
-it works this way…</p>
-
-<p><strong>For security reasons</strong> after you finished your debugging session,
-you should remove ZAP certificate from Java keystore:</p>
-
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span><span class="nb">cd</span> <span class="nv">$JAVA_HOME</span>/jre/lib/security
-
-<span class="nv">$ </span><span class="c"># Make sure you see your cert</span>
-<span class="nv">$ </span><span class="nb">sudo </span>keytool <span class="nt">-list</span> <span class="nt">-v</span> <span class="nt">-keystore</span> cacerts | <span class="nb">grep </span>zap-proxy.org
-Enter keystore password:  changeit
-
-<span class="nv">$ </span><span class="c"># Remove it</span>
-<span class="nv">$ </span><span class="nb">sudo </span>keytool <span class="nt">-delete</span> <span class="nt">-alias</span> zap-proxy.org <span class="nt">-keystore</span> cacerts
-
-<span class="nv">$ </span><span class="c"># Make sure it's gone</span>
-<span class="nv">$ </span><span class="nb">sudo </span>keytool <span class="nt">-list</span> <span class="nt">-v</span> <span class="nt">-keystore</span> cacerts | <span class="nb">grep </span>zap-proxy.org
-Enter keystore password:  changeit</code></pre></figure>
-
-<p>Always generate a new ZAP proxy certificate
-before adding it to Java keystore. If you must do this
-often, I can advice you to create a script and/or bash alias to
-make entire process more convenient.</p>
 
 
 	  ]]></description>
