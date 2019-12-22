@@ -8,6 +8,26 @@
     
       
       <item>
+        <title>Pitfalls of using Mockito with Scala</title>
+        
+          <description>&lt;p&gt;I need to test my new, shiny Scala code.
+Usually I write tests in &lt;a href=&quot;http://www.scalatest.org/&quot;&gt;ScalaTest&lt;/a&gt;,
+but for generating stubs I still use good, old
+&lt;a href=&quot;https://site.mockito.org/&quot;&gt;Mockito&lt;/a&gt;.
+What can possibly go wrong?
+I open a new tab in my editor and start hacking test code.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Sun, 22 Dec 2019 01:00:01 +0100</pubDate>
+        <link>
+        http://localhost:4000/pitfalls-of-using-Mockito-with-Scala</link>
+        <guid isPermaLink="true">http://localhost:4000/pitfalls-of-using-Mockito-with-Scala</guid>
+      </item>
+      
+    
+      
+      <item>
         <title>Binary to Gray algorithm explained</title>
         
           <description>&lt;p&gt;Binary to Gray code conversion algorithm is deceptively simple:&lt;/p&gt;
