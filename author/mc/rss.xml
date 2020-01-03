@@ -12,6 +12,363 @@
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
+	  <title>Jak zacząć przygodę z elektroniką</title>
+	  <link>//jak-zaczac-przygode-z-elektronika</link>
+	  <author></author>
+	  <pubDate>2019-12-30T01:00:01+01:00</pubDate>
+	  <guid>//jak-zaczac-przygode-z-elektronika</guid>
+	  <description><![CDATA[
+	     <p>Parę miesięcy temu postanowiłem powrócić do mojego
+hobby z czasów dzieciństwa: elektroniki.
+Powrót, po ponad dziesięciu latach przerwy, okazał
+się być trudniejszy niż przypuszczałem,
+a droga do pierwszego działającego układu 
+pełna frustracji i porażek.</p>
+
+<p>Pomimo tego radość z wykonania najprostszego generatora,
+który naprzemiennie migał diodami LED dostarczyła
+mi tak dużo radości i frajdy, że przez kilka następnych
+wieczorów oddałem się w całości budowie kolejnych układów.</p>
+
+<p>Niestety elektronika jako hobby, nie jest
+już w Polsce tak popularna jak 
+miało to miejsce w końcówce lat dziewięćdziesiątych.
+A szkoda, bo na zachodzie mamy obecnie do czynienia
+z prawdziwym boomem na elektronikę.
+Dobrze ilustrują to platformy takie jak
+<a href="https://www.arduino.cc/">Arduino</a> czy
+<a href="https://www.raspberrypi.org/">Raspberry PI</a>.
+Nie wspominając już o modzie na retro-computing
+(a więc na budowę prostych, często 8-bitowych komputerów wprost
+z układów scalonych) uosabianej przez takie postaci
+jak <a href="https://www.youtube.com/channel/UCS0N5baNlQWJCUrhCEo8WlA">Ben Eater</a>
+i projekty jak <a href="https://monster6502.com/">The MOnSter 6502</a> i
+<a href="https://gigatron.io/">Gigatron</a></p>
+
+<p>Niestety nauka nowej umiejętności czy jest nią jazda samochodem,
+czy język obcy czy też elektronika, nie jest prosta.
+Na początkujących czyha wiele pułapek, które zniechęcają ich 
+do dalszej nauki. Dlatego, aby ułatwić początkującym wejście w
+świat elektronik, postawiłem podzielić się moimi doświadczeniami
+(czytaj wpadkami)
+i opisać problemy na jakie się natknąłem.
+To jest pierwszy wpis z tej serii, w którym opisuję
+pułapki które czekają nas przy zakupie pierwszych płytek
+stykowych, przewodów i elementów elektronicznych. Zapraszam!</p>
+
+<h4 id="płytka-stykowa">Płytka stykowa</h4>
+
+<p>Według mnie najlepszym sposobem montażu układów, na początku
+przygody z elektroniką są płytki stykowe.
+Na rysunku poniżej przedstawiam przykład dwóch takich płytek:
+<img src="assets/images/2019-12-30/plytki-stykowe-1.jpg" alt="Przykładowe płytki stykowe" /></p>
+
+<p>Płytka oznaczona numerem 1, to przykład płytki droższej
+która mimo to posiada kilka poważnych mankamentów.
+Po pierwsze brakuje oznaczenia polaryzacji szyn zasilania,
+co rodzi pole do przykrych w konsekwencjach pomyłek
+(np. nieprawidłowe doprowadzenie zasilania do układu scalonego).
+Po drugie szyny zasilania są “przecięte” w połowie płytki
+(patrz strzałki). Tego typu “przecięcie” przydaje 
+się gdy budujemy układy w których występują dwa poziomy
+zasilania np. 3.3V i 5V. Większość początkujących
+elektroników korzysta jednak z pojedynczego napięcia zasilania.
+W praktyce okazywało się to tak denerwujące że musiałem dodać specjalne
+oznaczenia markerem, żeby już więcej się nie zastanawiać dlaczego
+połowa układu nie ma napięcia zasilania.</p>
+
+<p>Płytka oznaczona numerem 2 to tania płytka (7 PLN za sztukę),
+produkcji chińskiej. Mimo to producent
+nie oszczędzał na pomocnych oznaczeniach. 
+Każda z czterech linii zasilania
+ma swój kolor, każde gniazdo jest adresowane 
+za pomocą kombinacji litery (a-j) i liczby (1-65).
+Może, na pierwszy rzut oka nie wydaje się to
+przydatne, ale w internecie można znaleźć mnóstwo
+projektów pomyślanych specjalnie do wykonania
+na płytkach stykowych, które zawierają instrukcje
+typu: “umieść rezystor 1k w gniazdach 5f i 5c”.</p>
+
+<p>Niestety niska cena płytki nr. 2 znalazła negatywne
+odbicie w jakości styków. Korzystanie z tej płytki
+rodziło sporo kłopotów: często miałem problemy żeby
+włożyć końcówkę przewodu lub nóżkę elementu do danego
+gniazda. Czasami pomagało wetknięcie szpilki, czasami
+włożenie przewodów najpierw do sąsiadujących gniazd
+a dopiero potem przeniesienie ich do tego właściwego.
+Czasami pomagało “wiercenie” w gnieździe nóżką diody LED.
+Innymi słowy, spora część radości wynikającej z budowania układu 
+ustępowała miejsca frustracji związanej z niskiej jakości płytką.</p>
+
+<p>Przed zakupem płytek polecam przeczytać
+recenzje, zarówno na polski forach jak i na zagranicznych (oraz
+na Amazonie). Osobiście, nie znalazłem jak do tej pory
+płytki stykowej godnej polecenia, jeżeli taką znacie to
+proszę dodajcie komentarz z linkiem.</p>
+
+<p>Wróćmy jeszcze na chwilę do zdjęcia płytek. 
+Część oznaczona numerem cztery to pojedyncza szyna zasilania,
+odseparowana od płytki stykowej typu dwa. 
+Jak się okazuje od każdej płytki możemy oderwać jedną lub
+obie szyny zasilania. Przy wykonywaniu tej operacji
+przydaje się nożyk do kartonu, który pozwoli nam
+rozciąć izolacyjny materiał znajdujący się na spodzie płytki.</p>
+
+<p>Każda płytka stykowa posiada wypustki, które pozwalają
+zbudować “megapłytkę” z dwóch lub większej liczby 
+pojedynczych płytek (z obecnymi lub oderwanymi szynami zasilania).
+Niestety płytki wyprodukowane przez różne firmy rzadko
+są ze sobą kompatybilne. 
+Poniżej zamiejszczam zdjęcie takiej “megapłytki”:
+<img src="assets/images/2019-12-30/megaplytka.jpg" alt="Megapłytka" /></p>
+
+<p>Oprócz pełonowymiarowych płytek, na ryku dostępne są też
+mniejsze modele:
+<img src="assets/images/2019-12-30/mini.jpg" alt="Mini płytki" />
+Osobiście nie polecam ich początkującym, gdyż są
+po prostu za małe.</p>
+
+<p>Wydawało by się że orientacja płytki nie ma żadnego znaczenia.
+Warto jednak przy budowie układów podążać za sprawdzoną regułą,
+która mówi że prądy powinny płynąć z góry na dół, a sygnały
+od lewej do prawej. W praktyce oznacza to że górna wewnętrzna
+szyna zasilająca powinna być podłączona do plusa zasilania,
+a dolna wewnętrzna do minusa. Przestrzeganie tej
+zasady znacznie ułatwi nam doprowadzanie zasilania do układów scalonych.</p>
+
+<p>A skoro już jesteśmy przy układach scalonych, większość
+z nich nie posiada prostopadłych nóżek. Zamiast tego
+nóżki rozchodzą się nieco na boki, co uniemożliwia umieszczenie
+takiego układu w płytce stykowej. Rozwiązaniem tego
+problemu jest przygięcie nóżek scalaka przed włożeniem go
+do płytki:
+<img src="assets/images/2019-12-30/nogi.jpg" alt="Ach te nóżki" /></p>
+
+<p>Zanim opuścimy temat płytek warto jeszcze dodać, że
+na opakowaniu płytki znajduje się jeden z najważniejszych
+jej parametrów, mianowicie zakres grubości drutów/końcówek/wyprowadzeń
+z jakimi płytka współpracuje. Ten parametr okaże się istotny
+gdy będziemy planować zakup przewodów kompatybilnych
+z płytką (czytaj nie każdy przewód pasuje do danej płytki).</p>
+
+<h4 id="przewody--połączenia--zworki">Przewody / połączenia / zworki</h4>
+
+<p>Oprócz płytki stykowej, przy budowie układów będziemy
+też potrzebowali całej masy przewodów.
+Osobiście polecam zakup zestawu przewodów
+takich jak <a href="https://www.adafruit.com/product/3174">Adafruit Hook-up Wire</a>,
+wraz ze szczypcami do ściągania izolacji takimi
+jak <a href="https://www.adafruit.com/product/147">Adafruit Wire Stripper</a>:
+<img src="assets/images/2019-12-30/druty.jpg" alt="Przewody" />
+Przy zakupie warto zwracać uwagę czy na pewno kupujemy
+<em>jednożyłowy</em>, <em>cynowany</em> przewód miedziany, a nie na przykład
+wielożyłowy (czysta miedź pokrywa się
+nieprzewodzącą warstwą tlenków, cynowany drut zapewni
+nam znacznie lepszą jakość połączeń).</p>
+
+<p>Przedstawiony powyżej zestaw przewodów ma grubość
+drutu AWG 22 (miara amerykańska), co przelicza się
+na polskie 0.6438 milimetra średnicy.
+Płytki stykowe z pierwszej sekcji, pracują poprawnie z przewodami
+o grubościach 0.3-0.8 milimetra, a więc są kompatybilne z tym
+zestawem przewodów.</p>
+
+<p>Ze względu na rosnące ceny miedzi zakup zestawów takich
+jak te przedstawione powyżej, może wiązać się ze sporym wydatkiem.
+Należy jednak pamiętać że
+jeden zestaw przewodów powinien zaspokoić nasze potrzeby na mniej więcej rok,
+a szczypce to wydatek jednorazowy.
+Obecna cena powyższego zestawu przewodów w sklepie <a href="https://pl.mouser.com/">Mouser</a>
+wynosi około 120PLN. Oczywiście zawsze warto sprawdzić czy
+nie znajdziemy lepszej oferty w polskich sklepach, na ceneo czy
+w końcu na AliExpressie.</p>
+
+<p>Oprócz zestawu przewodów, w sklepach można znaleźć również zestawy zworek
+(numer jeden na zdjęciu):
+<img src="assets/images/2019-12-30/zwory.jpg" alt="Przewody ciąg dalszy" />
+Zestawy takie są, w stosunku do ich ceny, kompletnie bezużyteczne.
+Zwory prawie nigdy nie miały potrzebnej długości gdy chciałem
+ich użyć. Krótkie zworki kończyły się bardzo szybko, podczas
+gdy długich zostawał nadmiar. Jednym słowem: nie polecam.</p>
+
+<p>Polecam za to zakup elastycznych przewodów połączeniowych
+(numer dwa i trzy na zdjęciu).
+Przewody typu trzy dostępne są w zestawach o dość przystępnej
+cenie. Przewody typu dwa występują we wstęgach, które można
+rozrywać (nawet na pojedyncze przewody) wedle upodobań.</p>
+
+<p>Do zabawy z płytkami stykowymi i Arduino potrzebne nam będą przede
+wszystkim przewody z wtykami męskimi (patrz numer trzy).
+Do zabawy z Rasbperry PI,
+a także z modułami do Arduino (np. czujniki ruchu) przydadzą się
+przewody męsko-żeńskie (patrz numer dwa).</p>
+
+<p>Czasami zdarza się, że przewody będące częścią zestawów mają
+końcówki wtyków pokryte ochronną warstwą plastiku którą łatwo
+przeoczyć. Jeżeli przewód “źle łączy” należy sprawdzić czy
+końcówki nie posiadają takiej ochronnej izolacji i ewentualnie
+ją usunąć.</p>
+
+<p>Warto zarezerwować sobie dwa kolory (np. czarny i czerwony)
+na oznaczenie przewodów które mają potencjał masy i plusa zasilania.
+Warto też pomyśleć o konwencji użycia kolorów, na przykład: przewód biały to
+zawsze sygnał zegara.
+Poza tym im więcej kolorów mamy do dyspozycji tym lepiej.</p>
+
+<h4 id="pozostałe-narzędzia">Pozostałe narzędzia</h4>
+
+<p>Pozostałe przydatne narzędzia to:</p>
+
+<ol>
+  <li>Mały płaski śrubokręt</li>
+  <li><em>Szczypce tnące boczne</em>
+ do ucinania zbyt długich wyprowadzeń elementów
+ (<a href="https://botland.com.pl/pl/szczypce/5851-szczypce-tnace-boczne-yato-yt-2081-115mm-5906083920813.html">model ze zdjęcia</a>)</li>
+  <li>Oraz najbardziej przydatna z całej tej
+ trójki, bo pozwalająca wygodnie wyjmować i wkładać przewody
+ połączeniowe - pęseta
+ (<a href="https://sklep.avt.pl/peseta-antystatyczna-122mm-prosta-ostra-esd-10.html">model ze zdjęcia</a>)</li>
+</ol>
+
+<p><img src="assets/images/2019-12-30/szczypce.jpg" alt="Przydatne narzędzia" /></p>
+
+<p>Przycinanie wyprowadzeń elementów za pomocą
+szczypiec może być odrobinę niebezpieczne.
+Nóżki, na przykład dużych diod LED, podczas przycinania mają tendencje to
+“wystrzeliwania” w znanym tylko sobie kierunku, dlatego
+warto też pomyśleć o zakupie 
+<a href="https://botland.com.pl/en/goggles/5626-okulary-yt-7367-5906083973611.html">okularów ochronnych</a>.</p>
+
+<p>Ostatnim, naprawdę niezbędnym narzędziem, w jaki
+powinniśmy się zaopatrzyć jest multimetr.
+Ja używam następującego modelu, mało znanej chińskiej
+marki i jestem z niego całkowicie zadowolony:
+<img src="assets/images/2019-12-30/multi.jpg" alt="Multimetr" /></p>
+
+<h4 id="elementy-elektroniczne">Elementy elektroniczne</h4>
+
+<p>Można by pomyśleć, że po całym tym zamieszaniu z płytkami,
+narzędziami i multimetrem zakup elementów elektronicznych 
+będzie czystą przyjemnością.
+Nic bardziej mylnego!
+Pierwszym zaskoczeniem jakie mnie spotkało, była niewielka
+średnica wyprowadzeń resystorów zakupionych w zestawie
+“dla początkujących”. Średnica była tak mała, że czasami
+trudno było uzyskać dobre połączenie z płytką stykową.
+Ostatecznie skończyłem z <a href="https://botland.com.pl/pl/rezystory-przewlekane/13895-zestaw-rezystorow-cf-tht-14w-velleman-kres-e3-480szt-5410329241803.html">tym zestawem rezystorów</a></p>
+
+<p><img src="assets/images/2019-12-30/vkit.jpg" alt="Zestaw velleman-kit" /></p>
+
+<p>Dobrze ilustruje to powyższe zdjęcie, rezystor oznaczony
+numerem jeden pochodzi z taniego zestawu “dla początkujących”.
+Posiada długie i cienkie wyprowadzenia słabo współpracujące z
+płytkami stykowymi. Rezystor oznaczony numerem dwa pochodzi
+z zestawu velleman’a - wyraźnie widać krótsze, ale za to
+grubsze i bardziej masywne wyprowadzenia.</p>
+
+<p>Osobiście odradzam również zakup rezystorów o mocy większej
+niż 0,25W. Rezystory 1W w porównaniu do 0,25W to prawdziwe olbrzymy.</p>
+
+<p>W przeciwieństwie do rezystorów, zakup diod LED
+(polecam “duże” 5mm) czy kondensatorów nie sprawiał
+większych problemów, elementy po prostu działały.</p>
+
+<p>Z kolei zakup przycisków (“switchy”) i potencjometrów
+sprawił mi trochę kłopotów. Okazuje się że wiele elementów
+występuje w dwóch wersjach: do wlutowania i do płytek stykowych.
+Popatrzmy na zdjęcie:
+<img src="assets/images/2019-12-30/proste.jpg" alt="Elementy do wlutowania i do płytek stykowych" />
+Elementy z grupy pierwszej są przeznaczone do wlutowania.
+Elementy z grupy drugiej, charakteryzującej się prostymi
+wyprowadzeniami, są przewidziane do umieszczenia na płytkach
+stykowych. Zawsze należy dokładnie sprawdzić czy na pewno
+kupujemy takie elementy, jakich naprawdę potrzebujemy.</p>
+
+<p>Na koniec, żeby nie tracić czasu na mozolne odnajdywanie potrzebnych
+elementów, warto zaopatrzyć się w dobry organizer:
+<img src="assets/images/2019-12-30/organizer.jpg" alt="Organizer" /></p>
+
+<h4 id="zasilanie">Zasilanie</h4>
+
+<p>Początkowo zasilałem moje układy z baterii 9V.
+Wykorzystywałem do tego celu kijankę (numer jeden),
+gniazdo które można włożyć w szynę zasilania płytki stykowej (numer trzy) oraz
+konwerter (numer dwa):
+<img src="assets/images/2019-12-30/zas1.jpg" alt="Zasilanie z bateri 9V" />
+Konwerter okazał się konieczny, ponieważ zakupu
+gniazda dokonałem “na oko”, nie będąc świadom że
+istnieje wiele różnych rozmiarów wtyków zasilania.</p>
+
+<p>Osobiście nie polecam tego sposobu zasilania.
+Po pierwsze jesteśmy zdani na napięcie baterii, a wiele
+układów wymaga niestandardowych napięć 3,3V lub 5V.
+Po drugie zaśmiecamy środowisko zużytymi bateriami,
+przy jednoczesnym zubożaniu naszego portfela.</p>
+
+<p>Najlepszym rozwiązaniem, dla osób dysponujących zapasem
+gotówki jest kupno zasilacza laboratoryjnego,
+nazywanego również zasilaczem warsztatowym.
+Dla wszystkich pozostałych, przynajmniej na początku,
+dobrym kompromisem jest zakup 
+<a href="https://sklep.avt.pl/avt3072.html">zasilacza płytek stykowych</a>:
+<img src="assets/images/2019-12-30/zas2.jpg" alt="Zasilacz do płytek stykowych" />
+Należy pamiętać że sam zasilacz to tylko prosta płytka PCB
+(ang. printed circuit board, pl. płytka drukowana), do
+pracy potrzebny jej jest <a href="https://sklep.avt.pl/zasilacz-impulsowy-12v-1-5a-18w-dc2-5-5-5.html">zasilacz impulsowy</a> - oznaczony na zdjęciu numerem dwa.</p>
+
+<p>Przedstawiony powyżej zasilacz, który służy mi już kilka miesięcy,
+niestety nie jest pozbawiony wad.
+Najpoważniejsza z nich jest taka, że nie jesteśmy ostrzegani
+o zwarciu przewodów zasilania.
+Istnieją na rynku zasilacze które np. piszczą
+gdy dojdzie do zwarcia.
+W powyższym zasilaczu, zwarcie można rozpoznać jedynie po
+silnie rozgrzanym radiatorze.
+Dlatego, pomimo że podałem linki do sklepu, zachęcam was do
+poszukania lepszego modelu lub jeżeli już taki
+posiadacie do pozostawienia komentarza z linkiem.</p>
+
+<h4 id="sklepy">Sklepy</h4>
+
+<p>Na koniec lista sklepów z których jestem
+względnie zadowolony:</p>
+
+<ul>
+  <li>
+    <p><a href="https://sklep.avt.pl/">Sklep AVT</a> związany od wielu lat
+ z czasopismem “Elektronika dla wszystkich”</p>
+  </li>
+  <li>
+    <p><a href="https://botland.com.pl/pl/">Botland</a></p>
+  </li>
+</ul>
+
+<p>Z zagranicznych warto wspomnieć:</p>
+
+<ul>
+  <li><a href="https://pl.mouser.com/">Mouser</a> - ten sklep
+ śmiało można nazwać profesjonalnym.
+ Można łatwo i szybko (czas dostawy nie przekracza tygodnia)
+ dostać układy praktycznie niedostępne na polskim rynku.
+ Ale uwaga, ceny produktów podane są na modłę amerykańską, 
+ a więc nie zawierają
+ 23% podatku VAT. Najeży o tym pamiętać porównując oferty.</li>
+</ul>
+
+<p>Oczywiście zawsze warto korzystać z porównywarek cen
+i sprawdzać opinie sklepów na forach internetowych.
+Bardziej odważni i cierpliwi mogą spróbować szczęścia na AliExpressie.</p>
+
+<p>Na zakończenie, “starożytne” i niestety niedziałające, układy
+scalone polskiej produkcji (sic!), które otrzymałem od jednego
+z polskich sklepów:
+<img src="assets/images/2019-12-30/cemi.jpg" alt="Polskie scalaki" /></p>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
 	  <title>Pitfalls of using Mockito with Scala</title>
 	  <link>//pitfalls-of-using-Mockito-with-Scala</link>
 	  <author></author>
@@ -2361,180 +2718,6 @@ to our program:</p>
 
 <p>After this change we achieved code that is easy to read and
 also hides irrelevant details. Yay!</p>
-
-
-	  ]]></description>
-	</item>
-
-	<item>
-	  <title>Why using PESEL as a password is a very bad idea</title>
-	  <link>//why-using-pesel-as-a-password-is-a-very-bad-idea</link>
-	  <author></author>
-	  <pubDate>2019-02-25T01:00:00+01:00</pubDate>
-	  <guid>//why-using-pesel-as-a-password-is-a-very-bad-idea</guid>
-	  <description><![CDATA[
-	     <p>I am sure, none of you, my dear readers would use a PESEL number
-as a password or an encryption key.
-Still, as unbelievable as it may sounds, recently 
-I was talking with my friend on a topic of computer security and
-he told me a horror story about a certain company doing exactly that.
-Such practice is highly insecure and in this post I going to
-prove that. Namely we will create an encrypted 7zip archive with
-a random PESEL as a password and then we will crack it using
-<a href="https://github.com/magnumripper/JohnTheRipper">John the Ripper</a>.</p>
-
-<p>DISCLAIMER: All information is provided for educational purposes only.
-Accessing data that does not belong to you is in most
-cases illegal. Always check your local laws and your company policy
-before using tools presented in this blog post.</p>
-
-<h3 id="wtf-is-pesel">WTF is PESEL?</h3>
-
-<p>First, let me explain for non-Polish readers what is
-a <a href="https://en.wikipedia.org/wiki/PESEL">PESEL number</a>.
-Basically it is an identification number similar to 
-US Social Security number (SSN).
-Every Polish citizen is assigned one unique PESEL number at birth.</p>
-
-<p>But more important to us here is, that 
-PESEL numbers have a very well defined structure:
-<img src="assets/images/2019-02-25/pesel.svg" alt="PESEL number structure" />
-First six digits of a PESEL number represent a date of birth
-in <code class="highlighter-rouge">YYMMDD</code> format. Of course such a simple format does not allow us
-to represent birth dates after year 1999. 
-So there is a small twist, by adding twenty to the month number
-we signify that the year is <code class="highlighter-rouge">20YY</code> not <code class="highlighter-rouge">19YY</code>.
-For example if a person was born on 25th March 2029 we encode it
-in PESEL as <code class="highlighter-rouge">292325XXXXX</code>.</p>
-
-<p>The other interesting property of a PESEL number is that one before last
-digit is used to encode person gender. Males are assigned
-only odd digits, females only even digits.</p>
-
-<p>The last digit of a PESEL is a checksum that can be easily computed
-using other digits.</p>
-
-<h3 id="so-how-many-pesels-are-there">So how many PESELs are there?</h3>
-
-<p>Let’s assume that we intercepted a message encrypted by a PESEL
-number. We know that the recipient of the message is male,
-with age between twenty and sixty five.
-How much PESELs we must brute force in the worst case scenario?</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">(65 - 20 + 1) * 356 * 10^3 * 5 = 83_950_000</code></pre></figure>
-
-<p>How many six character 
-passwords are there consisting of small letters and numbers?</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">(10 + 26)^6 = 2_176_782_336</code></pre></figure>
-
-<p>Do you consider a six character password safe? Of course not!
-Yet the number of possible six character passwords dwarfs
-the number of possible PESELs.</p>
-
-<p>What is worse, is that it is usually not too difficult to find out person
-<em>year</em> of birth, thus reducing number of possible PESELs even more.</p>
-
-<h3 id="demo-time">Demo time</h3>
-
-<p>To demonstrate how weak protection PESEL passwords provide,
-we will first create an encrypted <code class="highlighter-rouge">7z</code> archive and then
-we will try to crack it using John the Ripper.</p>
-
-<p>All provided instructions are for Ubuntu, but there should
-be no problems with running modified versions of
-these commands on macOS or Windows.</p>
-
-<p>First we need to install <a href="https://www.7-zip.org/download.html">7-zip</a>:</p>
-
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">sudo </span>apt-get install p7zip-full p7zip-rar</code></pre></figure>
-
-<p>Then we can create an encrypted archive:</p>
-
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">7z a <span class="nt">-m0</span><span class="o">=</span>lzma2 <span class="nt">-mx</span><span class="o">=</span>9 <span class="nt">-p29032502498</span> secret.7z secret.txt </code></pre></figure>
-
-<p>with <code class="highlighter-rouge">29032502498</code> PESEL as a password.</p>
-
-<p>Just to make sure that the archive is indeed encrypted,
-we execute:</p>
-
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>7z l <span class="nt">-slt</span> secret.7z
-
-<span class="o">(</span>... skipped ...<span class="o">)</span>
-Encrypted <span class="o">=</span> +
-Method <span class="o">=</span> LZMA2:16 7zAES:19
-Block <span class="o">=</span> 0</code></pre></figure>
-
-<p><code class="highlighter-rouge">7zAES:19</code> visible in the command output means that the archive 
-is encrypted with AES-256 algorithm.</p>
-
-<h3 id="meet-john">Meet John</h3>
-
-<p>To install John the Ripper we must follow instructions
-<a href="https://github.com/magnumripper/JohnTheRipper/blob/bleeding-jumbo/doc/INSTALL-UBUNTU">from the official repository</a>.
-I compiled John without OpenCL and REXGEN support, YMMV though.</p>
-
-<p>To allow John to crack <code class="highlighter-rouge">7z</code> file, first we must extract a hash from
-it:</p>
-
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">./john/run/7z2john.pl secret.7z <span class="o">&gt;</span> secret.7z.hash</code></pre></figure>
-
-<p>To make this Perl script work, I had to install this library:</p>
-
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">sudo </span>apt-get install libcompress-raw-lzma-perl</code></pre></figure>
-
-<p>Then I generated a suitable list of PESEL numbers
-(people aged 20-65, males) using
-<a href="https://github.com/marcin-chwedczuk/blog-pesel-password-bad-idea/blob/master/peselgen/Program.cs">this short program</a>
-that I wrote.
-The generated file <code class="highlighter-rouge">pesels.txt</code> is about 1GB big and
-consist of 82 185 000 PESEL numbers.
-We are going to use it as a John the Ripper wordlist.</p>
-
-<p>Now we can start cracking:</p>
-
-<figure class="highlight"><pre><code class="language-shell" data-lang="shell">./john/run/john <span class="nt">--wordlist</span><span class="o">=</span>pesels.txt secret.7z.hash
-
-<span class="c"># Found passwords are saved in john.pot file</span>
-<span class="nb">cat</span> ./john/run/john.pot</code></pre></figure>
-
-<p>I performed two test. First I tried to crack a small
-340B archive that you can find <a href="https://github.com/marcin-chwedczuk/blog-pesel-password-bad-idea/blob/master/secret.7z">here</a>.
-On it I achieved speed of about 100 checked PESELs per second,
-this means that cracking it, could take in the worst case scenario:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">82 185 000 / 100 / 3600 / 24 ~ 10 days</code></pre></figure>
-
-<p>And all this on my four years old i7-4771 CPU, using John without GPU support.
-Imagine how fast it would work on a high end Amazon EC2 instance…</p>
-
-<p>Then I performed a second test, trying to crack 3MB archive
-containing a PDF file. There I achieved speed of about 50 PESELs per second.
-Not bad either (20 days in the worst case scenario).</p>
-
-<p>But you don’t have to believe me here. Grab the
-<a href="https://github.com/marcin-chwedczuk/blog-pesel-password-bad-idea/blob/master/secret.7z">test archive</a> and try to crack it yourself!
-I encrypted it with a random PESEL generated using <a href="https://bogus-z-polska.pl/generatory/all.html">Bogus</a> site. Good luck!</p>
-
-<p>As we can see archives protected by PESEL numbers can be easily cracked.</p>
-
-<h3 id="conclusion">Conclusion</h3>
-
-<ul>
-  <li>Do NOT use PESEL numbers neither as passwords nor as encryption keys.</li>
-  <li>Do USE <a href="https://www.gnupg.org/">GPG</a> if you want to send other person
- some secret data using email.</li>
-</ul>
-
-<h3 id="references">References</h3>
-
-<ul>
-  <li><a href="https://askubuntu.com/a/928301">https://askubuntu.com/a/928301</a></li>
-  <li><a href="https://sourceforge.net/p/p7zip/patches/25/#3da5">https://sourceforge.net/p/p7zip/patches/25/#3da5</a></li>
-  <li><a href="https://github.com/magnumripper/JohnTheRipper/blob/bleeding-jumbo/doc/INSTALL-UBUNTU">https://github.com/magnumripper/JohnTheRipper/blob/bleeding-jumbo/doc/INSTALL-UBUNTU</a></li>
-  <li><a href="https://www.openwall.com/john/doc/">https://www.openwall.com/john/doc/</a></li>
-  <li><a href="https://github.com/koboi137/john/blob/master/7z2john.pl#L32">https://github.com/koboi137/john/blob/master/7z2john.pl#L32</a></li>
-</ul>
 
 
 	  ]]></description>
