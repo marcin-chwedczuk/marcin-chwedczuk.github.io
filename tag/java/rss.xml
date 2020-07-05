@@ -5,12 +5,783 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://localhost:4000</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
+	<item>
+	  <title>Matching regexes using backtracking</title>
+	  <link>//matching-regexes-using-backtracking</link>
+	  <author></author>
+	  <pubDate>2020-06-28T02:00:01+02:00</pubDate>
+	  <guid>//matching-regexes-using-backtracking</guid>
+	  <description><![CDATA[
+	     <p>In this post we will write a simple regex library.
+The table below presents regex operators that we are going to support:</p>
+
+<table>
+    <colgroup>
+        <col width="25%" />
+        <col width="75%" />
+    </colgroup>
+    <thead>
+        <tr class="header">
+            <th>Operator</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>A single character e.g. <code class="highlighter-rouge">a</code>, <code class="highlighter-rouge">\n</code>, <code class="highlighter-rouge">\(</code></td>
+            <td>
+                A single character matches itself.<br />
+                Special characters need to be escaped e.g. <code class="highlighter-rouge">\n</code>.
+            </td>
+        </tr>
+        <tr>
+            <td>Character groups e.g. <code class="highlighter-rouge">[a-z]</code>, <code class="highlighter-rouge">[^xyz]</code></td>
+            <td>Character group matches any character
+                that is part of the group.<br /><br />
+                Negated character group (<code class="highlighter-rouge">[^xyz]</code>)
+                matches any character that is <em>not</em> part of the group.<br /><br />
+                Character ranges like <code class="highlighter-rouge">a-z</code> can be used inside groups.
+                A character c belongs to <code class="highlighter-rouge">a-z</code> range when its
+                numerical value falls between <code class="highlighter-rouge">(int)'a' &lt;= (int)c &lt;= (int)'z'</code>.
+            </td>
+        </tr>
+        <tr>
+            <td><code class="highlighter-rouge">.</code> wildcard</td>
+            <td>
+                <code class="highlighter-rouge">.</code> wildcard will match any single character. 
+                <br /><br />
+                For example
+                <code class="highlighter-rouge">...</code> will match any string consisting of three characters.
+            </td>
+        </tr>
+        <tr>
+            <td>Concatenation e.g. <code class="highlighter-rouge">abc</code>,<br /><code class="highlighter-rouge">[0-9]-[0-9]</code></td>
+            <td>Just as we can concatenate strings, 
+                we may also concatenate regexes. 
+                The resulting expression will match an input, only when the input can be split into two parts, so that
+                the first part of the input matches the first concatenated regex and
+                the second part of the input matches the second concatenated regex.
+                <br /><br />
+                For example input <code class="highlighter-rouge">9X</code> matches the regex <code class="highlighter-rouge">[0-9][XYZ]</code> because <code class="highlighter-rouge">9</code> matches <code class="highlighter-rouge">[0-9]</code> and <code class="highlighter-rouge">X</code> matches <code class="highlighter-rouge">[XYZ]</code>.
+            </td>
+        </tr>
+        <tr>
+            <td>Alternative e.g. <code class="highlighter-rouge">Z|X|[0-9]</code></td>
+            <td>Input matches the alternative when it matches
+                any branch of the alternative. <br /><br />
+                For example inputs <code class="highlighter-rouge">Z</code>, <code class="highlighter-rouge">X</code>
+                and <code class="highlighter-rouge">3</code> will all match <code class="highlighter-rouge">Z|X|[0-9]</code> alternative because they match
+                respectively <code class="highlighter-rouge">Z</code>, <code class="highlighter-rouge">X</code> and <code class="highlighter-rouge">[0-9]</code> branches. 
+                <br /><br />
+                Alternative has lower priority than concatenation so
+                <code class="highlighter-rouge">foo|bar</code> means <code class="highlighter-rouge">(foo)|(bar)</code>, not <code class="highlighter-rouge">fo(o|b)ar</code>.
+            </td>
+        </tr>
+        <tr>
+            <td>Repetition (quantification) 
+                e.g. <code class="highlighter-rouge">a*</code>, <code class="highlighter-rouge">[0-9]?</code>, <code class="highlighter-rouge">X{1,5}</code></td>
+            <td>
+                Preceding regex must match input specified number of times.<br />
+                Supported operators are: <br /><br />
+                <ul>
+                    <li><code>*</code> - matches zero or more times</li>
+                    <li><code>+</code> - matches one or more times</li>
+                    <li><code>?</code> - matches zero or one time</li>
+                    <li><code>{n}</code> - matches exactly n times</li>
+                    <li><code>{n,m}</code> - matches between n and m
+                     times (inclusive) 
+                    </li>
+                </ul>
+                <div>
+                    For example <code class="highlighter-rouge">[0-9]*</code> will match any string consisting of digits, including empty string.<br />
+                    On the other hand <code class="highlighter-rouge">[0-9]{2,3}</code> will match strings consisting of two or three decimal digits.<br /><br />
+                    In our limited implementation we do not support spaces
+                    (or any other whitespace characters) inside <code class="highlighter-rouge">{n,m}</code> expressions.<br /><br />
+                    Repetition has higher priority than concatenation and 
+                    alternative so <code class="highlighter-rouge">foo{5}</code> means <code class="highlighter-rouge">fo(o{5})</code>, not <code class="highlighter-rouge">(foo){5}</code>.<br /><br />
+                    Repetition operators are greedy, this means they will try
+                    to match as much input as possible.<br />
+                    For example <code class="highlighter-rouge">(a*)(a*)</code> will match the <code class="highlighter-rouge">aaaaa</code> input in
+                    the following way <code class="highlighter-rouge">(aaaaa)()</code> - the first <code class="highlighter-rouge">a*</code> will match
+                    all the characters, leaving empty string for the second <code class="highlighter-rouge">a*</code> to match.
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td><code class="highlighter-rouge">^</code> and <code class="highlighter-rouge">$</code> anchors</td>
+            <td>
+                <code class="highlighter-rouge">^</code> matches the beginning of the input.<br />
+                <code class="highlighter-rouge">$</code> matches the end of the input.<br /><br />
+                For example <code class="highlighter-rouge">^foo</code> will match strings that start with
+                <code class="highlighter-rouge">foo</code> and <code class="highlighter-rouge">bar$</code> will match strings that end with <code class="highlighter-rouge">bar</code>.
+            </td>
+        </tr>
+        <tr>
+            <td>Grouping (parentheses)</td>
+            <td>
+                Parentheses are used to alter the precedence of the operators.<br /><br />
+                For example compare <code class="highlighter-rouge">foo|bar</code> with <code class="highlighter-rouge">fo(o|b)ar</code>,
+                the first one will match <code class="highlighter-rouge">foo</code>, the second one <code class="highlighter-rouge">fooar</code>.
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<p>The library itself is quite small, it consists of two parts:
+a parser and a matcher. 
+The parser is a very simple <a href="https://en.wikipedia.org/wiki/Recursive_descent_parser">recursive descent parser</a>
+and as most of manually written parsers
+it probably contains some undiscovered bugs.
+The parser itself is not the main focus of this article,
+so we will tread it as a black box that consumes regular 
+expressions in text form and produces equivalent ASTs or Abstract Syntax Trees.</p>
+
+<p>ASTs are tree like data structures, 
+that make order of operator evaluation and the internal structure of a regular
+expression explicit.
+Let’s see this on an example. The AST representation of 
+ <code class="highlighter-rouge">^a(foo|bar|egg)*b$</code> regex is:
+<img src="assets/images/2020-06-28/ast1.svg" alt="AST tree" /></p>
+
+<p>The anchors <code class="highlighter-rouge">^</code> and <code class="highlighter-rouge">$</code> are represented by their own
+AST nodes <code class="highlighter-rouge">AT_BEGINNING</code> and <code class="highlighter-rouge">AT_END</code>.
+To represent both character groups and single characters, we use
+<code class="highlighter-rouge">GROUP</code> nodes. <code class="highlighter-rouge">GROUP</code> nodes are very simple, they contain a list
+of characters that they match. A <code class="highlighter-rouge">GROUP</code> node for <code class="highlighter-rouge">[0-9]</code> regex
+contains characters <code class="highlighter-rouge">0123456789</code> in the list.
+For negated groups like <code class="highlighter-rouge">[^0-9]</code> we use <code class="highlighter-rouge">NEGATED_GROUP</code> node,
+the representation is the same as for <code class="highlighter-rouge">GROUP</code> (we keep <code class="highlighter-rouge">0123456789</code> characters
+in the list).
+Next is the tricky one, we use <code class="highlighter-rouge">NEGATED_GROUP</code> without any characters
+to represent wildcard (<code class="highlighter-rouge">.</code>). This makes sense because an empty group <code class="highlighter-rouge">[]</code> 
+does not match anything, so its negation will match all characters.</p>
+
+<p>To represent quantification operators like <code class="highlighter-rouge">?</code>, <code class="highlighter-rouge">+</code>, <code class="highlighter-rouge">*</code> and <code class="highlighter-rouge">{n,m}</code>
+we use <code class="highlighter-rouge">REPEAT</code> nodes. <code class="highlighter-rouge">REPEAT</code> nodes contain two additional attributes:
+minimum and maximum number of allowed repetitions.
+We use <code class="highlighter-rouge">Long.MAX_VALUE</code> to signify that maximum number of repetitions is unbound.
+Finally we use <code class="highlighter-rouge">CONCAT</code> node to represent concatenation of two or more
+regular expressions.</p>
+
+<p>In the code all AST nodes are represented by a single class
+called <code class="highlighter-rouge">RAst</code>:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RAst</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">final</span> <span class="n">RAstType</span> <span class="n">type</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">final</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">Character</span><span class="o">&gt;</span> <span class="n">chars</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">final</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">RAst</span><span class="o">&gt;</span> <span class="n">exprs</span><span class="o">;</span>
+
+    <span class="c1">// Repeat from to, both inclusive</span>
+    <span class="kd">public</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">repeatMin</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">repeatMax</span><span class="o">;</span>
+
+    <span class="c1">// ...</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">type</code> field describes what kind of AST node this instance
+represents e.g. <code class="highlighter-rouge">CONCAT</code>.
+<code class="highlighter-rouge">GROUP</code> and <code class="highlighter-rouge">NEGATED_GROUP</code> nodes keep the set of matched/not-matched
+characters in <code class="highlighter-rouge">chars</code> field.
+<code class="highlighter-rouge">CONCAT</code> and <code class="highlighter-rouge">ALTERNATIVE</code> nodes keep their children in <code class="highlighter-rouge">exprs</code> field 
+(the order of children is important, hence a <code class="highlighter-rouge">List</code>).
+<code class="highlighter-rouge">REPEAT</code> node keeps its only child as a single element list in <code class="highlighter-rouge">exprs</code> field.</p>
+
+<p>The matcher is represented in the code by <code class="highlighter-rouge">BacktrackingMatcher</code> class.
+The interface of the matcher is very simple:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BacktrackingMatcher</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Match</span> <span class="nf">match</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">,</span> <span class="n">RAst</span> <span class="n">regex</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Match</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">hasMatch</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">input</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">start</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">end</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="n">String</span> <span class="nf">matched</span><span class="o">()</span>  <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">hasMatch</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="k">return</span> <span class="n">input</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">start</span><span class="o">,</span> <span class="n">end</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Our matcher will only find the first substring of the input that
+matches the regex. Yet it would not be too difficult to extend 
+the algorithm to find all matches (start matching again 
+after the end of the previous match).</p>
+
+<p>To implement our matcher we will use an algorithm design technique 
+called backtracking. The general idea of backtracking is
+very simple: we enumerate all the possible solution candidates
+in a smart way and then we return the first candidate that is a valid solution.
+The part “in a smart way” is very important, usually
+enumerating all solution candidates will result in a very
+slow algorithm (think <code class="highlighter-rouge">O(2^n)</code> or even <code class="highlighter-rouge">O(n!)</code>).
+The key here is to quickly and early reject some subsets of
+the solutions candidates.</p>
+
+<p>Let’s see this on a very simple example,
+say we want to solve a puzzle that is about placing various shapes in 3x3 grid. Some places in the grid are already taken. There is also a rule that describes a valid solution: in every row and column we cannot have two shapes of the same kind.
+<img src="assets/images/2020-06-28/puzzle.svg" alt="Puzzle board" />
+Simple enumeration of all possible assignments of the shapes to the free places
+will generate <code class="highlighter-rouge">3^5</code> solution candidates, most of them wrong.
+A smarter candidate generation strategy
+would be to check immediately after we fill a free place,
+if the solution conditions still holds for this place row and column.
+This would save us a lot of work, because we could discard a lot of
+solution candidates much more early in the process.
+For example we could discard all the solution candidates that have
+Cloud shape at 1B position in the first step of the algorithm.</p>
+
+<p>The name of the technique itself comes from the specific way
+in which the algorithm generates all the solution candidates.
+The naive backtracking algorithm that solves our simple puzzle looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// Board positions:</span>
+<span class="c1">// [0 | 1 | 2]</span>
+<span class="c1">// [3 | 4 | 5]</span>
+<span class="c1">// [6 | 7 | 8]</span>
+<span class="c1">// Notice that rowIndex = currentPosition / 3</span>
+<span class="c1">// and         colIndex = currentPosition % 3</span>
+<span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">solve</span><span class="o">(</span><span class="kt">char</span><span class="o">[][]</span> <span class="n">board</span><span class="o">,</span> <span class="kt">int</span> <span class="n">currentPosition</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">currentPosition</span> <span class="o">==</span> <span class="mi">9</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// All places are filled, check if this</span>
+        <span class="c1">// candidate is a valid solution.</span>
+        <span class="k">return</span> <span class="nf">isValidSolution</span><span class="o">(</span><span class="n">board</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="k">if</span> <span class="o">(</span><span class="n">isPlaceTaken</span><span class="o">(</span><span class="n">board</span><span class="o">,</span> <span class="n">currentPosition</span><span class="o">))</span> <span class="o">{</span>
+        <span class="c1">// Move to checking the next place.</span>
+        <span class="k">return</span> <span class="nf">solve</span><span class="o">(</span><span class="n">board</span><span class="o">,</span> <span class="n">currentPosition</span><span class="o">+</span><span class="mi">1</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="c1">// Try putting all shapes in the free place</span>
+    <span class="k">for</span> <span class="o">(</span><span class="kt">char</span> <span class="nl">shape:</span> <span class="k">new</span> <span class="kt">char</span><span class="o">[]</span> <span class="o">{</span> <span class="sc">'C'</span><span class="o">,</span> <span class="sc">'H'</span><span class="o">,</span> <span class="sc">'R'</span> <span class="o">})</span> <span class="o">{</span>
+        <span class="n">putShape</span><span class="o">(</span><span class="n">board</span><span class="o">,</span> <span class="n">currentPosition</span><span class="o">,</span> <span class="n">shape</span><span class="o">);</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">solve</span><span class="o">(</span><span class="n">board</span><span class="o">,</span> <span class="n">currentPosition</span> <span class="o">+</span> <span class="mi">1</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="c1">// Clear position or BACKTRACK.</span>
+        <span class="n">putShape</span><span class="o">(</span><span class="n">board</span><span class="o">,</span> <span class="n">currentPosition</span><span class="o">,</span> <span class="sc">'?'</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The key part of the algorithm is the <code class="highlighter-rouge">for</code> loop,
+where we put a shape on the free place and then remove it 
+when don’t find a solution. This removal
+or taking a move back is what gave the algorithm its name.
+Alternatively we may say that when <code class="highlighter-rouge">solve</code> returns <code class="highlighter-rouge">false</code>,
+then the <code class="highlighter-rouge">board</code> is exactly in the same state as it was
+before we called <code class="highlighter-rouge">solve</code>.</p>
+
+<p>Matching regular expression is somehow similar to solving our previous puzzle.
+At each step we have several possibilities, like should we match <code class="highlighter-rouge">foo</code>
+or <code class="highlighter-rouge">fo</code> from the alternative <code class="highlighter-rouge">(foo|fo)</code>. How much characters should
+<code class="highlighter-rouge">f+</code> expression match? Should <code class="highlighter-rouge">(bar)?</code> match <code class="highlighter-rouge">bar</code> or nothing?
+On the other hand the most complexity in matching regular expressions
+comes from the fact that we are matching a recurrent structure (tree).
+It’s like matching our puzzle, but where each empty place can contain
+another smaller version of the same puzzle that also must be solved.</p>
+
+<p>The main entry point to our regex matching algorithm is</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@FunctionalInterface</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Cont</span> <span class="o">{</span>
+    <span class="kt">boolean</span> <span class="nf">run</span><span class="o">();</span>
+<span class="o">}</span>
+
+<span class="kt">boolean</span> <span class="nf">match</span><span class="o">(</span><span class="n">Input</span> <span class="n">input</span><span class="o">,</span> <span class="n">RAst</span> <span class="n">ast</span><span class="o">,</span> <span class="n">Cont</span> <span class="n">cont</span><span class="o">)</span></code></pre></figure>
+
+<p>method. It takes three parameters, <code class="highlighter-rouge">input</code> which is just
+the input <code class="highlighter-rouge">String</code> plus a pointer called <code class="highlighter-rouge">pos</code> that tracks next, not yet
+matched character. <code class="highlighter-rouge">Input</code> also provides helpful methods that can
+be used to save and restore <code class="highlighter-rouge">pos</code> value (we will need that
+for backtracking). Next parameter, <code class="highlighter-rouge">ast</code>, is an AST subtree that the algorithm
+should match. The last parameter <code class="highlighter-rouge">cont</code> is the most interesting one.
+In my previous blog post I wrote about 
+<a href="/continuations-in-java">continuations</a>, please read that post before
+going further. <code class="highlighter-rouge">cont</code> is lambda expression (but we may thread it also as
+a kind of continuation), that when called will
+try to match remaining part of the regex AST (e.g. it will match parents
+and the remaining siblings nodes of <code class="highlighter-rouge">ast</code> node).</p>
+
+<p>The contract of <code class="highlighter-rouge">match</code> method is as follows.
+If the method is not able to match <code class="highlighter-rouge">ast</code> subtree it will
+return <code class="highlighter-rouge">false</code>, <code class="highlighter-rouge">cont</code> will not be called and the <code class="highlighter-rouge">input</code>
+will not be modified (or it may be restored to the original state).
+On the other hand if <code class="highlighter-rouge">ast</code> subtree could be matched then
+<code class="highlighter-rouge">cont</code> will be called with the modified <code class="highlighter-rouge">input</code> and
+<code class="highlighter-rouge">match</code> will return whatever <code class="highlighter-rouge">cont</code> returns.
+Before returning value to the client <code class="highlighter-rouge">input</code> will be restored
+to the original state (this is not strictly necessary if we
+are looking for the first match but somehow makes algorithm more elegant).</p>
+
+<p>At the top level we will call <code class="highlighter-rouge">match</code> somehow like this:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">startIndex</span> <span class="o">=</span> <span class="n">input</span><span class="o">.</span><span class="na">currentPos</span><span class="o">();</span>
+<span class="n">AtomicInteger</span> <span class="n">endIndex</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AtomicInteger</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+
+<span class="kt">boolean</span> <span class="n">hasMatch</span> <span class="o">=</span> <span class="n">match</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">regex</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+    <span class="n">endIndex</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">input</span><span class="o">.</span><span class="na">currentPos</span><span class="o">());</span>
+    <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+<span class="o">});</span></code></pre></figure>
+
+<p>This call means that we are looking for the matches
+starting at index <code class="highlighter-rouge">startIndex</code> and if we find one
+we save the
+end of the match in the <code class="highlighter-rouge">endIndex</code> variable and return <code class="highlighter-rouge">true</code>
+to signify that matching process should stop.
+This is the only place in the algorithm where we use
+<code class="highlighter-rouge">return true</code>. Matched substring could be easily
+retrieved as <code class="highlighter-rouge">input.substring(startIndex, endIndex)</code>.</p>
+
+<p>The body of <code class="highlighter-rouge">match</code> method is a giant switch statement that
+delegates matching of different AST types to different methods (not counting simple
+operators):</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">match</span><span class="o">(</span><span class="n">Input</span> <span class="n">input</span><span class="o">,</span> <span class="n">RAst</span> <span class="n">ast</span><span class="o">,</span> <span class="n">Cont</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">RAstType</span> <span class="n">type</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="na">type</span><span class="o">;</span>
+    <span class="n">InputPositionMarker</span> <span class="n">m</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+    <span class="k">switch</span> <span class="o">(</span><span class="n">type</span><span class="o">)</span> <span class="o">{</span>
+        <span class="cm">/* some cases skipped */</span>
+
+        <span class="k">case</span> <span class="nl">GROUP:</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">input</span><span class="o">.</span><span class="na">atEnd</span><span class="o">())</span> <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">ast</span><span class="o">.</span><span class="na">chars</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">input</span><span class="o">.</span><span class="na">current</span><span class="o">()))</span> <span class="o">{</span>
+                <span class="n">m</span> <span class="o">=</span> <span class="n">input</span><span class="o">.</span><span class="na">markPosition</span><span class="o">();</span>
+                <span class="n">input</span><span class="o">.</span><span class="na">advance</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
+                <span class="k">try</span> <span class="o">{</span>
+                    <span class="k">return</span> <span class="n">cont</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+                <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
+                    <span class="n">input</span><span class="o">.</span><span class="na">restorePosition</span><span class="o">(</span><span class="n">m</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+
+        <span class="k">case</span> <span class="nl">CONCAT:</span>
+            <span class="k">return</span> <span class="nf">concatRec</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">ast</span><span class="o">.</span><span class="na">exprs</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">cont</span><span class="o">);</span>
+
+        <span class="k">case</span> <span class="nl">ALTERNATIVE:</span>
+            <span class="k">return</span> <span class="nf">alternativeRec</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">ast</span><span class="o">.</span><span class="na">exprs</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">cont</span><span class="o">);</span>
+
+        <span class="k">case</span> <span class="nl">REPEAT:</span>
+            <span class="k">return</span> <span class="nf">repeatRec</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">ast</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">cont</span><span class="o">);</span>
+
+        <span class="k">default</span><span class="o">:</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">AssertionError</span><span class="o">(</span><span class="s">"Unknown AST type: "</span> <span class="o">+</span> <span class="n">type</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Let’s take a look how matching a <code class="highlighter-rouge">GROUP</code> is performed.
+If the group matches next input character, we save the current
+input pointer in <code class="highlighter-rouge">m</code> variable, then we advance the input pointer 
+and finally we call <code class="highlighter-rouge">cont</code> to match the
+rest of the regex. After <code class="highlighter-rouge">cont</code> returns we restore the input position
+using <code class="highlighter-rouge">finally</code> block. This is a bit hacky but it works.</p>
+
+<p>Matching <code class="highlighter-rouge">CONCAT</code> node is also simple. We use recursion to match
+subsequent children expressions:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">concatRec</span><span class="o">(</span><span class="n">Input</span> <span class="n">input</span><span class="o">,</span>
+                                 <span class="n">List</span><span class="o">&lt;</span><span class="n">RAst</span><span class="o">&gt;</span> <span class="n">exprs</span><span class="o">,</span>
+                                 <span class="kt">int</span> <span class="n">currExpr</span><span class="o">,</span>
+                                 <span class="n">Cont</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">currExpr</span> <span class="o">==</span> <span class="n">exprs</span><span class="o">.</span><span class="na">size</span><span class="o">())</span> <span class="o">{</span>
+        <span class="c1">// We matched all the children</span>
+        <span class="k">return</span> <span class="n">cont</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="c1">// Match exprs.get(currExpr) child</span>
+    <span class="k">return</span> <span class="nf">match</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">exprs</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">currExpr</span><span class="o">),</span> <span class="o">()</span> <span class="o">-&gt;</span>
+        <span class="c1">// If it succeeded then match next child expression </span>
+        <span class="n">concatRec</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">exprs</span><span class="o">,</span> <span class="n">currExpr</span> <span class="o">+</span> <span class="mi">1</span><span class="o">,</span> <span class="n">cont</span><span class="o">)</span>
+    <span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Notice that because we are not consuming any input here we have
+nothing to restore.</p>
+
+<p>Similarly <code class="highlighter-rouge">ALTERNATIVE</code> is easy to match:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">alternativeRec</span><span class="o">(</span><span class="n">Input</span> <span class="n">input</span><span class="o">,</span>
+                                      <span class="n">List</span><span class="o">&lt;</span><span class="n">RAst</span><span class="o">&gt;</span> <span class="n">expr</span><span class="o">,</span>
+                                      <span class="kt">int</span> <span class="n">currExpr</span><span class="o">,</span>
+                                      <span class="n">Cont</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">currExpr</span> <span class="o">==</span> <span class="n">expr</span><span class="o">.</span><span class="na">size</span><span class="o">())</span> <span class="o">{</span>
+        <span class="c1">// We tried all branches but found no match.</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="c1">// Try matching expr.get(currExpr) branch of the alternative</span>
+    <span class="kt">boolean</span> <span class="n">matched</span> <span class="o">=</span> <span class="n">match</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">expr</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">currExpr</span><span class="o">),</span> <span class="n">cont</span><span class="o">);</span>
+    <span class="c1">// We found a match</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">matched</span><span class="o">)</span> <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+
+    <span class="c1">// No match found - Let's try next alternative "branch"</span>
+    <span class="k">return</span> <span class="nf">alternativeRec</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">expr</span><span class="o">,</span> <span class="n">currExpr</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">cont</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Here <code class="highlighter-rouge">currExpr</code> points to the current alternative branch that we are matching.
+Instead of using recursion we may implement <code class="highlighter-rouge">alternativeRec</code> 
+using a simple <code class="highlighter-rouge">for</code> loop, which I left as an exercise for the reader.</p>
+
+<p>Matching <code class="highlighter-rouge">REPEAT</code> node causes the most troubles, because all
+quantification operators are greedy by default. This means that
+e.g. <code class="highlighter-rouge">a+</code> will try to match as much characters as possible.
+To implement this behavior we first attempt to match <code class="highlighter-rouge">REPEAT</code>s child subtree 
+as many times as possible, then we move “backwards” calling <code class="highlighter-rouge">cont</code>
+each time to check if we have a match.
+The diagram below illustrates this process:</p>
+
+<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">We match a+ expression:
+a
+a a
+a a a         // We matched a three times.
+a a a noMatch // Forth time we have noMatch.
+a a a cont()  // We move backwards, calling cont()
+a a cont()    // each time until it returns true.
+a cont() match // cont() returned true.
+               // We stop moving backwards and return true from a+.</code></pre></figure>
+
+<p>The code of <code class="highlighter-rouge">repeatRec</code> is:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">repeatRec</span><span class="o">(</span><span class="n">Input</span> <span class="n">input</span><span class="o">,</span>
+                                 <span class="n">RAst</span> <span class="n">repeatAst</span><span class="o">,</span>
+                                 <span class="kt">long</span> <span class="n">matchCount</span><span class="o">,</span>
+                                 <span class="n">Cont</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// For expressions like R{n,m} do we have</span>
+    <span class="c1">// more matches than necessary?</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">matchCount</span> <span class="o">&gt;</span> <span class="n">repeatAst</span><span class="o">.</span><span class="na">repeatMax</span><span class="o">)</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+
+    <span class="c1">// Greedy matching as much as possible.</span>
+    <span class="kt">boolean</span> <span class="n">matched</span> <span class="o">=</span> <span class="n">match</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">repeatAst</span><span class="o">.</span><span class="na">headExpr</span><span class="o">(),</span> <span class="o">()</span> <span class="o">-&gt;</span>
+        <span class="n">repeatRec</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">repeatAst</span><span class="o">,</span> <span class="n">matchCount</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">cont</span><span class="o">)</span>
+    <span class="o">);</span>
+
+    <span class="c1">// We are moving backwards, calling `cont` each time.</span>
+    <span class="c1">// We also make sure that we have min number of matches</span>
+    <span class="c1">// for expressions like R{n,m}.</span>
+    <span class="k">if</span> <span class="o">(!</span><span class="n">matched</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">matchCount</span> <span class="o">&gt;=</span> <span class="n">repeatAst</span><span class="o">.</span><span class="na">repeatMin</span><span class="o">))</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">cont</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="k">return</span> <span class="n">matched</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>And generally that’s it. Our simple regex engine.
+There are some details left (like handling <code class="highlighter-rouge">^</code> or <code class="highlighter-rouge">$</code> or
+moving <code class="highlighter-rouge">startIndex</code>) but the idea behind the backtracking
+matcher should now be familiar to us.</p>
+
+<p>You can find source code for the engine (including tests)
+on GitHub: <a href="https://github.com/marcin-chwedczuk/reng">https://github.com/marcin-chwedczuk/reng</a>. But before you jump to see the
+code I really recommend you to write a similar engine (in your
+favorite language) yourself. This will give you a much more
+deeper understanding of the algorithm.</p>
+
+<p>Last but not least, our algorithm has a decent performance,
+given that we use reasonable regexes and inputs.
+A regex like <code class="highlighter-rouge">(a+)*c</code> matched on the input <code class="highlighter-rouge">aaaaaaaaaaaaaaaaaaaaaaaaaaaab</code>
+will have a very bad performance. This is a common problem
+not only in our matcher but in most regex libraries
+that use backtracking algorithms. You can 
+read more about this problem on <a href="https://en.wikipedia.org/wiki/ReDoS">Wikipedia</a>.</p>
+
+	  ]]></description>
+	</item>
+
+	<item>
+	  <title>Continuations in Java</title>
+	  <link>//continuations-in-java</link>
+	  <author></author>
+	  <pubDate>2020-06-27T02:00:01+02:00</pubDate>
+	  <guid>//continuations-in-java</guid>
+	  <description><![CDATA[
+	     <p>CSP or Continuation-Passing Style is a style of programming in which
+functions return results via callbacks.
+For example <code class="highlighter-rouge">+</code> operator is a function that takes two numbers and
+returns their sum. In CSP <code class="highlighter-rouge">+</code> operator becomes a function that takes
+three arguments, two terms and a callback, usually called a continuation in
+the context of CSP.
+In Java we can express this as:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">add</span><span class="o">(</span><span class="kt">int</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">b</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="nd">@FunctionalInterface</span>
+<span class="kd">private</span> <span class="kd">interface</span> <span class="nc">Cont</span><span class="o">&lt;</span><span class="n">R</span><span class="o">&gt;</span> <span class="o">{</span>
+  <span class="kt">void</span> <span class="nf">apply</span><span class="o">(</span><span class="n">R</span> <span class="n">result</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Because functions’ results are always returned via callback calls,
+CSP is forcing us to name the returned values by naming callback parameters.
+In addition CSP makes the order of evaluation of an expression explicit.
+For example, a simple Java program in imperative style:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span><span class="o">);</span>
+<span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span></code></pre></figure>
+
+<p>Can be expressed in CSP as follows:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">add</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="n">partialSum</span> <span class="o">-&gt;</span>
+  <span class="n">add</span><span class="o">(</span><span class="n">partialSum</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="n">sum</span> <span class="o">-&gt;</span>
+    <span class="n">print</span><span class="o">(</span><span class="n">sum</span><span class="o">,</span> <span class="n">unit</span> <span class="o">-&gt;</span>
+      <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">0</span><span class="o">))));</span>
+
+<span class="kd">static</span> <span class="kt">void</span> <span class="nf">print</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">n</span><span class="o">);</span>
+  <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>While transforming imperative programs into CSP form we may encounter
+problems with handling procedures (methods returning <code class="highlighter-rouge">void</code> in Java).
+A lot of functional programming languages do not support procedures,
+instead they define a special type called <code class="highlighter-rouge">Unit</code>, that has only
+a single value and use that type to signify that function does
+not return any meaningful data.
+So defined <code class="highlighter-rouge">Unit</code> type is often identified with the empty tuple <code class="highlighter-rouge">()</code>.
+In Java we do not have <code class="highlighter-rouge">Unit</code>, but we may use <code class="highlighter-rouge">Void</code> type with its only
+allowed value <code class="highlighter-rouge">null</code> to simulate it.</p>
+
+<p>While looking at our last example we may notice that in CSP form,
+function arguments can be in one of three forms:
+a constant, a variable or a lambda expression.
+There is no rule preventing us from passing two or more
+callbacks to a single function. 
+Indeed this is necessary to translate <code class="highlighter-rouge">if</code> statement to CSP counterpart:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">iff</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">expr</span><span class="o">,</span>
+         <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Boolean</span><span class="o">&gt;</span> <span class="n">trueBranch</span><span class="o">,</span>
+         <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Boolean</span><span class="o">&gt;</span> <span class="n">falseBranch</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">expr</span><span class="o">)</span> <span class="n">trueBranch</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="k">else</span> <span class="n">falseBranch</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Instead of <code class="highlighter-rouge">Cont&lt;Boolean&gt;</code> we could use here <code class="highlighter-rouge">Cont&lt;Void&gt;</code> as well.</p>
+
+<p>To get a better feel for CSP we will look at three more examples.
+We will start with a simple (naive) program for computing sum
+of all numbers between given two numbers:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">long</span> <span class="nf">sum</span><span class="o">(</span><span class="kt">int</span> <span class="n">from</span><span class="o">,</span> <span class="kt">int</span> <span class="n">to</span><span class="o">)</span> <span class="o">{</span>
+  <span class="kt">long</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">from</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">to</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="n">sum</span> <span class="o">+=</span> <span class="n">i</span><span class="o">;</span>
+  <span class="o">}</span>
+  <span class="k">return</span> <span class="n">sum</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The transformation to CSP will become easier
+if we first replace <code class="highlighter-rouge">for</code> loop with recursion:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">long</span> <span class="nf">sum_rec</span><span class="o">(</span><span class="kt">int</span> <span class="n">from</span><span class="o">,</span> <span class="kt">int</span> <span class="n">to</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="o">(</span><span class="n">from</span> <span class="o">&gt;</span> <span class="n">to</span><span class="o">)</span>
+    <span class="o">?</span> <span class="mi">0</span>
+    <span class="o">:</span> <span class="n">from</span> <span class="o">+</span> <span class="n">sum_rec</span><span class="o">(</span><span class="n">from</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">to</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This version can be easily translated into CSP:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">void</span> <span class="nf">sumCC</span><span class="o">(</span><span class="kt">int</span> <span class="n">from</span><span class="o">,</span> <span class="kt">int</span> <span class="n">to</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">gt</span><span class="o">(</span><span class="n">from</span><span class="o">,</span> <span class="n">to</span><span class="o">,</span> <span class="n">fromGreaterThanTo</span> <span class="o">-&gt;</span>
+    <span class="n">iff</span><span class="o">(</span><span class="n">fromGreaterThanTo</span><span class="o">,</span>
+      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="mi">0L</span><span class="o">),</span>
+      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">add</span><span class="o">(</span><span class="n">from</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="n">from1</span> <span class="o">-&gt;</span>
+        <span class="n">sumCC</span><span class="o">(</span><span class="n">from1</span><span class="o">,</span> <span class="n">to</span><span class="o">,</span> <span class="n">sumCC1</span> <span class="o">-&gt;</span>
+          <span class="n">addLong</span><span class="o">(</span><span class="n">from</span><span class="o">,</span> <span class="n">sumCC1</span><span class="o">,</span> <span class="n">cont</span><span class="o">)))));</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Where <code class="highlighter-rouge">gt</code> is the CSP counterpart of <code class="highlighter-rouge">&gt;</code> operator.</p>
+
+<p>Next we will transform factorial computing function.
+This time we will start with a recursive definition that is 
+easier to translate:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">int</span> <span class="nf">factorial</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
+  <span class="k">return</span> <span class="nf">factorial</span><span class="o">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="o">)*</span><span class="n">n</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>CSP version of factorial looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">factorial</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">eq</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">isNZero</span> <span class="o">-&gt;</span>
+    <span class="n">iff</span><span class="o">(</span><span class="n">isNZero</span><span class="o">,</span>
+      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span>
+      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">add</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">nm1</span> <span class="o">-&gt;</span>
+        <span class="n">factorial</span><span class="o">(</span><span class="n">nm1</span><span class="o">,</span> <span class="n">fnm1</span> <span class="o">-&gt;</span>
+          <span class="n">multiply</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="n">fnm1</span><span class="o">,</span> <span class="n">cont</span><span class="o">)))));</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>As the last example we will transform a function
+that computes Fibonacci sequence:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">int</span> <span class="nf">fib1</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">)</span> <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
+    <span class="k">return</span> <span class="nf">fib1</span><span class="o">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">+</span> <span class="n">fib1</span><span class="o">(</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>In CSP it looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">void</span> <span class="nf">fib</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">lt</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="n">nlt2</span> <span class="o">-&gt;</span>
+    <span class="n">iff</span><span class="o">(</span><span class="n">nlt2</span><span class="o">,</span>
+      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span>
+      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">add</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">nm1</span> <span class="o">-&gt;</span>
+        <span class="n">fib</span><span class="o">(</span><span class="n">nm1</span><span class="o">,</span> <span class="n">fnm1</span> <span class="o">-&gt;</span>
+          <span class="n">add</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="o">-</span><span class="mi">2</span><span class="o">,</span> <span class="n">nm2</span> <span class="o">-&gt;</span>
+            <span class="n">fib</span><span class="o">(</span><span class="n">nm2</span><span class="o">,</span> <span class="n">fnm2</span> <span class="o">-&gt;</span>
+              <span class="n">add</span><span class="o">(</span><span class="n">fnm1</span><span class="o">,</span> <span class="n">fnm2</span><span class="o">,</span> <span class="n">cont</span><span class="o">)))))));</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Now we should have, at least intuitive feel, how the
+transformation to CSP works. In fact any program can be
+transformed to CSP. The last point is quite interesting,
+especially if we pass <code class="highlighter-rouge">() -&gt; exit(0)</code> or some other not-returning function
+as the last continuation. Why? Because in that case we will
+never return from any of the called functions.
+Let’s see how this works on a simple example:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">factorial</span><span class="o">(</span><span class="mi">6</span><span class="o">,</span> <span class="n">fac6</span> <span class="o">-&gt;</span>
+      <span class="n">print</span><span class="o">(</span><span class="n">fac6</span><span class="o">,</span> <span class="n">x</span> <span class="o">-&gt;</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">0</span><span class="o">)));</span>
+
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Will never be printed"</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The entire idea of having a call stack is about providing a way for
+the called functions to return the control to the callers.
+But if we are never returning, then we don’t need a call stack, right?
+Not so fast, some of you may say - what about passing arguments to 
+the called functions,
+call stack is used for that too. Yes, the arguments are also stored on
+the call stack but with CSP we capture 
+the values of arguments using closures.
+Of course JVM does not know that our programs are in CSP form or that they 
+would do fine without having a call stack at all.
+Instead we get a new call stack frame every time we call something,
+this results in <code class="highlighter-rouge">StackOverflowError</code> quickly when we call
+e.g. <code class="highlighter-rouge">factorial(3000, r -&gt; ...)</code>.</p>
+
+<p>Too avoid <code class="highlighter-rouge">StackOverflowError</code>s we may use a technique called trampolining. 
+Trampolining in connection with CSP
+could reduce the required call stack space to a constant number
+of slots.
+The idea of trampolining is very simple, we split computation into
+parts and then we compute only the first part and <em>return</em> a 
+continuation (called thunk) that is responsible for computing the rest. 
+The returned continuation captures the result of the first computation in
+its closure so we don’t have to recompute it.
+Let’s see how a trampolined <code class="highlighter-rouge">+</code> operator would looks like:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="n">Thunk</span> <span class="nf">add</span><span class="o">(</span><span class="kt">int</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">b</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="o">;</span>
+    <span class="k">return</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">sum</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="kd">static</span> <span class="n">Thunk</span> <span class="nf">add3</span><span class="o">(</span><span class="kt">int</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">b</span><span class="o">,</span> <span class="kt">int</span> <span class="n">c</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nf">add</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span> <span class="n">sum</span> <span class="o">-&gt;</span>
+            <span class="n">add</span><span class="o">(</span><span class="n">sum</span><span class="o">,</span> <span class="n">c</span><span class="o">,</span> <span class="n">cont</span><span class="o">));</span>
+<span class="o">}</span>
+
+<span class="nd">@FunctionalInterface</span>
+<span class="kd">private</span> <span class="kd">interface</span> <span class="nc">Cont</span><span class="o">&lt;</span><span class="n">R</span><span class="o">&gt;</span> <span class="o">{</span>
+    <span class="n">Thunk</span> <span class="nf">apply</span><span class="o">(</span><span class="n">R</span> <span class="n">result</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="nd">@FunctionalInterface</span>
+<span class="kd">private</span> <span class="kd">interface</span> <span class="nc">Thunk</span> <span class="o">{</span>
+    <span class="n">Thunk</span> <span class="nf">run</span><span class="o">();</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Notice that trampolined <code class="highlighter-rouge">+</code> operator splits its computation
+into two parts: computing the sum and calling the continuation.
+The called continuation will again split it’s work and so on and on.</p>
+
+<p><code class="highlighter-rouge">add3</code> function illustrates two key points. 
+One is that the logical flow of the program stays the same, we just
+call the passed continuations like in a pure CSP program.
+The other is, that to introduce trampolining we only need to modify
+primitives provided by our programming language (operators and statements).
+The program code stays the same.
+Of course because Java is a statically-typed language we need to change 
+functions return type from <code class="highlighter-rouge">void</code> into <code class="highlighter-rouge">Thunk</code>, but this is
+a simple mechanical change that would not be necessary in 
+a dynamically-typed language.</p>
+
+<p>Next example illustrates how trampolined <code class="highlighter-rouge">if</code> statement and
+<code class="highlighter-rouge">factorial</code> looks like. Notice that factorial code did not change,
+not counting the return type:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="n">Thunk</span> <span class="nf">iff</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">expr</span><span class="o">,</span>
+                 <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Boolean</span><span class="o">&gt;</span> <span class="n">trueBranch</span><span class="o">,</span>
+                 <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Boolean</span><span class="o">&gt;</span> <span class="n">falseBranch</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="o">(</span><span class="n">expr</span><span class="o">)</span>
+    <span class="o">?</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="n">trueBranch</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span>
+    <span class="o">:</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="n">falseBranch</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="kd">static</span> <span class="n">Thunk</span> <span class="nf">factorial</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="nf">eq</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">isNZero</span> <span class="o">-&gt;</span>
+    <span class="n">iff</span><span class="o">(</span><span class="n">isNZero</span><span class="o">,</span>
+      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span>
+      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">add</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">nm1</span> <span class="o">-&gt;</span>
+        <span class="n">factorial</span><span class="o">(</span><span class="n">nm1</span><span class="o">,</span> <span class="n">fnm1</span> <span class="o">-&gt;</span>
+          <span class="n">multiply</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="n">fnm1</span><span class="o">,</span> <span class="n">cont</span><span class="o">)))));</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Because we are now performing computation “in parts”, we need 
+a procedure that will be continually invoking returned thunks,
+thus ensuring that out computation is making progress.
+A procedure like this is called a trampoline:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">void</span> <span class="nf">trampoline</span><span class="o">(</span><span class="n">Thunk</span> <span class="n">thunk</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">while</span> <span class="o">(</span><span class="n">thunk</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">thunk</span> <span class="o">=</span> <span class="n">thunk</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="nf">endCall</span><span class="o">(</span><span class="n">Consumer</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">call</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">return</span> <span class="n">r</span> <span class="o">-&gt;</span> <span class="o">{</span>
+      <span class="n">call</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">r</span><span class="o">);</span>
+      <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+  <span class="o">};</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>We are also providing a new primitive operator <code class="highlighter-rouge">endCall</code> that
+can be used to mark the last part of the computation.
+Using <code class="highlighter-rouge">trampoline</code> we may now compute <code class="highlighter-rouge">factorial(3000)</code>
+without any troubles:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">AtomicInteger</span> <span class="n">res</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AtomicInteger</span><span class="o">(-</span><span class="mi">1</span><span class="o">);</span>
+<span class="n">trampoline</span><span class="o">(</span><span class="n">factorial</span><span class="o">(</span><span class="mi">400000</span><span class="o">,</span> <span class="n">endCall</span><span class="o">(</span><span class="nl">res:</span><span class="o">:</span><span class="n">set</span><span class="o">)));</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">res</span><span class="o">.</span><span class="na">get</span><span class="o">())</span></code></pre></figure>
+
+<p>As a side effect, we may now use trampoline to mix
+CSP and imperative code in the same program.</p>
+
+<p>CSP and trampolining are not mere theoretical concepts,
+there where and are still used to implement e.g. LISP interpreters.
+Continuations can also be used to simplify backtracking algorithms.
+Source code for this blog post can be found
+<a href="https://github.com/marcin-chwedczuk/reng/tree/master/test/pl/marcinchwedczuk/continuations">here</a>.</p>
+
+
+	  ]]></description>
+	</item>
+
 	<item>
 	  <title>Spy JVM network traffic with Owasp ZAP proxy</title>
 	  <link>//spy-jvm-network-traffic-with-owasp-zap</link>
@@ -2764,1162 +3535,6 @@ transaction (with propagation <code class="highlighter-rouge">REQUIRED</code>, <
 <h4 id="transactionaltimeout">@Transactional(timeout=…)</h4>
 
 <p>Transaction timeout in seconds.</p>
-
-
-	  ]]></description>
-	</item>
-
-	<item>
-	  <title>Crudest CRUD using Spring</title>
-	  <link>//crudest-curd-using-spring</link>
-	  <author></author>
-	  <pubDate>2016-12-27T01:00:00+01:00</pubDate>
-	  <guid>//crudest-curd-using-spring</guid>
-	  <description><![CDATA[
-	     <p>EDIT: In this post I’ll use Spring XML configuration, in new
-applications you should definitely use Spring JavaConfig configuration (via
-annotations and Java classes).
-For more info see reddit comment discussion <a href="https://www.reddit.com/r/springsource/comments/5mjwa2/100_crudest_crud_using_spring_and_jdbc/">here</a>.</p>
-
-<p>In this blog post we will create simple CRUD (Create Retrieve Update Delete)
-application using Spring and JDBC.
-Before we start we need to setup our database.
-I will assume that you already have Postgres running on your box.</p>
-
-<h4 id="setup-database">Setup database</h4>
-
-<p>Because we want to follow good programming practices we will create a
-separate user in Postgres database dedicated only for our application.
-Open pgAdmin and execute following SQL to create user <code class="highlighter-rouge">crud</code>:</p>
-
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">create</span> <span class="k">user</span> <span class="n">crud</span>
-  <span class="k">with</span> <span class="n">password</span> <span class="s1">'crud'</span><span class="p">;</span></code></pre></figure>
-
-<p>Next create <code class="highlighter-rouge">cruddb</code> database with <code class="highlighter-rouge">crud</code> as db owner:</p>
-
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">create</span> <span class="k">database</span> <span class="n">cruddb</span>
-  <span class="k">with</span> <span class="k">owner</span> <span class="n">crud</span>
-       <span class="k">encoding</span> <span class="s1">'utf-8'</span><span class="p">;</span></code></pre></figure>
-
-<p>Now it’s time to switch to <code class="highlighter-rouge">cruddb</code> database and create
-<code class="highlighter-rouge">app_data</code> table:</p>
-
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">create</span> <span class="k">table</span> <span class="n">app_data</span> <span class="p">(</span>
-  <span class="n">id</span> <span class="n">serial</span> <span class="k">primary</span> <span class="k">key</span><span class="p">,</span>
-  <span class="k">index</span> <span class="n">int</span> <span class="k">not</span> <span class="k">null</span><span class="p">,</span>
-  <span class="n">value</span> <span class="n">text</span> <span class="k">not</span> <span class="k">null</span>
-<span class="p">);</span></code></pre></figure>
-
-<p>We should create this table logged as <code class="highlighter-rouge">crud</code> user,
-otherwise <code class="highlighter-rouge">curd</code> will be denied access to the table.
-If you don’t want to login as <code class="highlighter-rouge">curd</code> you may create
-table from superuser account and then grant permissions
-to <code class="highlighter-rouge">curd</code> user:</p>
-
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">grant</span> <span class="k">all</span> <span class="k">on</span> <span class="k">table</span> <span class="n">app_data</span> <span class="k">to</span> <span class="n">crud</span>
-
-<span class="c1">-- needed to autogenerate primary key</span>
-<span class="k">grant</span> <span class="k">all</span> <span class="k">on</span> <span class="n">sequence</span> <span class="n">app_data_id_seq</span> <span class="k">to</span> <span class="n">crud</span></code></pre></figure>
-
-<h4 id="setup-application">Setup application</h4>
-
-<p>I assume that you already have Maven installed because
-we are going to use it to create our CRUD application:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ mvn archetype:generate \
-  -DgroupId="io.mc.crudapp" \
-  -DartifactId=crudapp \
-  -Dversion=1.0 \
-  -DarchetypeArtifactId=maven-archetype-quickstart \
-  -DinteractiveMode=false
-
-$ tree crudapp/
-crudapp
-|-- pom.xml
-`-- src
-    |-- main
-    |   `-- java
-    |       `-- io
-    |           `-- mc
-    |               `-- crudapp
-    |                   `-- App.java
-    `-- test
-        `-- java
-            `-- io
-                `-- mc
-                    `-- crudapp
-                        `-- AppTest.java
-
-11 directories, 3 files</code></pre></figure>
-
-<p>NOTE: Try to use <code class="highlighter-rouge">archetype:create</code> instead of <code class="highlighter-rouge">archetype:generate</code> if you
-get an error using above command</p>
-
-<p>Now we may load our application into our favorite IDE or just stick
-to command line.</p>
-
-<p>Since we will be using Spring and Postgres JDBC driver we need to
-add them as a dependencies to our POM. We also want to use connection
-pooling (database connections are expensive to create so we want to
-reuse them whenever possible) so we will add a dependency on 
-HikariCP library:</p>
-
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- pom.xml --&gt;</span>
-<span class="nt">&lt;dependencies&gt;</span>
-   <span class="nt">&lt;dependency&gt;</span>
-      <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
-      <span class="nt">&lt;artifactId&gt;</span>spring-context<span class="nt">&lt;/artifactId&gt;</span>
-      <span class="nt">&lt;version&gt;</span>4.3.5.RELEASE<span class="nt">&lt;/version&gt;</span>
-   <span class="nt">&lt;/dependency&gt;</span>
-   <span class="nt">&lt;dependency&gt;</span>
-      <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
-      <span class="nt">&lt;artifactId&gt;</span>spring-jdbc<span class="nt">&lt;/artifactId&gt;</span>
-      <span class="nt">&lt;version&gt;</span>4.3.5.RELEASE<span class="nt">&lt;/version&gt;</span>
-   <span class="nt">&lt;/dependency&gt;</span>
-
-   <span class="nt">&lt;dependency&gt;</span>
-      <span class="nt">&lt;groupId&gt;</span>org.postgresql<span class="nt">&lt;/groupId&gt;</span>
-      <span class="nt">&lt;artifactId&gt;</span>postgresql<span class="nt">&lt;/artifactId&gt;</span>
-      <span class="nt">&lt;version&gt;</span>9.4-1200-jdbc41<span class="nt">&lt;/version&gt;</span>
-   <span class="nt">&lt;/dependency&gt;</span>
-
-   <span class="nt">&lt;dependency&gt;</span>
-      <span class="nt">&lt;groupId&gt;</span>com.zaxxer<span class="nt">&lt;/groupId&gt;</span>
-      <span class="nt">&lt;artifactId&gt;</span>HikariCP<span class="nt">&lt;/artifactId&gt;</span>
-      <span class="nt">&lt;version&gt;</span>2.5.1<span class="nt">&lt;/version&gt;</span>
-   <span class="nt">&lt;/dependency&gt;</span>
-<span class="nt">&lt;/dependencies&gt;</span></code></pre></figure>
-
-<p>We should also change to using Java 8
-so we may use lambdas and all cool stuff, we do this
-by adding to our POM:</p>
-
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;properties&gt;</span>
-   <span class="nt">&lt;maven.compiler.source&gt;</span>1.8<span class="nt">&lt;/maven.compiler.source&gt;</span>
-   <span class="nt">&lt;maven.compiler.target&gt;</span>1.8<span class="nt">&lt;/maven.compiler.target&gt;</span>
-   <span class="nt">&lt;project.build.sourceEncoding&gt;</span>UTF-8<span class="nt">&lt;/project.build.sourceEncoding&gt;</span>
-<span class="nt">&lt;/properties&gt;</span></code></pre></figure>
-
-<p>And finally we will use <code class="highlighter-rouge">exec-maven-plugin</code> 
-to strightforward running our application from
-command line:</p>
-
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;build&gt;</span>
-  <span class="nt">&lt;plugins&gt;</span>
-    <span class="nt">&lt;plugin&gt;</span>
-      <span class="nt">&lt;groupId&gt;</span>org.codehaus.mojo<span class="nt">&lt;/groupId&gt;</span>
-      <span class="nt">&lt;artifactId&gt;</span>exec-maven-plugin<span class="nt">&lt;/artifactId&gt;</span>
-      <span class="nt">&lt;version&gt;</span>1.5.0<span class="nt">&lt;/version&gt;</span>
-      <span class="nt">&lt;executions&gt;</span>
-        <span class="nt">&lt;execution&gt;</span>
-          <span class="nt">&lt;goals&gt;</span>
-            <span class="nt">&lt;goal&gt;</span>java<span class="nt">&lt;/goal&gt;</span>
-          <span class="nt">&lt;/goals&gt;</span>
-        <span class="nt">&lt;/execution&gt;</span>
-      <span class="nt">&lt;/executions&gt;</span>
-      <span class="nt">&lt;configuration&gt;</span>
-        <span class="nt">&lt;mainClass&gt;</span>io.mc.crudapp.Main<span class="nt">&lt;/mainClass&gt;</span>
-      <span class="nt">&lt;/configuration&gt;</span>
-    <span class="nt">&lt;/plugin&gt;</span>
-  <span class="nt">&lt;/plugins&gt;</span>
-<span class="nt">&lt;/build&gt;</span></code></pre></figure>
-
-<p>NOTE: You may find complete <code class="highlighter-rouge">pom.xml</code> in attached source code</p>
-
-<p>You may write</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ mvn clean install</code></pre></figure>
-
-<p>to rebuild CURD application and</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ mvn exec:java</code></pre></figure>
-
-<p>to start it.</p>
-
-<h4 id="setup-spring">Setup Spring</h4>
-
-<p>Add following code to the <code class="highlighter-rouge">main</code> method:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">ClassPathXmlApplicationContext</span> <span class="n">appContext</span> <span class="o">=</span>
-                <span class="k">new</span> <span class="nf">ClassPathXmlApplicationContext</span><span class="o">(</span><span class="k">new</span> <span class="n">String</span><span class="o">[]</span> <span class="o">{</span>
-                        <span class="s">"spring/app-context.xml"</span>
-                <span class="o">});</span>
-
-        <span class="c1">// We can use Spring context here</span>
-
-        <span class="n">appContext</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>We must also create <code class="highlighter-rouge">resource/spring/app-context.xml</code> file:</p>
-
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;beans</span> 
-  <span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>
-  <span class="na">xmlns:context=</span><span class="s">"http://www.springframework.org/schema/context"</span>
-  <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
-  <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans     http://www.springframework.org/schema/beans/spring-beans-3.0.xsd     http://www.springframework.org/schema/context     http://www.springframework.org/schema/context/spring-context-3.0.xsd"</span><span class="nt">&gt;</span>
-  <span class="nt">&lt;context:annotation-config</span> <span class="nt">/&gt;</span>
-<span class="nt">&lt;/beans&gt;</span></code></pre></figure>
-
-<p>After these two steps we should have working Spring application.
-Right now no beans are registered in Spring container, this will
-change in the next section.</p>
-
-<h4 id="setup-spring-jdbc-data-source">Setup Spring JDBC Data source</h4>
-
-<p>To enable Spring to access database
-we must define data source in <code class="highlighter-rouge">app-context.xml</code>:</p>
-
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- Without pooling: --&gt;</span>
-<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"dataSource"</span>
-    <span class="na">class=</span><span class="s">"org.springframework.jdbc.datasource.DriverManagerDataSource"</span><span class="nt">&gt;</span>
-
-  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"driverClassName"</span> <span class="na">value=</span><span class="s">"org.postgresql.Driver"</span> <span class="nt">/&gt;</span>
-  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"url"</span> <span class="na">value=</span><span class="s">"jdbc:postgresql://localhost:5432/cruddb"</span> <span class="nt">/&gt;</span>
-  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"username"</span> <span class="na">value=</span><span class="s">"crud"</span> <span class="nt">/&gt;</span>
-  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"password"</span> <span class="na">value=</span><span class="s">"crud"</span> <span class="nt">/&gt;</span>
-<span class="nt">&lt;/bean&gt;</span></code></pre></figure>
-
-<p><code class="highlighter-rouge">DriverManagerDataSource</code> class is provided by Spring as one
-of several implementations of <code class="highlighter-rouge">DataSource</code> interface.
-<code class="highlighter-rouge">DriverManagerDataSource</code> returns a new connection to database
-every time application asks for a connection.
-Connection is created using specified JDBC driver.
-<code class="highlighter-rouge">SingleConnectionDataSource</code> is another DataSource implementation
-provided by Spring
-that returns always the
-same connection (having single connection 
-has serious implications in multithreaded
-apps - when two threads want to
-access database concurrently one of them must wait).</p>
-
-<p>Now we may use <code class="highlighter-rouge">dataSource</code> bean to insert row into <code class="highlighter-rouge">app_data</code> table:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">final</span> <span class="n">String</span> <span class="n">sql</span> <span class="o">=</span> <span class="s">"insert into app_data(index,value) values(?,?)"</span><span class="o">;</span>
-
-<span class="n">DataSource</span> <span class="n">ds</span> <span class="o">=</span> <span class="n">appContext</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="n">DataSource</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-<span class="k">try</span> <span class="o">(</span><span class="n">Connection</span> <span class="n">conn</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="na">getConnection</span><span class="o">();</span>
-    <span class="n">PreparedStatement</span> <span class="n">stmt</span> <span class="o">=</span>
-         <span class="n">conn</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span><span class="n">sql</span><span class="o">,</span> <span class="n">Statement</span><span class="o">.</span><span class="na">RETURN_GENERATED_KEYS</span><span class="o">))</span> <span class="o">{</span>
-
-       <span class="n">stmt</span><span class="o">.</span><span class="na">setInt</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">101</span><span class="o">);</span>
-       <span class="n">stmt</span><span class="o">.</span><span class="na">setString</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="s">"foo"</span><span class="o">);</span>
-
-       <span class="n">stmt</span><span class="o">.</span><span class="na">executeUpdate</span><span class="o">();</span>
-
-       <span class="c1">// retrieve id of inserted row</span>
-       <span class="k">try</span><span class="o">(</span><span class="n">ResultSet</span> <span class="n">rs</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="na">getGeneratedKeys</span><span class="o">())</span> <span class="o">{</span>
-           <span class="n">rs</span><span class="o">.</span><span class="na">next</span><span class="o">();</span>
-           <span class="n">Long</span> <span class="n">id</span> <span class="o">=</span> <span class="n">rs</span><span class="o">.</span><span class="na">getLong</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
-           <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"id: "</span> <span class="o">+</span> <span class="n">id</span><span class="o">);</span>
-       <span class="o">}</span>
-<span class="o">}</span>
-<span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-   <span class="n">ex</span><span class="o">.</span><span class="na">printStackTrace</span><span class="o">();</span>
-<span class="o">}</span></code></pre></figure>
-
-<h4 id="writing-simple-dao">Writing simple DAO</h4>
-
-<p>It is always a good idea to isolate data access code into
-a separate component, in our case we will create <code class="highlighter-rouge">AppDataDAO</code> bean that
-will be responsible for CURD operations on <code class="highlighter-rouge">app_data</code> table.</p>
-
-<p>To make passing and retrieving data via <code class="highlighter-rouge">AppDataDAO</code> easier we will define
-<code class="highlighter-rouge">AppData</code> class that will represent a single row from <code class="highlighter-rouge">app_data</code> table:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">AppData</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">id</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">index</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">value</span><span class="o">;</span>
-
-    <span class="kd">public</span> <span class="nf">AppData</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">,</span> <span class="kt">int</span> <span class="n">index</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">id</span> <span class="o">=</span> <span class="n">id</span><span class="o">;</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">index</span> <span class="o">=</span> <span class="n">index</span><span class="o">;</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getId</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">id</span><span class="o">;</span> <span class="o">}</span>
-    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getIndex</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">index</span><span class="o">;</span> <span class="o">}</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">getValue</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">value</span><span class="o">;</span> <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>It is a good practice to program to interface, so
-instead of creating a single bean <code class="highlighter-rouge">AppDataDAO</code> we will create
-<code class="highlighter-rouge">AppDataDAO</code> interface and then provide an implementation:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">AppDataDAO</span> <span class="o">{</span>
-    <span class="kt">int</span> <span class="nf">insert</span><span class="o">(</span><span class="kt">int</span> <span class="n">index</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">);</span>
-    <span class="kt">void</span> <span class="nf">update</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">,</span> <span class="kt">int</span> <span class="n">newIndex</span><span class="o">,</span> <span class="n">String</span> <span class="n">newValue</span><span class="o">);</span>
-    <span class="kt">boolean</span> <span class="nf">delete</span><span class="o">(</span><span class="kt">int</span> <span class="n">id</span><span class="o">);</span>
-    <span class="n">List</span><span class="o">&lt;</span><span class="n">AppData</span><span class="o">&gt;</span> <span class="nf">selectAll</span><span class="o">();</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Finally we may create <code class="highlighter-rouge">JDBCAppDataDAO</code> class that will implement <code class="highlighter-rouge">AppDataDAO</code>
-interface:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">JDBCAppDataDAO</span> <span class="kd">implements</span> <span class="n">AppDataDAO</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="n">DataSource</span> <span class="n">ds</span><span class="o">;</span>
-    
-    <span class="nd">@Autowired</span>
-    <span class="kd">public</span> <span class="nf">JDBCAppDataDAO</span><span class="o">(</span><span class="n">DataSource</span> <span class="n">ds</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">ds</span> <span class="o">=</span> <span class="n">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">ds</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="kd">private</span> <span class="kd">interface</span> <span class="nc">ConnectionConsumer</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
-        <span class="n">T</span> <span class="nf">consume</span><span class="o">(</span><span class="n">Connection</span> <span class="n">conn</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">SQLException</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="kd">private</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">usingConnection</span><span class="o">(</span><span class="n">ConnectionConsumer</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">consumer</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">Connection</span> <span class="n">connection</span> <span class="o">=</span> <span class="n">DataSourceUtils</span><span class="o">.</span><span class="na">getConnection</span><span class="o">(</span><span class="n">ds</span><span class="o">);</span>
-
-        <span class="k">try</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="n">consumer</span><span class="o">.</span><span class="na">consume</span><span class="o">(</span><span class="n">connection</span><span class="o">);</span>
-        <span class="o">}</span>
-        <span class="k">catch</span> <span class="o">(</span><span class="n">SQLException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">ex</span><span class="o">);</span>
-        <span class="o">}</span>
-        <span class="k">finally</span> <span class="o">{</span>
-            <span class="n">DataSourceUtils</span><span class="o">.</span><span class="na">releaseConnection</span><span class="o">(</span><span class="n">connection</span><span class="o">,</span> <span class="n">ds</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">insert</span><span class="o">(</span><span class="kt">int</span> <span class="n">index</span><span class="o">,</span> <span class="n">String</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="nf">usingConnection</span><span class="o">(</span><span class="n">conn</span> <span class="o">-&gt;</span> <span class="o">{</span>
-            <span class="n">String</span> <span class="n">sql</span> <span class="o">=</span> <span class="s">"insert into app_data(index,value) values(?,?)"</span><span class="o">;</span>
-            <span class="k">try</span> <span class="o">(</span><span class="n">PreparedStatement</span> <span class="n">stmt</span> <span class="o">=</span>
-                    <span class="n">conn</span><span class="o">.</span><span class="na">prepareStatement</span><span class="o">(</span><span class="n">sql</span><span class="o">,</span> <span class="n">PreparedStatement</span><span class="o">.</span><span class="na">RETURN_GENERATED_KEYS</span><span class="o">))</span> <span class="o">{</span>
-                <span class="n">stmt</span><span class="o">.</span><span class="na">setInt</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">index</span><span class="o">);</span>
-                <span class="n">stmt</span><span class="o">.</span><span class="na">setString</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="n">value</span><span class="o">);</span>
-
-                <span class="n">stmt</span><span class="o">.</span><span class="na">executeUpdate</span><span class="o">();</span>
-
-                <span class="k">try</span><span class="o">(</span><span class="n">ResultSet</span> <span class="n">rs</span> <span class="o">=</span> <span class="n">stmt</span><span class="o">.</span><span class="na">getGeneratedKeys</span><span class="o">())</span> <span class="o">{</span>
-                    <span class="k">if</span> <span class="o">(</span><span class="n">rs</span><span class="o">.</span><span class="na">next</span><span class="o">())</span> <span class="o">{</span>
-                        <span class="k">return</span> <span class="n">rs</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
-                    <span class="o">}</span>
-                    <span class="k">else</span>
-                        <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"no generated key!"</span><span class="o">);</span>
-                <span class="o">}</span>
-            <span class="o">}</span>
-        <span class="o">});</span>
-    <span class="o">}</span></code></pre></figure>
-
-<p>A few things to notice: logic responsible for acquiring and releasing
-a db connection was encapsulated in <code class="highlighter-rouge">usingConnection</code> method.
-Instead of getting connection straight from <code class="highlighter-rouge">DataSource</code> we use
-<code class="highlighter-rouge">DataSourceUtils</code> class to get and release connection. This become important
-when we later start using transactions, because transactions are
-attached to connections we will no longer be responsible for creating
-and closing connection - a transaction manager will do that for
-us. When <code class="highlighter-rouge">DataSourceUtils</code> is asked for a new connection it first checks
-if any transaction is running and if it is it returns connection used
-by that transaction. If no transaction is active 
-a new connection is created.</p>
-
-<p>The last thing that we must do is to register our bean in Spring container:</p>
-
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"> <span class="nt">&lt;bean</span> <span class="na">name=</span><span class="s">"AppDataDAO"</span>
-     <span class="na">class=</span><span class="s">"io.mc.crudapp.JDBCAppDataDAO"</span> <span class="nt">/&gt;</span></code></pre></figure>
-
-<p>and use it to insert a row:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">AppDataDAO</span> <span class="n">appDataDAO</span> <span class="o">=</span> <span class="n">appContext</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="n">AppDataDAO</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-<span class="n">appDataDAO</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="mi">102</span><span class="o">,</span> <span class="s">"bar"</span><span class="o">);</span></code></pre></figure>
-
-<h4 id="using-hikaricp">Using HikariCP</h4>
-
-<p>Opening a new connection to database is expensive operation.
-Instead of constantly opening and closing connections we should
-reuse them whenever possible. Because manually managing and resetting
-connections
-(before we can reuse connection we must reset it state - this will
-for example clear any pending errors on connection) is error-prone
-it is wise to use one of many connection pool libraries.
-Here we will use HikariCP library (CP stands for Connection Pool).</p>
-
-<p>Let’s start by creating HikariCP configuration file <code class="highlighter-rouge">resources/db/hikari.properties</code>:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">dataSourceClassName=org.postgresql.ds.PGSimpleDataSource
-dataSource.user=crud
-dataSource.password=crud
-dataSource.databaseName=cruddb
-dataSource.portNumber=5432
-dataSource.serverName=localhost</code></pre></figure>
-
-<p>Then we must change our <code class="highlighter-rouge">dataSource</code> bean definition to:</p>
-
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"dataSource"</span>
-    <span class="na">class=</span><span class="s">"com.zaxxer.hikari.HikariDataSource"</span><span class="nt">&gt;</span>
-  <span class="nt">&lt;constructor-arg&gt;</span>
-      <span class="nt">&lt;bean</span> <span class="na">class=</span><span class="s">"com.zaxxer.hikari.HikariConfig"</span><span class="nt">&gt;</span>
-          <span class="nt">&lt;constructor-arg</span> <span class="na">value=</span><span class="s">"/db/hikari.properties"</span> <span class="nt">/&gt;</span>
-      <span class="nt">&lt;/bean&gt;</span>
-  <span class="nt">&lt;/constructor-arg&gt;</span>
-<span class="nt">&lt;/bean&gt;</span></code></pre></figure>
-
-<p>That’s all - now our application draws connections from connection pool!</p>
-
-<h4 id="adding-transactions-to-crud-app">Adding transactions to CRUD app</h4>
-
-<p>Let’s clear <code class="highlighter-rouge">app_data</code> table:</p>
-
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">truncate</span> <span class="k">table</span> <span class="n">app_data</span><span class="p">;</span></code></pre></figure>
-
-<p>and exeucte the following code in <code class="highlighter-rouge">main</code>:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">AppDataDAO</span> <span class="n">appDataDAO</span> <span class="o">=</span> <span class="n">appContext</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="n">AppDataDAO</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-<span class="n">appDataDAO</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="mi">101</span><span class="o">,</span> <span class="s">"foo"</span><span class="o">);</span>
-<span class="n">someOperation</span><span class="o">();</span>
-<span class="n">appDataDAO</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="mi">102</span><span class="o">,</span> <span class="s">"bar"</span><span class="o">);</span>
-
-<span class="c1">// given:</span>
-<span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">someOperation</span><span class="o">()</span> <span class="o">{</span>
-  <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"uber error"</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Of course running this program results in error and only one row
-is inserted to database:</p>
-
-<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">select</span> <span class="o">*</span> <span class="k">from</span> <span class="n">app_data</span> </code></pre></figure>
-
-<p><img src="assets/images/2017-01-07/select_result.png" alt="select query result" /></p>
-
-<p>In real life application we often want to perform either all of
-database operations or none of them. In our example this will mean that
-we either want to insert both rows to db or none of them should be inserted.
-Transactions can solve these problem for us. Transactions also offers
-some level of isolation between database operations performed by
-different users - but this topic is
-beyond this simple tutorial.
-For more information please <a href="https://en.wikipedia.org/wiki/Isolation_(database_systems)">check Wikipedia</a>.</p>
-
-<p>Transactions are usually handled at application service level, we will
-follow this pattern. As usually we will start by creating
-<code class="highlighter-rouge">CRUDAppDemoService</code> interface:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">CRUDAppDemoService</span> <span class="o">{</span>
-    <span class="kt">void</span> <span class="nf">doDemo</span><span class="o">();</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Then we may write implementation of <code class="highlighter-rouge">CRUDAppDemoService</code>:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CRUDAppDemoServiceImpl</span> <span class="kd">implements</span> <span class="n">CRUDAppDemoService</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">TransactionTemplate</span> <span class="n">txTemplate</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">AppDataDAO</span> <span class="n">appDataDAO</span><span class="o">;</span>
-
-    <span class="nd">@Autowired</span>
-    <span class="kd">public</span> <span class="nf">CRUDAppDemoServiceImpl</span><span class="o">(</span>
-      <span class="n">TransactionTemplate</span> <span class="n">txTemplate</span><span class="o">,</span> <span class="n">AppDataDAO</span> <span class="n">appDataDAO</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">txTemplate</span> <span class="o">=</span> <span class="n">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">txTemplate</span><span class="o">);</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">appDataDAO</span> <span class="o">=</span> <span class="n">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">appDataDAO</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doDemo</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">txTemplate</span><span class="o">.</span><span class="na">execute</span><span class="o">(</span><span class="n">ts</span> <span class="o">-&gt;</span> <span class="o">{</span>
-            <span class="n">appDataDAO</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="mi">101</span><span class="o">,</span> <span class="s">"foo"</span><span class="o">);</span>
-            <span class="n">someOperation</span><span class="o">();</span>
-            <span class="n">appDataDAO</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="mi">102</span><span class="o">,</span> <span class="s">"bar"</span><span class="o">);</span> 
-
-            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-        <span class="o">});</span>
-    <span class="o">}</span>
-
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">someOperation</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"uber error"</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>To define boundaries of transaction we use Spring provided
-<code class="highlighter-rouge">TransactionTemplate</code> class. All database operations executed
-in callback passed to <code class="highlighter-rouge">execute</code> method
-will be performed within transaction. In callback we have access
-to <code class="highlighter-rouge">ts</code> parameter that allows us to manually rollback current transaction.</p>
-
-<p>When we throw runtime exception from callback, transaction will be
-rolled back automatically. This behaviour doesn’t occur for
-checked exceptions, if we want to rollback transaction in that case
-we must catch exception manually and then invoke <code class="highlighter-rouge">ts.setRollbackOnly()</code>.</p>
-
-<p>Before we can run this code we need to register <code class="highlighter-rouge">TransactionTemplate</code> and
-<code class="highlighter-rouge">TransactionManager</code> in Spring container:</p>
-
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;bean</span> <span class="na">name=</span><span class="s">"transactionManager"</span>
-    <span class="na">class=</span><span class="s">"org.springframework.jdbc.datasource.DataSourceTransactionManager"</span><span class="nt">&gt;</span>
-  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"dataSource"</span> <span class="na">ref=</span><span class="s">"dataSource"</span> <span class="nt">/&gt;</span>
-<span class="nt">&lt;/bean&gt;</span>
-
-<span class="nt">&lt;bean</span> <span class="na">id=</span><span class="s">"TransactionTemplate"</span>
-    <span class="na">class=</span><span class="s">"org.springframework.transaction.support.TransactionTemplate"</span>
-    <span class="nt">&gt;</span>
-  <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"transactionManager"</span> <span class="na">ref=</span><span class="s">"transactionManager"</span> <span class="nt">/&gt;</span>
-<span class="nt">&lt;/bean&gt;</span>
-
-<span class="nt">&lt;bean</span> <span class="na">name=</span><span class="s">"CRUDAppDemoService"</span>
-    <span class="na">class=</span><span class="s">"io.mc.crudapp.CRUDAppDemoServiceImpl"</span> <span class="nt">/&gt;</span></code></pre></figure>
-
-<p>Finally we may add to the <code class="highlighter-rouge">main</code> method:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">CRUDAppDemoService</span> <span class="n">service</span> <span class="o">=</span> <span class="n">appContext</span><span class="o">.</span><span class="na">getBean</span><span class="o">(</span><span class="n">CRUDAppDemoService</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
-<span class="n">service</span><span class="o">.</span><span class="na">doDemo</span><span class="o">();</span></code></pre></figure>
-
-<p>Again running our program results in error but this time neither of rows
-is inserted in <code class="highlighter-rouge">app_data</code> table.
-When we comment out call to <code class="highlighter-rouge">someOperation()</code> both rows
-are inserted - just as we wanted.</p>
-
-<h4 id="annotation-driven-transactions">Annotation driven transactions</h4>
-
-<p>Using <code class="highlighter-rouge">TransactionManager</code> is cumbersome so Spring provides a better
-alternative, we may declare transaction boundaries using annotations.
-Let’s change our <code class="highlighter-rouge">CRUDAppDemoServiceImpl</code> class to:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">CRUDAppDemoServiceImpl</span> <span class="kd">implements</span> <span class="n">CRUDAppDemoService</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">AppDataDAO</span> <span class="n">appDataDAO</span><span class="o">;</span>
-
-    <span class="nd">@Autowired</span>
-    <span class="kd">public</span> <span class="nf">CRUDAppDemoServiceImpl</span><span class="o">(</span><span class="n">AppDataDAO</span> <span class="n">appDataDAO</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">appDataDAO</span> <span class="o">=</span> <span class="n">Objects</span><span class="o">.</span><span class="na">requireNonNull</span><span class="o">(</span><span class="n">appDataDAO</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="nd">@Override</span>
-    <span class="nd">@Transactional</span><span class="o">(</span><span class="n">propagation</span> <span class="o">=</span> <span class="n">Propagation</span><span class="o">.</span><span class="na">REQUIRED</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">doDemo</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">appDataDAO</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="mi">101</span><span class="o">,</span> <span class="s">"foo"</span><span class="o">);</span>
-        <span class="n">someOperation</span><span class="o">();</span>
-        <span class="n">appDataDAO</span><span class="o">.</span><span class="na">insert</span><span class="o">(</span><span class="mi">102</span><span class="o">,</span> <span class="s">"bar"</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">someOperation</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"uber error"</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>We may see that <code class="highlighter-rouge">TransactionTemplate</code> is gone, and a new annotation
-appeared on <code class="highlighter-rouge">doDemo()</code> method. <code class="highlighter-rouge">@Transactional</code> means that we
-want to start transaction when we call this method and commit it
-when we return from it. As with <code class="highlighter-rouge">TransactionTemplate</code> if method
-trows <code class="highlighter-rouge">RuntimeException</code> transaction will be rolled back.
-To <code class="highlighter-rouge">@Transactional</code> we pass a single parameter <code class="highlighter-rouge">Propagation.REQUIRED</code>
-that means that we want Spring to use existing transaction if one
-is currently active or start a new one otherwise.
-If Spring will use already active transaction,
-then transaction will be committed or rolled
-back not at our method level but at method that started it.
-<code class="highlighter-rouge">@Transactional</code> has
-plenty of options you may want to consult official documentation to
-see them all.</p>
-
-<p>To make <code class="highlighter-rouge">@Transactional</code> work we also need to enable it in Spring
-configuration file. First we must add <code class="highlighter-rouge">tx</code> namespace to Spring XML:</p>
-
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;beans</span> <span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>
-       <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
-       <span class="na">xmlns:context=</span><span class="s">"http://www.springframework.org/schema/context"</span>
-       <span class="na">xmlns:tx=</span><span class="s">"http://www.springframework.org/schema/tx"</span>
-       <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans
-    http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-    http://www.springframework.org/schema/context
-    http://www.springframework.org/schema/context/spring-context-3.0.xsd
-    http://www.springframework.org/schema/tx
-    http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"</span><span class="nt">&gt;</span></code></pre></figure>
-
-<p>And then we must enable annotation driven transactions:</p>
-
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;tx:annotation-driven</span> <span class="na">transaction-manager=</span><span class="s">"transactionManager"</span><span class="nt">/&gt;</span></code></pre></figure>
-
-<p>That’s it! Now we can use transactions without using <code class="highlighter-rouge">TransactionTemplate</code>.</p>
-
-<h4 id="source-code">Source code</h4>
-
-<p><a href="assets/data/2017-01-07/crudest_crud.zip">DOWNLOAD SOURCE CODE</a></p>
-
-
-	  ]]></description>
-	</item>
-
-	<item>
-	  <title>Generics in Java</title>
-	  <link>//generics-in-java</link>
-	  <author></author>
-	  <pubDate>2016-12-27T01:00:00+01:00</pubDate>
-	  <guid>//generics-in-java</guid>
-	  <description><![CDATA[
-	     <p>Generics were introduced with Java 6 and quickly
-become indispensable tool of every Java programmer.
-In this blog post I gathered the most important
-facts about generics in Java. After reading this post you
-you should be able to comfortable use generics in
-your code.</p>
-
-<h4 id="generic-classes">Generic classes</h4>
-
-<p>We can declare generic <code class="highlighter-rouge">Pair</code> class using syntax:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Pair</span><span class="o">&lt;</span><span class="n">E1</span><span class="o">,</span><span class="n">E2</span><span class="o">&gt;</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">E1</span> <span class="n">first</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">E2</span> <span class="n">second</span><span class="o">;</span>
-
-    <span class="kd">public</span> <span class="nf">Pair</span><span class="o">(</span><span class="n">E1</span> <span class="n">first</span><span class="o">,</span> <span class="n">E2</span> <span class="n">second</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">first</span> <span class="o">=</span> <span class="n">first</span><span class="o">;</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">second</span> <span class="o">=</span> <span class="n">second</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="kd">public</span> <span class="n">E1</span> <span class="nf">getFirst</span><span class="o">()</span>  <span class="o">{</span> <span class="k">return</span> <span class="n">first</span><span class="o">;</span>  <span class="o">}</span>
-    <span class="kd">public</span> <span class="n">E2</span> <span class="nf">getSecond</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">second</span><span class="o">;</span> <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Then we can use <code class="highlighter-rouge">Pair</code> as follows:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// java 6:</span>
-<span class="n">Pair</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">p1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Pair</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">Integer</span><span class="o">&gt;(</span><span class="s">"foo"</span><span class="o">,</span> <span class="mi">10</span><span class="o">);</span>
-  
-<span class="n">String</span> <span class="n">first</span> <span class="o">=</span> <span class="n">p1</span><span class="o">.</span><span class="na">getFirst</span><span class="o">();</span>
-<span class="kt">int</span> <span class="n">second</span> <span class="o">=</span> <span class="n">p1</span><span class="o">.</span><span class="na">getSecond</span><span class="o">();</span>
-  
-<span class="c1">// java 7+ - using diamond operator &lt;&gt;</span>
-<span class="n">Pair</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">p2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Pair</span><span class="o">&lt;&gt;(</span><span class="s">"foo"</span><span class="o">,</span> <span class="mi">10</span><span class="o">);</span></code></pre></figure>
-
-<p>In Java 7 and later we can let compiler infer values of generic parameters
-in <code class="highlighter-rouge">new</code> expression by using diamond operator (<code class="highlighter-rouge">&lt;&gt;</code>).</p>
-
-<h5 id="bounds">Bounds</h5>
-
-<p>We can reduce possible values of generic parameters by using bounds.
-For example to reduce values of parameter <code class="highlighter-rouge">T</code> to types that
-implement <code class="highlighter-rouge">Serializable</code> interface we can write:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SerializableList</span><span class="o">&lt;</span><span class="n">T</span> <span class="kd">extends</span> <span class="n">Serializable</span><span class="o">&gt;</span> <span class="o">{</span> <span class="o">}</span></code></pre></figure>
-
-<p>When using bounds we are not limited to single type.
-For example we may
-require that types allowed for <code class="highlighter-rouge">T</code> must extend <code class="highlighter-rouge">MyBaseClass</code> and
-implement <code class="highlighter-rouge">Serializable</code> and <code class="highlighter-rouge">Cloneable</code> interfaces:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">SerializableList2</span><span class="o">&lt;</span>
-   <span class="n">T</span> <span class="kd">extends</span> <span class="n">MyBaseClass</span> <span class="o">&amp;</span> <span class="n">Serializable</span> <span class="o">&amp;</span> <span class="n">Cloneable</span><span class="o">&gt;</span> <span class="o">{</span> <span class="o">}</span></code></pre></figure>
-
-<p>When we try to use <code class="highlighter-rouge">SerializableList</code> with types that doesn’t
-conform to our bounds we will get compile-time error:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// ok</span>
-<span class="n">SerializableList</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">ints</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SerializableList</span><span class="o">&lt;&gt;();</span>
-
-<span class="c1">// error: type argument java.lang.Object is not within bounds of type-variable T</span>
-<span class="n">SerializableList</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">objs</span> <span class="o">=</span> <span class="k">new</span> <span class="n">SerializableList</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;();</span></code></pre></figure>
-
-<h5 id="type-erasure">Type erasure</h5>
-
-<p>In Java generics are implemented via type erasure, this means that
-generics exists only in Java source code and not in JVM bytecode.
-When Java compiler translates generic classes to bytecode it
-substitutes generic parameters in class body with <code class="highlighter-rouge">Object</code>
-or if generic parameter has bounds with value of the first bound.
-For example our <code class="highlighter-rouge">Pair</code> class would be translated by compiler into:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Pair</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Object</span> <span class="n">first</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="n">Object</span> <span class="n">second</span><span class="o">;</span>
-
-    <span class="kd">public</span> <span class="nf">Pair</span><span class="o">(</span><span class="n">Object</span> <span class="n">first</span><span class="o">,</span> <span class="n">Object</span> <span class="n">second</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">first</span> <span class="o">=</span> <span class="n">first</span><span class="o">;</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">second</span> <span class="o">=</span> <span class="n">second</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">getFirst</span><span class="o">()</span>  <span class="o">{</span> <span class="k">return</span> <span class="n">first</span><span class="o">;</span>  <span class="o">}</span>
-    <span class="kd">public</span> <span class="n">Object</span> <span class="nf">getSecond</span><span class="o">()</span> <span class="o">{</span> <span class="k">return</span> <span class="n">second</span><span class="o">;</span> <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Compiler also inserts necessary casts, and converts between primitives 
-and wrappers (e.g. between <code class="highlighter-rouge">int</code> and <code class="highlighter-rouge">Integer</code>) - a process
-called (un)boxing. Continuing our example:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">pair</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Pair</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">Integer</span><span class="o">&gt;(</span><span class="s">"foo"</span><span class="o">,</span> <span class="mi">10</span><span class="o">);</span>
-
-<span class="n">String</span> <span class="n">first</span> <span class="o">=</span> <span class="n">pair</span><span class="o">.</span><span class="na">getFirst</span><span class="o">();</span>
-<span class="kt">int</span> <span class="n">second</span> <span class="o">=</span> <span class="n">pair</span><span class="o">.</span><span class="na">getSecond</span><span class="o">();</span></code></pre></figure>
-
-<p>is translated by compiler into:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">pair</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Pair</span><span class="o">(</span><span class="s">"foo"</span><span class="o">,</span> <span class="mi">10</span><span class="o">);</span>
-
-<span class="n">String</span> <span class="n">first</span> <span class="o">=</span> <span class="o">(</span><span class="n">String</span><span class="o">)</span><span class="n">pair</span><span class="o">.</span><span class="na">getFirst</span><span class="o">();</span>
-<span class="kt">int</span> <span class="n">second</span> <span class="o">=</span> <span class="o">((</span><span class="n">Integer</span><span class="o">)</span><span class="n">pair</span><span class="o">.</span><span class="na">getSecond</span><span class="o">()).</span><span class="na">intValue</span><span class="o">();</span></code></pre></figure>
-
-<p>Generics were implemented via type erasure to preserve binary
-compatibility with pre Java 6 code (binary compatibility means that
-your old code will work with generic types out of the box - you
-don’t need to change or recompile your legacy libraries).</p>
-
-<h5 id="shortcomings-of-type-erasure">Shortcomings of type erasure</h5>
-
-<p>Type erasure is not the best way to implement generics, and IMHO Java
-should take a different approach (e.g. reification).
-But Java didn’t and we are stuck with “type erasure” generics.
-Below is a list of Java generics shortcomings:</p>
-
-<ul>
-  <li>Primitive types like <code class="highlighter-rouge">int</code> cannot be used with generics.
- We may use generics with wrapper types e.g. <code class="highlighter-rouge">Integer</code> but this
- will incur performance penalty caused by casts and boxing/unboxing operations.</li>
-  <li>We cannot use generic parameters in declarations of static class
- members. Static class members are shared between all instances of generic
- class regardless of generic parameters values. To stress this fact
- Java allows to access static members only via class name without
- generic parameters:</li>
-</ul>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">Example</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
-    <span class="c1">// error: non-static type variable T cannot be referenced from a static context</span>
-    <span class="c1">// private static T last;</span>
-
-    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">printCounter</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"counter: "</span> <span class="o">+</span> <span class="n">counter</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="kd">public</span> <span class="nf">Example</span><span class="o">()</span> <span class="o">{</span> <span class="n">counter</span><span class="o">++;</span> <span class="o">}</span>
-<span class="o">}</span>
-
-<span class="k">new</span> <span class="n">Example</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span>
-<span class="k">new</span> <span class="n">Example</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;();</span>
-
-<span class="c1">// error: not a statement</span>
-<span class="c1">// Example&lt;Integer&gt;.printCounter();</span>
-
-<span class="c1">// prints counter: 2</span>
-<span class="n">Example</span><span class="o">.</span><span class="na">printCounter</span><span class="o">();</span></code></pre></figure>
-
-<ul>
-  <li>Sometimes Java compiler must create synthetic methods
- (in this case called bridge methods) to make overriding
- work with generic types. For example:</li>
-</ul>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">interface</span> <span class="nc">TestInterface</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span>
-    <span class="kt">void</span> <span class="nf">consume</span><span class="o">(</span><span class="n">T</span> <span class="n">value</span><span class="o">);</span>
-<span class="o">}</span>
-
-<span class="kd">class</span> <span class="nc">TestClass</span> <span class="kd">implements</span> <span class="n">TestInterface</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="o">{</span>
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">consume</span><span class="o">(</span><span class="n">Integer</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">value</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>after type erasure becomes:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">interface</span> <span class="nc">TestInterface</span> <span class="o">{</span>
-	<span class="kt">void</span> <span class="nf">consume</span><span class="o">(</span><span class="n">Object</span> <span class="n">value</span><span class="o">);</span>
-<span class="o">}</span>
-
-<span class="kd">class</span> <span class="nc">TestClass</span> <span class="kd">implements</span> <span class="n">TestInterface</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">consume</span><span class="o">(</span><span class="n">Integer</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">value</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>and we can see that <code class="highlighter-rouge">TestClass</code> no longer overrides
-<code class="highlighter-rouge">consume</code> method from <code class="highlighter-rouge">TestInterface</code>. To solve this
-problem compiler adds following method to <code class="highlighter-rouge">TestClass</code>:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">TestClass</span> <span class="kd">implements</span> <span class="n">TestInterface</span> <span class="o">{</span>
-   <span class="c1">// bridge method added by compiler:</span>
-   <span class="nd">@Override</span> <span class="kd">public</span> <span class="kt">void</span> <span class="nf">consume</span><span class="o">(</span><span class="n">Object</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span>
-	 <span class="k">this</span><span class="o">.</span><span class="na">consume</span><span class="o">((</span><span class="n">Integer</span><span class="o">)</span><span class="n">value</span><span class="o">);</span>
-   <span class="o">}</span>
-
-   <span class="kd">public</span> <span class="kt">void</span> <span class="nf">consume</span><span class="o">(</span><span class="n">Integer</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span> <span class="o">...</span> <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<ul>
-  <li>Generics don’t work well with overloading, for example following
- overloads are forbidden:</li>
-</ul>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">check</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">ints</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
-<span class="kd">public</span> <span class="kt">void</span> <span class="nf">check</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">strings</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span></code></pre></figure>
-
-<p>because after type erasure both methods have exactly the same signature</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">check</span><span class="o">(</span><span class="n">List</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span></code></pre></figure>
-
-<p>Similarly we cannot implement the same interface twice
-with different generic parameters. Again type erasure is our culprit:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Test</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="o">{</span> <span class="o">}</span>
-<span class="c1">// error: Test cannot be inherited with </span>
-<span class="c1">//	  different arguments: &lt;Integer&gt; and &lt;String&gt;</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">TestImpl</span> 
-	<span class="kd">implements</span> <span class="n">Test</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;,</span> <span class="n">Test</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="o">{</span> <span class="o">}</span></code></pre></figure>
-
-<h5 id="raw-types-and-unchecked-warnings">Raw types and unchecked warnings</h5>
-
-<p>To maintain backward compatibility Java allows us to use generic types
-without specifying generic parameters. Such types are called raw types,
-for example:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// preferred usage of generics:</span>
-<span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">typedList</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span>
-
-<span class="c1">// raw type:</span>
-<span class="n">List</span> <span class="n">rawList</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;();</span>
-<span class="n">rawList</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">"foo"</span><span class="o">);</span> <span class="c1">// unchecked warning</span></code></pre></figure>
-
-<p>Raw types can be treated like generic types after type erasure.
-Raw types should only be used to interact with legacy code.</p>
-
-<p>When working with raw types compiler may generate an unchecked warning:</p>
-
-<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">warning: unchecked call to add(E) as a member of the raw type java.util.List</code></pre></figure>
-
-<p>This warning means that compiler is not sure if we used generic type
-correctly and in case that we didn’t we should expect <code class="highlighter-rouge">ClassCastException</code>
-at runtime. For example:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">ints</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span>
-
-  <span class="n">List</span> <span class="n">rawList</span> <span class="o">=</span> <span class="n">ints</span><span class="o">;</span>
-  <span class="n">legacyCode</span><span class="o">(</span><span class="n">rawList</span><span class="o">);</span>
-
-  <span class="kt">int</span> <span class="n">x</span> <span class="o">=</span> <span class="n">ints</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span> <span class="c1">// ClassCastException</span>
-<span class="o">}</span>
-
-<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">legacyCode</span><span class="o">(</span><span class="n">List</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="s">"foo"</span><span class="o">);</span> <span class="c1">// unchecked warning</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>The problem here is that the client of <code class="highlighter-rouge">legacyCode</code> expected that <code class="highlighter-rouge">legacyCode</code>
-will add integer to provided list. A simple solution is to use
-<code class="highlighter-rouge">List&lt;Object&gt;</code> instead of <code class="highlighter-rouge">List&lt;Integer&gt;</code>
-if <code class="highlighter-rouge">legacyCode</code> may add different types to list.
-Notice also that line which generated unchecked warning didn’t throw
-any exception, exception was thrown later when the
-client wanted to access list element.</p>
-
-<p>We may suppress unchecked warning at the method or class level by using
-<code class="highlighter-rouge">@SuppressWarnings("unchecked")</code> annotation.</p>
-
-<h4 id="generic-methods">Generic methods</h4>
-
-<p>We can declare generic method as follows:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">E1</span><span class="o">,</span><span class="n">E2</span><span class="o">&gt;</span> <span class="n">Pair</span><span class="o">&lt;</span><span class="n">E1</span><span class="o">,</span><span class="n">E2</span><span class="o">&gt;</span> <span class="nf">pair</span><span class="o">(</span><span class="n">E1</span> <span class="n">first</span><span class="o">,</span> <span class="n">E2</span> <span class="n">second</span><span class="o">)</span> <span class="o">{</span>
-   <span class="k">return</span> <span class="k">new</span> <span class="n">Pair</span><span class="o">&lt;</span><span class="n">E1</span><span class="o">,</span><span class="n">E2</span><span class="o">&gt;(</span><span class="n">first</span><span class="o">,</span> <span class="n">second</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Generic methods are invoked like ordinary methods:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Pair</span><span class="o">&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">p1</span> <span class="o">=</span> <span class="n">pair</span><span class="o">(</span><span class="s">"foo"</span><span class="o">,</span> <span class="mi">10</span><span class="o">);</span></code></pre></figure>
-
-<p>In most cases compiler will be able to infer proper values of
-generic parameters. When it won’t we can override compiler by
-explicitly specifying generic parameters values:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">ClassName</span><span class="o">.&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">Number</span><span class="o">&gt;</span><span class="n">staticMethod</span><span class="o">(</span><span class="n">arg1</span><span class="o">,</span> <span class="n">arg2</span><span class="o">);</span>
-<span class="c1">// or</span>
-<span class="k">this</span><span class="o">.&lt;</span><span class="n">String</span><span class="o">,</span><span class="n">Integer</span><span class="o">&gt;</span><span class="n">instanceMethod</span><span class="o">(</span><span class="n">arg1</span><span class="o">,</span> <span class="n">arg2</span><span class="o">);</span>
-
-<span class="c1">// syntax error:</span>
-<span class="c1">// &lt;String,Integer&gt;method(arg1, arg2);</span></code></pre></figure>
-
-<h4 id="wildcards">Wildcards</h4>
-
-<p>Let’s consider method that copies elements from one list to
-another:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">copy</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">dest</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">src</span><span class="o">)</span> <span class="o">{</span>
-   <span class="k">for</span> <span class="o">(</span><span class="n">T</span> <span class="nl">element:</span> <span class="n">src</span><span class="o">)</span> <span class="o">{</span>
-	  <span class="n">dest</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">element</span><span class="o">);</span>
-   <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>It works perfectly with lists of integers:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">src</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">3</span><span class="o">);</span>
-<span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">dest</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
-<span class="n">copy</span><span class="o">(</span><span class="n">dest</span><span class="o">,</span> <span class="n">src</span><span class="o">);</span></code></pre></figure>
-
-<p>But fails when we want to copy integers to list of numbers:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">src</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">3</span><span class="o">);</span>
-<span class="n">List</span><span class="o">&lt;</span><span class="n">Number</span><span class="o">&gt;</span> <span class="n">nums</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
-<span class="c1">// error: method cannot be applied to given types</span>
-<span class="n">copy</span><span class="o">(</span><span class="n">nums</span><span class="o">,</span> <span class="n">src</span><span class="o">);</span></code></pre></figure>
-
-<p>We may fix method by adding second generic parameter:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">D</span><span class="o">,</span><span class="n">S</span> <span class="kd">extends</span> <span class="n">D</span><span class="o">&gt;</span>
-<span class="kt">void</span> <span class="nf">copy</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">D</span><span class="o">&gt;</span> <span class="n">dest</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">S</span><span class="o">&gt;</span> <span class="n">src</span><span class="o">)</span> <span class="o">{</span>
-   <span class="k">for</span> <span class="o">(</span><span class="n">S</span> <span class="nl">element:</span> <span class="n">src</span><span class="o">)</span> <span class="o">{</span>
-	  <span class="n">dest</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">element</span><span class="o">);</span>
-   <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>This is so common situation that Java introduces a shortcut:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">copy</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">dest</span><span class="o">,</span> <span class="n">List</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">T</span><span class="o">&gt;</span> <span class="n">src</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">for</span> <span class="o">(</span><span class="n">T</span> <span class="nl">element:</span> <span class="n">src</span><span class="o">)</span> <span class="o">{</span>
-	  <span class="n">dest</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">element</span><span class="o">);</span>
-  <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Type <code class="highlighter-rouge">List&lt;? extends T&gt;</code> means that this is a list of elements that
-extends or implements type <code class="highlighter-rouge">T</code>.</p>
-
-<p>Wildcards allows us to reduce number of required generic parameters and
-made method declarations more clear, for example:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">boolean</span> <span class="nf">isNullOrEmpty</span><span class="o">(</span><span class="n">Collection</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">coll</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">return</span> <span class="n">coll</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">coll</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">();</span>
-<span class="o">}</span>
-
-<span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">isNullOrEmptyWildcards</span><span class="o">(</span><span class="n">Collection</span><span class="o">&lt;?&gt;</span> <span class="n">coll</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">return</span> <span class="n">coll</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">coll</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">();</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Here <code class="highlighter-rouge">Collections&lt;?&gt;</code> means collection of elements of some certain type 
-e.g. this may be
-<code class="highlighter-rouge">Collection&lt;Object&gt;</code> or <code class="highlighter-rouge">Collection&lt;MyClass&gt;</code>.</p>
-
-<h5 id="super-bound">super bound</h5>
-
-<p><code class="highlighter-rouge">super</code> bound may be used only with wildcards.
-<code class="highlighter-rouge">super</code> bound restricts values of wildcard to given class
-and all of its superclasses, for example method:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">process</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">Integer</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span></code></pre></figure>
-
-<p>can only be used with <code class="highlighter-rouge">List&lt;Integer&gt;</code>, <code class="highlighter-rouge">List&lt;Number&gt;</code> and <code class="highlighter-rouge">List&lt;Object&gt;</code>.
-Calling method with <code class="highlighter-rouge">List&lt;String&gt;</code> results in compile time error.</p>
-
-<p>While <code class="highlighter-rouge">extends</code> bound is useful when we want to get values
-from generic type instance,
-<code class="highlighter-rouge">super</code> bound is needed when we want to pass values to generic type instance.
-For example:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">produceConsume</span><span class="o">(</span>
-	  <span class="n">Producer</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">T</span><span class="o">&gt;</span> <span class="n">producer</span><span class="o">,</span>
-	  <span class="n">Consumer</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">T</span><span class="o">&gt;</span> <span class="n">consumer</span><span class="o">)</span>
-<span class="o">{</span>
-  <span class="k">for</span><span class="o">(;;)</span> <span class="o">{</span>
-	  <span class="n">T</span> <span class="n">value</span> <span class="o">=</span> <span class="n">producer</span><span class="o">.</span><span class="na">produce</span><span class="o">();</span>
-	  <span class="n">consumer</span><span class="o">.</span><span class="na">consume</span><span class="o">(</span><span class="n">value</span><span class="o">);</span>
-  <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Here <code class="highlighter-rouge">Producer</code> may produce type <code class="highlighter-rouge">T</code> or more derived type, and <code class="highlighter-rouge">Consumer</code>
-may consume type <code class="highlighter-rouge">T</code> or more general type e.g. <code class="highlighter-rouge">Object</code>. Thanks to
-wildcards we may use <code class="highlighter-rouge">produceConsume</code> with <code class="highlighter-rouge">Producer&lt;Integer&gt;</code> and
-<code class="highlighter-rouge">Consumer&lt;Object&gt;</code>.</p>
-
-<p>NOTE: Java compiler tries to infer the most specific type for
-generic parameters. In call to <code class="highlighter-rouge">produceConsume</code> with <code class="highlighter-rouge">Producer&lt;Integer&gt;</code>
-and <code class="highlighter-rouge">Consumer&lt;Object&gt;</code> <code class="highlighter-rouge">Integer</code> will be used as <code class="highlighter-rouge">T</code> parameter value.</p>
-
-<h5 id="wildcard-capture">Wildcard capture</h5>
-
-<p>Let’s say that we want to create a method that swaps elements of
-the list, we may write:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">swap</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;?&gt;</span> <span class="n">list</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i2</span><span class="o">)</span> <span class="o">{</span>
-   <span class="c1">// doesn't compile</span>
-   <span class="o">?</span> <span class="n">tmp</span> <span class="o">=</span> <span class="n">list</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i1</span><span class="o">);</span>
-   <span class="n">list</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">i1</span><span class="o">,</span> <span class="n">list</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i2</span><span class="o">));</span>
-   <span class="n">list</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">i2</span><span class="o">,</span> <span class="n">tmp</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Unfortunately above code doesn’t compile. We may either
-introduce generic parameter to method signature or create
-a helper method with generic parameter that 
-will “capture” wildcard value:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">swap</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;?&gt;</span> <span class="n">list</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i2</span><span class="o">)</span> <span class="o">{</span>
-   <span class="n">swapImpl</span><span class="o">(</span><span class="n">list</span><span class="o">,</span> <span class="n">i1</span><span class="o">,</span> <span class="n">i2</span><span class="o">);</span>
-<span class="o">}</span>
-<span class="kd">private</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="kt">void</span> <span class="nf">swapImpl</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">list</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i1</span><span class="o">,</span> <span class="kt">int</span> <span class="n">i2</span><span class="o">)</span> <span class="o">{</span>
-   <span class="n">T</span> <span class="n">tmp</span> <span class="o">=</span> <span class="n">list</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i1</span><span class="o">);</span>
-   <span class="n">list</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">i1</span><span class="o">,</span> <span class="n">list</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">i2</span><span class="o">));</span>
-   <span class="n">list</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">i2</span><span class="o">,</span> <span class="n">tmp</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Introducing generic parameter is always better solution than
-using wildcard capture. I only mention above technique because
-it is often used in Java Collection Framework.</p>
-
-<h4 id="covariance-and-contravariance">Covariance and contravariance</h4>
-
-<p>With Java arrays we may write:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">String</span><span class="o">[]</span> <span class="n">strings</span> <span class="o">=</span> <span class="o">{</span> <span class="s">"foo"</span><span class="o">,</span> <span class="s">"bar"</span> <span class="o">};</span>
-<span class="n">Object</span><span class="o">[]</span> <span class="n">objects</span> <span class="o">=</span> <span class="n">strings</span><span class="o">;</span></code></pre></figure>
-
-<p>We say that Java arrays are covariant.</p>
-
-<p>Generics in Java are invariant this means that below
-code doesn’t compile:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">strings</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="s">"foo"</span><span class="o">,</span> <span class="s">"bar"</span><span class="o">);</span>
-<span class="c1">// error: incompatible types</span>
-<span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">objects</span> <span class="o">=</span> <span class="n">strings</span><span class="o">;</span></code></pre></figure>
-
-<p>We must tread <code class="highlighter-rouge">List&lt;String&gt;</code> and <code class="highlighter-rouge">List&lt;Object&gt;</code> as two
-distinct types.</p>
-
-<p>Still we may use wildcards to refer to either
-<code class="highlighter-rouge">List&lt;String&gt;</code> or <code class="highlighter-rouge">List&lt;Object&gt;</code>:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span><span class="o">&lt;</span><span class="n">String</span><span class="o">&gt;</span> <span class="n">strings</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="s">"foo"</span><span class="o">,</span> <span class="s">"bar"</span><span class="o">);</span>
-<span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">objects</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="kc">true</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="s">"foo"</span><span class="o">);</span>
-
-<span class="n">List</span><span class="o">&lt;?&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">strings</span><span class="o">;</span>
-<span class="n">list</span> <span class="o">=</span> <span class="n">objects</span><span class="o">;</span></code></pre></figure>
-
-<p><code class="highlighter-rouge">List&lt;?&gt;</code> should be treated as superclass of any <code class="highlighter-rouge">List&lt;T&gt;</code>,
-because it represents list of objects of some certain type.</p>
-
-<p>We can’t do much with <code class="highlighter-rouge">List&lt;?&gt;</code>, we can only get <code class="highlighter-rouge">Objects</code> from it,
-add <code class="highlighter-rouge">null</code>s and ask for size (operations allowed for any list):</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span><span class="o">&lt;?&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="n">strings</span><span class="o">;</span>
-
-<span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
-<span class="n">Object</span> <span class="n">value</span> <span class="o">=</span> <span class="n">list</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
-<span class="n">list</span><span class="o">.</span><span class="na">size</span><span class="o">();</span></code></pre></figure>
-
-<p>Operations on <code class="highlighter-rouge">List&lt;?&gt;</code> are limited because we don’t know what types list contains.
-We may limit range of possible types with bounds thus gaining
-more functionality:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">Number</span><span class="o">&gt;</span> <span class="n">numbers</span> <span class="o">=</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="mf">1.2</span><span class="o">,</span> <span class="mf">3.5</span><span class="o">);</span>
-<span class="n">Number</span> <span class="n">num</span> <span class="o">=</span> <span class="n">numbers</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span></code></pre></figure>
-
-<p>Now compiler knows that list elements are at least numbers so
-we may assign result of <code class="highlighter-rouge">get()</code> to variable of type <code class="highlighter-rouge">Number</code>.
-Still we are not able to put anything beyond <code class="highlighter-rouge">null</code> into list,
-because we don’t know if this is a list of doubles or a list of integers.</p>
-
-<p>When we want to add elements to list we should use <code class="highlighter-rouge">super</code> bound:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span><span class="o">&lt;?</span> <span class="kd">super</span> <span class="n">Number</span><span class="o">&gt;</span> <span class="n">numbers</span> <span class="o">=</span>
-   <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;(</span><span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="s">"foo"</span><span class="o">,</span> <span class="kc">true</span><span class="o">));</span>
-
-<span class="n">numbers</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mi">3</span><span class="o">);</span>
-<span class="n">numbers</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="mf">3.2</span><span class="o">);</span></code></pre></figure>
-
-<p>Now compiler knows that list holds numbers or elements more general
-than numbers e.g. objects, so adding number to list is safe.</p>
-
-<h4 id="how-to-use-generic-types-with-instanceof-and-class">How to use generic types with <code class="highlighter-rouge">instanceof</code> and <code class="highlighter-rouge">class</code></h4>
-
-<p>Because of type erasure types <code class="highlighter-rouge">List&lt;Object&gt;</code> and <code class="highlighter-rouge">List&lt;Integer&gt;</code> are
-indistinguishable to JVM. To check if value is instance of <code class="highlighter-rouge">List</code> we
-may write:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Object</span> <span class="n">value</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span>
-
-<span class="k">if</span> <span class="o">(</span><span class="n">value</span> <span class="k">instanceof</span> <span class="n">List</span><span class="o">&lt;?&gt;)</span> <span class="o">{</span>
-   <span class="c1">// do something</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Similarly types <code class="highlighter-rouge">List&lt;Object&gt;</code> and <code class="highlighter-rouge">List&lt;Integer&gt;</code> are represented
-by the same class token:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">integers</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;();</span>
-<span class="n">List</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;</span> <span class="n">objects</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">&gt;();</span>
-
-<span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">List</span><span class="o">&gt;</span> <span class="n">integersClazz</span> <span class="o">=</span> <span class="n">integers</span><span class="o">.</span><span class="na">getClass</span><span class="o">();</span>
-<span class="n">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">List</span><span class="o">&gt;</span> <span class="n">objectsClazz</span> <span class="o">=</span> <span class="n">objects</span><span class="o">.</span><span class="na">getClass</span><span class="o">();</span>
-<span class="n">Class</span><span class="o">&lt;</span><span class="n">ArrayList</span><span class="o">&gt;</span> <span class="n">arrayListClazz</span> <span class="o">=</span> <span class="n">ArrayList</span><span class="o">.</span><span class="na">class</span><span class="o">;</span>
-
-<span class="c1">// true</span>
-<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">integersClazz</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">objectsClazz</span><span class="o">));</span>
-<span class="c1">// true</span>
-<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">integersClazz</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">arrayListClazz</span><span class="o">));</span></code></pre></figure>
-
-<p>Notice that in instance test we should use type with wildcard (<code class="highlighter-rouge">List&lt;?&gt;</code>) but to
-get class token we should use raw type (<code class="highlighter-rouge">ArrayList.class</code>).</p>
-
-<h4 id="generics-and-arrays">Generics and arrays</h4>
-
-<p>Let’s consider this innocent looking code:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span><span class="o">[]</span> <span class="nf">toArray</span><span class="o">(</span><span class="n">T</span> <span class="n">v1</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">T</span><span class="o">[]</span> <span class="n">array</span> <span class="o">=</span> <span class="o">(</span><span class="n">T</span><span class="o">[])</span> <span class="k">new</span> <span class="n">Object</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span> <span class="c1">// unchecked warning</span>
-  <span class="n">array</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="n">v1</span><span class="o">;</span>
-  <span class="k">return</span> <span class="n">array</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Calling this method results in <code class="highlighter-rouge">ClassCastException</code>:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">String</span><span class="o">[]</span> <span class="n">s</span> <span class="o">=</span> <span class="n">toArray</span><span class="o">(</span><span class="s">"foo"</span><span class="o">);</span> <span class="c1">// class cast exception</span></code></pre></figure>
-
-<p>Because we cannot assign <code class="highlighter-rouge">Object[]</code> instance to <code class="highlighter-rouge">String[]</code> variable.
-The source of the trouble is type erasure again.
-Because value of parameter <code class="highlighter-rouge">T</code> is not accessible at runtime
-we don’t know what array we should create - should it be array of
-objects or maybe array of strings. We may fix this method by passing
-additional parameter that will represent required type of array elements:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span><span class="o">[]</span> <span class="nf">toArray</span><span class="o">(</span><span class="n">T</span> <span class="n">v1</span><span class="o">,</span> <span class="n">Class</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">type</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">T</span><span class="o">[]</span> <span class="n">array</span> <span class="o">=</span> <span class="o">(</span><span class="n">T</span><span class="o">[])</span> <span class="n">Array</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="n">type</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
-  <span class="n">array</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span> <span class="o">=</span> <span class="n">v1</span><span class="o">;</span>
-  <span class="k">return</span> <span class="n">array</span><span class="o">;</span>
-<span class="o">}</span>
-
-<span class="n">String</span><span class="o">[]</span> <span class="n">s</span> <span class="o">=</span> <span class="n">toArray</span><span class="o">(</span><span class="s">"foo"</span><span class="o">,</span> <span class="n">String</span><span class="o">.</span><span class="na">class</span><span class="o">);</span></code></pre></figure>
-
-<p>Now method works as expected but is cumbersome to use.</p>
-
-<p>Another problem with arrays and generics is that we cannot
-create array with generic elements - type erasure is culprit again:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// error: generic array creation</span>
-<span class="c1">// List&lt;Integer&gt;[] lists = new List&lt;Integer&gt;[3];</span>
-
-<span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;[]</span> <span class="n">lists</span> <span class="o">=</span> <span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;[])</span> <span class="k">new</span> <span class="n">List</span><span class="o">[</span><span class="mi">3</span><span class="o">];</span></code></pre></figure>
-
-<p>To create array of generic types we must use raw type and cast.</p>
-
-<p>To sum up: you should avoid mixing arrays and generics.</p>
-
-<h4 id="generics-and-varargs">Generics and varargs</h4>
-
-<p>Java varargs methods are implemented using arrays, when we try
-to use varargs with generics:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="nf">concat</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">T</span><span class="o">&gt;...</span> <span class="n">lists</span><span class="o">)</span> <span class="o">{</span>
-   <span class="n">List</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">concatenated</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;();</span>
-
-   <span class="k">for</span> <span class="o">(</span><span class="n">List</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="n">T</span><span class="o">&gt;</span> <span class="nl">l:</span> <span class="n">lists</span><span class="o">)</span> <span class="o">{</span>
-	  <span class="n">concatenated</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">l</span><span class="o">);</span>
-   <span class="o">}</span>
-
-   <span class="k">return</span> <span class="n">concatenated</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>compiler issues a warning:</p>
-
-<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">warning: unchecked generic array creation for varargs parameter</code></pre></figure>
-
-<p>Generic varargs suffer from the same problems as generic arrays.
-If we are sure that our code is safe,
-we may use <code class="highlighter-rouge">@SafeVarargs</code> annotation to suppress this warning.</p>
-
-<h4 id="additional-resources">Additional resources</h4>
-
-<p>If you want to know more about generics check resources below:</p>
-
-<ul>
-  <li><a href="http://a.co/5oMY1hY">Java Generics and Collections: Speed Up the Java Development Process</a></li>
-  <li><a href="http://www.angelikalanger.com/GenericsFAQ/JavaGenericsFAQ.html">Java Generics FAQ</a></li>
-</ul>
 
 
 	  ]]></description>
