@@ -12,6 +12,97 @@
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
+	  <title>Scala WTF 1</title>
+	  <link>//scala-wtf-1</link>
+	  <author></author>
+	  <pubDate>2020-07-06T02:00:01+02:00</pubDate>
+	  <guid>//scala-wtf-1</guid>
+	  <description><![CDATA[
+	     <p>So here is a puzzle. What will be written by
+this program:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">object</span> <span class="nc">Wtf1</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="k">val</span> <span class="n">points</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Point</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span>
+      <span class="nc">Point</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">),</span>
+      <span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">),</span>
+      <span class="nc">Point</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">)</span>
+    <span class="o">)</span>
+
+    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">points</span><span class="o">.</span><span class="n">contains</span><span class="o">(</span><span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="k">_</span><span class="o">))</span>
+    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"result: $result"</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="k">case</span> <span class="k">class</span> <span class="nc">Point</span><span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">y</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span>
+
+<span class="c1">// ANSWER BELOW
+// ..............................................
+</span><span class="o">//</span></code></pre></figure>
+
+<p>The answer is <code class="highlighter-rouge">false</code>.
+Why? Because the line with <code class="highlighter-rouge">points.contains(Point(3, _))</code>
+instead of performing pattern matching, checks whether <code class="highlighter-rouge">points</code> 
+contain a function:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">points</span><span class="o">.</span><span class="n">contains</span><span class="o">(</span><span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="k">_</span><span class="o">))</span>
+<span class="c1">// in reality is:
+</span><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">names</span><span class="o">.</span><span class="n">contains</span><span class="o">((</span><span class="n">n</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="n">n</span><span class="o">))</span></code></pre></figure>
+
+<p>The strangest thing for me is that the compilation of 
+this code does not generate any warnings.
+From Scala compiler point of view the above code is
+perfectly valid and this in turn is the result of
+<code class="highlighter-rouge">List</code> type being covariant.
+Or in the other words because we can assign <code class="highlighter-rouge">List[Point]</code> to
+<code class="highlighter-rouge">List[Any]</code>, <code class="highlighter-rouge">contains</code> must accept
+arguments of any type:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">points</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Point</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span>
+    <span class="nc">Point</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">),</span>
+    <span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">),</span>
+    <span class="nc">Point</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">)</span>
+<span class="o">)</span>
+
+<span class="k">val</span> <span class="n">anys</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Any</span><span class="o">]</span> <span class="k">=</span> <span class="n">points</span>
+
+<span class="n">anys</span><span class="o">.</span><span class="n">contains</span><span class="o">(</span><span class="k">new</span> <span class="nc">Object</span><span class="o">())</span></code></pre></figure>
+
+<p>The declaration of <code class="highlighter-rouge">contains</code> method in <code class="highlighter-rouge">List[A]</code> looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">contains</span><span class="o">[</span><span class="kt">A1</span> <span class="k">&gt;:</span> <span class="kt">A</span><span class="o">](</span><span class="n">elem</span><span class="k">:</span> <span class="kt">A1</span><span class="o">)</span><span class="k">:</span> <span class="kt">Boolean</span></code></pre></figure>
+
+<p>We may snoop the actual types assigned to the generic parameters
+using a helper method:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">detectType</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">A1</span> <span class="k">&gt;:</span> <span class="kt">A</span><span class="o">](</span><span class="n">l</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">A</span><span class="o">],</span> <span class="n">obj</span><span class="k">:</span> <span class="kt">A1</span><span class="o">)</span>
+                          <span class="o">(</span><span class="k">implicit</span> <span class="n">tagA</span><span class="k">:</span> <span class="kt">ClassTag</span><span class="o">[</span><span class="kt">A</span><span class="o">],</span> <span class="n">tagA1</span><span class="k">:</span> <span class="kt">ClassTag</span><span class="o">[</span><span class="kt">A1</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"type of A : ${tagA.runtimeClass.getName}"</span><span class="o">)</span>
+    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"type of A1: ${tagA1.runtimeClass.getName}"</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="n">detectType</span><span class="o">(</span><span class="n">names</span><span class="o">,</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="k">_</span><span class="o">))</span>
+
+<span class="c1">// This prints:
+// type of A : Point
+// type of A1: java.lang.Object
+</span><span class="o">//</span></code></pre></figure>
+
+<p>So during the compilation <code class="highlighter-rouge">A1</code> becomes <code class="highlighter-rouge">Object</code> and everything
+type-checks.</p>
+
+<p>Let’s finish by writing a code that actually does what
+the programmer intended:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">names</span>
+    <span class="o">.</span><span class="n">collectFirst</span> <span class="o">{</span> <span class="k">case</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="k">_</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="kc">true</span> <span class="o">}</span>
+    <span class="o">.</span><span class="n">getOrElse</span><span class="o">(</span><span class="kc">false</span><span class="o">)</span></code></pre></figure>
+
+
+	  ]]></description>
+	</item>
+
+	<item>
 	  <title>Pitfalls of using Mockito with Scala</title>
 	  <link>//pitfalls-of-using-Mockito-with-Scala</link>
 	  <author></author>
