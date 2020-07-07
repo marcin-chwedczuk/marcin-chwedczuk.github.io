@@ -5,7 +5,7 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>http://localhost:4000</link>
+   <link></link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor> </managingEditor>
@@ -113,9 +113,9 @@ Otherwise you may use this script created by @pkh
 
 <p>Just copy and paste this code into the session and then enter <code class="highlighter-rouge">resize</code> (use Ctrl+Shift+Insert to paste in <code class="highlighter-rouge">putty</code>).
 After the <code class="highlighter-rouge">resize</code>, commands like <code class="highlighter-rouge">top</code> or <code class="highlighter-rouge">htop</code> should occupy the entire terminal window.
-<img src="assets/images/2020-07-07/beforer.png" alt="Before resize" />
+<img src="assets/images/2020-07-07/beforeR.png" alt="Before resize" />
 After resize becomes:
-<img src="assets/images/2020-07-07/afterr.png" alt="After resize" /></p>
+<img src="assets/images/2020-07-07/afterR.png" alt="After resize" /></p>
 
 <p>You may want to add both the <code class="highlighter-rouge">resize</code> function and <code class="highlighter-rouge">TERM</code> environment variable to <code class="highlighter-rouge">~/.profile</code>
 to avoid copy-pasting them every time.</p>
