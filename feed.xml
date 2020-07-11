@@ -8,6 +8,23 @@
     
       
       <item>
+        <title>Useful JDK tools (part 1)</title>
+        
+          <description>&lt;p&gt;JDK comes with a bunch of handy tools. It’s good to
+know about them. In this post we will take a look at
+&lt;code class=&quot;highlighter-rouge&quot;&gt;jps&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;jstack&lt;/code&gt;, &lt;code class=&quot;highlighter-rouge&quot;&gt;jmap&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;jhat&lt;/code&gt;.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Fri, 10 Jul 2020 02:00:01 +0200</pubDate>
+        <link>
+        /useful-jdk-tools-part-1</link>
+        <guid isPermaLink="true">/useful-jdk-tools-part-1</guid>
+      </item>
+      
+    
+      
+      <item>
         <title>iTerm2 cheat sheet</title>
         
           <description>&lt;p&gt;iTerm2 is one of the best terminal emulators out there.
