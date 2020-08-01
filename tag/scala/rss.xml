@@ -5,12 +5,127 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://localhost:4000</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
+	<item>
+	  <title>Nesting monads in Scala</title>
+	  <link>//scala-nesting-monads</link>
+	  <author></author>
+	  <pubDate>2020-08-01T02:00:01+02:00</pubDate>
+	  <guid>//scala-nesting-monads</guid>
+	  <description><![CDATA[
+	     <p>Recently I write a lot of async code. Most of my repository
+methods return types like <code class="highlighter-rouge">Future[Set[T]]</code> or <code class="highlighter-rouge">Future[Option[T]]</code>.
+But as we will see, working with such types in pure Scala
+can be very cumbersome.</p>
+
+<p>For example in pure Scala we cannot write:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">namesFuture</span> <span class="k">=</span> <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="nc">List</span><span class="o">(</span><span class="s">"bob"</span><span class="o">,</span> <span class="s">"alice"</span><span class="o">));</span>
+
+<span class="k">val</span> <span class="n">capitalizedNames</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">names</span> <span class="k">&lt;-</span> <span class="n">namesFuture</span>
+  <span class="n">name</span> <span class="k">&lt;-</span> <span class="n">names</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">name</span><span class="o">.</span><span class="n">capitalize</span></code></pre></figure>
+
+<p>Nop. Nada. Will not work. When we try to compile this code,
+the compiler will point out that <code class="highlighter-rouge">names</code> have type of <code class="highlighter-rouge">List[String]</code>
+instead of expected <code class="highlighter-rouge">Future[X]</code>.</p>
+
+<p>To understand the problem better lets remind ourselves
+how Scala compiler translates for-comprehensions into
+method calls:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">ks</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="mi">10</span>
+  <span class="n">j</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="n">i</span>
+  <span class="n">k</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="n">j</span>
+  <span class="n">sum</span> <span class="k">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="n">k</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">sum</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="o">&amp;&amp;</span> <span class="n">sum</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="o">)</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="mi">3</span><span class="o">*</span><span class="n">sum</span>
+<span class="c1">// Is translated (with some simplifications) into:
+</span><span class="k">val</span> <span class="n">ks2</span> <span class="k">=</span> <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="mi">10</span><span class="o">).</span><span class="n">flatMap</span> <span class="o">{</span> <span class="n">i</span> <span class="k">=&gt;</span>
+  <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">i</span><span class="o">).</span><span class="n">flatMap</span> <span class="o">{</span> <span class="n">j</span> <span class="k">=&gt;</span>
+    <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">j</span><span class="o">)</span>
+      <span class="o">.</span><span class="n">map</span> <span class="o">{</span> <span class="n">k</span> <span class="k">=&gt;</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="n">k</span> <span class="o">}</span>
+      <span class="o">.</span><span class="n">withFilter</span> <span class="o">{</span> <span class="n">sum</span> <span class="k">=&gt;</span> <span class="n">sum</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="o">&amp;&amp;</span> <span class="n">sum</span> <span class="o">&lt;</span> <span class="mi">20</span> <span class="o">}</span>
+      <span class="o">.</span><span class="n">map</span> <span class="o">{</span> <span class="n">sum</span> <span class="k">=&gt;</span> <span class="mi">3</span><span class="o">*</span><span class="n">sum</span> <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>In short every but the last “assignment” of the form <code class="highlighter-rouge">var &lt;- something</code> is
+translated into <code class="highlighter-rouge">something.flatMap { var =&gt; ...</code>.
+The last “assignment” is translated into a simple <code class="highlighter-rouge">map</code> call.
+<code class="highlighter-rouge">if</code> filters are translated into <code class="highlighter-rouge">withFilter</code> or <code class="highlighter-rouge">filter</code> calls.</p>
+
+<p>Returning to our first example we see that it is translated
+into:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">capitalizedNames</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">names</span> <span class="k">&lt;-</span> <span class="n">namesFuture</span>
+  <span class="n">name</span> <span class="k">&lt;-</span> <span class="n">names</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">name</span><span class="o">.</span><span class="n">capitalize</span>
+<span class="c1">// into this:
+</span><span class="k">val</span> <span class="n">capitalizedNames</span> <span class="k">=</span> <span class="n">namesFuture</span><span class="o">.</span><span class="n">flatMap</span> <span class="o">{</span> <span class="n">names</span> <span class="k">=&gt;</span>
+  <span class="n">names</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">capitalize</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>And indeed it does not type check as <code class="highlighter-rouge">namesFuture.flatMap</code> expects
+that the passed lambda will return a <code class="highlighter-rouge">Future[X]</code> not
+a <code class="highlighter-rouge">List[X]</code>.</p>
+
+<p>We can quickly fix this problem by introducing a nested <code class="highlighter-rouge">for</code>
+or by replacing <code class="highlighter-rouge">flatMap</code> by <code class="highlighter-rouge">map</code>:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">capitalizedNames</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span> <span class="n">names</span> <span class="k">&lt;-</span> <span class="n">namesFuture</span> <span class="o">}</span> <span class="k">yield</span>
+                       <span class="k">for</span> <span class="o">{</span> <span class="n">name</span> <span class="k">&lt;-</span> <span class="n">names</span> <span class="o">}</span> <span class="k">yield</span> <span class="n">name</span><span class="o">.</span><span class="n">capitalize</span><span class="o">;</span>
+<span class="c1">// or:
+</span><span class="k">val</span> <span class="n">capitalizedNames</span> <span class="k">=</span> <span class="n">namesFuture</span><span class="o">.</span><span class="n">map</span> <span class="o">{</span> <span class="n">names</span> <span class="k">=&gt;</span>
+  <span class="n">names</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">capitalize</span><span class="o">)</span>
+<span class="o">}</span>
+<span class="c1">// of if you are processing only a single collection:
+</span><span class="k">val</span> <span class="n">capitalizedNames</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span> <span class="n">names</span> <span class="k">&lt;-</span> <span class="n">namesFuture</span> <span class="o">}</span>
+                       <span class="k">yield</span> <span class="n">names</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">capitalize</span><span class="o">)</span></code></pre></figure>
+
+<p>And even in this simple example, the method chain 
+becomes quite unreadable when you try to
+squash it into a single line: <code class="highlighter-rouge">namesFuture.map(_.map(_.capitalize))</code>.</p>
+
+<p>Exactly the same problems appears when we try to work with <code class="highlighter-rouge">Future[Option[T]]</code>.
+But here we can at least use libraries to reduce the pain.
+For example using <code class="highlighter-rouge">OptionT</code> type from <a href="https://typelevel.org/cats/">Cats</a>,
+we can write:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">import</span> <span class="nn">cats.data.OptionT</span>
+<span class="k">import</span> <span class="nn">cats.implicits._</span>
+
+<span class="k">val</span> <span class="n">nameFuture</span> <span class="k">=</span> <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="nc">Option</span><span class="o">(</span><span class="s">"foo"</span><span class="o">))</span>
+
+<span class="k">val</span> <span class="n">f</span> <span class="k">=</span> <span class="nc">OptionT</span><span class="o">(</span><span class="n">nameFuture</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">name</span> <span class="k">=&gt;</span> <span class="n">name</span> <span class="o">+</span> <span class="s">"!"</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">name</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"name is $name"</span><span class="o">))</span>
+<span class="nc">Await</span><span class="o">.</span><span class="n">result</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="n">value</span><span class="o">,</span> <span class="nc">Duration</span><span class="o">.</span><span class="nc">Inf</span><span class="o">)</span></code></pre></figure>
+
+<p>…and call it a day.</p>
+
+<p>In pure Scala this code would look like this:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">f</span> <span class="k">=</span> <span class="n">nameFuture</span>
+  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">name</span> <span class="k">=&gt;</span> <span class="n">name</span> <span class="o">+</span> <span class="s">"!"</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">foreach</span><span class="o">(</span><span class="n">n</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"name is $n"</span><span class="o">)))</span>
+<span class="nc">Await</span><span class="o">.</span><span class="n">result</span><span class="o">(</span><span class="n">f</span><span class="o">,</span> <span class="nc">Duration</span><span class="o">.</span><span class="nc">Inf</span><span class="o">)</span></code></pre></figure>
+
+<p>In short I don’t understand why language designers decided to not support
+nested monads in for-comprehensions. It’s a pity that we have to use
+external libraries to get such a basic functionality.</p>
+
+	  ]]></description>
+	</item>
+
 	<item>
 	  <title>Scala WTF 1</title>
 	  <link>//scala-wtf-1</link>
