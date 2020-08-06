@@ -12,40 +12,280 @@
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
+	  <title>Cierpienia młodego Wertera czyli algorytm alfa-beta dla gry kółko i krzyżyk</title>
+	  <link>//cierpienia-mlodego-wertera</link>
+	  <author></author>
+	  <pubDate>2020-08-06T02:00:01+02:00</pubDate>
+	  <guid>//cierpienia-mlodego-wertera</guid>
+	  <description><![CDATA[
+	     W tym wpisie przyjrzymy się trudnościom które występują podczas
+implementacji algorytmu alfa-beta dla gry kółko i krzyżyk.
+Nie będę tutaj omawiał samego algorytmu, gdyż został on już dobrze
+opisany w wielu innych miejscach, między innymi na
+[Ważniaku](http://wazniak.mimuw.edu.pl/index.php?title=Sztuczna_inteligencja/SI_Modu%C5%82_8_-_Gry_dwuosobowe).
+Zamiast tego skoncentrujemy się na technikach debugowania które można
+będzie wykorzystać również przy innych grach np. warcabach.
+
+Kod algorytmów alfa-beta i minimax jest powszechnie dostępny
+w internecie czy to w postaci 
+[pseudokodu](https://en.wikipedia.org/wiki/Alpha–beta_pruning#Pseudocode)
+czy jako gotowa implementacja na [GitHubie](https://github.com/search?l=Java&q=alpha+beta+tictactoe&type=Repositories).
+
+W trakcie przygotowań do stworzenia tego artykułu, ja również napisałem 
+prostą implementację gry w kółko i krzyżyk. 
+Kod mojej wersji algorytmu alfa-beta, podobnie jak cała gra, dostępny jest na 
+[GitHubie](https://github.com/marcin-chwedczuk/xox/blob/master/src/main/java/pl/marcinchwedczuk/xox/game/AlphaBetaAlgo.java).
+
+W dalszej części artykułu założymy że posiadana przez nas 
+implementacja algorytmu alfa-beta jest poprawna, 
+a mimo to program nie wykonuje prawidłowych ruchów podczas gry.
+
+### Heurystyka czyli Serce algorytmu
+
+Najważniejszą częścią algorytmu alfa-beta jest heurystyka czyli
+funkcja oceniająca stan gry z punktu widzenia danego gracza.
+Ogólna sygnatura heurystyki wygląda następująco:
+{% highlight java %}
+double score(GameState gameState, Player player)
+{% endhighlight %}
+Większe wartości zwracane przez funkcję odpowiadają lepszej
+sytuacji gracza na planszy i na odwrót im mniejsza wartość
+zwrócona tym położenie gracza jest gorsze.
+
+Czasami przekazujemy do heurystyki również
+inne pomocnicze informacje,
+na przykład ostatni wykonany przez gracza ruch - jeżeli może to
+przyspieszyć wykonywanie obliczeń.
+Sama funkcja również może zwracać więcej danych, niż tylko samą ocenę sytuacji na polu gry.
+Przykładowo heurystyka może także zwracać informację o zakończeniu gry i jej ewentualnym zwycięscy.
+Wiele zależy tutaj od konkretnej gry, w przypadku gry w kółko i krzyżyk
+obie te optymalizacje są możliwe.
+
+W przypadku planszy 3x3 prosta heurystyka która zwraca `1` gdy gracz
+wygrał i `0` w przeciwnym wypadku, w połączeniu z algorytmem alfa-beta
+tworzy program z którym nie sposób wygrać.
+
+Na koniec uwaga techniczna. Nakreślona powyżej funkcja heurystyki
+traktuje w taki sam sposób zarówno gracza MAX
+jak i gracza MIN. Dla poprawności działania algorytmu alfa-beta
+konieczne jest zanegowanie wyniku zwróconego przez heurystykę dla
+gracza MIN:
+{% highlight java %}
+var score = score(gameState, currentPlayer);
+score = maximizingPlayer ? score : -score;
+{% endhighlight %}
+
+### Plansza 4x4, 3 pod rząd wygrywają
+
+Uruchomienie powyższego algorytmu na planszy 4x4, gdy pierwszy ruch
+należy do użytkownika przynosi jednak opłakane efekty.
+Program zajmuje po prostu kolejne pola na planszy, a my nie mamy
+najmniejszego problemu z wygraną.
+
+![Dziwne zachowanie algorytmu](assets/images/2020-08-05/game1.png)
+X - Użytkownik, O - Komputer
+
+Dlaczego tak się dzieje? Okazuje się że przy grze 4x4, 3 pod rząd
+istnieje strategia wygrywająca która pozwala pierwszemu graczowi
+wygrać w dokładnie 3 ruchach.
+![Strategia wygrywająca](assets/images/2020-08-05/str1.svg)
+
+Z punktu widzenia algorytmu minimax każdy ruch skutkuje przegraną,
+dlatego algorytm wybierze pierwszy lub ostatni ruch 
+(w zależności od implementacji).
+Pozwolę sobie nazwać to zjawisko depresją,
+chociaż nie jest to powszechnie przyjęta terminologia.
+
+Istnieje bardzo prosty sposób na wykrycie zjawiska depresji -
+wystarczy zamienić kolejność graczy tj. pozwolić komputerowi wykonać
+pierwszy ruch. Jeżeli spowoduje to nagłą poprawę sposobu działania algorytmu
+należy sprawdzić czy przypadkiem gra nie faworyzuje gracza wykonującego
+ruch jako pierwszy.
+
+Istnieje jeszcze jedno proste ulepszenie które możemy wykonać.
+Mianowicie jeżeli pozwolimy algorytmowi grać samemu ze sobą to
+okaże się że "nie spieszy mu się do wygranej".
+![Ilustracja problemu](assets/images/2020-08-05/str2.svg)
+Ludzie zachowują się inaczej, chcemy wygrać jak najszybciej,
+w jak najmniejszej ilości ruchów.
+Możemy dodać to zachowanie do naszego algorytmu, modyfikując
+funkcję heurystyki tak żeby "karała" gracza za każdy wykonany ruch.
+Alternatywnie heurystyka może nagradzać gracza za każde 
+pozostawione wolne pole na planszy:
+{% highlight java %}
+double impatientPlayerHeuristics(GameState gameState, Player player) {
+    var score = score(gameState, currentPlayer);
+    var freePlaces = gameState.board.countFreePlaces();
+    return score + freePlaces*Q;
+}
+{% endhighlight %}
+Stałą `Q` musimy dobrać w taki sposób żeby wyrażenie `freePlaces*Q` nigdy
+nie przekraczało wartości zwracanej w przypadku wygranej przez 
+funkcję `score`.
+Na przykład jeżeli dla wygranej heurystyka zwraca `1000.0` to użycie
+`Q = 1` jest rozsądnym wyborem.
+
+Na koniec zauważmy że plansza 5x5, 3 pod rząd zawiera w sobie
+planszę 4x4, 3 pod rząd, dlatego wszystko co powiedzieliśmy tutaj
+o zjawisku depresji odnosi się również do niej.
+
+### Plansza 4x4, 4 pod rząd wygrywaj
+
+W przypadku plansz 4x4 i większych kluczowym problemem staje się wydajność.
+Prostym sposobem na poradzenie sobie z tym problemem jest rezygnacja z
+analizy całego drzewa gry i skupienie się na pierwszych N ruchach 
+wykonywanych przez graczy.
+W tym wypadku dobór odpowiedniej heurystyki staje się jeszcze bardziej ważny
+ponieważ
+oceniać musimy nie tylko gry zakończone, ale również takie
+które wciąż trwają.
+Z drugiej strony nadmierne skomplikowanie heurystyki negatywnie wpływa 
+na złożoność obliczeniową i co za tym idzie na czas oczekiwania na wybór ruchu.
+
+Jako kompromis możemy przyjąć na przykład analizę jedynie siedmiu
+posunięć graczy w przyszłość, przy jednoczesnym rozbudowaniu heurystyki
+o punktowanie "prawie zwycięstw". Prawie zwycięstwo to sytuacja na
+planszy która w wyniku jednego ruchu czy posunięcia gracza zmienia się
+w wygraną. W przypadku planszy 4x4, 4 pod rząd możemy przyjąć
+że rząd, kolumna lub przekątna złożona z trzech znaków gracza i wolnego
+miejsca jest prawie zwycięstwem np. `X _ X X` jest prawie zwycięstwem
+dla gracza X.
+
+W przypadku optymalizacji bardziej skomplikowanych gier nie obejdziemy się
+bez dodatkowych narzędzi takich jak np. profiler.
+Jednym z najlepszych, darmowych profilerów dostępnych na rynku dla platformy JVM
+jest [async-profiler](https://github.com/jvm-profiling-tools/async-profiler).
+
+Możemy również dużo zyskać unikając nadmiernych alokacji pamięci.
+Na przykład zamiast tworzyć nową niemutowalną planszę za każdym razem gdy 
+symulujemy ruch gracza, możemy wykorzystać mutowalną strukturę danych
+wraz z wycofywaniem ruchów (ang. backtracking):
+{% highlight java %}
+for (Move playerMove: movesToCheck) {
+    board.put(playerMove.position, playerMove.mark);
+
+    // Do recursive minimax call and other stuff
+
+    // Restore board state
+    board.removeMark(playerMove.position)
+}
+{% endhighlight %}
+
+### Plansza 5x5, 4 lub 5 pod rząd wygrywają
+
+Na tym poziomie wydajność staje się elementem kluczowym.
+Duża wielkość drzewa gry sprawia że strategie
+bazujące na prawdopodobieństwie zaczynają wyglądać 
+coraz bardziej interesująco.
+Na przykład możemy użyć następującego algorytmu bazującego
+na [metodzie Monte Carlo](https://pl.wikipedia.org/wiki/Metoda_Monte_Carlo),
+do wygenerowania listy ruchów które będziemy oceniać:
+{% highlight java %}
+Set<Moves> getMovesToCheck(Board board, int depth) {
+    // Cutoff - use heuristics to evaluate the board
+    if (depth > 8) {
+        return Set.of();
+    }
+
+    // For first 3 player moves we analyze every possibility
+    var allPossibleMoves = board.getMovesForAllFreeFields()
+    if (depth < 3) {
+        return allPossibleMoves;
+    }
+
+    // Take K random moves to analyze
+    return allPossibleMove.shuffle().take(K);
+
+}
+{% endhighlight %}
+
+W przypadku gdy algorytm zwróci pustą listę ruchów do sprawdzenia,
+po prostu oceniamy planszę za pomocą heurystyki i zwracamy to jako
+wynik (pamiętając o negacji dla gracza MIN) z wywołania funkcji minimax.
+
+### Jak to zdebugować? Generalne strategie debugowania
+
+* Testy jednostkowe dla wykorzystywanych przez nas heurystyk to podstawa.
+ Pisząc heurystyki dla gry kółko i krzyżyk bardzo łatwo o pomyłkę
+ lub błąd w stylu "off by one". Dodanie testów i upewnienie się
+ że pokrycie kodu testami jest odpowiednio wysokie powinno być
+ pierwszym działaniem jakie podejmujemy podczas debugowania.
+* Nasza aplikacja powinna posiadać funkcję umożliwiającą cofnięcie
+ ostatnich ruchów gracza. Znacznie ułatwi to debugowanie za pomocą
+ debuggera. W przypadku bardziej skomplikowanych gier typu warcaby
+ warto dodać opcję zapisy i odczytu stanu gry do pliku.
+* Warto dodać opcję gry komputer vs komputer, jak również wyboru
+ kto stawia pierwszy ruch. Pozwala to lepiej ocenić działanie algorytmu.
+* Zwracając optymalny ruch algorytm minimax zwraca tak naprawdę
+ ścieżkę od korzenia do liścia w drzewie gry (korzeń reprezentuje
+ obecną sytuację na planszy, liść przyszłą wygraną lub remis).
+ Warto zalogować taką informację wypisując ją na konsole, bądź 
+ zapisując do pliku. Pamiętajmy żeby zalogować tylko i wyłącznie
+ ścieżkę dla wybranego ruchu. W przeciwnym wypadku możemy utonąć w
+ powodzi informacji.
+
+Na koniec zdradzę wam sekret debugowania, który pomoże wam rozwiązać
+nie jeden problem: "Co dwie głowy to nie jedna!".
+Jeżeli masz problem którego nie potrafisz sam rozwiązać poproś
+drugą osobę o pomoc. I niech to nie będzie prośba na forum 
+czy StackOverflow ale debugowanie ramie w ramie z drugim człowiekiem.
+To naprawdę działa i mówię to mając na karku kilka lat solidnej
+praktyki jako programista.
+
+### Przykładowa aplikacja
+
+Kod przykładowej aplikacji można znaleźć na 
+[GitHubie](https://github.com/marcin-chwedczuk/xox/).
+
+Aplikację najlepiej otworzyć w IntelliJ, importując ją 
+jako projekt Gradle. Do edycji GUI niezbędny jest
+[SceneBuilder](https://gluonhq.com/products/scene-builder/).
+
+Jeżeli odkryjecie w aplikacji błąd proszę piszcie na 0xmarcin małpa gmail.com.
+
+Sam kod aplikacji jest czytelny ale nie perfekcyjny. Jest jeszcze wiele
+rzeczy które chciałbym poprawić. Jeżeli widzicie miejsce które
+można poprawić nie bójcie się stworzyć pull request'a na GitHubie.
+Gwiazdki są również mile widziane ;)
+
+	  ]]></description>
+	</item>
+
+	<item>
 	  <title>Jak zacząć przygodę z elektroniką</title>
 	  <link>//jak-zaczac-przygode-z-elektronika</link>
 	  <author></author>
 	  <pubDate>2019-12-30T01:00:01+01:00</pubDate>
 	  <guid>//jak-zaczac-przygode-z-elektronika</guid>
 	  <description><![CDATA[
-	     <p>Parę miesięcy temu postanowiłem powrócić do mojego
+	     Parę miesięcy temu postanowiłem powrócić do mojego
 hobby z czasów dzieciństwa: elektroniki.
 Powrót, po ponad dziesięciu latach przerwy, okazał
 się być trudniejszy niż przypuszczałem,
 a droga do pierwszego działającego układu 
-pełna frustracji i porażek.</p>
+pełna frustracji i porażek.
 
-<p>Pomimo tego radość z wykonania najprostszego generatora,
+Pomimo tego radość z wykonania najprostszego generatora,
 który naprzemiennie migał diodami LED dostarczyła
 mi tak dużo radości i frajdy, że przez kilka następnych
-wieczorów oddałem się w całości budowie kolejnych układów.</p>
+wieczorów oddałem się w całości budowie kolejnych układów.
 
-<p>Niestety elektronika jako hobby, nie jest
+Niestety elektronika jako hobby, nie jest
 już w Polsce tak popularna jak 
 miało to miejsce w końcówce lat dziewięćdziesiątych.
 A szkoda, bo na zachodzie mamy obecnie do czynienia
 z prawdziwym boomem na elektronikę.
 Dobrze ilustrują to platformy takie jak
-<a href="https://www.arduino.cc/">Arduino</a> czy
-<a href="https://www.raspberrypi.org/">Raspberry PI</a>.
+[Arduino](https://www.arduino.cc/) czy
+[Raspberry PI](https://www.raspberrypi.org/).
 Nie wspominając już o modzie na retro-computing
 (a więc na budowę prostych, często 8-bitowych komputerów wprost
 z układów scalonych) uosabianej przez takie postaci
-jak <a href="https://www.youtube.com/channel/UCS0N5baNlQWJCUrhCEo8WlA">Ben Eater</a>
-i projekty jak <a href="https://monster6502.com/">The MOnSter 6502</a> i
-<a href="https://gigatron.io/">Gigatron</a></p>
+jak [Ben Eater](https://www.youtube.com/channel/UCS0N5baNlQWJCUrhCEo8WlA)
+i projekty jak [The MOnSter 6502](https://monster6502.com/) i
+[Gigatron](https://gigatron.io/)
 
-<p>Niestety nauka nowej umiejętności czy jest nią jazda samochodem,
+Niestety nauka nowej umiejętności czy jest nią jazda samochodem,
 czy język obcy czy też elektronika, nie jest prosta.
 Na początkujących czyha wiele pułapek, które zniechęcają ich 
 do dalszej nauki. Dlatego, aby ułatwić początkującym wejście w
@@ -54,30 +294,30 @@ do dalszej nauki. Dlatego, aby ułatwić początkującym wejście w
 i opisać problemy na jakie się natknąłem.
 To jest pierwszy wpis z tej serii, w którym opisuję
 pułapki które czekają nas przy zakupie pierwszych płytek
-stykowych, przewodów i elementów elektronicznych. Zapraszam!</p>
+stykowych, przewodów i elementów elektronicznych. Zapraszam!
 
-<h4 id="płytka-stykowa">Płytka stykowa</h4>
+#### Płytka stykowa
 
-<p>Według mnie najlepszym sposobem montażu układów, na początku
+Według mnie najlepszym sposobem montażu układów, na początku
 przygody z elektroniką są płytki stykowe.
 Na rysunku poniżej przedstawiam przykład dwóch takich płytek:
-<img src="assets/images/2019-12-30/plytki-stykowe-1.jpg" alt="Przykładowe płytki stykowe" /></p>
+![Przykładowe płytki stykowe](assets/images/2019-12-30/plytki-stykowe-1.jpg)
 
-<p>Płytka oznaczona numerem 1, to przykład płytki droższej
+Płytka oznaczona numerem 1, to przykład płytki droższej
 która mimo to posiada kilka poważnych mankamentów.
 Po pierwsze brakuje oznaczenia polaryzacji szyn zasilania,
 co rodzi pole do przykrych w konsekwencjach pomyłek
 (np. nieprawidłowe doprowadzenie zasilania do układu scalonego).
-Po drugie szyny zasilania są “przecięte” w połowie płytki
-(patrz strzałki). Tego typu “przecięcie” przydaje 
+Po drugie szyny zasilania są "przecięte" w połowie płytki
+(patrz strzałki). Tego typu "przecięcie" przydaje 
 się gdy budujemy układy w których występują dwa poziomy
 zasilania np. 3.3V i 5V. Większość początkujących
 elektroników korzysta jednak z pojedynczego napięcia zasilania.
 W praktyce okazywało się to tak denerwujące że musiałem dodać specjalne
 oznaczenia markerem, żeby już więcej się nie zastanawiać dlaczego
-połowa układu nie ma napięcia zasilania.</p>
+połowa układu nie ma napięcia zasilania.
 
-<p>Płytka oznaczona numerem 2 to tania płytka (7 PLN za sztukę),
+Płytka oznaczona numerem 2 to tania płytka (7 PLN za sztukę),
 produkcji chińskiej. Mimo to producent
 nie oszczędzał na pomocnych oznaczeniach. 
 Każda z czterech linii zasilania
@@ -87,236 +327,234 @@ Może, na pierwszy rzut oka nie wydaje się to
 przydatne, ale w internecie można znaleźć mnóstwo
 projektów pomyślanych specjalnie do wykonania
 na płytkach stykowych, które zawierają instrukcje
-typu: “umieść rezystor 1k w gniazdach 5f i 5c”.</p>
+typu: "umieść rezystor 1k w gniazdach 5f i 5c".
 
-<p>Niestety niska cena płytki nr. 2 znalazła negatywne
+Niestety niska cena płytki nr. 2 znalazła negatywne
 odbicie w jakości styków. Korzystanie z tej płytki
 rodziło sporo kłopotów: często miałem problemy żeby
 włożyć końcówkę przewodu lub nóżkę elementu do danego
 gniazda. Czasami pomagało wetknięcie szpilki, czasami
 włożenie przewodów najpierw do sąsiadujących gniazd
 a dopiero potem przeniesienie ich do tego właściwego.
-Czasami pomagało “wiercenie” w gnieździe nóżką diody LED.
+Czasami pomagało "wiercenie" w gnieździe nóżką diody LED.
 Innymi słowy, spora część radości wynikającej z budowania układu 
-ustępowała miejsca frustracji związanej z niskiej jakości płytką.</p>
+ustępowała miejsca frustracji związanej z niskiej jakości płytką.
 
-<p>Przed zakupem płytek polecam przeczytać
+Przed zakupem płytek polecam przeczytać
 recenzje, zarówno na polski forach jak i na zagranicznych (oraz
 na Amazonie). Osobiście, nie znalazłem jak do tej pory
 płytki stykowej godnej polecenia, jeżeli taką znacie to
-proszę dodajcie komentarz z linkiem.</p>
+proszę dodajcie komentarz z linkiem.
 
-<p>Wróćmy jeszcze na chwilę do zdjęcia płytek. 
+Wróćmy jeszcze na chwilę do zdjęcia płytek. 
 Część oznaczona numerem cztery to pojedyncza szyna zasilania,
 odseparowana od płytki stykowej typu dwa. 
 Jak się okazuje od każdej płytki możemy oderwać jedną lub
 obie szyny zasilania. Przy wykonywaniu tej operacji
 przydaje się nożyk do kartonu, który pozwoli nam
-rozciąć izolacyjny materiał znajdujący się na spodzie płytki.</p>
+rozciąć izolacyjny materiał znajdujący się na spodzie płytki.
 
-<p>Każda płytka stykowa posiada wypustki, które pozwalają
-zbudować “megapłytkę” z dwóch lub większej liczby 
+Każda płytka stykowa posiada wypustki, które pozwalają
+zbudować "megapłytkę" z dwóch lub większej liczby 
 pojedynczych płytek (z obecnymi lub oderwanymi szynami zasilania).
 Niestety płytki wyprodukowane przez różne firmy rzadko
 są ze sobą kompatybilne. 
-Poniżej zamiejszczam zdjęcie takiej “megapłytki”:
-<img src="assets/images/2019-12-30/megaplytka.jpg" alt="Megapłytka" /></p>
+Poniżej zamiejszczam zdjęcie takiej "megapłytki":
+![Megapłytka](assets/images/2019-12-30/megaplytka.jpg)
 
-<p>Oprócz pełonowymiarowych płytek, na ryku dostępne są też
+Oprócz pełonowymiarowych płytek, na ryku dostępne są też
 mniejsze modele:
-<img src="assets/images/2019-12-30/mini.jpg" alt="Mini płytki" />
+![Mini płytki](assets/images/2019-12-30/mini.jpg)
 Osobiście nie polecam ich początkującym, gdyż są
-po prostu za małe.</p>
+po prostu za małe.
 
-<p>Wydawało by się że orientacja płytki nie ma żadnego znaczenia.
+Wydawało by się że orientacja płytki nie ma żadnego znaczenia.
 Warto jednak przy budowie układów podążać za sprawdzoną regułą,
 która mówi że prądy powinny płynąć z góry na dół, a sygnały
 od lewej do prawej. W praktyce oznacza to że górna wewnętrzna
 szyna zasilająca powinna być podłączona do plusa zasilania,
 a dolna wewnętrzna do minusa. Przestrzeganie tej
-zasady znacznie ułatwi nam doprowadzanie zasilania do układów scalonych.</p>
+zasady znacznie ułatwi nam doprowadzanie zasilania do układów scalonych.
 
-<p>A skoro już jesteśmy przy układach scalonych, większość
+A skoro już jesteśmy przy układach scalonych, większość
 z nich nie posiada prostopadłych nóżek. Zamiast tego
 nóżki rozchodzą się nieco na boki, co uniemożliwia umieszczenie
 takiego układu w płytce stykowej. Rozwiązaniem tego
 problemu jest przygięcie nóżek scalaka przed włożeniem go
 do płytki:
-<img src="assets/images/2019-12-30/nogi.jpg" alt="Ach te nóżki" /></p>
+![Ach te nóżki](assets/images/2019-12-30/nogi.jpg)
 
-<p>Zanim opuścimy temat płytek warto jeszcze dodać, że
+Zanim opuścimy temat płytek warto jeszcze dodać, że
 na opakowaniu płytki znajduje się jeden z najważniejszych
 jej parametrów, mianowicie zakres grubości drutów/końcówek/wyprowadzeń
 z jakimi płytka współpracuje. Ten parametr okaże się istotny
 gdy będziemy planować zakup przewodów kompatybilnych
-z płytką (czytaj nie każdy przewód pasuje do danej płytki).</p>
+z płytką (czytaj nie każdy przewód pasuje do danej płytki).
 
-<h4 id="przewody--połączenia--zworki">Przewody / połączenia / zworki</h4>
+#### Przewody / połączenia / zworki
 
-<p>Oprócz płytki stykowej, przy budowie układów będziemy
+Oprócz płytki stykowej, przy budowie układów będziemy
 też potrzebowali całej masy przewodów.
 Osobiście polecam zakup zestawu przewodów
-takich jak <a href="https://www.adafruit.com/product/3174">Adafruit Hook-up Wire</a>,
+takich jak [Adafruit Hook-up Wire](https://www.adafruit.com/product/3174),
 wraz ze szczypcami do ściągania izolacji takimi
-jak <a href="https://www.adafruit.com/product/147">Adafruit Wire Stripper</a>:
-<img src="assets/images/2019-12-30/druty.jpg" alt="Przewody" />
+jak [Adafruit Wire Stripper](https://www.adafruit.com/product/147):
+![Przewody](assets/images/2019-12-30/druty.jpg)
 Przy zakupie warto zwracać uwagę czy na pewno kupujemy
-<em>jednożyłowy</em>, <em>cynowany</em> przewód miedziany, a nie na przykład
+_jednożyłowy_, _cynowany_ przewód miedziany, a nie na przykład
 wielożyłowy (czysta miedź pokrywa się
 nieprzewodzącą warstwą tlenków, cynowany drut zapewni
-nam znacznie lepszą jakość połączeń).</p>
+nam znacznie lepszą jakość połączeń).
 
-<p>Przedstawiony powyżej zestaw przewodów ma grubość
+Przedstawiony powyżej zestaw przewodów ma grubość
 drutu AWG 22 (miara amerykańska), co przelicza się
 na polskie 0.6438 milimetra średnicy.
 Płytki stykowe z pierwszej sekcji, pracują poprawnie z przewodami
 o grubościach 0.3-0.8 milimetra, a więc są kompatybilne z tym
-zestawem przewodów.</p>
+zestawem przewodów.
 
-<p>Ze względu na rosnące ceny miedzi zakup zestawów takich
+Ze względu na rosnące ceny miedzi zakup zestawów takich
 jak te przedstawione powyżej, może wiązać się ze sporym wydatkiem.
 Należy jednak pamiętać że
 jeden zestaw przewodów powinien zaspokoić nasze potrzeby na mniej więcej rok,
 a szczypce to wydatek jednorazowy.
-Obecna cena powyższego zestawu przewodów w sklepie <a href="https://pl.mouser.com/">Mouser</a>
+Obecna cena powyższego zestawu przewodów w sklepie [Mouser](https://pl.mouser.com/)
 wynosi około 120PLN. Oczywiście zawsze warto sprawdzić czy
 nie znajdziemy lepszej oferty w polskich sklepach, na ceneo czy
-w końcu na AliExpressie.</p>
+w końcu na AliExpressie.
 
-<p>Oprócz zestawu przewodów, w sklepach można znaleźć również zestawy zworek
+Oprócz zestawu przewodów, w sklepach można znaleźć również zestawy zworek
 (numer jeden na zdjęciu):
-<img src="assets/images/2019-12-30/zwory.jpg" alt="Przewody ciąg dalszy" />
+![Przewody ciąg dalszy](assets/images/2019-12-30/zwory.jpg)
 Zestawy takie są, w stosunku do ich ceny, kompletnie bezużyteczne.
 Zwory prawie nigdy nie miały potrzebnej długości gdy chciałem
 ich użyć. Krótkie zworki kończyły się bardzo szybko, podczas
-gdy długich zostawał nadmiar. Jednym słowem: nie polecam.</p>
+gdy długich zostawał nadmiar. Jednym słowem: nie polecam.
 
-<p>Polecam za to zakup elastycznych przewodów połączeniowych
+Polecam za to zakup elastycznych przewodów połączeniowych
 (numer dwa i trzy na zdjęciu).
 Przewody typu trzy dostępne są w zestawach o dość przystępnej
 cenie. Przewody typu dwa występują we wstęgach, które można
-rozrywać (nawet na pojedyncze przewody) wedle upodobań.</p>
+rozrywać (nawet na pojedyncze przewody) wedle upodobań.
 
-<p>Do zabawy z płytkami stykowymi i Arduino potrzebne nam będą przede
+Do zabawy z płytkami stykowymi i Arduino potrzebne nam będą przede
 wszystkim przewody z wtykami męskimi (patrz numer trzy).
 Do zabawy z Rasbperry PI,
 a także z modułami do Arduino (np. czujniki ruchu) przydadzą się
-przewody męsko-żeńskie (patrz numer dwa).</p>
+przewody męsko-żeńskie (patrz numer dwa).
 
-<p>Czasami zdarza się, że przewody będące częścią zestawów mają
+Czasami zdarza się, że przewody będące częścią zestawów mają
 końcówki wtyków pokryte ochronną warstwą plastiku którą łatwo
-przeoczyć. Jeżeli przewód “źle łączy” należy sprawdzić czy
+przeoczyć. Jeżeli przewód "źle łączy" należy sprawdzić czy
 końcówki nie posiadają takiej ochronnej izolacji i ewentualnie
-ją usunąć.</p>
+ją usunąć.
 
-<p>Warto zarezerwować sobie dwa kolory (np. czarny i czerwony)
+Warto zarezerwować sobie dwa kolory (np. czarny i czerwony)
 na oznaczenie przewodów które mają potencjał masy i plusa zasilania.
 Warto też pomyśleć o konwencji użycia kolorów, na przykład: przewód biały to
 zawsze sygnał zegara.
-Poza tym im więcej kolorów mamy do dyspozycji tym lepiej.</p>
+Poza tym im więcej kolorów mamy do dyspozycji tym lepiej.
 
-<h4 id="pozostałe-narzędzia">Pozostałe narzędzia</h4>
+#### Pozostałe narzędzia
 
-<p>Pozostałe przydatne narzędzia to:</p>
+Pozostałe przydatne narzędzia to:
 
-<ol>
-  <li>Mały płaski śrubokręt</li>
-  <li><em>Szczypce tnące boczne</em>
+1. Mały płaski śrubokręt
+2. _Szczypce tnące boczne_
  do ucinania zbyt długich wyprowadzeń elementów
- (<a href="https://botland.com.pl/pl/szczypce/5851-szczypce-tnace-boczne-yato-yt-2081-115mm-5906083920813.html">model ze zdjęcia</a>)</li>
-  <li>Oraz najbardziej przydatna z całej tej
+ ([model ze zdjęcia](https://botland.com.pl/pl/szczypce/5851-szczypce-tnace-boczne-yato-yt-2081-115mm-5906083920813.html))
+3. Oraz najbardziej przydatna z całej tej
  trójki, bo pozwalająca wygodnie wyjmować i wkładać przewody
  połączeniowe - pęseta
- (<a href="https://sklep.avt.pl/peseta-antystatyczna-122mm-prosta-ostra-esd-10.html">model ze zdjęcia</a>)</li>
-</ol>
+ ([model ze zdjęcia](https://sklep.avt.pl/peseta-antystatyczna-122mm-prosta-ostra-esd-10.html))
 
-<p><img src="assets/images/2019-12-30/szczypce.jpg" alt="Przydatne narzędzia" /></p>
+![Przydatne narzędzia](assets/images/2019-12-30/szczypce.jpg)
 
-<p>Przycinanie wyprowadzeń elementów za pomocą
+Przycinanie wyprowadzeń elementów za pomocą
 szczypiec może być odrobinę niebezpieczne.
 Nóżki, na przykład dużych diod LED, podczas przycinania mają tendencje to
-“wystrzeliwania” w znanym tylko sobie kierunku, dlatego
+"wystrzeliwania" w znanym tylko sobie kierunku, dlatego
 warto też pomyśleć o zakupie 
-<a href="https://botland.com.pl/en/goggles/5626-okulary-yt-7367-5906083973611.html">okularów ochronnych</a>.</p>
+[okularów ochronnych](https://botland.com.pl/en/goggles/5626-okulary-yt-7367-5906083973611.html).
 
-<p>Ostatnim, naprawdę niezbędnym narzędziem, w jaki
+Ostatnim, naprawdę niezbędnym narzędziem, w jaki
 powinniśmy się zaopatrzyć jest multimetr.
 Ja używam następującego modelu, mało znanej chińskiej
 marki i jestem z niego całkowicie zadowolony:
-<img src="assets/images/2019-12-30/multi.jpg" alt="Multimetr" /></p>
+![Multimetr](assets/images/2019-12-30/multi.jpg)
 
-<h4 id="elementy-elektroniczne">Elementy elektroniczne</h4>
+#### Elementy elektroniczne
 
-<p>Można by pomyśleć, że po całym tym zamieszaniu z płytkami,
+Można by pomyśleć, że po całym tym zamieszaniu z płytkami,
 narzędziami i multimetrem zakup elementów elektronicznych 
 będzie czystą przyjemnością.
 Nic bardziej mylnego!
 Pierwszym zaskoczeniem jakie mnie spotkało, była niewielka
 średnica wyprowadzeń resystorów zakupionych w zestawie
-“dla początkujących”. Średnica była tak mała, że czasami
+"dla początkujących". Średnica była tak mała, że czasami
 trudno było uzyskać dobre połączenie z płytką stykową.
-Ostatecznie skończyłem z <a href="https://botland.com.pl/pl/rezystory-przewlekane/13895-zestaw-rezystorow-cf-tht-14w-velleman-kres-e3-480szt-5410329241803.html">tym zestawem rezystorów</a></p>
+Ostatecznie skończyłem z [tym zestawem rezystorów](https://botland.com.pl/pl/rezystory-przewlekane/13895-zestaw-rezystorow-cf-tht-14w-velleman-kres-e3-480szt-5410329241803.html)
 
-<p><img src="assets/images/2019-12-30/vkit.jpg" alt="Zestaw velleman-kit" /></p>
+![Zestaw velleman-kit](assets/images/2019-12-30/vkit.jpg)
 
-<p>Dobrze ilustruje to powyższe zdjęcie, rezystor oznaczony
-numerem jeden pochodzi z taniego zestawu “dla początkujących”.
+Dobrze ilustruje to powyższe zdjęcie, rezystor oznaczony
+numerem jeden pochodzi z taniego zestawu "dla początkujących".
 Posiada długie i cienkie wyprowadzenia słabo współpracujące z
 płytkami stykowymi. Rezystor oznaczony numerem dwa pochodzi
-z zestawu velleman’a - wyraźnie widać krótsze, ale za to
-grubsze i bardziej masywne wyprowadzenia.</p>
+z zestawu velleman'a - wyraźnie widać krótsze, ale za to
+grubsze i bardziej masywne wyprowadzenia.
 
-<p>Osobiście odradzam również zakup rezystorów o mocy większej
-niż 0,25W. Rezystory 1W w porównaniu do 0,25W to prawdziwe olbrzymy.</p>
+Osobiście odradzam również zakup rezystorów o mocy większej
+niż 0,25W. Rezystory 1W w porównaniu do 0,25W to prawdziwe olbrzymy.
 
-<p>W przeciwieństwie do rezystorów, zakup diod LED
-(polecam “duże” 5mm) czy kondensatorów nie sprawiał
-większych problemów, elementy po prostu działały.</p>
+W przeciwieństwie do rezystorów, zakup diod LED
+(polecam "duże" 5mm) czy kondensatorów nie sprawiał
+większych problemów, elementy po prostu działały.
 
-<p>Z kolei zakup przycisków (“switchy”) i potencjometrów
+Z kolei zakup przycisków ("switchy") i potencjometrów
 sprawił mi trochę kłopotów. Okazuje się że wiele elementów
 występuje w dwóch wersjach: do wlutowania i do płytek stykowych.
 Popatrzmy na zdjęcie:
-<img src="assets/images/2019-12-30/proste.jpg" alt="Elementy do wlutowania i do płytek stykowych" />
+![Elementy do wlutowania i do płytek stykowych](assets/images/2019-12-30/proste.jpg)
 Elementy z grupy pierwszej są przeznaczone do wlutowania.
 Elementy z grupy drugiej, charakteryzującej się prostymi
 wyprowadzeniami, są przewidziane do umieszczenia na płytkach
 stykowych. Zawsze należy dokładnie sprawdzić czy na pewno
-kupujemy takie elementy, jakich naprawdę potrzebujemy.</p>
+kupujemy takie elementy, jakich naprawdę potrzebujemy.
 
-<p>Na koniec, żeby nie tracić czasu na mozolne odnajdywanie potrzebnych
+Na koniec, żeby nie tracić czasu na mozolne odnajdywanie potrzebnych
 elementów, warto zaopatrzyć się w dobry organizer:
-<img src="assets/images/2019-12-30/organizer.jpg" alt="Organizer" /></p>
+![Organizer](assets/images/2019-12-30/organizer.jpg)
 
-<h4 id="zasilanie">Zasilanie</h4>
+#### Zasilanie
 
-<p>Początkowo zasilałem moje układy z baterii 9V.
+Początkowo zasilałem moje układy z baterii 9V.
 Wykorzystywałem do tego celu kijankę (numer jeden),
 gniazdo które można włożyć w szynę zasilania płytki stykowej (numer trzy) oraz
 konwerter (numer dwa):
-<img src="assets/images/2019-12-30/zas1.jpg" alt="Zasilanie z bateri 9V" />
+![Zasilanie z bateri 9V](assets/images/2019-12-30/zas1.jpg)
 Konwerter okazał się konieczny, ponieważ zakupu
-gniazda dokonałem “na oko”, nie będąc świadom że
-istnieje wiele różnych rozmiarów wtyków zasilania.</p>
+gniazda dokonałem "na oko", nie będąc świadom że
+istnieje wiele różnych rozmiarów wtyków zasilania.
 
-<p>Osobiście nie polecam tego sposobu zasilania.
+Osobiście nie polecam tego sposobu zasilania.
 Po pierwsze jesteśmy zdani na napięcie baterii, a wiele
 układów wymaga niestandardowych napięć 3,3V lub 5V.
 Po drugie zaśmiecamy środowisko zużytymi bateriami,
-przy jednoczesnym zubożaniu naszego portfela.</p>
+przy jednoczesnym zubożaniu naszego portfela.
 
-<p>Najlepszym rozwiązaniem, dla osób dysponujących zapasem
+Najlepszym rozwiązaniem, dla osób dysponujących zapasem
 gotówki jest kupno zasilacza laboratoryjnego,
 nazywanego również zasilaczem warsztatowym.
 Dla wszystkich pozostałych, przynajmniej na początku,
 dobrym kompromisem jest zakup 
-<a href="https://sklep.avt.pl/avt3072.html">zasilacza płytek stykowych</a>:
-<img src="assets/images/2019-12-30/zas2.jpg" alt="Zasilacz do płytek stykowych" />
+[zasilacza płytek stykowych](https://sklep.avt.pl/avt3072.html):
+![Zasilacz do płytek stykowych](assets/images/2019-12-30/zas2.jpg)
 Należy pamiętać że sam zasilacz to tylko prosta płytka PCB
 (ang. printed circuit board, pl. płytka drukowana), do
-pracy potrzebny jej jest <a href="https://sklep.avt.pl/zasilacz-impulsowy-12v-1-5a-18w-dc2-5-5-5.html">zasilacz impulsowy</a> - oznaczony na zdjęciu numerem dwa.</p>
+pracy potrzebny jej jest [zasilacz impulsowy](https://sklep.avt.pl/zasilacz-impulsowy-12v-1-5a-18w-dc2-5-5-5.html) - oznaczony na zdjęciu numerem dwa.
 
-<p>Przedstawiony powyżej zasilacz, który służy mi już kilka miesięcy,
+Przedstawiony powyżej zasilacz, który służy mi już kilka miesięcy,
 niestety nie jest pozbawiony wad.
 Najpoważniejsza z nich jest taka, że nie jesteśmy ostrzegani
 o zwarciu przewodów zasilania.
@@ -326,43 +564,37 @@ W powyższym zasilaczu, zwarcie można rozpoznać jedynie po
 silnie rozgrzanym radiatorze.
 Dlatego, pomimo że podałem linki do sklepu, zachęcam was do
 poszukania lepszego modelu lub jeżeli już taki
-posiadacie do pozostawienia komentarza z linkiem.</p>
+posiadacie do pozostawienia komentarza z linkiem.
 
-<h4 id="sklepy">Sklepy</h4>
+#### Sklepy
 
-<p>Na koniec lista sklepów z których jestem
-względnie zadowolony:</p>
+Na koniec lista sklepów z których jestem
+względnie zadowolony:
 
-<ul>
-  <li>
-    <p><a href="https://sklep.avt.pl/">Sklep AVT</a> związany od wielu lat
- z czasopismem “Elektronika dla wszystkich”</p>
-  </li>
-  <li>
-    <p><a href="https://botland.com.pl/pl/">Botland</a></p>
-  </li>
-</ul>
+* [Sklep AVT](https://sklep.avt.pl/) związany od wielu lat
+ z czasopismem "Elektronika dla wszystkich"
 
-<p>Z zagranicznych warto wspomnieć:</p>
+* [Botland](https://botland.com.pl/pl/)
 
-<ul>
-  <li><a href="https://pl.mouser.com/">Mouser</a> - ten sklep
+Z zagranicznych warto wspomnieć:
+
+* [Mouser](https://pl.mouser.com/) - ten sklep
  śmiało można nazwać profesjonalnym.
  Można łatwo i szybko (czas dostawy nie przekracza tygodnia)
  dostać układy praktycznie niedostępne na polskim rynku.
  Ale uwaga, ceny produktów podane są na modłę amerykańską, 
  a więc nie zawierają
- 23% podatku VAT. Najeży o tym pamiętać porównując oferty.</li>
-</ul>
+ 23% podatku VAT. Najeży o tym pamiętać porównując oferty.
 
-<p>Oczywiście zawsze warto korzystać z porównywarek cen
+Oczywiście zawsze warto korzystać z porównywarek cen
 i sprawdzać opinie sklepów na forach internetowych.
-Bardziej odważni i cierpliwi mogą spróbować szczęścia na AliExpressie.</p>
+Bardziej odważni i cierpliwi mogą spróbować szczęścia na AliExpressie.
 
-<p>Na zakończenie, “starożytne” i niestety niedziałające, układy
+Na zakończenie, "starożytne" i niestety niedziałające, układy
 scalone polskiej produkcji (sic!), które otrzymałem od jednego
 z polskich sklepów:
-<img src="assets/images/2019-12-30/cemi.jpg" alt="Polskie scalaki" /></p>
+![Polskie scalaki](assets/images/2019-12-30/cemi.jpg)
+
 
 
 	  ]]></description>

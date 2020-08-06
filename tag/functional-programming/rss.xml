@@ -18,163 +18,168 @@
 	  <pubDate>2020-06-27T02:00:01+02:00</pubDate>
 	  <guid>//continuations-in-java</guid>
 	  <description><![CDATA[
-	     <p>CSP or Continuation-Passing Style is a style of programming in which
+	     CSP or Continuation-Passing Style is a style of programming in which
 functions return results via callbacks.
-For example <code class="highlighter-rouge">+</code> operator is a function that takes two numbers and
-returns their sum. In CSP <code class="highlighter-rouge">+</code> operator becomes a function that takes
+For example `+` operator is a function that takes two numbers and
+returns their sum. In CSP `+` operator becomes a function that takes
 three arguments, two terms and a callback, usually called a continuation in
 the context of CSP.
-In Java we can express this as:</p>
+In Java we can express this as:
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">add</span><span class="o">(</span><span class="kt">int</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">b</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="o">);</span>
-<span class="o">}</span>
+{% highlight java %}
+void add(int a, int b, Cont<Integer> cont) {
+    cont.apply(a + b);
+}
 
-<span class="nd">@FunctionalInterface</span>
-<span class="kd">private</span> <span class="kd">interface</span> <span class="nc">Cont</span><span class="o">&lt;</span><span class="n">R</span><span class="o">&gt;</span> <span class="o">{</span>
-  <span class="kt">void</span> <span class="nf">apply</span><span class="o">(</span><span class="n">R</span> <span class="n">result</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
+@FunctionalInterface
+private interface Cont<R> {
+  void apply(R result);
+}
+{% endhighlight %}
 
-<p>Because functions’ results are always returned via callback calls,
+Because functions' results are always returned via callback calls,
 CSP is forcing us to name the returned values by naming callback parameters.
 In addition CSP makes the order of evaluation of an expression explicit.
-For example, a simple Java program in imperative style:</p>
+For example, a simple Java program in imperative style:
+{% highlight java %}
+System.out.println(1 + 2 + 3);
+System.exit(0);
+{% endhighlight %}
+Can be expressed in CSP as follows:
+{% highlight java %}
+add(1, 2, partialSum ->
+  add(partialSum, 3, sum ->
+    print(sum, unit ->
+      System.exit(0))));
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span><span class="o">);</span>
-<span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span></code></pre></figure>
-
-<p>Can be expressed in CSP as follows:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">add</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="n">partialSum</span> <span class="o">-&gt;</span>
-  <span class="n">add</span><span class="o">(</span><span class="n">partialSum</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="n">sum</span> <span class="o">-&gt;</span>
-    <span class="n">print</span><span class="o">(</span><span class="n">sum</span><span class="o">,</span> <span class="n">unit</span> <span class="o">-&gt;</span>
-      <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">0</span><span class="o">))));</span>
-
-<span class="kd">static</span> <span class="kt">void</span> <span class="nf">print</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">n</span><span class="o">);</span>
-  <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>While transforming imperative programs into CSP form we may encounter
-problems with handling procedures (methods returning <code class="highlighter-rouge">void</code> in Java).
+static void print(int n, Cont<Void> cont) {
+  System.out.println(n);
+  cont.apply(null);
+}
+{% endhighlight %}
+While transforming imperative programs into CSP form we may encounter
+problems with handling procedures (methods returning `void` in Java).
 A lot of functional programming languages do not support procedures,
-instead they define a special type called <code class="highlighter-rouge">Unit</code>, that has only
+instead they define a special type called `Unit`, that has only
 a single value and use that type to signify that function does
 not return any meaningful data.
-So defined <code class="highlighter-rouge">Unit</code> type is often identified with the empty tuple <code class="highlighter-rouge">()</code>.
-In Java we do not have <code class="highlighter-rouge">Unit</code>, but we may use <code class="highlighter-rouge">Void</code> type with its only
-allowed value <code class="highlighter-rouge">null</code> to simulate it.</p>
+So defined `Unit` type is often identified with the empty tuple `()`.
+In Java we do not have `Unit`, but we may use `Void` type with its only
+allowed value `null` to simulate it.
 
-<p>While looking at our last example we may notice that in CSP form,
+While looking at our last example we may notice that in CSP form,
 function arguments can be in one of three forms:
 a constant, a variable or a lambda expression.
 There is no rule preventing us from passing two or more
 callbacks to a single function. 
-Indeed this is necessary to translate <code class="highlighter-rouge">if</code> statement to CSP counterpart:</p>
+Indeed this is necessary to translate `if` statement to CSP counterpart:
+{% highlight java %}
+void iff(boolean expr,
+         Cont<Boolean> trueBranch,
+         Cont<Boolean> falseBranch) {
+    if (expr) trueBranch.apply(true);
+    else falseBranch.apply(false);
+}
+{% endhighlight %}
+Instead of `Cont<Boolean>` we could use here `Cont<Void>` as well.
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">iff</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">expr</span><span class="o">,</span>
-         <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Boolean</span><span class="o">&gt;</span> <span class="n">trueBranch</span><span class="o">,</span>
-         <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Boolean</span><span class="o">&gt;</span> <span class="n">falseBranch</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">expr</span><span class="o">)</span> <span class="n">trueBranch</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-    <span class="k">else</span> <span class="n">falseBranch</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Instead of <code class="highlighter-rouge">Cont&lt;Boolean&gt;</code> we could use here <code class="highlighter-rouge">Cont&lt;Void&gt;</code> as well.</p>
-
-<p>To get a better feel for CSP we will look at three more examples.
+To get a better feel for CSP we will look at three more examples.
 We will start with a simple (naive) program for computing sum
-of all numbers between given two numbers:</p>
+of all numbers between given two numbers:
+{% highlight java %}
+static long sum(int from, int to) {
+  long sum = 0;
+  for (int i = from; i <= to; i++) {
+    sum += i;
+  }
+  return sum;
+}
+{% endhighlight %}
+The transformation to CSP will become easier
+if we first replace `for` loop with recursion:
+{% highlight java %}
+static long sum_rec(int from, int to) {
+  return (from > to)
+    ? 0
+    : from + sum_rec(from+1, to);
+}
+{% endhighlight %}
+This version can be easily translated into CSP:
+{% highlight java %}
+static void sumCC(int from, int to, Cont<Long> cont) {
+  gt(from, to, fromGreaterThanTo ->
+    iff(fromGreaterThanTo,
+      x -> cont.apply(0L),
+      x -> add(from, 1, from1 ->
+        sumCC(from1, to, sumCC1 ->
+          addLong(from, sumCC1, cont)))));
+}
+{% endhighlight %}
+Where `gt` is the CSP counterpart of `>` operator.
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">long</span> <span class="nf">sum</span><span class="o">(</span><span class="kt">int</span> <span class="n">from</span><span class="o">,</span> <span class="kt">int</span> <span class="n">to</span><span class="o">)</span> <span class="o">{</span>
-  <span class="kt">long</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">from</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">to</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-    <span class="n">sum</span> <span class="o">+=</span> <span class="n">i</span><span class="o">;</span>
-  <span class="o">}</span>
-  <span class="k">return</span> <span class="n">sum</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>The transformation to CSP will become easier
-if we first replace <code class="highlighter-rouge">for</code> loop with recursion:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">long</span> <span class="nf">sum_rec</span><span class="o">(</span><span class="kt">int</span> <span class="n">from</span><span class="o">,</span> <span class="kt">int</span> <span class="n">to</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">return</span> <span class="o">(</span><span class="n">from</span> <span class="o">&gt;</span> <span class="n">to</span><span class="o">)</span>
-    <span class="o">?</span> <span class="mi">0</span>
-    <span class="o">:</span> <span class="n">from</span> <span class="o">+</span> <span class="n">sum_rec</span><span class="o">(</span><span class="n">from</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">to</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>This version can be easily translated into CSP:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">void</span> <span class="nf">sumCC</span><span class="o">(</span><span class="kt">int</span> <span class="n">from</span><span class="o">,</span> <span class="kt">int</span> <span class="n">to</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">gt</span><span class="o">(</span><span class="n">from</span><span class="o">,</span> <span class="n">to</span><span class="o">,</span> <span class="n">fromGreaterThanTo</span> <span class="o">-&gt;</span>
-    <span class="n">iff</span><span class="o">(</span><span class="n">fromGreaterThanTo</span><span class="o">,</span>
-      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="mi">0L</span><span class="o">),</span>
-      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">add</span><span class="o">(</span><span class="n">from</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="n">from1</span> <span class="o">-&gt;</span>
-        <span class="n">sumCC</span><span class="o">(</span><span class="n">from1</span><span class="o">,</span> <span class="n">to</span><span class="o">,</span> <span class="n">sumCC1</span> <span class="o">-&gt;</span>
-          <span class="n">addLong</span><span class="o">(</span><span class="n">from</span><span class="o">,</span> <span class="n">sumCC1</span><span class="o">,</span> <span class="n">cont</span><span class="o">)))));</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Where <code class="highlighter-rouge">gt</code> is the CSP counterpart of <code class="highlighter-rouge">&gt;</code> operator.</p>
-
-<p>Next we will transform factorial computing function.
+Next we will transform factorial computing function.
 This time we will start with a recursive definition that is 
-easier to translate:</p>
+easier to translate:
+{% highlight java %}
+static int factorial(int n) {
+  if (n == 0) return 1;
+  return factorial(n-1)*n;
+}
+{% endhighlight %}
+CSP version of factorial looks like this:
+{% highlight java %}
+private static void factorial(int n, Cont<Integer> cont) {
+  eq(n, 0, isNZero ->
+    iff(isNZero,
+      x -> cont.apply(1),
+      x -> add(n, -1, nm1 ->
+        factorial(nm1, fnm1 ->
+          multiply(n, fnm1, cont)))));
+}
+{% endhighlight %}
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">int</span> <span class="nf">factorial</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">if</span> <span class="o">(</span><span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
-  <span class="k">return</span> <span class="nf">factorial</span><span class="o">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="o">)*</span><span class="n">n</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
+As the last example we will transform a function
+that computes Fibonacci sequence:
+{% highlight java %}
+static int fib1(int n) {
+    if (n < 2) return 1;
+    return fib1(n-1) + fib1(n-2);
+}
+{% endhighlight %}
+In CSP it looks like this:
+{% highlight java %}
+static void fib(int n, Cont<Integer> cont) {
+  lt(n, 2, nlt2 ->
+    iff(nlt2,
+      x -> cont.apply(1),
+      x -> add(n, -1, nm1 ->
+        fib(nm1, fnm1 ->
+          add(n, -2, nm2 ->
+            fib(nm2, fnm2 ->
+              add(fnm1, fnm2, cont)))))));
+}
+{% endhighlight %}
 
-<p>CSP version of factorial looks like this:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">factorial</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">eq</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">isNZero</span> <span class="o">-&gt;</span>
-    <span class="n">iff</span><span class="o">(</span><span class="n">isNZero</span><span class="o">,</span>
-      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span>
-      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">add</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">nm1</span> <span class="o">-&gt;</span>
-        <span class="n">factorial</span><span class="o">(</span><span class="n">nm1</span><span class="o">,</span> <span class="n">fnm1</span> <span class="o">-&gt;</span>
-          <span class="n">multiply</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="n">fnm1</span><span class="o">,</span> <span class="n">cont</span><span class="o">)))));</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>As the last example we will transform a function
-that computes Fibonacci sequence:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">int</span> <span class="nf">fib1</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">)</span> <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
-    <span class="k">return</span> <span class="nf">fib1</span><span class="o">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">+</span> <span class="n">fib1</span><span class="o">(</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>In CSP it looks like this:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">void</span> <span class="nf">fib</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">lt</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="n">nlt2</span> <span class="o">-&gt;</span>
-    <span class="n">iff</span><span class="o">(</span><span class="n">nlt2</span><span class="o">,</span>
-      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span>
-      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">add</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">nm1</span> <span class="o">-&gt;</span>
-        <span class="n">fib</span><span class="o">(</span><span class="n">nm1</span><span class="o">,</span> <span class="n">fnm1</span> <span class="o">-&gt;</span>
-          <span class="n">add</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="o">-</span><span class="mi">2</span><span class="o">,</span> <span class="n">nm2</span> <span class="o">-&gt;</span>
-            <span class="n">fib</span><span class="o">(</span><span class="n">nm2</span><span class="o">,</span> <span class="n">fnm2</span> <span class="o">-&gt;</span>
-              <span class="n">add</span><span class="o">(</span><span class="n">fnm1</span><span class="o">,</span> <span class="n">fnm2</span><span class="o">,</span> <span class="n">cont</span><span class="o">)))))));</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Now we should have, at least intuitive feel, how the
+Now we should have, at least intuitive feel, how the
 transformation to CSP works. In fact any program can be
 transformed to CSP. The last point is quite interesting,
-especially if we pass <code class="highlighter-rouge">() -&gt; exit(0)</code> or some other not-returning function
+especially if we pass `() -> exit(0)` or some other not-returning function
 as the last continuation. Why? Because in that case we will
 never return from any of the called functions.
-Let’s see how this works on a simple example:</p>
+Let's see how this works on a simple example:
+{% highlight java %}
+static void main(String[] args) {
+    factorial(6, fac6 ->
+      print(fac6, x ->
+        System.exit(0)));
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">factorial</span><span class="o">(</span><span class="mi">6</span><span class="o">,</span> <span class="n">fac6</span> <span class="o">-&gt;</span>
-      <span class="n">print</span><span class="o">(</span><span class="n">fac6</span><span class="o">,</span> <span class="n">x</span> <span class="o">-&gt;</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">0</span><span class="o">)));</span>
+    System.out.println("Will never be printed");
+}
+{% endhighlight %}
 
-    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Will never be printed"</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>The entire idea of having a call stack is about providing a way for
+The entire idea of having a call stack is about providing a way for
 the called functions to return the control to the callers.
-But if we are never returning, then we don’t need a call stack, right?
+But if we are never returning, then we don't need a call stack, right?
 Not so fast, some of you may say - what about passing arguments to 
 the called functions,
 call stack is used for that too. Yes, the arguments are also stored on
@@ -183,111 +188,113 @@ the values of arguments using closures.
 Of course JVM does not know that our programs are in CSP form or that they 
 would do fine without having a call stack at all.
 Instead we get a new call stack frame every time we call something,
-this results in <code class="highlighter-rouge">StackOverflowError</code> quickly when we call
-e.g. <code class="highlighter-rouge">factorial(3000, r -&gt; ...)</code>.</p>
+this results in `StackOverflowError` quickly when we call
+e.g. `factorial(3000, r -> ...)`.
 
-<p>Too avoid <code class="highlighter-rouge">StackOverflowError</code>s we may use a technique called trampolining. 
+Too avoid `StackOverflowError`s we may use a technique called trampolining. 
 Trampolining in connection with CSP
 could reduce the required call stack space to a constant number
 of slots.
 The idea of trampolining is very simple, we split computation into
-parts and then we compute only the first part and <em>return</em> a 
+parts and then we compute only the first part and _return_ a 
 continuation (called thunk) that is responsible for computing the rest. 
 The returned continuation captures the result of the first computation in
-its closure so we don’t have to recompute it.
-Let’s see how a trampolined <code class="highlighter-rouge">+</code> operator would looks like:</p>
+its closure so we don't have to recompute it.
+Let's see how a trampolined `+` operator would looks like:
+{% highlight java %}
+static Thunk add(int a, int b, Cont<Integer> cont) {
+    int sum = a + b;
+    return () -> cont.apply(sum);
+}
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="n">Thunk</span> <span class="nf">add</span><span class="o">(</span><span class="kt">int</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">b</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-    <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="o">;</span>
-    <span class="k">return</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">sum</span><span class="o">);</span>
-<span class="o">}</span>
+static Thunk add3(int a, int b, int c, Cont<Integer> cont) {
+    return add(a, b, sum ->
+            add(sum, c, cont));
+}
 
-<span class="kd">static</span> <span class="n">Thunk</span> <span class="nf">add3</span><span class="o">(</span><span class="kt">int</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">b</span><span class="o">,</span> <span class="kt">int</span> <span class="n">c</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="nf">add</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span> <span class="n">sum</span> <span class="o">-&gt;</span>
-            <span class="n">add</span><span class="o">(</span><span class="n">sum</span><span class="o">,</span> <span class="n">c</span><span class="o">,</span> <span class="n">cont</span><span class="o">));</span>
-<span class="o">}</span>
+@FunctionalInterface
+private interface Cont<R> {
+    Thunk apply(R result);
+}
 
-<span class="nd">@FunctionalInterface</span>
-<span class="kd">private</span> <span class="kd">interface</span> <span class="nc">Cont</span><span class="o">&lt;</span><span class="n">R</span><span class="o">&gt;</span> <span class="o">{</span>
-    <span class="n">Thunk</span> <span class="nf">apply</span><span class="o">(</span><span class="n">R</span> <span class="n">result</span><span class="o">);</span>
-<span class="o">}</span>
-
-<span class="nd">@FunctionalInterface</span>
-<span class="kd">private</span> <span class="kd">interface</span> <span class="nc">Thunk</span> <span class="o">{</span>
-    <span class="n">Thunk</span> <span class="nf">run</span><span class="o">();</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Notice that trampolined <code class="highlighter-rouge">+</code> operator splits its computation
+@FunctionalInterface
+private interface Thunk {
+    Thunk run();
+}
+{% endhighlight %}
+Notice that trampolined `+` operator splits its computation
 into two parts: computing the sum and calling the continuation.
-The called continuation will again split it’s work and so on and on.</p>
+The called continuation will again split it's work and so on and on.
 
-<p><code class="highlighter-rouge">add3</code> function illustrates two key points. 
+`add3` function illustrates two key points. 
 One is that the logical flow of the program stays the same, we just
 call the passed continuations like in a pure CSP program.
 The other is, that to introduce trampolining we only need to modify
 primitives provided by our programming language (operators and statements).
 The program code stays the same.
 Of course because Java is a statically-typed language we need to change 
-functions return type from <code class="highlighter-rouge">void</code> into <code class="highlighter-rouge">Thunk</code>, but this is
+functions return type from `void` into `Thunk`, but this is
 a simple mechanical change that would not be necessary in 
-a dynamically-typed language.</p>
+a dynamically-typed language.
 
-<p>Next example illustrates how trampolined <code class="highlighter-rouge">if</code> statement and
-<code class="highlighter-rouge">factorial</code> looks like. Notice that factorial code did not change,
-not counting the return type:</p>
+Next example illustrates how trampolined `if` statement and
+`factorial` looks like. Notice that factorial code did not change,
+not counting the return type:
+{% highlight java %}
+static Thunk iff(boolean expr,
+                 Cont<Boolean> trueBranch,
+                 Cont<Boolean> falseBranch) {
+  return (expr)
+    ? () -> trueBranch.apply(true)
+    : () -> falseBranch.apply(false);
+}
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="n">Thunk</span> <span class="nf">iff</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">expr</span><span class="o">,</span>
-                 <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Boolean</span><span class="o">&gt;</span> <span class="n">trueBranch</span><span class="o">,</span>
-                 <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Boolean</span><span class="o">&gt;</span> <span class="n">falseBranch</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">return</span> <span class="o">(</span><span class="n">expr</span><span class="o">)</span>
-    <span class="o">?</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="n">trueBranch</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span>
-    <span class="o">:</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="n">falseBranch</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-<span class="o">}</span>
+static Thunk factorial(int n, Cont<Integer> cont) {
+  return eq(n, 0, isNZero ->
+    iff(isNZero,
+      x -> cont.apply(1),
+      x -> add(n, -1, nm1 ->
+        factorial(nm1, fnm1 ->
+          multiply(n, fnm1, cont)))));
+}
+{% endhighlight %}
 
-<span class="kd">static</span> <span class="n">Thunk</span> <span class="nf">factorial</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">return</span> <span class="nf">eq</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">isNZero</span> <span class="o">-&gt;</span>
-    <span class="n">iff</span><span class="o">(</span><span class="n">isNZero</span><span class="o">,</span>
-      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span>
-      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">add</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">nm1</span> <span class="o">-&gt;</span>
-        <span class="n">factorial</span><span class="o">(</span><span class="n">nm1</span><span class="o">,</span> <span class="n">fnm1</span> <span class="o">-&gt;</span>
-          <span class="n">multiply</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="n">fnm1</span><span class="o">,</span> <span class="n">cont</span><span class="o">)))));</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Because we are now performing computation “in parts”, we need 
+Because we are now performing computation "in parts", we need 
 a procedure that will be continually invoking returned thunks,
 thus ensuring that out computation is making progress.
-A procedure like this is called a trampoline:</p>
+A procedure like this is called a trampoline:
+{% highlight java %}
+static void trampoline(Thunk thunk) {
+  while (thunk != null) {
+      thunk = thunk.run();
+  }
+}
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">void</span> <span class="nf">trampoline</span><span class="o">(</span><span class="n">Thunk</span> <span class="n">thunk</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">while</span> <span class="o">(</span><span class="n">thunk</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">thunk</span> <span class="o">=</span> <span class="n">thunk</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
-  <span class="o">}</span>
-<span class="o">}</span>
-
-<span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="nf">endCall</span><span class="o">(</span><span class="n">Consumer</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">call</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">return</span> <span class="n">r</span> <span class="o">-&gt;</span> <span class="o">{</span>
-      <span class="n">call</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">r</span><span class="o">);</span>
-      <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-  <span class="o">};</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>We are also providing a new primitive operator <code class="highlighter-rouge">endCall</code> that
+static <T> Cont<T> endCall(Consumer<T> call) {
+  return r -> {
+      call.accept(r);
+      return null;
+  };
+}
+{% endhighlight %}
+We are also providing a new primitive operator `endCall` that
 can be used to mark the last part of the computation.
-Using <code class="highlighter-rouge">trampoline</code> we may now compute <code class="highlighter-rouge">factorial(3000)</code>
-without any troubles:</p>
+Using `trampoline` we may now compute `factorial(3000)`
+without any troubles:
+{% highlight java %}
+AtomicInteger res = new AtomicInteger(-1);
+trampoline(factorial(400000, endCall(res::set)));
+System.out.println(res.get())
+{% endhighlight %}
+As a side effect, we may now use trampoline to mix
+CSP and imperative code in the same program.
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">AtomicInteger</span> <span class="n">res</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AtomicInteger</span><span class="o">(-</span><span class="mi">1</span><span class="o">);</span>
-<span class="n">trampoline</span><span class="o">(</span><span class="n">factorial</span><span class="o">(</span><span class="mi">400000</span><span class="o">,</span> <span class="n">endCall</span><span class="o">(</span><span class="nl">res:</span><span class="o">:</span><span class="n">set</span><span class="o">)));</span>
-<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">res</span><span class="o">.</span><span class="na">get</span><span class="o">())</span></code></pre></figure>
-
-<p>As a side effect, we may now use trampoline to mix
-CSP and imperative code in the same program.</p>
-
-<p>CSP and trampolining are not mere theoretical concepts,
+CSP and trampolining are not mere theoretical concepts,
 there where and are still used to implement e.g. LISP interpreters.
 Continuations can also be used to simplify backtracking algorithms.
 Source code for this blog post can be found
-<a href="https://github.com/marcin-chwedczuk/reng/tree/master/test/pl/marcinchwedczuk/continuations">here</a>.</p>
+[here](https://github.com/marcin-chwedczuk/reng/tree/master/test/pl/marcinchwedczuk/continuations).
+
 
 
 	  ]]></description>

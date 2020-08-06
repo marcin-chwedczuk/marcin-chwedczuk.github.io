@@ -18,111 +18,111 @@
 	  <pubDate>2020-08-01T02:00:01+02:00</pubDate>
 	  <guid>//scala-nesting-monads</guid>
 	  <description><![CDATA[
-	     <p>Recently I write a lot of async code. Most of my repository
-methods return types like <code class="highlighter-rouge">Future[Set[T]]</code> or <code class="highlighter-rouge">Future[Option[T]]</code>.
+	     Recently I write a lot of async code. Most of my repository
+methods return types like `Future[Set[T]]` or `Future[Option[T]]`.
 But as we will see, working with such types in pure Scala
-can be very cumbersome.</p>
+can be very cumbersome.
 
-<p>For example in pure Scala we cannot write:</p>
+For example in pure Scala we cannot write:
+{% highlight scala %}
+val namesFuture = Future.successful(List("bob", "alice"));
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">namesFuture</span> <span class="k">=</span> <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="nc">List</span><span class="o">(</span><span class="s">"bob"</span><span class="o">,</span> <span class="s">"alice"</span><span class="o">));</span>
+val capitalizedNames = for {
+  names <- namesFuture
+  name <- names
+} yield name.capitalize
+{% endhighlight %}
+Nop. Nada. Will not work. When we try to compile this code,
+the compiler will point out that `names` have type of `List[String]`
+instead of expected `Future[X]`.
 
-<span class="k">val</span> <span class="n">capitalizedNames</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
-  <span class="n">names</span> <span class="k">&lt;-</span> <span class="n">namesFuture</span>
-  <span class="n">name</span> <span class="k">&lt;-</span> <span class="n">names</span>
-<span class="o">}</span> <span class="k">yield</span> <span class="n">name</span><span class="o">.</span><span class="n">capitalize</span></code></pre></figure>
-
-<p>Nop. Nada. Will not work. When we try to compile this code,
-the compiler will point out that <code class="highlighter-rouge">names</code> have type of <code class="highlighter-rouge">List[String]</code>
-instead of expected <code class="highlighter-rouge">Future[X]</code>.</p>
-
-<p>To understand the problem better lets remind ourselves
+To understand the problem better lets remind ourselves
 how Scala compiler translates for-comprehensions into
-method calls:</p>
+method calls:
+{% highlight scala %}
+val ks = for {
+  i <- 1 to 10
+  j <- 1 to i
+  k <- 1 to j
+  sum = i + j + k
+  if (sum > 10 && sum < 20)
+} yield 3*sum
+// Is translated (with some simplifications) into:
+val ks2 = (1 to 10).flatMap { i =>
+  (1 to i).flatMap { j =>
+    (1 to j)
+      .map { k => i + j + k }
+      .withFilter { sum => sum > 10 && sum < 20 }
+      .map { sum => 3*sum }
+  }
+}
+{% endhighlight %}
+In short every but the last "assignment" of the form `var <- something` is
+translated into `something.flatMap { var => ...`.
+The last "assignment" is translated into a simple `map` call.
+`if` filters are translated into `withFilter` or `filter` calls.
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">ks</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
-  <span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="mi">10</span>
-  <span class="n">j</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="n">i</span>
-  <span class="n">k</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="n">j</span>
-  <span class="n">sum</span> <span class="k">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="n">k</span>
-  <span class="k">if</span> <span class="o">(</span><span class="n">sum</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="o">&amp;&amp;</span> <span class="n">sum</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="o">)</span>
-<span class="o">}</span> <span class="k">yield</span> <span class="mi">3</span><span class="o">*</span><span class="n">sum</span>
-<span class="c1">// Is translated (with some simplifications) into:
-</span><span class="k">val</span> <span class="n">ks2</span> <span class="k">=</span> <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="mi">10</span><span class="o">).</span><span class="n">flatMap</span> <span class="o">{</span> <span class="n">i</span> <span class="k">=&gt;</span>
-  <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">i</span><span class="o">).</span><span class="n">flatMap</span> <span class="o">{</span> <span class="n">j</span> <span class="k">=&gt;</span>
-    <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">j</span><span class="o">)</span>
-      <span class="o">.</span><span class="n">map</span> <span class="o">{</span> <span class="n">k</span> <span class="k">=&gt;</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="n">k</span> <span class="o">}</span>
-      <span class="o">.</span><span class="n">withFilter</span> <span class="o">{</span> <span class="n">sum</span> <span class="k">=&gt;</span> <span class="n">sum</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="o">&amp;&amp;</span> <span class="n">sum</span> <span class="o">&lt;</span> <span class="mi">20</span> <span class="o">}</span>
-      <span class="o">.</span><span class="n">map</span> <span class="o">{</span> <span class="n">sum</span> <span class="k">=&gt;</span> <span class="mi">3</span><span class="o">*</span><span class="n">sum</span> <span class="o">}</span>
-  <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
+Returning to our first example we see that it is translated
+into:
+{% highlight scala %}
+val capitalizedNames = for {
+  names <- namesFuture
+  name <- names
+} yield name.capitalize
+// into this:
+val capitalizedNames = namesFuture.flatMap { names =>
+  names.map(_.capitalize)
+}
+{% endhighlight %}
+And indeed it does not type check as `namesFuture.flatMap` expects
+that the passed lambda will return a `Future[X]` not
+a `List[X]`.
 
-<p>In short every but the last “assignment” of the form <code class="highlighter-rouge">var &lt;- something</code> is
-translated into <code class="highlighter-rouge">something.flatMap { var =&gt; ...</code>.
-The last “assignment” is translated into a simple <code class="highlighter-rouge">map</code> call.
-<code class="highlighter-rouge">if</code> filters are translated into <code class="highlighter-rouge">withFilter</code> or <code class="highlighter-rouge">filter</code> calls.</p>
-
-<p>Returning to our first example we see that it is translated
-into:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">capitalizedNames</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
-  <span class="n">names</span> <span class="k">&lt;-</span> <span class="n">namesFuture</span>
-  <span class="n">name</span> <span class="k">&lt;-</span> <span class="n">names</span>
-<span class="o">}</span> <span class="k">yield</span> <span class="n">name</span><span class="o">.</span><span class="n">capitalize</span>
-<span class="c1">// into this:
-</span><span class="k">val</span> <span class="n">capitalizedNames</span> <span class="k">=</span> <span class="n">namesFuture</span><span class="o">.</span><span class="n">flatMap</span> <span class="o">{</span> <span class="n">names</span> <span class="k">=&gt;</span>
-  <span class="n">names</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">capitalize</span><span class="o">)</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>And indeed it does not type check as <code class="highlighter-rouge">namesFuture.flatMap</code> expects
-that the passed lambda will return a <code class="highlighter-rouge">Future[X]</code> not
-a <code class="highlighter-rouge">List[X]</code>.</p>
-
-<p>We can quickly fix this problem by introducing a nested <code class="highlighter-rouge">for</code>
-or by replacing <code class="highlighter-rouge">flatMap</code> by <code class="highlighter-rouge">map</code>:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">capitalizedNames</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span> <span class="n">names</span> <span class="k">&lt;-</span> <span class="n">namesFuture</span> <span class="o">}</span> <span class="k">yield</span>
-                       <span class="k">for</span> <span class="o">{</span> <span class="n">name</span> <span class="k">&lt;-</span> <span class="n">names</span> <span class="o">}</span> <span class="k">yield</span> <span class="n">name</span><span class="o">.</span><span class="n">capitalize</span><span class="o">;</span>
-<span class="c1">// or:
-</span><span class="k">val</span> <span class="n">capitalizedNames</span> <span class="k">=</span> <span class="n">namesFuture</span><span class="o">.</span><span class="n">map</span> <span class="o">{</span> <span class="n">names</span> <span class="k">=&gt;</span>
-  <span class="n">names</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">capitalize</span><span class="o">)</span>
-<span class="o">}</span>
-<span class="c1">// of if you are processing only a single collection:
-</span><span class="k">val</span> <span class="n">capitalizedNames</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span> <span class="n">names</span> <span class="k">&lt;-</span> <span class="n">namesFuture</span> <span class="o">}</span>
-                       <span class="k">yield</span> <span class="n">names</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">capitalize</span><span class="o">)</span></code></pre></figure>
-
-<p>And even in this simple example, the method chain 
+We can quickly fix this problem by introducing a nested `for`
+or by replacing `flatMap` by `map`:
+{% highlight scala %}
+val capitalizedNames = for { names <- namesFuture } yield
+                       for { name <- names } yield name.capitalize;
+// or:
+val capitalizedNames = namesFuture.map { names =>
+  names.map(_.capitalize)
+}
+// of if you are processing only a single collection:
+val capitalizedNames = for { names <- namesFuture }
+                       yield names.map(_.capitalize)
+{% endhighlight %}
+And even in this simple example, the method chain 
 becomes quite unreadable when you try to
-squash it into a single line: <code class="highlighter-rouge">namesFuture.map(_.map(_.capitalize))</code>.</p>
+squash it into a single line: `namesFuture.map(_.map(_.capitalize))`.
 
-<p>Exactly the same problems appears when we try to work with <code class="highlighter-rouge">Future[Option[T]]</code>.
+Exactly the same problems appears when we try to work with `Future[Option[T]]`.
 But here we can at least use libraries to reduce the pain.
-For example using <code class="highlighter-rouge">OptionT</code> type from <a href="https://typelevel.org/cats/">Cats</a>,
-we can write:</p>
+For example using `OptionT` type from [Cats](https://typelevel.org/cats/),
+we can write:
+{% highlight scala %}
+import cats.data.OptionT
+import cats.implicits._
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">import</span> <span class="nn">cats.data.OptionT</span>
-<span class="k">import</span> <span class="nn">cats.implicits._</span>
+val nameFuture = Future.successful(Option("foo"))
 
-<span class="k">val</span> <span class="n">nameFuture</span> <span class="k">=</span> <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="nc">Option</span><span class="o">(</span><span class="s">"foo"</span><span class="o">))</span>
+val f = OptionT(nameFuture)
+  .map(name => name + "!")
+  .map(name => println(s"name is $name"))
+Await.result(f.value, Duration.Inf)
+{% endhighlight %}
+...and call it a day. 
 
-<span class="k">val</span> <span class="n">f</span> <span class="k">=</span> <span class="nc">OptionT</span><span class="o">(</span><span class="n">nameFuture</span><span class="o">)</span>
-  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">name</span> <span class="k">=&gt;</span> <span class="n">name</span> <span class="o">+</span> <span class="s">"!"</span><span class="o">)</span>
-  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">name</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"name is $name"</span><span class="o">))</span>
-<span class="nc">Await</span><span class="o">.</span><span class="n">result</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="n">value</span><span class="o">,</span> <span class="nc">Duration</span><span class="o">.</span><span class="nc">Inf</span><span class="o">)</span></code></pre></figure>
+In pure Scala this code would look like this:
+{% highlight scala %}
+val f = nameFuture
+  .map(_.map(name => name + "!"))
+  .map(_.foreach(n => println(s"name is $n")))
+Await.result(f, Duration.Inf)
+{% endhighlight %}
 
-<p>…and call it a day.</p>
-
-<p>In pure Scala this code would look like this:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">f</span> <span class="k">=</span> <span class="n">nameFuture</span>
-  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">name</span> <span class="k">=&gt;</span> <span class="n">name</span> <span class="o">+</span> <span class="s">"!"</span><span class="o">))</span>
-  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">foreach</span><span class="o">(</span><span class="n">n</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"name is $n"</span><span class="o">)))</span>
-<span class="nc">Await</span><span class="o">.</span><span class="n">result</span><span class="o">(</span><span class="n">f</span><span class="o">,</span> <span class="nc">Duration</span><span class="o">.</span><span class="nc">Inf</span><span class="o">)</span></code></pre></figure>
-
-<p>In short I don’t understand why language designers decided to not support
-nested monads in for-comprehensions. It’s a pity that we have to use
-external libraries to get such a basic functionality.</p>
-
+In short I don't understand why language designers decided to not support
+nested monads in for-comprehensions. It's a pity that we have to use
+external libraries to get such a basic functionality.
 	  ]]></description>
 	</item>
 
@@ -133,85 +133,92 @@ external libraries to get such a basic functionality.</p>
 	  <pubDate>2020-07-06T02:00:01+02:00</pubDate>
 	  <guid>//scala-wtf-1</guid>
 	  <description><![CDATA[
-	     <p>So here is a puzzle. What will be written by
-this program:</p>
+	     So here is a puzzle. What will be written by
+this program:
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">object</span> <span class="nc">Wtf1</span> <span class="o">{</span>
-  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
-    <span class="k">val</span> <span class="n">points</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Point</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span>
-      <span class="nc">Point</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">),</span>
-      <span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">),</span>
-      <span class="nc">Point</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">)</span>
-    <span class="o">)</span>
+{% highlight scala %}
+object Wtf1 {
+  def main(args: Array[String]): Unit = {
+    val points: List[Point] = List(
+      Point(1, 2),
+      Point(3, 4),
+      Point(5, 6)
+    )
 
-    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">points</span><span class="o">.</span><span class="n">contains</span><span class="o">(</span><span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="k">_</span><span class="o">))</span>
-    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"result: $result"</span><span class="o">)</span>
-  <span class="o">}</span>
-<span class="o">}</span>
+    val result = points.contains(Point(3, _))
+    println(s"result: $result")
+  }
+}
 
-<span class="k">case</span> <span class="k">class</span> <span class="nc">Point</span><span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">y</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span>
+case class Point(x: Int, y: Int)
 
-<span class="c1">// ANSWER BELOW
+// ANSWER BELOW
 // ..............................................
-</span><span class="o">//</span></code></pre></figure>
+//
+{% endhighlight %}
 
-<p>The answer is <code class="highlighter-rouge">false</code>.
-Why? Because the line with <code class="highlighter-rouge">points.contains(Point(3, _))</code>
-instead of performing pattern matching, checks whether <code class="highlighter-rouge">points</code> 
-contain a function:</p>
+The answer is `false`.
+Why? Because the line with `points.contains(Point(3, _))`
+instead of performing pattern matching, checks whether `points` 
+contain a function:
+{% highlight scala %}
+val result = points.contains(Point(3, _))
+// in reality is:
+val result = names.contains((n: Int) => Point(3, n))
+{% endhighlight %}
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">points</span><span class="o">.</span><span class="n">contains</span><span class="o">(</span><span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="k">_</span><span class="o">))</span>
-<span class="c1">// in reality is:
-</span><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">names</span><span class="o">.</span><span class="n">contains</span><span class="o">((</span><span class="n">n</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="n">n</span><span class="o">))</span></code></pre></figure>
-
-<p>The strangest thing for me is that the compilation of 
+The strangest thing for me is that the compilation of 
 this code does not generate any warnings.
 From Scala compiler point of view the above code is
 perfectly valid and this in turn is the result of
-<code class="highlighter-rouge">List</code> type being covariant.
-Or in the other words because we can assign <code class="highlighter-rouge">List[Point]</code> to
-<code class="highlighter-rouge">List[Any]</code>, <code class="highlighter-rouge">contains</code> must accept
-arguments of any type:</p>
+`List` type being covariant.
+Or in the other words because we can assign `List[Point]` to
+`List[Any]`, `contains` must accept
+arguments of any type:
+{% highlight scala %}
+val points: List[Point] = List(
+    Point(1, 2),
+    Point(3, 4),
+    Point(5, 6)
+)
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">points</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Point</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span>
-    <span class="nc">Point</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">),</span>
-    <span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">),</span>
-    <span class="nc">Point</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">)</span>
-<span class="o">)</span>
+val anys: List[Any] = points
 
-<span class="k">val</span> <span class="n">anys</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Any</span><span class="o">]</span> <span class="k">=</span> <span class="n">points</span>
+anys.contains(new Object())
+{% endhighlight %}
 
-<span class="n">anys</span><span class="o">.</span><span class="n">contains</span><span class="o">(</span><span class="k">new</span> <span class="nc">Object</span><span class="o">())</span></code></pre></figure>
+The declaration of `contains` method in `List[A]` looks like this:
+{% highlight scala %}
+def contains[A1 >: A](elem: A1): Boolean
+{% endhighlight %}
+We may snoop the actual types assigned to the generic parameters
+using a helper method:
+{% highlight scala %}
+def detectType[A, A1 >: A](l: List[A], obj: A1)
+                          (implicit tagA: ClassTag[A], tagA1: ClassTag[A1]): Unit = {
+    println(s"type of A : ${tagA.runtimeClass.getName}")
+    println(s"type of A1: ${tagA1.runtimeClass.getName}")
+}
 
-<p>The declaration of <code class="highlighter-rouge">contains</code> method in <code class="highlighter-rouge">List[A]</code> looks like this:</p>
+detectType(names, Point(3, _))
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">contains</span><span class="o">[</span><span class="kt">A1</span> <span class="k">&gt;:</span> <span class="kt">A</span><span class="o">](</span><span class="n">elem</span><span class="k">:</span> <span class="kt">A1</span><span class="o">)</span><span class="k">:</span> <span class="kt">Boolean</span></code></pre></figure>
-
-<p>We may snoop the actual types assigned to the generic parameters
-using a helper method:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">detectType</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">A1</span> <span class="k">&gt;:</span> <span class="kt">A</span><span class="o">](</span><span class="n">l</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">A</span><span class="o">],</span> <span class="n">obj</span><span class="k">:</span> <span class="kt">A1</span><span class="o">)</span>
-                          <span class="o">(</span><span class="k">implicit</span> <span class="n">tagA</span><span class="k">:</span> <span class="kt">ClassTag</span><span class="o">[</span><span class="kt">A</span><span class="o">],</span> <span class="n">tagA1</span><span class="k">:</span> <span class="kt">ClassTag</span><span class="o">[</span><span class="kt">A1</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
-    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"type of A : ${tagA.runtimeClass.getName}"</span><span class="o">)</span>
-    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"type of A1: ${tagA1.runtimeClass.getName}"</span><span class="o">)</span>
-<span class="o">}</span>
-
-<span class="n">detectType</span><span class="o">(</span><span class="n">names</span><span class="o">,</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="k">_</span><span class="o">))</span>
-
-<span class="c1">// This prints:
+// This prints:
 // type of A : Point
 // type of A1: java.lang.Object
-</span><span class="o">//</span></code></pre></figure>
+//
+{% endhighlight %}
+So during the compilation `A1` becomes `Object` and everything
+type-checks.
 
-<p>So during the compilation <code class="highlighter-rouge">A1</code> becomes <code class="highlighter-rouge">Object</code> and everything
-type-checks.</p>
+Let's finish by writing a code that actually does what
+the programmer intended:
+{% highlight scala %}
+val result = names
+    .collectFirst { case Point(3, _) => true }
+    .getOrElse(false)
+{% endhighlight %}
 
-<p>Let’s finish by writing a code that actually does what
-the programmer intended:</p>
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">names</span>
-    <span class="o">.</span><span class="n">collectFirst</span> <span class="o">{</span> <span class="k">case</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="k">_</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="kc">true</span> <span class="o">}</span>
-    <span class="o">.</span><span class="n">getOrElse</span><span class="o">(</span><span class="kc">false</span><span class="o">)</span></code></pre></figure>
 
 
 	  ]]></description>
@@ -224,222 +231,225 @@ the programmer intended:</p>
 	  <pubDate>2019-12-22T01:00:01+01:00</pubDate>
 	  <guid>//pitfalls-of-using-Mockito-with-Scala</guid>
 	  <description><![CDATA[
-	     <p>I need to test my new, shiny Scala code.
-Usually I write tests in <a href="http://www.scalatest.org/">ScalaTest</a>,
+	     I need to test my new, shiny Scala code.
+Usually I write tests in [ScalaTest](http://www.scalatest.org/),
 but for generating stubs I still use good, old
-<a href="https://site.mockito.org/">Mockito</a>.
+[Mockito](https://site.mockito.org/).
 What can possibly go wrong?
-I open a new tab in my editor and start hacking test code.</p>
+I open a new tab in my editor and start hacking test code.
 
-<p>For the first surprise I don’t have to wait too long.
-In my code I use <a href="https://docs.scala-lang.org/overviews/core/value-classes.html">value classes</a> 
+For the first surprise I don't have to wait too long.
+In my code I use [value classes](https://docs.scala-lang.org/overviews/core/value-classes.html) 
 to represent entity IDs.
-For example I use <code class="highlighter-rouge">CustomerId</code>:</p>
+For example I use `CustomerId`:
+{% highlight scala %}
+case class CustomerId(id: Long) extends AnyVal
+{% endhighlight %}
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">CustomerId</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">AnyVal</span></code></pre></figure>
+When I tried to mock `customerId` method (property?):
+{% highlight scala %}
+trait RequestContext {
+  val customerId: CustomerId
+  // ...
+}
+{% endhighlight %}
+in my test, Mockito started complaining about wrong return types
+and refused to cooperate:
+{% highlight scala %}
+// inside test
+val requestContext = mock(classOf[RequestContext])
 
-<p>When I tried to mock <code class="highlighter-rouge">customerId</code> method (property?):</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">trait</span> <span class="nc">RequestContext</span> <span class="o">{</span>
-  <span class="k">val</span> <span class="n">customerId</span><span class="k">:</span> <span class="kt">CustomerId</span>
-  <span class="c1">// ...
-</span><span class="o">}</span></code></pre></figure>
-
-<p>in my test, Mockito started complaining about wrong return types
-and refused to cooperate:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="c1">// inside test
-</span><span class="k">val</span> <span class="n">requestContext</span> <span class="k">=</span> <span class="n">mock</span><span class="o">(</span><span class="n">classOf</span><span class="o">[</span><span class="kt">RequestContext</span><span class="o">])</span>
-
-<span class="cm">/* Fails with WrongTypeOfReturnValue exception:
+/* Fails with WrongTypeOfReturnValue exception:
 *
 * CustomerId cannot be returned by customerId()
 * customerId() should return long
-*/</span>
-<span class="n">when</span><span class="o">(</span><span class="n">requestContext</span><span class="o">.</span><span class="n">customerId</span><span class="o">).</span><span class="n">thenReturn</span><span class="o">(</span><span class="nc">CustomerId</span><span class="o">(</span><span class="mi">123L</span><span class="o">))</span></code></pre></figure>
+*/
+when(requestContext.customerId).thenReturn(CustomerId(123L))
+{% endhighlight %}
 
-<p>Of course my <code class="highlighter-rouge">CustomerId</code> <a href="https://docs.scala-lang.org/overviews/core/value-classes.html">value class</a> is here to blame…</p>
+Of course my `CustomerId` [value class](https://docs.scala-lang.org/overviews/core/value-classes.html) is here to blame...
 
-<p>In Scala, value classes offer type safety of normal classes with
+In Scala, value classes offer type safety of normal classes with
 performance of the primitives.
 Scala compiler achieves this, simply by replacing the value
 class type by the primitive type, wherever possible.
-So I grabbed <code class="highlighter-rouge">javap</code> and took a look at the generated bytecode,
-and indeed there is a <code class="highlighter-rouge">long</code> there:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">target/scala-2.13/classes$ javap RequestContext.class 
+So I grabbed `javap` and took a look at the generated bytecode,
+and indeed there is a `long` there:
+{% highlight no-highlight %}
+target/scala-2.13/classes$ javap RequestContext.class 
 Compiled from "RequestContext.scala"
 public interface RequestContext {
   public abstract long customerId();
   // ...
-}</code></pre></figure>
-
-<p>Mockito uses reflection to figure out which type
+}
+{% endhighlight %}
+Mockito uses reflection to figure out which type
 a given method returns.
 This gives us little hope for a nice solution.
 We can only try to hack around the problem, for example
-this monstrosity works:</p>
+this monstrosity works:
+{% highlight scala %}
+val requestContext = mock(classOf[RequestContext])
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">requestContext</span> <span class="k">=</span> <span class="n">mock</span><span class="o">(</span><span class="n">classOf</span><span class="o">[</span><span class="kt">RequestContext</span><span class="o">])</span>
+when(requestContext.customerId.asInstanceOf[Object])
+  .thenReturn(Long.box(123L))
 
-<span class="n">when</span><span class="o">(</span><span class="n">requestContext</span><span class="o">.</span><span class="n">customerId</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">Object</span><span class="o">])</span>
-  <span class="o">.</span><span class="n">thenReturn</span><span class="o">(</span><span class="nc">Long</span><span class="o">.</span><span class="n">box</span><span class="o">(</span><span class="mi">123L</span><span class="o">))</span>
+assert(requestContext.customerId == CustomerId(123L))
+{% endhighlight %}
+We use `asInstanceOf[Object]` to fool Scala's type system
+and then return a `java.lang.Long` instance.
 
-<span class="n">assert</span><span class="o">(</span><span class="n">requestContext</span><span class="o">.</span><span class="n">customerId</span> <span class="o">==</span> <span class="nc">CustomerId</span><span class="o">(</span><span class="mi">123L</span><span class="o">))</span></code></pre></figure>
+Yeah it works but it is not nice... But hey, first get the job done, then
+get it done well. Let's move on to the next test...
 
-<p>We use <code class="highlighter-rouge">asInstanceOf[Object]</code> to fool Scala’s type system
-and then return a <code class="highlighter-rouge">java.lang.Long</code> instance.</p>
-
-<p>Yeah it works but it is not nice… But hey, first get the job done, then
-get it done well. Let’s move on to the next test…</p>
-
-<p>I have to verify that a given method was called.
+I have to verify that a given method was called.
 This time I should have more luck, right?
-So I wrote another test and I ran it:</p>
+So I wrote another test and I ran it:
+{% highlight scala %}
+val requestContext = mock(classOf[RequestContext])
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">requestContext</span> <span class="k">=</span> <span class="n">mock</span><span class="o">(</span><span class="n">classOf</span><span class="o">[</span><span class="kt">RequestContext</span><span class="o">])</span>
+requestContext.setRequestId(RequestId(123L))
 
-<span class="n">requestContext</span><span class="o">.</span><span class="n">setRequestId</span><span class="o">(</span><span class="nc">RequestId</span><span class="o">(</span><span class="mi">123L</span><span class="o">))</span>
+// works perfectly 
+verify(requestContext).setRequestId(RequestId(123L))
 
-<span class="c1">// works perfectly 
-</span><span class="n">verify</span><span class="o">(</span><span class="n">requestContext</span><span class="o">).</span><span class="n">setRequestId</span><span class="o">(</span><span class="nc">RequestId</span><span class="o">(</span><span class="mi">123L</span><span class="o">))</span>
+// does NOT WORK 
+verify(requestContext).setRequestId(any())
+{% endhighlight %}
+But I saw the results I was completly perplexed.
+Verification with `RequestId(123L)` worked but the one with
+`any()` did not. But what is worse the second verification
+thrown `NullPointerException`. NPE? Really?
 
-<span class="c1">// does NOT WORK 
-</span><span class="n">verify</span><span class="o">(</span><span class="n">requestContext</span><span class="o">).</span><span class="n">setRequestId</span><span class="o">(</span><span class="n">any</span><span class="o">())</span></code></pre></figure>
+My brain was racing, and after a few seconds a thought strike me:
+it's these pesky value classes again!
 
-<p>But I saw the results I was completly perplexed.
-Verification with <code class="highlighter-rouge">RequestId(123L)</code> worked but the one with
-<code class="highlighter-rouge">any()</code> did not. But what is worse the second verification
-thrown <code class="highlighter-rouge">NullPointerException</code>. NPE? Really?</p>
+And I was right! Value classes in Scala cannot be `null`!
+For example, in Scala REPL:
+{% highlight scala %}
+scala> case class FooId(id: Long) extends AnyVal
+defined class FooId
 
-<p>My brain was racing, and after a few seconds a thought strike me:
-it’s these pesky value classes again!</p>
+scala> val f: FooId = null.asInstanceOf[FooId]
+f: FooId = FooId(0)
 
-<p>And I was right! Value classes in Scala cannot be <code class="highlighter-rouge">null</code>!
-For example, in Scala REPL:</p>
+scala> f.id
+res0: Long = 0
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">scala</span><span class="o">&gt;</span> <span class="k">case</span> <span class="k">class</span> <span class="nc">FooId</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">AnyVal</span>
-<span class="n">defined</span> <span class="k">class</span> <span class="nc">FooId</span>
+// And more...
+scala> var o: Object = null
+o: Object = null
 
-<span class="n">scala</span><span class="o">&gt;</span> <span class="k">val</span> <span class="n">f</span><span class="k">:</span> <span class="kt">FooId</span> <span class="o">=</span> <span class="kc">null</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">FooId</span><span class="o">]</span>
-<span class="n">f</span><span class="k">:</span> <span class="kt">FooId</span> <span class="o">=</span> <span class="nc">FooId</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span>
+scala> o.asInstanceOf[FooId]
+java.lang.NullPointerException
+  ... 33 elided
+{% endhighlight %}
 
-<span class="n">scala</span><span class="o">&gt;</span> <span class="n">f</span><span class="o">.</span><span class="n">id</span>
-<span class="n">res0</span><span class="k">:</span> <span class="kt">Long</span> <span class="o">=</span> <span class="mi">0</span>
+`any()` matcher that comes with Mockito has a very simple
+implementation:
+{% highlight java %}
+public static <T> T any() {
+  return anyObject();
+}
 
-<span class="c1">// And more...
-</span><span class="n">scala</span><span class="o">&gt;</span> <span class="k">var</span> <span class="n">o</span><span class="k">:</span> <span class="kt">Object</span> <span class="o">=</span> <span class="kc">null</span>
-<span class="n">o</span><span class="k">:</span> <span class="kt">Object</span> <span class="o">=</span> <span class="kc">null</span>
+@Deprecated
+public static <T> T anyObject() {
+  reportMatcher(Any.ANY);
+  return null;
+}
+{% endhighlight %}
+that always returns `null`.
 
-<span class="n">scala</span><span class="o">&gt;</span> <span class="n">o</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">FooId</span><span class="o">]</span>
-<span class="n">java</span><span class="o">.</span><span class="n">lang</span><span class="o">.</span><span class="nc">NullPointerException</span>
-  <span class="o">...</span> <span class="mi">33</span> <span class="n">elided</span></code></pre></figure>
+The method that I tried to check, has a signature:
+{% highlight scala %}
+trait RequestContext {
+  def setRequestId(requestId: RequestId)
+  // ...
+}
+{% endhighlight %}
+and since `RequestId` is a value class, the "real" JVM signature is:
+{% highlight no-highlight %}
+public abstract void setRequestId(long);
+{% endhighlight %}
+When I write `verify(...).setRequestId(any())` 
+Scala compiler adds instructions that convert the *object* returned
+by `any()` (remember generics does not exist on JVM level, so all
+these `T`s and `V`s are just `Object`s at runtime) to `long`.
+And this is the reason why I got `NullPointerException` earlier.
 
-<p><code class="highlighter-rouge">any()</code> matcher that comes with Mockito has a very simple
-implementation:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">any</span><span class="o">()</span> <span class="o">{</span>
-  <span class="k">return</span> <span class="nf">anyObject</span><span class="o">();</span>
-<span class="o">}</span>
-
-<span class="nd">@Deprecated</span>
-<span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">T</span> <span class="nf">anyObject</span><span class="o">()</span> <span class="o">{</span>
-  <span class="n">reportMatcher</span><span class="o">(</span><span class="n">Any</span><span class="o">.</span><span class="na">ANY</span><span class="o">);</span>
-  <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>that always returns <code class="highlighter-rouge">null</code>.</p>
-
-<p>The method that I tried to check, has a signature:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">trait</span> <span class="nc">RequestContext</span> <span class="o">{</span>
-  <span class="k">def</span> <span class="n">setRequestId</span><span class="o">(</span><span class="n">requestId</span><span class="k">:</span> <span class="kt">RequestId</span><span class="o">)</span>
-  <span class="c1">// ...
-</span><span class="o">}</span></code></pre></figure>
-
-<p>and since <code class="highlighter-rouge">RequestId</code> is a value class, the “real” JVM signature is:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">public abstract void setRequestId(long);</code></pre></figure>
-
-<p>When I write <code class="highlighter-rouge">verify(...).setRequestId(any())</code> 
-Scala compiler adds instructions that convert the <em>object</em> returned
-by <code class="highlighter-rouge">any()</code> (remember generics does not exist on JVM level, so all
-these <code class="highlighter-rouge">T</code>s and <code class="highlighter-rouge">V</code>s are just <code class="highlighter-rouge">Object</code>s at runtime) to <code class="highlighter-rouge">long</code>.
-And this is the reason why I got <code class="highlighter-rouge">NullPointerException</code> earlier.</p>
-
-<p>In bytecode it looks like this:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">19: invokestatic  #33 // Method org/mockito/Mockito.verify:(Ljava/lang/Object;)Ljava/lang/Object;
+In bytecode it looks like this:
+{% highlight no-highlight %}
+19: invokestatic  #33 // Method org/mockito/Mockito.verify:(Ljava/lang/Object;)Ljava/lang/Object;
 22: checkcast     #17 // class RequestContext
 25: invokestatic  #39 // Method org/mockito/ArgumentMatchers.any:()Ljava/lang/Object;
 28: checkcast     #41 // class RequestId
 31: invokevirtual #45 // Method RequestId.id:()J
-34: invokeinterface #29, 3 // InterfaceMethod RequestContext.setRequestId:(J)V</code></pre></figure>
+34: invokeinterface #29, 3 // InterfaceMethod RequestContext.setRequestId:(J)V
+{% endhighlight %}
+and the NPE is thrown by the instruction at the offset `31`.
 
-<p>and the NPE is thrown by the instruction at the offset <code class="highlighter-rouge">31</code>.</p>
-
-<p>Now I understand the problem, but I still want to use <code class="highlighter-rouge">any()</code> matcher.
-There must be a trick to make it return a valid <code class="highlighter-rouge">RequestId</code>.
+Now I understand the problem, but I still want to use `any()` matcher.
+There must be a trick to make it return a valid `RequestId`.
 But then I realized that even if I found such a way, I would be
-bitten again by <code class="highlighter-rouge">WrongTypeOfReturnValue</code> exception or
+bitten again by `WrongTypeOfReturnValue` exception or
 something similar, since
-the method takes <code class="highlighter-rouge">long</code> not <code class="highlighter-rouge">RequestId</code>. What I really need is
-a way to use <code class="highlighter-rouge">anyLong()</code> with <code class="highlighter-rouge">setRequestId</code>. It was a good
+the method takes `long` not `RequestId`. What I really need is
+a way to use `anyLong()` with `setRequestId`. It was a good
 enough challenge to
 start my evil alter-ego working on some frankensteinian solution.
-And I found it, I FOUND IT!, I FOUND IT!!! Ehmm… and here it is:</p>
+And I found it, I FOUND IT!, I FOUND IT!!! Ehmm... and here it is:
+{% highlight scala %}
+val requestContext = mock(classOf[RequestContext])
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">requestContext</span> <span class="k">=</span> <span class="n">mock</span><span class="o">(</span><span class="n">classOf</span><span class="o">[</span><span class="kt">RequestContext</span><span class="o">])</span>
+requestContext.setRequestId(RequestId(123L))
 
-<span class="n">requestContext</span><span class="o">.</span><span class="n">setRequestId</span><span class="o">(</span><span class="nc">RequestId</span><span class="o">(</span><span class="mi">123L</span><span class="o">))</span>
+// works again
+verify(requestContext).setRequestId(RequestId(anyLong()))
+verify(requestContext).setRequestId(
+  RequestId(ArgumentMatchers.eq(123L)))
+{% endhighlight %}
+A perfect combination of beauty and evil...
 
-<span class="c1">// works again
-</span><span class="n">verify</span><span class="o">(</span><span class="n">requestContext</span><span class="o">).</span><span class="n">setRequestId</span><span class="o">(</span><span class="nc">RequestId</span><span class="o">(</span><span class="n">anyLong</span><span class="o">()))</span>
-<span class="n">verify</span><span class="o">(</span><span class="n">requestContext</span><span class="o">).</span><span class="n">setRequestId</span><span class="o">(</span>
-  <span class="nc">RequestId</span><span class="o">(</span><span class="nc">ArgumentMatchers</span><span class="o">.</span><span class="n">eq</span><span class="o">(</span><span class="mi">123L</span><span class="o">)))</span></code></pre></figure>
-
-<p>A perfect combination of beauty and evil…</p>
-
-<p>The trick that I used here is that Mockito does not care,
+The trick that I used here is that Mockito does not care,
 where the matcher is located, it only cares about the time when it
-is called. As long as I call <code class="highlighter-rouge">anyLong()</code> after the call to
-<code class="highlighter-rouge">verify(...)</code> and before the call to <code class="highlighter-rouge">.setRequestId(...)</code>,
-Mockito will work. Actually we may wrap <em>any</em> matcher in
-as many dummy calls as we want, as in <code class="highlighter-rouge">a(b(c(d(any()))))</code>,
-only the fact that it was called counts.</p>
+is called. As long as I call `anyLong()` after the call to
+`verify(...)` and before the call to `.setRequestId(...)`,
+Mockito will work. Actually we may wrap _any_ matcher in
+as many dummy calls as we want, as in `a(b(c(d(any()))))`,
+only the fact that it was called counts.
 
-<p>It can’t be worse right? Two tests, two hacks…</p>
+It can't be worse right? Two tests, two hacks...
 
-<p>But only I wrote my third test, I was slapped by the next problem,
-this time caused by default parameters:</p>
+But only I wrote my third test, I was slapped by the next problem,
+this time caused by default parameters:
+{% highlight scala %}
+trait SomeTrait {
+ def method(a: Int, b: Int = 100): Int
+}
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">trait</span> <span class="nc">SomeTrait</span> <span class="o">{</span>
- <span class="k">def</span> <span class="n">method</span><span class="o">(</span><span class="n">a</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">b</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">100</span><span class="o">)</span><span class="k">:</span> <span class="kt">Int</span>
-<span class="o">}</span>
+test("...") {
+ val someTrait = mock(classOf[SomeTrait])
 
-<span class="n">test</span><span class="o">(</span><span class="s">"..."</span><span class="o">)</span> <span class="o">{</span>
- <span class="k">val</span> <span class="n">someTrait</span> <span class="k">=</span> <span class="n">mock</span><span class="o">(</span><span class="n">classOf</span><span class="o">[</span><span class="kt">SomeTrait</span><span class="o">])</span>
+ someTrait.method(3)
 
- <span class="n">someTrait</span><span class="o">.</span><span class="n">method</span><span class="o">(</span><span class="mi">3</span><span class="o">)</span>
-
- <span class="cm">/* This call fails with:
+ /* This call fails with:
  * Argument(s) are different! Wanted:
  *  someTrait.method(3, 100);
  * Actual invocations have different arguments:
  *  someTrait.method(3, 0);
- */</span>
- <span class="c1">// verify(someTrait).method(3, 100)
-</span>
- <span class="c1">// works
-</span> <span class="n">verify</span><span class="o">(</span><span class="n">someTrait</span><span class="o">).</span><span class="n">method</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">0</span><span class="o">)</span>
-<span class="o">}</span></code></pre></figure>
+ */
+ // verify(someTrait).method(3, 100)
 
-<p>WTF? Not again… Another strange problem that forces me
-to look under the bonnet.</p>
+ // works
+ verify(someTrait).method(3, 0)
+}
+{% endhighlight %}
+WTF? Not again... Another strange problem that forces me
+to look under the bonnet.
 
-<p>Let’s look at the bytecode using <code class="highlighter-rouge">javap -c</code>:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">// bytecode of `someTrait.method(3)`
+Let's look at the bytecode using `javap -c`:
+{% highlight no-highlight %}
+// bytecode of `someTrait.method(3)`
 // (some code skipped here)
 // 3 - load first arg onto the stack
 10: iconst_3
@@ -452,74 +462,73 @@ to look under the bonnet.</p>
 
 // finally call the `method` method
 17: invokeinterface #31,  3
-// (some code skipped here)</code></pre></figure>
+// (some code skipped here)
+{% endhighlight %}
 
-<p>So the Scala compiler calls a hidden method, with a name
-<code class="highlighter-rouge">methodName$default$parameterIndex</code> on the trait,
+So the Scala compiler calls a hidden method, with a name
+`methodName$default$parameterIndex` on the trait,
 to figure out what value should be used as a value
-of the default parameter. Wow! I didn’t expect something
-like that!</p>
+of the default parameter. Wow! I didn't expect something
+like that!
 
-<p>If only I could stub this <code class="highlighter-rouge">method$default$2</code> or something :thinking:
+If only I could stub this `method$default$2` or something :thinking:
 :thinking: :thinking:
-…oh wait I could:</p>
+...oh wait I could:
+{% highlight scala %}
+val someTrait = mock(classOf[SomeTrait])
+when(someTrait.method$default$2).thenReturn(100)
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">someTrait</span> <span class="k">=</span> <span class="n">mock</span><span class="o">(</span><span class="n">classOf</span><span class="o">[</span><span class="kt">SomeTrait</span><span class="o">])</span>
-<span class="n">when</span><span class="o">(</span><span class="n">someTrait</span><span class="o">.</span><span class="n">method$default$2</span><span class="o">).</span><span class="n">thenReturn</span><span class="o">(</span><span class="mi">100</span><span class="o">)</span>
+someTrait.method(3)
 
-<span class="n">someTrait</span><span class="o">.</span><span class="n">method</span><span class="o">(</span><span class="mi">3</span><span class="o">)</span>
+// it works!
+verify(someTrait).method(3, 100)
+{% endhighlight %}
+Excellent. It is working perfectly but now I have three tests
+and three hacks. Surely I am doing something wrong here.
 
-<span class="c1">// it works!
-</span><span class="n">verify</span><span class="o">(</span><span class="n">someTrait</span><span class="o">).</span><span class="n">method</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">100</span><span class="o">)</span></code></pre></figure>
-
-<p>Excellent. It is working perfectly but now I have three tests
-and three hacks. Surely I am doing something wrong here.</p>
-
-<p>And so I harnessed the power of Google (after spending
+And so I harnessed the power of Google (after spending
 some time looking at the pictures of stoats;
-hey they are really cute) and found this gem:</p>
+hey they are really cute) and found this gem:
 
-<p><a href="https://github.com/mockito/mockito-scala">Mockito-Scala</a></p>
+[Mockito-Scala](https://github.com/mockito/mockito-scala)
 
-<p>I plug it into my project (it even has a special version
+I plug it into my project (it even has a special version
 for ScalaTest) and suddenly everything started to working
-as it should be.</p>
+as it should be.
 
-<p>Stubbing works:</p>
+Stubbing works:
+{% highlight scala %}
+import org.mockito.ArgumentMatchersSugar._ // from Mockito-Scala
+import org.mockito.MockitoSugar._
+// Don't import Mockito or ArgumentMatchers
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">import</span> <span class="nn">org.mockito.ArgumentMatchersSugar._</span> <span class="c1">// from Mockito-Scala
-</span><span class="k">import</span> <span class="nn">org.mockito.MockitoSugar._</span>
-<span class="c1">// Don't import Mockito or ArgumentMatchers
-</span>
-<span class="k">val</span> <span class="n">requestContext</span> <span class="k">=</span> <span class="n">mock</span><span class="o">[</span><span class="kt">RequestContext</span><span class="o">]</span>
-<span class="n">when</span><span class="o">(</span><span class="n">requestContext</span><span class="o">.</span><span class="n">customerId</span><span class="o">).</span><span class="n">thenReturn</span><span class="o">(</span><span class="nc">CustomerId</span><span class="o">(</span><span class="mi">123L</span><span class="o">))</span>
-<span class="n">assert</span><span class="o">(</span><span class="n">requestContext</span><span class="o">.</span><span class="n">customerId</span> <span class="o">==</span> <span class="nc">CustomerId</span><span class="o">(</span><span class="mi">123L</span><span class="o">))</span></code></pre></figure>
+val requestContext = mock[RequestContext]
+when(requestContext.customerId).thenReturn(CustomerId(123L))
+assert(requestContext.customerId == CustomerId(123L))
+{% endhighlight %}
+...and verification works:
+{% highlight scala %}
+val requestContext = mock[RequestContext]
 
-<p>…and verification works:</p>
+requestContext.setRequestId(RequestId(123L))
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">requestContext</span> <span class="k">=</span> <span class="n">mock</span><span class="o">[</span><span class="kt">RequestContext</span><span class="o">]</span>
+verify(requestContext).setRequestId(eqTo(RequestId(123L)))
+verify(requestContext).setRequestId(any[RequestId])
+// but this will not work: verify(requestContext).setRequestId(any)
+{% endhighlight %}
+even default parameters work:
+{% highlight scala %}
+val someTrait = mock[SomeTrait]
+someTrait.method(3)
+verify(someTrait).method(3)
+verify(someTrait).method(3, 100)
+{% endhighlight %}
+Yay! 
 
-<span class="n">requestContext</span><span class="o">.</span><span class="n">setRequestId</span><span class="o">(</span><span class="nc">RequestId</span><span class="o">(</span><span class="mi">123L</span><span class="o">))</span>
+Wanna see some real code? [Click here.](https://github.com/marcin-chwedczuk/blog-problems-when-using-mockito-from-scala/)
 
-<span class="n">verify</span><span class="o">(</span><span class="n">requestContext</span><span class="o">).</span><span class="n">setRequestId</span><span class="o">(</span><span class="n">eqTo</span><span class="o">(</span><span class="nc">RequestId</span><span class="o">(</span><span class="mi">123L</span><span class="o">)))</span>
-<span class="n">verify</span><span class="o">(</span><span class="n">requestContext</span><span class="o">).</span><span class="n">setRequestId</span><span class="o">(</span><span class="n">any</span><span class="o">[</span><span class="kt">RequestId</span><span class="o">])</span>
-<span class="o">//</span> <span class="n">but</span> <span class="k">this</span> <span class="n">will</span> <span class="n">not</span> <span class="n">work</span><span class="k">:</span> <span class="kt">verify</span><span class="o">(</span><span class="kt">requestContext</span><span class="o">)</span><span class="kt">.setRequestId</span><span class="o">(</span><span class="kt">any</span><span class="o">)</span></code></pre></figure>
-
-<p>even default parameters work:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">someTrait</span> <span class="k">=</span> <span class="n">mock</span><span class="o">[</span><span class="kt">SomeTrait</span><span class="o">]</span>
-<span class="n">someTrait</span><span class="o">.</span><span class="n">method</span><span class="o">(</span><span class="mi">3</span><span class="o">)</span>
-<span class="n">verify</span><span class="o">(</span><span class="n">someTrait</span><span class="o">).</span><span class="n">method</span><span class="o">(</span><span class="mi">3</span><span class="o">)</span>
-<span class="n">verify</span><span class="o">(</span><span class="n">someTrait</span><span class="o">).</span><span class="n">method</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">100</span><span class="o">)</span></code></pre></figure>
-
-<p>Yay!</p>
-
-<p>Wanna see some real code? <a href="https://github.com/marcin-chwedczuk/blog-problems-when-using-mockito-from-scala/">Click here.</a></p>
-
-<p>References:</p>
-<ul>
-  <li><a href="https://medium.com/@bruno.bonanno/introduction-to-mockito-scala-ede30769cbda?">Intro to Mockito-Scala (Medium)</a></li>
-</ul>
+References:
+* [Intro to Mockito-Scala (Medium)](https://medium.com/@bruno.bonanno/introduction-to-mockito-scala-ede30769cbda?)
 
 	  ]]></description>
 	</item>
@@ -531,743 +540,764 @@ as it should be.</p>
 	  <pubDate>2019-09-19T02:00:01+02:00</pubDate>
 	  <guid>//ultimate-guide-to-scalas-match-expression</guid>
 	  <description><![CDATA[
-	     <p>Scala <code class="highlighter-rouge">match</code> expression is a very powerful tool.
+	     Scala `match` expression is a very powerful tool.
 In hands of an experienced developer it can be used to
 create concise and easy to understand code,
 yet novice programmers are often intimidated by it.
-In this blog post I will describe how <code class="highlighter-rouge">match</code> expression
+In this blog post I will describe how `match` expression
 work. We will start with the basics and finish with the extractors.
-After reading this post you will know how <code class="highlighter-rouge">case List(a, b, c)</code>
-works and you will be able to write your own extractors.</p>
+After reading this post you will know how `case List(a, b, c)`
+works and you will be able to write your own extractors.
 
-<h4 id="pattern-matching-values">Pattern matching values</h4>
+#### Pattern matching values
 
-<p><code class="highlighter-rouge">match</code> expression can be used (just like Java’s <code class="highlighter-rouge">switch</code>)
-as a more robust <code class="highlighter-rouge">if</code> statement replacement.
-For example we can write:</p>
+`match` expression can be used (just like Java's `switch`)
+as a more robust `if` statement replacement.
+For example we can write:
+{% highlight scala %}
+val command: String = fetchNextCommand()
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">command</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="n">fetchNextCommand</span><span class="o">()</span>
+command match {
+  case "ls" => printDirectoryContents()
+  case "ps" => printProcesses()
+  case "exit" => exitShell()
+}
+{% endhighlight %}
 
-<span class="n">command</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="s">"ls"</span> <span class="k">=&gt;</span> <span class="n">printDirectoryContents</span><span class="o">()</span>
-  <span class="k">case</span> <span class="s">"ps"</span> <span class="k">=&gt;</span> <span class="n">printProcesses</span><span class="o">()</span>
-  <span class="k">case</span> <span class="s">"exit"</span> <span class="k">=&gt;</span> <span class="n">exitShell</span><span class="o">()</span>
-<span class="o">}</span></code></pre></figure>
-
-<p><code class="highlighter-rouge">match</code> expression, in opposite to Java’s <code class="highlighter-rouge">switch</code> is not
+`match` expression, in opposite to Java's `switch` is not
 limited to strings, Enums and numeric types, but can also match
-booleans, floating point numbers (although this isn’t a good idea)
-and <code class="highlighter-rouge">null</code> literal.
-We can also mix multiple value types in a single <code class="highlighter-rouge">match</code>
-expression:</p>
+booleans, floating point numbers (although this isn't a good idea)
+and `null` literal.
+We can also mix multiple value types in a single `match`
+expression:
+{% highlight scala %}
+val x: Any = 3.1415
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">x</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="mf">3.1415</span>
+x match {
+  case true => println("it's true")
+  case 3 => println("integer 3")
+  case 3.1415 => println("pi approximation")
+  case null => println("null")
+  case "foo" => println("this 'foo' again!")
+  case 'a' => println("character 'a'")
+}
+// Prints:
+// pi approximation
+{% endhighlight %}
 
-<span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="kc">true</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"it's true"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="mi">3</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"integer 3"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="mf">3.1415</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"pi approximation"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="kc">null</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"null"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="s">"foo"</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"this 'foo' again!"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="sc">'a'</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"character 'a'"</span><span class="o">)</span>
-<span class="o">}</span>
-<span class="c1">// Prints:
-</span><span class="o">//</span> <span class="n">pi</span> <span class="n">approximation</span></code></pre></figure>
+When we match an Enum value we are not required to
+provide cases for all possible values of the Enum:
+{% highlight scala %}
+object Color extends Enumeration {
+  type Color = Value
+  val White, Red, Green, Blue, Black = Value
+}
 
-<p>When we match an Enum value we are not required to
-provide cases for all possible values of the Enum:</p>
+val skyColor = Color.Blue
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">object</span> <span class="nc">Color</span> <span class="k">extends</span> <span class="nc">Enumeration</span> <span class="o">{</span>
-  <span class="k">type</span> <span class="kt">Color</span> <span class="o">=</span> <span class="nc">Value</span>
-  <span class="k">val</span> <span class="nc">White</span><span class="o">,</span> <span class="nc">Red</span><span class="o">,</span> <span class="nc">Green</span><span class="o">,</span> <span class="nc">Blue</span><span class="o">,</span> <span class="nc">Black</span> <span class="k">=</span> <span class="nc">Value</span>
-<span class="o">}</span>
+val weatherWildGuess = skyColor match {
+  case Color.White => "snow?"
+  case Color.Blue => "rain?"
+  case Color.Black => "a volcano eruption?"
+}
 
-<span class="k">val</span> <span class="n">skyColor</span> <span class="k">=</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Blue</span>
+println(weatherWildGuess)
+// Prints:
+// rain?
+{% endhighlight %}
 
-<span class="k">val</span> <span class="n">weatherWildGuess</span> <span class="k">=</span> <span class="n">skyColor</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">White</span> <span class="k">=&gt;</span> <span class="s">"snow?"</span>
-  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Blue</span> <span class="k">=&gt;</span> <span class="s">"rain?"</span>
-  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Black</span> <span class="k">=&gt;</span> <span class="s">"a volcano eruption?"</span>
-<span class="o">}</span>
-
-<span class="n">println</span><span class="o">(</span><span class="n">weatherWildGuess</span><span class="o">)</span>
-<span class="c1">// Prints:
-</span><span class="o">//</span> <span class="n">rain</span><span class="o">?</span></code></pre></figure>
-
-<p>When a value cannot be pattern matched
-a <code class="highlighter-rouge">scala.MatchError</code> runtime exception is thrown.
-A special “catch all” case can be
+When a value cannot be pattern matched
+a `scala.MatchError` runtime exception is thrown.
+A special "catch all" case can be
 provided to handle all previously unmatched values 
-(Scala’s <code class="highlighter-rouge">case _</code> is a counterpart to Java’s <code class="highlighter-rouge">switch</code> <code class="highlighter-rouge">default</code> label):</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">weatherWildGuess</span> <span class="k">=</span> <span class="n">skyColor</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">White</span> <span class="k">=&gt;</span> <span class="s">"snow?"</span>
-  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Blue</span> <span class="k">=&gt;</span> <span class="s">"rain?"</span>
-  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Black</span> <span class="k">=&gt;</span> <span class="s">"a volcano eruption?"</span>
-  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="s">"I don't know"</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>“catch all” case should be the last one. 
+(Scala's `case _` is a counterpart to Java's `switch` `default` label):
+{% highlight scala %}
+val weatherWildGuess = skyColor match {
+  case Color.White => "snow?"
+  case Color.Blue => "rain?"
+  case Color.Black => "a volcano eruption?"
+  case _ => "I don't know"
+}
+{% endhighlight %}
+"catch all" case should be the last one. 
 Patterns are matched from top to bottom and the procedure
-stops on the first matching <code class="highlighter-rouge">case</code> clause.</p>
+stops on the first matching `case` clause.
 
-<p>Sometimes we want to access the value matched by “catch all” case,
-this can be done by replacing wildcard pattern (<code class="highlighter-rouge">_</code>)
-with a variable name:</p>
+Sometimes we want to access the value matched by "catch all" case,
+this can be done by replacing wildcard pattern (`_`)
+with a variable name:
+{% highlight scala %}
+val weatherWildGuess = skyColor match {
+  case Color.White => "snow?"
+  case Color.Blue => "rain?"
+  case Color.Black => "a volcano eruption?"
+  case unknownColor => throw new IllegalArgumentException(
+      s"Cannot guess weather for sky color: $unknownColor")
+}
+{% endhighlight %}
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">weatherWildGuess</span> <span class="k">=</span> <span class="n">skyColor</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">White</span> <span class="k">=&gt;</span> <span class="s">"snow?"</span>
-  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Blue</span> <span class="k">=&gt;</span> <span class="s">"rain?"</span>
-  <span class="k">case</span> <span class="nc">Color</span><span class="o">.</span><span class="nc">Black</span> <span class="k">=&gt;</span> <span class="s">"a volcano eruption?"</span>
-  <span class="k">case</span> <span class="n">unknownColor</span> <span class="k">=&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nc">IllegalArgumentException</span><span class="o">(</span>
-      <span class="n">s</span><span class="s">"Cannot guess weather for sky color: $unknownColor"</span><span class="o">)</span>
-<span class="o">}</span></code></pre></figure>
+Often it is required to execute the same code for multiple values.
+With `match` this can be done using `|` (pipe) operator:
+{% highlight scala %}
+answer.toLowerCase match {
+  case "y" | "yes" | "ok" | "proceed" =>
+    executeOperation()
+  case "n" | "no" | "abort" =>
+    abortOperation()
+  case _ =>
+    askAgain()
+}
+{% endhighlight %}
 
-<p>Often it is required to execute the same code for multiple values.
-With <code class="highlighter-rouge">match</code> this can be done using <code class="highlighter-rouge">|</code> (pipe) operator:</p>
+`match` can also be used to match against `null`:
+{% highlight scala %}
+val nullableValue: String = null 
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">answer</span><span class="o">.</span><span class="n">toLowerCase</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="s">"y"</span> <span class="o">|</span> <span class="s">"yes"</span> <span class="o">|</span> <span class="s">"ok"</span> <span class="o">|</span> <span class="s">"proceed"</span> <span class="k">=&gt;</span>
-    <span class="n">executeOperation</span><span class="o">()</span>
-  <span class="k">case</span> <span class="s">"n"</span> <span class="o">|</span> <span class="s">"no"</span> <span class="o">|</span> <span class="s">"abort"</span> <span class="k">=&gt;</span>
-    <span class="n">abortOperation</span><span class="o">()</span>
-  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
-    <span class="n">askAgain</span><span class="o">()</span>
-<span class="o">}</span></code></pre></figure>
+val option = nullableValue match {
+  case null => None
+  case s => Some(s)
+}
+{% endhighlight %}
 
-<p><code class="highlighter-rouge">match</code> can also be used to match against <code class="highlighter-rouge">null</code>:</p>
+Matching against Double `NaN` value is more problematic, since
+`NaN == NaN` must always return `false` according to IEEE 754
+Standard. To match against `NaN` we need to use a pattern guard:
+{% highlight scala %}
+val d: Double = Double.NaN
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">nullableValue</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="kc">null</span> 
+val result = d match {
+  case Double.PositiveInfinity => "+∞"
 
-<span class="k">val</span> <span class="n">option</span> <span class="k">=</span> <span class="n">nullableValue</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="kc">null</span> <span class="k">=&gt;</span> <span class="nc">None</span>
-  <span class="k">case</span> <span class="n">s</span> <span class="k">=&gt;</span> <span class="nc">Some</span><span class="o">(</span><span class="n">s</span><span class="o">)</span>
-<span class="o">}</span></code></pre></figure>
+  // WRONG way to match NaN
+  case Double.NaN => "this does not work"
+  // RIGHT way to match NaN
+  case value if value.isNaN => "NaN"
 
-<p>Matching against Double <code class="highlighter-rouge">NaN</code> value is more problematic, since
-<code class="highlighter-rouge">NaN == NaN</code> must always return <code class="highlighter-rouge">false</code> according to IEEE 754
-Standard. To match against <code class="highlighter-rouge">NaN</code> we need to use a pattern guard:</p>
+  // catch-all
+  case value => value.toString
+}
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">d</span><span class="k">:</span> <span class="kt">Double</span> <span class="o">=</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span>
+println(result)
+{% endhighlight %}
+We will return to pattern guards later.
 
-<span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">d</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">PositiveInfinity</span> <span class="k">=&gt;</span> <span class="s">"+∞"</span>
+#### Pattern matching class instances
 
-  <span class="c1">// WRONG way to match NaN
-</span>  <span class="k">case</span> <span class="nc">Double</span><span class="o">.</span><span class="nc">NaN</span> <span class="k">=&gt;</span> <span class="s">"this does not work"</span>
-  <span class="c1">// RIGHT way to match NaN
-</span>  <span class="k">case</span> <span class="n">value</span> <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">isNaN</span> <span class="k">=&gt;</span> <span class="s">"NaN"</span>
-
-  <span class="c1">// catch-all
-</span>  <span class="k">case</span> <span class="n">value</span> <span class="k">=&gt;</span> <span class="n">value</span><span class="o">.</span><span class="n">toString</span>
-<span class="o">}</span>
-
-<span class="n">println</span><span class="o">(</span><span class="n">result</span><span class="o">)</span></code></pre></figure>
-
-<p>We will return to pattern guards later.</p>
-
-<h4 id="pattern-matching-class-instances">Pattern matching class instances</h4>
-
-<p>Besides pattern matching primitive types, <code class="highlighter-rouge">match</code> can also be used
+Besides pattern matching primitive types, `match` can also be used
 to compare normal class instances.
 For this to work, a matched class must provide a sensible
-override for <code class="highlighter-rouge">equals</code> and <code class="highlighter-rouge">hashCode</code> methods.</p>
+override for `equals` and `hashCode` methods.
 
-<p>Before we’ll see an example, we need to learn about
-a certain pitfall of Scala, illustrated by the following code:</p>
+Before we'll see an example, we need to learn about
+a certain pitfall of Scala, illustrated by the following code:
+{% highlight scala %}
+class NotEqualToAnything {
+  override def equals(obj: Any): Boolean = false
+}
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">NotEqualToAnything</span> <span class="o">{</span>
-  <span class="k">override</span> <span class="k">def</span> <span class="n">equals</span><span class="o">(</span><span class="n">obj</span><span class="k">:</span> <span class="kt">Any</span><span class="o">)</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="kc">false</span>
-<span class="o">}</span>
+val x = new NotEqualToAnything()
+val y = new NotEqualToAnything()
 
-<span class="k">val</span> <span class="n">x</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">NotEqualToAnything</span><span class="o">()</span>
-<span class="k">val</span> <span class="n">y</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">NotEqualToAnything</span><span class="o">()</span>
+println(x.equals(y)) // false
 
-<span class="n">println</span><span class="o">(</span><span class="n">x</span><span class="o">.</span><span class="n">equals</span><span class="o">(</span><span class="n">y</span><span class="o">))</span> <span class="c1">// false
-</span>
-<span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="n">y</span> <span class="k">=&gt;</span>
-    <span class="n">println</span><span class="o">(</span><span class="s">"Whaaaaa! What has just happened?"</span><span class="o">)</span>
-<span class="o">}</span>
-<span class="c1">// Prints:
+x match {
+  case y =>
+    println("Whaaaaa! What has just happened?")
+}
+// Prints:
 // false
-</span><span class="o">//</span> <span class="nc">Whaaaaa</span><span class="o">!</span> <span class="nc">What</span> <span class="n">has</span> <span class="n">just</span> <span class="n">happened</span><span class="o">?</span></code></pre></figure>
-
-<p>Why was <code class="highlighter-rouge">x</code> matched with <code class="highlighter-rouge">case y</code> despite <code class="highlighter-rouge">x.equals(y)</code> returning <code class="highlighter-rouge">false</code>?
-Because the <code class="highlighter-rouge">y</code> in <code class="highlighter-rouge">case y</code> is a new variable introduced by “catch-all” clause 
-to keep the matched value. It’s the same construct that we used
-earlier to catch unknown colors (<code class="highlighter-rouge">case unknownColor</code>).
+// Whaaaaa! What has just happened?
+{% endhighlight %}
+Why was `x` matched with `case y` despite `x.equals(y)` returning `false`?
+Because the `y` in `case y` is a new variable introduced by "catch-all" clause 
+to keep the matched value. It's the same construct that we used
+earlier to catch unknown colors (`case unknownColor`).
 To tell Scala compiler that we want to use the value kept in
 a variable instead of introducing a new one,
-we just need to quote variable name using <code>&#96;</code> character:</p>
+we just need to quote variable name using <code>&#96;</code> character:
+{% highlight scala %}
+x match {
+  case `y` =>
+    println("Whaaaaa! What has just happened?")
+  case _ =>
+    println("no-match")
+}
+{% endhighlight %}
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="n">`y`</span> <span class="k">=&gt;</span>
-    <span class="n">println</span><span class="o">(</span><span class="s">"Whaaaaa! What has just happened?"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
-    <span class="n">println</span><span class="o">(</span><span class="s">"no-match"</span><span class="o">)</span>
-<span class="o">}</span></code></pre></figure>
+Returning to the instances matching, here is a working example:
+{% highlight scala %}
+class JustInt(val n: Int) {
+  // hashCode() omitted for brevity
+  override def equals(obj: Any): Boolean = {
+    obj match {
+      case other: JustInt => other.n == this.n
+      case _              => false
+    }
+  }
+}
 
-<p>Returning to the instances matching, here is a working example:</p>
+val j2 = new JustInt(2)
+val j3 = new JustInt(3)
+val j4 = new JustInt(4)
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">JustInt</span><span class="o">(</span><span class="k">val</span> <span class="n">n</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>
-  <span class="c1">// hashCode() omitted for brevity
-</span>  <span class="k">override</span> <span class="k">def</span> <span class="n">equals</span><span class="o">(</span><span class="n">obj</span><span class="k">:</span> <span class="kt">Any</span><span class="o">)</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="o">{</span>
-    <span class="n">obj</span> <span class="k">match</span> <span class="o">{</span>
-      <span class="k">case</span> <span class="n">other</span><span class="k">:</span> <span class="kt">JustInt</span> <span class="o">=&gt;</span> <span class="n">other</span><span class="o">.</span><span class="n">n</span> <span class="o">==</span> <span class="k">this</span><span class="o">.</span><span class="n">n</span>
-      <span class="k">case</span> <span class="k">_</span>              <span class="k">=&gt;</span> <span class="kc">false</span>
-    <span class="o">}</span>
-  <span class="o">}</span>
-<span class="o">}</span>
+val just3: Any = new JustInt(3)
 
-<span class="k">val</span> <span class="n">j2</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">JustInt</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span>
-<span class="k">val</span> <span class="n">j3</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">JustInt</span><span class="o">(</span><span class="mi">3</span><span class="o">)</span>
-<span class="k">val</span> <span class="n">j4</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">JustInt</span><span class="o">(</span><span class="mi">4</span><span class="o">)</span>
+just3 match {
+  case `j2` => println("just 2!")
+  case `j3` => println("just 3!")
+  case `j4` => println("just 4!")
+}
+// Prints:
+// just 3!
+{% endhighlight %}
 
-<span class="k">val</span> <span class="n">just3</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">JustInt</span><span class="o">(</span><span class="mi">3</span><span class="o">)</span>
+One more example before we move on. When we attempt to
+match singleton objects we do not need to use <code>&#96;</code> escaping:
+{% highlight scala %}
+object X { }
+object Y { }
 
-<span class="n">just3</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="n">`j2`</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"just 2!"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="n">`j3`</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"just 3!"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="n">`j4`</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"just 4!"</span><span class="o">)</span>
-<span class="o">}</span>
-<span class="c1">// Prints:
-</span><span class="o">//</span> <span class="n">just</span> <span class="mi">3</span><span class="o">!</span></code></pre></figure>
+val x: Any = X
+x match {
+  case Y => println("it's Y!")
+  case X => println("it's X!")
+}
+// Prints:
+// it's X!
+{% endhighlight %}
+`case X` will work just fine!
 
-<p>One more example before we move on. When we attempt to
-match singleton objects we do not need to use <code>&#96;</code> escaping:</p>
+#### Pattern matching types
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">object</span> <span class="nc">X</span> <span class="o">{</span> <span class="o">}</span>
-<span class="k">object</span> <span class="nc">Y</span> <span class="o">{</span> <span class="o">}</span>
+Besides matching values, `match` can also perform `instanceof` tests:
+{% highlight scala %}
+val something: Any = new java.util.Random()
 
-<span class="k">val</span> <span class="n">x</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="n">X</span>
-<span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="n">Y</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"it's Y!"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="n">X</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"it's X!"</span><span class="o">)</span>
-<span class="o">}</span>
-<span class="c1">// Prints:
-</span><span class="o">//</span> <span class="n">it</span><span class="ss">'s </span><span class="n">X</span><span class="o">!</span></code></pre></figure>
+something match {
+  case _: String => println("a string!")
+  case _: Int => println("an int!")
+  case _: java.util.Random =>
+    println("A Random instance!")
+  case _ => println("type unknown!")
+}
+{% endhighlight %}
 
-<p><code class="highlighter-rouge">case X</code> will work just fine!</p>
-
-<h4 id="pattern-matching-types">Pattern matching types</h4>
-
-<p>Besides matching values, <code class="highlighter-rouge">match</code> can also perform <code class="highlighter-rouge">instanceof</code> tests:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">something</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="k">new</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Random</span><span class="o">()</span>
-
-<span class="n">something</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="k">_:</span> <span class="kt">String</span> <span class="o">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"a string!"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="k">_:</span> <span class="kt">Int</span> <span class="o">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"an int!"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="k">_:</span> <span class="kt">java.util.Random</span> <span class="o">=&gt;</span>
-    <span class="n">println</span><span class="o">(</span><span class="s">"A Random instance!"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"type unknown!"</span><span class="o">)</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>As usual on JVM <code class="highlighter-rouge">instanceof</code> tests will not work with
+As usual on JVM `instanceof` tests will not work with
 parametrized types 
-(while <code class="highlighter-rouge">class List&lt;T&gt;</code> is a generic type, 
-<code class="highlighter-rouge">List&lt;T&gt;</code> usage like <code class="highlighter-rouge">List&lt;String&gt;</code> is
+(while `class List<T>` is a generic type, 
+`List<T>` usage like `List<String>` is
 called a parametrized type). 
-<a href="https://en.wikipedia.org/wiki/Generics_in_Java#Problems_with_type_erasure">Type erasure</a>
-is here to blame:</p>
+[Type erasure](https://en.wikipedia.org/wiki/Generics_in_Java#Problems_with_type_erasure)
+is here to blame:
+{% highlight scala %}
+// DO NOT WORK
+val x: Any = List[Int](1,2,3)
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="c1">// DO NOT WORK
-</span><span class="k">val</span> <span class="n">x</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="nc">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">3</span><span class="o">)</span>
+val result = x match {
+  case _: List[String] => "string list" // unreachable code warning
+  case _: List[Int] => "int list" // unreachable code warning
+}
 
-<span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="k">_:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="s">"string list"</span> <span class="c1">// unreachable code warning
-</span>  <span class="k">case</span> <span class="k">_:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="s">"int list"</span> <span class="c1">// unreachable code warning
-</span><span class="o">}</span>
+println(result)
+// Prints:
+// string list (sic!)
+{% endhighlight %}
+But not all is lost, we can still preform type tests
+on generic types using wildcards (Scala `_` is a conterpart of Java `?`,
+consider Scala's `List[_]` and Java's `List<?>`):
+{% highlight scala %}
+val x: Any = List[Int](1,2,3)
 
-<span class="n">println</span><span class="o">(</span><span class="n">result</span><span class="o">)</span>
-<span class="c1">// Prints:
-</span><span class="o">//</span> <span class="n">string</span> <span class="n">list</span> <span class="o">(</span><span class="n">sic</span><span class="o">!)</span></code></pre></figure>
+val result = x match {
+  case _: Map[_, _] => "a map"
+  case _: List[_] => "a list"
+  case _: java.util.List[_] => "a java's list"
+}
 
-<p>But not all is lost, we can still preform type tests
-on generic types using wildcards (Scala <code class="highlighter-rouge">_</code> is a conterpart of Java <code class="highlighter-rouge">?</code>,
-consider Scala’s <code class="highlighter-rouge">List[_]</code> and Java’s <code class="highlighter-rouge">List&lt;?&gt;</code>):</p>
+println(result)
+// Prints:
+// a list
+{% endhighlight %}
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">x</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="nc">List</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">3</span><span class="o">)</span>
-
-<span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="k">_:</span> <span class="kt">Map</span><span class="o">[</span><span class="k">_</span>, <span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="s">"a map"</span>
-  <span class="k">case</span> <span class="k">_:</span> <span class="kt">List</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="s">"a list"</span>
-  <span class="k">case</span> <span class="k">_:</span> <span class="kt">java.util.List</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="s">"a java's list"</span>
-<span class="o">}</span>
-
-<span class="n">println</span><span class="o">(</span><span class="n">result</span><span class="o">)</span>
-<span class="c1">// Prints:
-</span><span class="o">//</span> <span class="n">a</span> <span class="n">list</span></code></pre></figure>
-
-<p>So far we where not interested in the actual value of the variable,
-but only in it’s type and so we just discarded the value using <code class="highlighter-rouge">case _: Type</code>
+So far we where not interested in the actual value of the variable,
+but only in it's type and so we just discarded the value using `case _: Type`
 clause.
 But nothing prevents us from assigning the already type checked
-value to a variable:</p>
+value to a variable:
+{% highlight scala %}
+val result = x match {
+  case map: Map[_, _] => map.size * 2
+  case list: List[_] => list.size
+  case jlist: java.util.List[_] => jlist.size
+  case _ => 0
+}
+{% endhighlight %}
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="n">map</span><span class="k">:</span> <span class="kt">Map</span><span class="o">[</span><span class="k">_</span>, <span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="n">map</span><span class="o">.</span><span class="n">size</span> <span class="o">*</span> <span class="mi">2</span>
-  <span class="k">case</span> <span class="n">list</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="n">list</span><span class="o">.</span><span class="n">size</span>
-  <span class="k">case</span> <span class="n">jlist</span><span class="k">:</span> <span class="kt">java.util.List</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="n">jlist</span><span class="o">.</span><span class="n">size</span>
-  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="mi">0</span>
-<span class="o">}</span></code></pre></figure>
+Every `case` clause creates it's own lexical scope.
+This means that we can reuse variable names across different `case`es:
+{% highlight scala %}
+val result = x match {
+  case list: java.util.List[_] =>
+    val tmp = 10
+    list.size + tmp
 
-<p>Every <code class="highlighter-rouge">case</code> clause creates it’s own lexical scope.
-This means that we can reuse variable names across different <code class="highlighter-rouge">case</code>es:</p>
+  case list: List[_] =>
+    val tmp = 1
+    list.size + tmp
+}
+{% endhighlight %}
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="n">list</span><span class="k">:</span> <span class="kt">java.util.List</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span>
-    <span class="k">val</span> <span class="n">tmp</span> <span class="k">=</span> <span class="mi">10</span>
-    <span class="n">list</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="n">tmp</span>
-
-  <span class="k">case</span> <span class="n">list</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=&gt;</span>
-    <span class="k">val</span> <span class="n">tmp</span> <span class="k">=</span> <span class="mi">1</span>
-    <span class="n">list</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="n">tmp</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Pipe operator can be used with type checks too, but the
-resulting code isn’t very readable:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="k">_:</span><span class="kt">Short</span> <span class="kt">|</span> <span class="k">_</span><span class="kt">:Int</span> <span class="kt">|</span> <span class="k">_</span><span class="kt">:Long</span> <span class="o">=&gt;</span>
-    <span class="n">println</span><span class="o">(</span><span class="s">"a number!"</span><span class="o">)</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>If we want to use the value matched by this
-pattern we need to use a pattern binder:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="n">num</span><span class="o">@(</span><span class="k">_:</span><span class="kt">Short</span> <span class="kt">|</span> <span class="k">_</span><span class="kt">:Int</span> <span class="kt">|</span> <span class="k">_</span><span class="kt">:Long</span><span class="o">)</span> <span class="k">=&gt;</span>
-    <span class="n">println</span><span class="o">(</span><span class="n">num</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">Number</span><span class="o">].</span><span class="n">doubleValue</span><span class="o">())</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Pattern binders allow us to assign a value
-that matches a <em>subpattern</em> to a variable.
-In the extreme case this <em>subpattern</em> can be the entire
+Pipe operator can be used with type checks too, but the
+resulting code isn't very readable:
+{% highlight scala %}
+x match {
+  case _:Short | _:Int | _:Long =>
+    println("a number!")
+}
+{% endhighlight %}
+If we want to use the value matched by this
+pattern we need to use a pattern binder:
+{% highlight scala %}
+x match {
+  case num@(_:Short | _:Int | _:Long) =>
+    println(num.asInstanceOf[Number].doubleValue())
+}
+{% endhighlight %}
+Pattern binders allow us to assign a value
+that matches a *subpattern* to a variable.
+In the extreme case this *subpattern* can be the entire
 pattern, as it is in our case. We will return to
-the pattern binders later.</p>
+the pattern binders later.
 
-<h4 id="pattern-matching-tuples">Pattern matching tuples</h4>
+#### Pattern matching tuples
 
-<p>Pattern matching on tuples is supported out of the box.
+Pattern matching on tuples is supported out of the box.
 We can match on tuple elements using all previously
 described matchers. We can ignore a tuple element
-by using “match all” wildcard (<code class="highlighter-rouge">_</code>):</p>
+by using "match all" wildcard (`_`):
+{% highlight scala %}
+// unpacking tuple
+(1, 2, 3) match {
+  case (a, b, c) => println(s"$a $b $c")
+}
+// ignoring certain elements
+(1, 2, 3) match {
+  case (a, _, _) => println(s"$a")
+}
+// matching values of the tuple
+(1, 2, 3) match {
+  case (1, e, 3) => println(s"$e")
+  case _ => throw new RuntimeException()
+}
+// matching types of the tuple
+val t = ("foo".asInstanceOf[Any],
+         1.asInstanceOf[Any],
+         true.asInstanceOf[Any])
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="c1">// unpacking tuple
-</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span> <span class="n">c</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$a $b $c"</span><span class="o">)</span>
-<span class="o">}</span>
-<span class="c1">// ignoring certain elements
-</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="k">_</span><span class="o">,</span> <span class="k">_</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$a"</span><span class="o">)</span>
-<span class="o">}</span>
-<span class="c1">// matching values of the tuple
-</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">e</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$e"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nc">RuntimeException</span><span class="o">()</span>
-<span class="o">}</span>
-<span class="c1">// matching types of the tuple
-</span><span class="k">val</span> <span class="n">t</span> <span class="k">=</span> <span class="o">(</span><span class="s">"foo"</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">Any</span><span class="o">],</span>
-         <span class="mf">1.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">Any</span><span class="o">],</span>
-         <span class="kc">true</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">Any</span><span class="o">])</span>
+t match {
+  case (s: String, n: Int, b: Boolean) => println(s"$s $n $b")
+  case _ => throw new RuntimeException()
+}
+{% endhighlight %}
 
-<span class="n">t</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="o">(</span><span class="n">s</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">n</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">b</span><span class="k">:</span> <span class="kt">Boolean</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$s $n $b"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nc">RuntimeException</span><span class="o">()</span>
-<span class="o">}</span></code></pre></figure>
+We can also match nested tuple structures:
+{% highlight scala %}
+val t: Any = (1, 2, ("foo", "bar"))
 
-<p>We can also match nested tuple structures:</p>
+t match {
+  case (a, b, (c, d)) => println(s"$a $b $c $d")
+  case _ => throw new RuntimeException()
+}
+// and with other constraints:
+t match {
+  case (a, 2, (_: String, d)) => println(s"$a $d")
+  case _ => throw new RuntimeException()
+}
+{% endhighlight %}
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">t</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="o">(</span><span class="s">"foo"</span><span class="o">,</span> <span class="s">"bar"</span><span class="o">))</span>
+#### Pattern guards
 
-<span class="n">t</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span> <span class="o">(</span><span class="n">c</span><span class="o">,</span> <span class="n">d</span><span class="o">))</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$a $b $c $d"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nc">RuntimeException</span><span class="o">()</span>
-<span class="o">}</span>
-<span class="c1">// and with other constraints:
-</span><span class="n">t</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="o">(</span><span class="k">_:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">d</span><span class="o">))</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$a $d"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="k">throw</span> <span class="k">new</span> <span class="nc">RuntimeException</span><span class="o">()</span>
-<span class="o">}</span></code></pre></figure>
-
-<h4 id="pattern-guards">Pattern guards</h4>
-
-<p>When pattern matching values, we often need to preform
+When pattern matching values, we often need to preform
 some additional checks e.g. say we want to match all odd
-or even integers. We can use pattern guards for this purpose:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">for</span> <span class="o">(</span><span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="mi">10</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">i</span> <span class="k">match</span> <span class="o">{</span>
-    <span class="k">case</span> <span class="n">i</span> <span class="k">if</span> <span class="o">(</span><span class="n">i</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="k">=&gt;</span>
-      <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$i is even"</span><span class="o">)</span>
-    <span class="k">case</span> <span class="n">i</span> <span class="k">if</span> <span class="o">(</span><span class="n">i</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="k">=&gt;</span>
-      <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$i is odd"</span><span class="o">)</span>
-  <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Since pattern guards use predicates (expressions that
-return either <code class="highlighter-rouge">true</code> or <code class="highlighter-rouge">false</code>) they are very flexible.
+or even integers. We can use pattern guards for this purpose:
+{% highlight scala %}
+for (i <- 1 to 10) {
+  i match {
+    case i if (i%2 == 0) =>
+      println(s"$i is even")
+    case i if (i%2 == 1) =>
+      println(s"$i is odd")
+  }
+}
+{% endhighlight %}
+Since pattern guards use predicates (expressions that
+return either `true` or `false`) they are very flexible.
 We can express both value and type checks using only
-pattern guards:</p>
+pattern guards:
+{% highlight scala %}
+val x: Any = 3
+x match {
+  case _ if x == "foo" =>
+    "it's this 'foo' again!"
+  case _ if x == 3 =>
+    "it's three!"
+}
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">x</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="mi">3</span>
-<span class="n">x</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="k">_</span> <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="s">"foo"</span> <span class="k">=&gt;</span>
-    <span class="s">"it's this 'foo' again!"</span>
-  <span class="k">case</span> <span class="k">_</span> <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">3</span> <span class="k">=&gt;</span>
-    <span class="s">"it's three!"</span>
-<span class="o">}</span>
-
-<span class="k">val</span> <span class="n">t</span><span class="k">:</span> <span class="kt">Any</span> <span class="o">=</span> <span class="s">"foo"</span>
-<span class="n">t</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="n">tmp</span> <span class="k">if</span> <span class="n">tmp</span><span class="o">.</span><span class="n">isInstanceOf</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span> <span class="k">=&gt;</span>
-    <span class="k">val</span> <span class="n">s</span> <span class="k">=</span> <span class="n">tmp</span><span class="o">.</span><span class="n">asInstanceOf</span><span class="o">[</span><span class="kt">String</span><span class="o">]</span>
-    <span class="n">println</span><span class="o">(</span><span class="s">"it's a string: "</span> <span class="o">+</span> <span class="n">s</span><span class="o">)</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>The problem with pattern guards is that they are
+val t: Any = "foo"
+t match {
+  case tmp if tmp.isInstanceOf[String] =>
+    val s = tmp.asInstanceOf[String]
+    println("it's a string: " + s)
+}
+{% endhighlight %}
+The problem with pattern guards is that they are
 imperative. We should try to avoid them
 as much as possible. Later we will learn about
 extractors, that roughly speaking do the same
-job as guards but in a more declarative way.</p>
+job as guards but in a more declarative way.
 
-<h4 id="extractors">Extractors</h4>
+#### Extractors
 
-<p>Extractors are pattern guards on steroids.
+Extractors are pattern guards on steroids.
 They allow us to build highly readable DSLs and provide
-a functional way to match, extract and transform program data.</p>
+a functional way to match, extract and transform program data.
 
-<p>The simplest extractor return just a <code class="highlighter-rouge">Boolean</code> value and
-can be used as a pattern guard replacement:</p>
+The simplest extractor return just a `Boolean` value and
+can be used as a pattern guard replacement:
+{% highlight scala %}
+object Odd {
+  def unapply(n: Int): Boolean = {
+    (n % 2 == 1)
+  }
+}
+object Even {
+  def unapply(n: Int): Boolean = {
+    (n % 2 == 0)
+  }
+}
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">object</span> <span class="nc">Odd</span> <span class="o">{</span>
-  <span class="k">def</span> <span class="n">unapply</span><span class="o">(</span><span class="n">n</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="o">{</span>
-    <span class="o">(</span><span class="n">n</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span>
-  <span class="o">}</span>
-<span class="o">}</span>
-<span class="k">object</span> <span class="nc">Even</span> <span class="o">{</span>
-  <span class="k">def</span> <span class="n">unapply</span><span class="o">(</span><span class="n">n</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="o">{</span>
-    <span class="o">(</span><span class="n">n</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span>
-  <span class="o">}</span>
-<span class="o">}</span>
+for (i <- 1 to 10) {
+  i match {
+    case Odd() => println(s"$i is odd")
+    case Even() => println(s"$i is even")
+  }
+}
+{% endhighlight %}
+Generally speaking extractor is just a value with `unapply` method.
+In the last example we used `object`s but extractor can also be kept in variables:
+{% highlight scala %}
+class MultipleOf(m: Int) {
+  def unapply(n: Int): Boolean = {
+    (n % m) == 0
+  }
+}
 
-<span class="k">for</span> <span class="o">(</span><span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="mi">10</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">i</span> <span class="k">match</span> <span class="o">{</span>
-    <span class="k">case</span> <span class="nc">Odd</span><span class="o">()</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$i is odd"</span><span class="o">)</span>
-    <span class="k">case</span> <span class="nc">Even</span><span class="o">()</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$i is even"</span><span class="o">)</span>
-  <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
+val multipleOf2 = new MultipleOf(2)
+val multipleOf5 = new MultipleOf(5)
 
-<p>Generally speaking extractor is just a value with <code class="highlighter-rouge">unapply</code> method.
-In the last example we used <code class="highlighter-rouge">object</code>s but extractor can also be kept in variables:</p>
+for (i <- 1 to 10) {
+  i match {
+    case m5 @ multipleOf5() => println(s"$m5 is multiple of 5")
+    case m2 @ multipleOf2() => println(s"$m2 is multiple of 2")
+    case _ =>
+  }
+}
+{% endhighlight %}
+Here we also used pattern binders to name the values that where matched
+by `multipleOf` extractors.
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">MultipleOf</span><span class="o">(</span><span class="n">m</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">def</span> <span class="n">unapply</span><span class="o">(</span><span class="n">n</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Boolean</span> <span class="o">=</span> <span class="o">{</span>
-    <span class="o">(</span><span class="n">n</span> <span class="o">%</span> <span class="n">m</span><span class="o">)</span> <span class="o">==</span> <span class="mi">0</span>
-  <span class="o">}</span>
-<span class="o">}</span>
+Unfortunately in the current version of Scala we cannot create parametrized
+extractors. In other words we cannot create a universal `multipleOf(n)` extractor.
+This also means that pattern guards are not 100% replaceable by extractors.
 
-<span class="k">val</span> <span class="n">multipleOf2</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">MultipleOf</span><span class="o">(</span><span class="mi">2</span><span class="o">)</span>
-<span class="k">val</span> <span class="n">multipleOf5</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">MultipleOf</span><span class="o">(</span><span class="mi">5</span><span class="o">)</span>
-
-<span class="k">for</span> <span class="o">(</span><span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="mi">10</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">i</span> <span class="k">match</span> <span class="o">{</span>
-    <span class="k">case</span> <span class="n">m5</span> <span class="k">@</span> <span class="n">multipleOf5</span><span class="o">()</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$m5 is multiple of 5"</span><span class="o">)</span>
-    <span class="k">case</span> <span class="n">m2</span> <span class="k">@</span> <span class="n">multipleOf2</span><span class="o">()</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"$m2 is multiple of 2"</span><span class="o">)</span>
-    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
-  <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Here we also used pattern binders to name the values that where matched
-by <code class="highlighter-rouge">multipleOf</code> extractors.</p>
-
-<p>Unfortunately in the current version of Scala we cannot create parametrized
-extractors. In other words we cannot create a universal <code class="highlighter-rouge">multipleOf(n)</code> extractor.
-This also means that pattern guards are not 100% replaceable by extractors.</p>
-
-<p>As the name suggest, the extractors main purpose is to extract the
+As the name suggest, the extractors main purpose is to extract the
 data from matched values.
-Our next extractor will extract non-null values from nullable reference:</p>
+Our next extractor will extract non-null values from nullable reference:
+{% highlight scala %}
+object NonNull {
+  def unapply[R](arg: R): Option[R] = {
+    if (arg == null) None
+    else Some(arg)
+  }
+}
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">object</span> <span class="nc">NonNull</span> <span class="o">{</span>
-  <span class="k">def</span> <span class="n">unapply</span><span class="o">[</span><span class="kt">R</span><span class="o">](</span><span class="n">arg</span><span class="k">:</span> <span class="kt">R</span><span class="o">)</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">R</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">arg</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="nc">None</span>
-    <span class="k">else</span> <span class="nc">Some</span><span class="o">(</span><span class="n">arg</span><span class="o">)</span>
-  <span class="o">}</span>
-<span class="o">}</span>
+val strings = List("foo", null, "bar", null)
+for (string <- strings) {
+  string match {
+    case NonNull(s) => print(s)
+    case _ => print("placeholder")
+  }
+  print(" ")
+}
+// Prints:
+// foo placeholder bar placeholder
+{% endhighlight %}
+`unapply` method can be generic, and should return `Some(value)` in
+case of match and `None` when there is not match.
 
-<span class="k">val</span> <span class="n">strings</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span><span class="s">"foo"</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="s">"bar"</span><span class="o">,</span> <span class="kc">null</span><span class="o">)</span>
-<span class="k">for</span> <span class="o">(</span><span class="n">string</span> <span class="k">&lt;-</span> <span class="n">strings</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">string</span> <span class="k">match</span> <span class="o">{</span>
-    <span class="k">case</span> <span class="nc">NonNull</span><span class="o">(</span><span class="n">s</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">print</span><span class="o">(</span><span class="n">s</span><span class="o">)</span>
-    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> <span class="n">print</span><span class="o">(</span><span class="s">"placeholder"</span><span class="o">)</span>
-  <span class="o">}</span>
-  <span class="n">print</span><span class="o">(</span><span class="s">" "</span><span class="o">)</span>
-<span class="o">}</span>
-<span class="c1">// Prints:
-</span><span class="o">//</span> <span class="n">foo</span> <span class="n">placeholder</span> <span class="n">bar</span> <span class="n">placeholder</span></code></pre></figure>
+But extractors are not limited to returning only a single value.
+In our next example we will learn how to extract `head` and `tail` from
+`java.util.List[E]`:
+{% highlight scala %}
+type JList[E] = java.util.List[E]
 
-<p><code class="highlighter-rouge">unapply</code> method can be generic, and should return <code class="highlighter-rouge">Some(value)</code> in
-case of match and <code class="highlighter-rouge">None</code> when there is not match.</p>
+object JList {
+  def unapply[E](list: JList[E]): Option[(E, JList[E])] = {
+    if (list.isEmpty) {
+      None
+    } else {
+      val head = list.get(0)
+      val tail = list.subList(1, list.size())
+      Some((head, tail))
+    }
+  }
+}
 
-<p>But extractors are not limited to returning only a single value.
-In our next example we will learn how to extract <code class="highlighter-rouge">head</code> and <code class="highlighter-rouge">tail</code> from
-<code class="highlighter-rouge">java.util.List[E]</code>:</p>
+val lists = List(
+  java.util.Collections.emptyList[Int](),
+  java.util.Arrays.asList(1),
+  java.util.Arrays.asList(1, 2, 3)
+)
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">type</span> <span class="kt">JList</span><span class="o">[</span><span class="kt">E</span><span class="o">]</span> <span class="k">=</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">List</span><span class="o">[</span><span class="kt">E</span><span class="o">]</span>
+for (list <- lists) {
+  list match {
+    case JList(head, tail) =>
+      println(s"head: $head, tail: $tail")
+    case emptyList =>
+      println("empty list")
+  }
+}
+{% endhighlight %}
+To return multiple values from the extractor we just need to return a
+tuple instead of a single value wrapped in `Option[A]`.
 
-<span class="k">object</span> <span class="nc">JList</span> <span class="o">{</span>
-  <span class="k">def</span> <span class="n">unapply</span><span class="o">[</span><span class="kt">E</span><span class="o">](</span><span class="n">list</span><span class="k">:</span> <span class="kt">JList</span><span class="o">[</span><span class="kt">E</span><span class="o">])</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[(</span><span class="kt">E</span>, <span class="kt">JList</span><span class="o">[</span><span class="kt">E</span><span class="o">])]</span> <span class="k">=</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">list</span><span class="o">.</span><span class="n">isEmpty</span><span class="o">)</span> <span class="o">{</span>
-      <span class="nc">None</span>
-    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
-      <span class="k">val</span> <span class="n">head</span> <span class="k">=</span> <span class="n">list</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="mi">0</span><span class="o">)</span>
-      <span class="k">val</span> <span class="n">tail</span> <span class="k">=</span> <span class="n">list</span><span class="o">.</span><span class="n">subList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">list</span><span class="o">.</span><span class="n">size</span><span class="o">())</span>
-      <span class="nc">Some</span><span class="o">((</span><span class="n">head</span><span class="o">,</span> <span class="n">tail</span><span class="o">))</span>
-    <span class="o">}</span>
-  <span class="o">}</span>
-<span class="o">}</span>
+Extractors can be nested, this is a really powerful feature.
+Given our previous `JList` extractor we can extract not only
+the first element but any finite number of elements from the beginning of a list:
+{% highlight scala %}
+list match {
+  case JList(e1, JList(e2, JList(e3, tail))) =>
+	 println(s"[$e1, $e2, $e3], tail: $tail")
+  case _ =>
+}
+{% endhighlight %}
+To understand how this pattern works it's helpful to look at the equivalent
+for comprehension:
+{% highlight scala %}
+for {
+  (e1, tmp1) <- JList.unapply(list)
+  (e2, tmp2) <- JList.unapply(tmp1)
+  (e3, tail) <- JList.unapply(tmp2)
+} {
+  println(s"[$e1, $e2, $e3], tail: $tail")
+}
+{% endhighlight %}
 
-<span class="k">val</span> <span class="n">lists</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span>
-  <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Collections</span><span class="o">.</span><span class="n">emptyList</span><span class="o">[</span><span class="kt">Int</span><span class="o">](),</span>
-  <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Arrays</span><span class="o">.</span><span class="n">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span>
-  <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Arrays</span><span class="o">.</span><span class="n">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">)</span>
-<span class="o">)</span>
-
-<span class="k">for</span> <span class="o">(</span><span class="n">list</span> <span class="k">&lt;-</span> <span class="n">lists</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">list</span> <span class="k">match</span> <span class="o">{</span>
-    <span class="k">case</span> <span class="nc">JList</span><span class="o">(</span><span class="n">head</span><span class="o">,</span> <span class="n">tail</span><span class="o">)</span> <span class="k">=&gt;</span>
-      <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"head: $head, tail: $tail"</span><span class="o">)</span>
-    <span class="k">case</span> <span class="n">emptyList</span> <span class="k">=&gt;</span>
-      <span class="n">println</span><span class="o">(</span><span class="s">"empty list"</span><span class="o">)</span>
-  <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>To return multiple values from the extractor we just need to return a
-tuple instead of a single value wrapped in <code class="highlighter-rouge">Option[A]</code>.</p>
-
-<p>Extractors can be nested, this is a really powerful feature.
-Given our previous <code class="highlighter-rouge">JList</code> extractor we can extract not only
-the first element but any finite number of elements from the beginning of a list:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">list</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="nc">JList</span><span class="o">(</span><span class="n">e1</span><span class="o">,</span> <span class="nc">JList</span><span class="o">(</span><span class="n">e2</span><span class="o">,</span> <span class="nc">JList</span><span class="o">(</span><span class="n">e3</span><span class="o">,</span> <span class="n">tail</span><span class="o">)))</span> <span class="k">=&gt;</span>
-	 <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"[$e1, $e2, $e3], tail: $tail"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>To understand how this pattern works it’s helpful to look at the equivalent
-for comprehension:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">for</span> <span class="o">{</span>
-  <span class="o">(</span><span class="n">e1</span><span class="o">,</span> <span class="n">tmp1</span><span class="o">)</span> <span class="k">&lt;-</span> <span class="nc">JList</span><span class="o">.</span><span class="n">unapply</span><span class="o">(</span><span class="n">list</span><span class="o">)</span>
-  <span class="o">(</span><span class="n">e2</span><span class="o">,</span> <span class="n">tmp2</span><span class="o">)</span> <span class="k">&lt;-</span> <span class="nc">JList</span><span class="o">.</span><span class="n">unapply</span><span class="o">(</span><span class="n">tmp1</span><span class="o">)</span>
-  <span class="o">(</span><span class="n">e3</span><span class="o">,</span> <span class="n">tail</span><span class="o">)</span> <span class="k">&lt;-</span> <span class="nc">JList</span><span class="o">.</span><span class="n">unapply</span><span class="o">(</span><span class="n">tmp2</span><span class="o">)</span>
-<span class="o">}</span> <span class="o">{</span>
-  <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"[$e1, $e2, $e3], tail: $tail"</span><span class="o">)</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>When we extract multiple values, sometimes we want to
+When we extract multiple values, sometimes we want to
 ignore some of them.
-We can use <code class="highlighter-rouge">_</code> wildcard, that matches any value, for this purpose:</p>
+We can use `_` wildcard, that matches any value, for this purpose:
+{% highlight scala %}
+list match {
+  case JList(_, JList(_, JList(e3, _))) =>
+    println(s"3rd element is $e3")
+  case _ =>
+}
+{% endhighlight %}
+We can also use pattern binders to assign names to
+subpatterns, for example:
+{% highlight scala %}
+list match {
+  case JList(_, tail @ JList(_, JList(e3, _))) =>
+    println(s"3rd element is $e3")
+    println(s"tail: $tail")
+  case _ =>
+}
+{% endhighlight %}
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">list</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="nc">JList</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="nc">JList</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="nc">JList</span><span class="o">(</span><span class="n">e3</span><span class="o">,</span> <span class="k">_</span><span class="o">)))</span> <span class="k">=&gt;</span>
-    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"3rd element is $e3"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>We can also use pattern binders to assign names to
-subpatterns, for example:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">list</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="nc">JList</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="n">tail</span> <span class="k">@</span> <span class="nc">JList</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="nc">JList</span><span class="o">(</span><span class="n">e3</span><span class="o">,</span> <span class="k">_</span><span class="o">)))</span> <span class="k">=&gt;</span>
-    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"3rd element is $e3"</span><span class="o">)</span>
-    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"tail: $tail"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Matching Java’s <code class="highlighter-rouge">List[E]</code> using nested patterns is not
+Matching Java's `List[E]` using nested patterns is not
 very comfortable. 
-In reality we prefer a syntax like <code class="highlighter-rouge">case JList(e1, e2, e3)</code>.
-Fortunately this can be done in Scala using extractors that return <code class="highlighter-rouge">Option[Seq[E]]</code>:</p>
+In reality we prefer a syntax like `case JList(e1, e2, e3)`.
+Fortunately this can be done in Scala using extractors that return `Option[Seq[E]]`:
+{% highlight scala %}
+object JList2 {
+  def unapplySeq[E](list: JList[E]): Option[Seq[E]] = {
+    import scala.jdk.CollectionConverters._
+    Some(list.asScala.toSeq)
+  }
+}
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">object</span> <span class="nc">JList2</span> <span class="o">{</span>
-  <span class="k">def</span> <span class="n">unapplySeq</span><span class="o">[</span><span class="kt">E</span><span class="o">](</span><span class="n">list</span><span class="k">:</span> <span class="kt">JList</span><span class="o">[</span><span class="kt">E</span><span class="o">])</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">Seq</span><span class="o">[</span><span class="kt">E</span><span class="o">]]</span> <span class="k">=</span> <span class="o">{</span>
-    <span class="k">import</span> <span class="nn">scala.jdk.CollectionConverters._</span>
-    <span class="nc">Some</span><span class="o">(</span><span class="n">list</span><span class="o">.</span><span class="n">asScala</span><span class="o">.</span><span class="n">toSeq</span><span class="o">)</span>
-  <span class="o">}</span>
-<span class="o">}</span>
+val list = java.util.Arrays.asList(1, 2, 3, 4)
 
-<span class="k">val</span> <span class="n">list</span> <span class="k">=</span> <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="nc">Arrays</span><span class="o">.</span><span class="n">asList</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">)</span>
+list match {
+  case JList2(a, _, c) => println("only 3 elements")
+  case JList2(_, _) => println("only 2 elements")
+  case JList2(a, b, c, d) =>
+    println(s"4 elements: $a, $b, $c, $d")
+}
+{% endhighlight %}
+Notice that we used `unapplySeq` instead of `unapply`.
 
-<span class="n">list</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="nc">JList2</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="k">_</span><span class="o">,</span> <span class="n">c</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"only 3 elements"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="nc">JList2</span><span class="o">(</span><span class="k">_</span><span class="o">,</span> <span class="k">_</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="s">"only 2 elements"</span><span class="o">)</span>
-  <span class="k">case</span> <span class="nc">JList2</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span> <span class="n">c</span><span class="o">,</span> <span class="n">d</span><span class="o">)</span> <span class="k">=&gt;</span>
-    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"4 elements: $a, $b, $c, $d"</span><span class="o">)</span>
-<span class="o">}</span></code></pre></figure>
+With `Seq` extractor we can match "tail" of
+the list using `_*` pattern:
+{% highlight scala %}
+list match {
+  case JList2(head, tail @ _*) =>
+    println(s"head $head, tail $tail")
+}
+{% endhighlight %}
 
-<p>Notice that we used <code class="highlighter-rouge">unapplySeq</code> instead of <code class="highlighter-rouge">unapply</code>.</p>
-
-<p>With <code class="highlighter-rouge">Seq</code> extractor we can match “tail” of
-the list using <code class="highlighter-rouge">_*</code> pattern:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">list</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="nc">JList2</span><span class="o">(</span><span class="n">head</span><span class="o">,</span> <span class="n">tail</span> <span class="k">@</span> <span class="k">_</span><span class="o">*)</span> <span class="k">=&gt;</span>
-    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"head $head, tail $tail"</span><span class="o">)</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>The last thing that may come handy is the ability to write
-extractor expression using either call notation <code class="highlighter-rouge">JList2(head, tail)</code>
-or using operator notation <code class="highlighter-rouge">head JList2 tail</code>:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">for</span> <span class="o">(</span><span class="n">list</span> <span class="k">&lt;-</span> <span class="n">lists</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">list</span> <span class="k">match</span> <span class="o">{</span>
-    <span class="k">case</span> <span class="n">head</span> <span class="nc">JList</span> <span class="n">tail</span> <span class="k">=&gt;</span>
-      <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"head: $head, tail: $tail"</span><span class="o">)</span>
-    <span class="k">case</span> <span class="n">emptyList</span> <span class="k">=&gt;</span>
-      <span class="n">println</span><span class="o">(</span><span class="s">"empty list"</span><span class="o">)</span>
-  <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>This is mostly useful when we want to provide “operator like” experience
+The last thing that may come handy is the ability to write
+extractor expression using either call notation `JList2(head, tail)`
+or using operator notation `head JList2 tail`:
+{% highlight scala %}
+for (list <- lists) {
+  list match {
+    case head JList tail =>
+      println(s"head: $head, tail: $tail")
+    case emptyList =>
+      println("empty list")
+  }
+}
+{% endhighlight %}
+This is mostly useful when we want to provide "operator like" experience
 for the programmers. For example when we want to match
-<code class="highlighter-rouge">List</code>s using <code class="highlighter-rouge">e1 :: e2 :: tail</code> expression.</p>
+`List`s using `e1 :: e2 :: tail` expression.
 
-<h4 id="scala-buildin-extractors">Scala buildin extractors</h4>
+#### Scala buildin extractors 
 
-<p>Let’s finish this post with a tour of Scala buildin extractors.</p>
+Let's finish this post with a tour of Scala buildin extractors.
 
-<h5 id="case-classes">Case classes</h5>
+##### Case classes
 
-<p>When you declare a case class in Scala:</p>
+When you declare a case class in Scala:
+{% highlight scala %}
+case class Point(x: Double,
+                 y: Double)
+{% endhighlight %}
+compiler, among other things, adds appropriate
+`apply` and `unapply` methods to the case class companion object.
+Thanks to this, pattern matching works with case classes out of the box:
+{% highlight scala %}
+val r = line match {
+  case Line(Point(fx, fy), Point(tx, ty), color@_) => 
+    s"line(($fx,$fy) -> ($tx,$ty))"
+  case _ => 
+    "fail"
+}
+{% endhighlight %}
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">case</span> <span class="k">class</span> <span class="nc">Point</span><span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Double</span><span class="o">,</span>
-                 <span class="n">y</span><span class="k">:</span> <span class="kt">Double</span><span class="o">)</span></code></pre></figure>
+##### List
 
-<p>compiler, among other things, adds appropriate
-<code class="highlighter-rouge">apply</code> and <code class="highlighter-rouge">unapply</code> methods to the case class companion object.
-Thanks to this, pattern matching works with case classes out of the box:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">r</span> <span class="k">=</span> <span class="n">line</span> <span class="k">match</span> <span class="o">{</span>
-  <span class="k">case</span> <span class="nc">Line</span><span class="o">(</span><span class="nc">Point</span><span class="o">(</span><span class="n">fx</span><span class="o">,</span> <span class="n">fy</span><span class="o">),</span> <span class="nc">Point</span><span class="o">(</span><span class="n">tx</span><span class="o">,</span> <span class="n">ty</span><span class="o">),</span> <span class="n">color</span><span class="nd">@_</span><span class="o">)</span> <span class="k">=&gt;</span> 
-    <span class="n">s</span><span class="s">"line(($fx,$fy) -&gt; ($tx,$ty))"</span>
-  <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span> 
-    <span class="s">"fail"</span>
-<span class="o">}</span></code></pre></figure>
-
-<h5 id="list">List</h5>
-
-<p>Scala <code class="highlighter-rouge">List</code> implements a singly linked list.
-<code class="highlighter-rouge">case object Nil</code> is used to represent an empty list.
-As a singleton object, <code class="highlighter-rouge">Nil</code> is matched by <code class="highlighter-rouge">case Nil</code> clause.
-<code class="highlighter-rouge">case class ::</code> is used as a linked list node, it contains
-two fields <code class="highlighter-rouge">head</code> and <code class="highlighter-rouge">next</code>. Both <code class="highlighter-rouge">Nil</code> and <code class="highlighter-rouge">::</code>
-extend abstract class <code class="highlighter-rouge">List[E]</code>.
-Because name of the <code class="highlighter-rouge">case class ::</code> ends in a <code class="highlighter-rouge">:</code> (colon),
-<code class="highlighter-rouge">::</code> when used as an operator is right associative:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="o">(</span><span class="mi">1</span> <span class="o">::</span> <span class="mi">2</span> <span class="o">::</span> <span class="mi">3</span> <span class="o">::</span> <span class="nc">Nil</span><span class="o">)</span> <span class="o">==</span> <span class="o">::(</span><span class="mi">1</span><span class="o">,</span> <span class="o">::(</span><span class="mi">2</span><span class="o">,</span> <span class="o">::(</span><span class="mi">3</span><span class="o">,</span> <span class="nc">Nil</span><span class="o">)))</span></code></pre></figure>
-
-<p>After this overly simplistic explanation on how <code class="highlighter-rouge">List[E]</code> works, we
+Scala `List` implements a singly linked list.
+`case object Nil` is used to represent an empty list.
+As a singleton object, `Nil` is matched by `case Nil` clause.
+`case class ::` is used as a linked list node, it contains
+two fields `head` and `next`. Both `Nil` and `::`
+extend abstract class `List[E]`.
+Because name of the `case class ::` ends in a `:` (colon),
+`::` when used as an operator is right associative:
+{% highlight scala %}
+(1 :: 2 :: 3 :: Nil) == ::(1, ::(2, ::(3, Nil)))
+{% endhighlight %}
+After this overly simplistic explanation on how `List[E]` works, we
 should now understand how pattern matching
-works with lists:</p>
+works with lists:
+{% highlight scala %}
+val lists = Seq(
+  List(),
+  List(1),
+  List(1, 2),
+  List(1,2,3,4))
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">lists</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span>
-  <span class="nc">List</span><span class="o">(),</span>
-  <span class="nc">List</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span>
-  <span class="nc">List</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">),</span>
-  <span class="nc">List</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">4</span><span class="o">))</span>
+for (list <- lists) {
+  list match {
+    case Nil =>
+      println("empty list")
 
-<span class="k">for</span> <span class="o">(</span><span class="n">list</span> <span class="k">&lt;-</span> <span class="n">lists</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">list</span> <span class="k">match</span> <span class="o">{</span>
-    <span class="k">case</span> <span class="nc">Nil</span> <span class="k">=&gt;</span>
-      <span class="n">println</span><span class="o">(</span><span class="s">"empty list"</span><span class="o">)</span>
+    case head :: Nil =>
+      println(s"single element list $head")
 
-    <span class="k">case</span> <span class="n">head</span> <span class="o">::</span> <span class="nc">Nil</span> <span class="k">=&gt;</span>
-      <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"single element list $head"</span><span class="o">)</span>
-
-    <span class="k">case</span> <span class="n">e1</span> <span class="o">::</span> <span class="n">e2</span> <span class="o">::</span> <span class="nc">Nil</span> <span class="k">=&gt;</span>
-      <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"two element list $e1 $e2"</span><span class="o">)</span>
+    case e1 :: e2 :: Nil =>
+      println(s"two element list $e1 $e2")
       
-    <span class="k">case</span> <span class="n">head</span> <span class="o">::</span> <span class="n">tail</span> <span class="k">=&gt;</span>
-      <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"head: $head, tail: $tail"</span><span class="o">)</span>
-  <span class="o">}</span>
-<span class="o">}</span>
-<span class="c1">// Prints:
+    case head :: tail =>
+      println(s"head: $head, tail: $tail")
+  }
+}
+// Prints:
 // empty list
 // single element list 1
 // two element list 1 2
-</span><span class="o">//</span> <span class="n">head</span><span class="k">:</span> <span class="err">1</span><span class="o">,</span> <span class="n">tail</span><span class="k">:</span> <span class="kt">List</span><span class="o">(</span><span class="err">2</span><span class="o">,</span> <span class="err">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">)</span></code></pre></figure>
+// head: 1, tail: List(2, 3, 4)
+{% endhighlight %}
 
-<p>For programmers convenience <code class="highlighter-rouge">unapplySeq</code> is also
-provided on <code class="highlighter-rouge">List</code> singleton object. It works very similar to 
-our <code class="highlighter-rouge">JList</code> extractor:</p>
+For programmers convenience `unapplySeq` is also
+provided on `List` singleton object. It works very similar to 
+our `JList` extractor:
+{% highlight scala %}
+val lists = Seq(
+  List(),
+  List(1),
+  List(1, 2),
+  List(1,2,3,4))
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">lists</span> <span class="k">=</span> <span class="nc">Seq</span><span class="o">(</span>
-  <span class="nc">List</span><span class="o">(),</span>
-  <span class="nc">List</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span>
-  <span class="nc">List</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">),</span>
-  <span class="nc">List</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span><span class="mi">2</span><span class="o">,</span><span class="mi">3</span><span class="o">,</span><span class="mi">4</span><span class="o">))</span>
+for (list <- lists) {
+  list match {
+    case Nil =>
+      println("empty list")
 
-<span class="k">for</span> <span class="o">(</span><span class="n">list</span> <span class="k">&lt;-</span> <span class="n">lists</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">list</span> <span class="k">match</span> <span class="o">{</span>
-    <span class="k">case</span> <span class="nc">Nil</span> <span class="k">=&gt;</span>
-      <span class="n">println</span><span class="o">(</span><span class="s">"empty list"</span><span class="o">)</span>
+    case List(first, second) =>
+      println(s"two element list: [$first, $second]")
 
-    <span class="k">case</span> <span class="nc">List</span><span class="o">(</span><span class="n">first</span><span class="o">,</span> <span class="n">second</span><span class="o">)</span> <span class="k">=&gt;</span>
-      <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"two element list: [$first, $second]"</span><span class="o">)</span>
-
-    <span class="k">case</span> <span class="nc">List</span><span class="o">(</span><span class="n">head</span><span class="o">,</span> <span class="n">tail</span> <span class="k">@</span> <span class="k">_</span><span class="o">*)</span> <span class="k">=&gt;</span>
-      <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"head: $head, tail: $tail"</span><span class="o">)</span>
-  <span class="o">}</span>
-<span class="o">}</span>
-<span class="c1">// Prints:
+    case List(head, tail @ _*) =>
+      println(s"head: $head, tail: $tail")
+  }
+}
+// Prints:
 // empty list
 // head: 1, tail: List()
 // two element list: [1, 2]
-</span><span class="o">//</span> <span class="n">head</span><span class="k">:</span> <span class="err">1</span><span class="o">,</span> <span class="n">tail</span><span class="k">:</span> <span class="kt">List</span><span class="o">(</span><span class="err">2</span><span class="o">,</span> <span class="err">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">)</span></code></pre></figure>
+// head: 1, tail: List(2, 3, 4)
+{% endhighlight %}
 
-<p>It is a good exercise to create our own <code class="highlighter-rouge">List[E]</code> implementation
-with all pattern matching facilities that standard <code class="highlighter-rouge">List[E]</code> provides.</p>
+It is a good exercise to create our own `List[E]` implementation
+with all pattern matching facilities that standard `List[E]` provides.
 
-<h5 id="regexes">Regexes</h5>
+##### Regexes
 
-<p>Scala <code class="highlighter-rouge">Regex</code> class provides <code class="highlighter-rouge">unapplySeq</code> extractor.
+Scala `Regex` class provides `unapplySeq` extractor.
 When a regex matches an input, the extractor will return
 values for all matching groups within the regex.
 You can create a group within a regex by using parentheses,
-for example regex <code class="highlighter-rouge">(\d{3})-(\d{5})</code> has two groups
-<code class="highlighter-rouge">\d{3}</code> and <code class="highlighter-rouge">\d{5}</code>. If you want to use parentheses
+for example regex `(\d{3})-(\d{5})` has two groups
+`\d{3}` and `\d{5}`. If you want to use parentheses
 but do not wish to create a group, you just need to put
-<code class="highlighter-rouge">?:</code> after starting <code class="highlighter-rouge">(</code> like in <code class="highlighter-rouge">(?:\d{3})?</code>.
+`?:` after starting `(` like in `(?:\d{3})?`.
 If you want to learn more about regular expressions
-you should check out <em>Mastering Regular Expressions</em> book by Jeffrey Friedl.</p>
+you should check out _Mastering Regular Expressions_ book by Jeffrey Friedl.
+{% highlight scala %}
+val phoneNumbers = List(
+  "+48 123-123-123",
+  "123-123-123",
+  "123123123"
+)
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">phoneNumbers</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span>
-  <span class="s">"+48 123-123-123"</span><span class="o">,</span>
-  <span class="s">"123-123-123"</span><span class="o">,</span>
-  <span class="s">"123123123"</span>
-<span class="o">)</span>
-
-<span class="k">val</span> <span class="n">plPhoneNumber</span> <span class="k">=</span> <span class="s">"^(?:\\+(\\d{2})\\s)?(\\d{3}-\\d{3}-\\d{3})$"</span><span class="o">.</span><span class="n">r</span>
-<span class="k">for</span> <span class="o">(</span><span class="n">phoneNo</span> <span class="k">&lt;-</span> <span class="n">phoneNumbers</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">phoneNo</span> <span class="k">match</span> <span class="o">{</span>
-    <span class="k">case</span> <span class="n">plPhoneNumber</span><span class="o">(</span><span class="n">countryPrefix</span><span class="o">,</span> <span class="n">phoneNo</span><span class="o">)</span> <span class="k">=&gt;</span>
-      <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"countryPrefix: $countryPrefix, phoneNo: $phoneNo"</span><span class="o">)</span>
-    <span class="k">case</span> <span class="k">_</span> <span class="k">=&gt;</span>
-      <span class="n">println</span><span class="o">(</span><span class="s">"no match"</span><span class="o">)</span>
-  <span class="o">}</span>
-<span class="o">}</span>
-<span class="c1">// Prints:
+val plPhoneNumber = "^(?:\\+(\\d{2})\\s)?(\\d{3}-\\d{3}-\\d{3})$".r
+for (phoneNo <- phoneNumbers) {
+  phoneNo match {
+    case plPhoneNumber(countryPrefix, phoneNo) =>
+      println(s"countryPrefix: $countryPrefix, phoneNo: $phoneNo")
+    case _ =>
+      println("no match")
+  }
+}
+// Prints:
 // countryPrefix: 48, phoneNo: 123-123-123
 // countryPrefix: null, phoneNo: 123-123-123
-</span><span class="o">//</span> <span class="n">no</span> <span class="k">match</span></code></pre></figure>
+// no match
+{% endhighlight %}
 
-<p>In practice regex extractors are rarely used with <code class="highlighter-rouge">match</code> expression.</p>
+In practice regex extractors are rarely used with `match` expression.
 
 
 	  ]]></description>

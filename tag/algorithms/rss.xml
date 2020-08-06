@@ -18,29 +18,29 @@
 	  <pubDate>2019-12-17T01:00:01+01:00</pubDate>
 	  <guid>//binary-to-gray-algorithm-explained</guid>
 	  <description><![CDATA[
-	     <p>Binary to Gray code conversion algorithm is deceptively simple:</p>
-
-<figure class="highlight"><pre><code class="language-cpp" data-lang="cpp"><span class="cm">/* This function converts an unsigned binary
+	     Binary to Gray code conversion algorithm is deceptively simple:
+{% highlight cpp %}
+/* This function converts an unsigned binary
  * number to reflected binary Gray code.
  *
- * The operator &gt;&gt; is shift right. The operator ^ is exclusive or.
+ * The operator >> is shift right. The operator ^ is exclusive or.
  *
  * Source: https://en.wikipedia.org/wiki/Gray_code
- */</span>
-<span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">binaryToGray</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">num</span><span class="p">)</span> <span class="p">{</span>
-   <span class="k">return</span> <span class="n">num</span> <span class="o">^</span> <span class="p">(</span><span class="n">num</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span><span class="p">);</span>
-<span class="p">}</span></code></pre></figure>
+ */
+unsigned int binaryToGray(unsigned int num) {
+   return num ^ (num >> 1);
+}
+{% endhighlight %}
+in this article I will explain how it works.
 
-<p>in this article I will explain how it works.</p>
+#### Gray code 
 
-<h4 id="gray-code">Gray code</h4>
-
-<p>Gray code is a binary code in which two consecutive
+Gray code is a binary code in which two consecutive
 values differ only by a single bit.
 Three-bit Gray code, along its binary counterpart,
-looks like this:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">|         BINARY|           GRAY|
+looks like this:
+{% highlight no-highlight %}
+|         BINARY|           GRAY|
 |            000|            000|
 |            001|            001|
 |            010|            011|
@@ -48,226 +48,232 @@ looks like this:</p>
 |            100|            110|
 |            101|            111|
 |            110|            101|
-|            111|            100|</code></pre></figure>
+|            111|            100|
+{% endhighlight %}
 
-<p><code class="highlighter-rouge">N+1</code>-bit Gray code can be easily constructed
-from <code class="highlighter-rouge">N</code>-bit Gray code using the following process:</p>
+`N+1`-bit Gray code can be easily constructed
+from `N`-bit Gray code using the following process:
 
-<p><img src="assets/images/2019-12-17/gn1.svg" alt="Making N+1-bit Gray code from N-bit Gray code" /></p>
+![Making N+1-bit Gray code from N-bit Gray code](assets/images/2019-12-17/gn1.svg)
 
-<p>This variant of Gray code is often called reflected binary Gray code.
-The “Vertical Flip” step is nothing else than creating
-a mirror image of the code in vertical direction.</p>
+This variant of Gray code is often called reflected binary Gray code.
+The "Vertical Flip" step is nothing else than creating
+a mirror image of the code in vertical direction.
 
-<p>The above process, with the fact that <code class="highlighter-rouge">1</code>-bit Gray code
-consists just of values <code class="highlighter-rouge">0</code> and <code class="highlighter-rouge">1</code>,
+The above process, with the fact that `1`-bit Gray code
+consists just of values `0` and `1`,
 allows us to write a recursive algorithm for converting 
-between corresponding binary and Gray code values.</p>
+between corresponding binary and Gray code values.
 
-<h4 id="recursive-algorithm">Recursive algorithm</h4>
+#### Recursive algorithm
 
-<p>We will define a function <code class="highlighter-rouge">G(nbits, n)</code> that returns
-<code class="highlighter-rouge">n</code>th <code class="highlighter-rouge">nbits</code>-bit Gray code value.
-<code class="highlighter-rouge">n</code> must be in range <code class="highlighter-rouge">0</code> .. <code class="highlighter-rouge">2**nbits - 1</code>
-(where <code class="highlighter-rouge">**</code> means power).</p>
+We will define a function `G(nbits, n)` that returns
+`n`th `nbits`-bit Gray code value.
+`n` must be in range `0` .. `2**nbits - 1`
+(where `**` means power).
 
-<p>For <code class="highlighter-rouge">nbits</code> equal to 1 this is trivial:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">func G(nbits, n) {
-   if (nbits &lt;= 1) return n;
+For `nbits` equal to 1 this is trivial:
+{% highlight no-highlight %}
+func G(nbits, n) {
+   if (nbits <= 1) return n;
    ???
-}</code></pre></figure>
+}
+{% endhighlight %}
+we return `0` when `n` is zero, and one when
+`n` is one.
 
-<p>we return <code class="highlighter-rouge">0</code> when <code class="highlighter-rouge">n</code> is zero, and one when
-<code class="highlighter-rouge">n</code> is one.</p>
-
-<p>Next we need to translate the process from the first picture
-into code:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">var msbBit = msb(nbits, n)
+Next we need to translate the process from the first picture
+into code:
+{% highlight no-highlight %}
+var msbBit = msb(nbits, n)
 
 if (msbBit == 0) {
    return msbBit | G(nbits-1, n); 
 }
 else {
    // clear MSB bit
-   var nWithoutMsb = n &amp; ~msbBit;
+   var nWithoutMsb = n & ~msbBit;
    var nonReflectedPos = pow(2, nbits-1)-1 - nWithoutMsb;
 
    return msbBit | G(nbits-1, nonReflectedPos)
-}</code></pre></figure>
+}
+{% endhighlight %}
+Where `msb` is a simple function that returns
+the _most significant bit_ (MSB for short) of
+an `nbits`-bit number `n`:
+{% highlight no-highlight %}
+func msb(nbits, n) {
+   return n & (1 << (nbits-1));
+}
+{% endhighlight %}
+Similarly we will use LSB term to refer to
+the _least significant bit_ of a number.
 
-<p>Where <code class="highlighter-rouge">msb</code> is a simple function that returns
-the <em>most significant bit</em> (MSB for short) of
-an <code class="highlighter-rouge">nbits</code>-bit number <code class="highlighter-rouge">n</code>:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">func msb(nbits, n) {
-   return n &amp; (1 &lt;&lt; (nbits-1));
-}</code></pre></figure>
-
-<p>Similarly we will use LSB term to refer to
-the <em>least significant bit</em> of a number.</p>
-
-<p>There are two key observations that we must make to
+There are two key observations that we must make to
 understand how the algorithm works.
 First observation is that binary values
 share the same value of MSB bit with the corresponding
 Gray code values.
-<img src="assets/images/2019-12-17/g2.svg" alt="MSB and LSB in our algorithm" />
+![MSB and LSB in our algorithm](assets/images/2019-12-17/g2.svg)
 This is the result of the construction process,
 that adds leading zeros to the upper half (blue) of the Gray code,
-and leading ones to the lower half (red) of the code.</p>
+and leading ones to the lower half (red) of the code.
 
-<p>When <code class="highlighter-rouge">MSB = 0</code> we are in the upper half (blue) of the <code class="highlighter-rouge">nbits</code>-bit
-Gray code, which was constructed from the <code class="highlighter-rouge">nbits-1</code>-bit Gray
-code by adding extra <code class="highlighter-rouge">0</code> as a prefix to its values.
-In this case we just call recursively <code class="highlighter-rouge">G(nbits-1, n)</code>
-(<code class="highlighter-rouge">n</code> is in this case <code class="highlighter-rouge">&lt; 2**nbits/2 = 2**(nbits-1)</code>),
-and add a <code class="highlighter-rouge">0</code> as a prefix to the result to
-finish the conversion to <code class="highlighter-rouge">nbits</code>-bit code.</p>
+When `MSB = 0` we are in the upper half (blue) of the `nbits`-bit
+Gray code, which was constructed from the `nbits-1`-bit Gray
+code by adding extra `0` as a prefix to its values.
+In this case we just call recursively `G(nbits-1, n)`
+(`n` is in this case `< 2**nbits/2 = 2**(nbits-1)`),
+and add a `0` as a prefix to the result to
+finish the conversion to `nbits`-bit code.
 
-<p>When <code class="highlighter-rouge">MSB = 1</code> we are in the lower half (red) of the code, that
-was constructed by vertically flipping <code class="highlighter-rouge">nbits-1</code>-bit Gray
-code and adding <code class="highlighter-rouge">1</code> as a prefix to its values.
-<img src="assets/images/2019-12-17/g3.svg" alt="Relation between simple and reflected code" />
+When `MSB = 1` we are in the lower half (red) of the code, that
+was constructed by vertically flipping `nbits-1`-bit Gray
+code and adding `1` as a prefix to its values.
+![Relation between simple and reflected code](assets/images/2019-12-17/g3.svg)
 The second key observation here, is the relationship between
-reflected <code class="highlighter-rouge">nbits-1</code>-bit Gray code and its non-reflected counterpart.
-<code class="highlighter-rouge">nbits-1</code>-bit Gray value that is located
-at <code class="highlighter-rouge">x</code>th position in the red (reflected)
+reflected `nbits-1`-bit Gray code and its non-reflected counterpart.
+`nbits-1`-bit Gray value that is located
+at `x`th position in the red (reflected)
 area is exactly the same as 
-<code class="highlighter-rouge">2**(nbits-1)-1 - x</code>th value located in the blue area.
-To convert <code class="highlighter-rouge">n</code> into <code class="highlighter-rouge">nbits-1</code> Gray code, first
-we remove <code class="highlighter-rouge">1</code> MSB bit from it, converting
-it basically into our <code class="highlighter-rouge">x</code>
+`2**(nbits-1)-1 - x`th value located in the blue area.
+To convert `n` into `nbits-1` Gray code, first
+we remove `1` MSB bit from it, converting
+it basically into our `x`
 (zero-based offset from the beginning of the red area; see the picture above).
-Then we compute position of <code class="highlighter-rouge">x</code>s counterpart in
-the non-reflected (blue) area of the code, by using expression:</p>
+Then we compute position of `x`s counterpart in
+the non-reflected (blue) area of the code, by using expression:
+{% highlight no-highlight %}
+var nonReflectedPos = pow(2, nbits-1)-1 - nWithoutMsb;
+{% endhighlight %}
+Then we call `G(nbits-1, nonReflectedPos)` to
+compute `nbits-1`-bit Gray code value
+and finally we restore `1` bit prefix to it.
 
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">var nonReflectedPos = pow(2, nbits-1)-1 - nWithoutMsb;</code></pre></figure>
+The above algorithm expressed in Java:
+{% highlight java %}
+private static int msb(int nbits, int n) {
+   return n & (1 << (nbits-1));
+}
 
-<p>Then we call <code class="highlighter-rouge">G(nbits-1, nonReflectedPos)</code> to
-compute <code class="highlighter-rouge">nbits-1</code>-bit Gray code value
-and finally we restore <code class="highlighter-rouge">1</code> bit prefix to it.</p>
+private static int G(int nbits, int n) {
+   if (nbits <= 1) return n;
 
-<p>The above algorithm expressed in Java:</p>
+   int msbBit = msb(nbits, n);
+   if (msbBit == 0) {
+      // We can skip 'msbBit |' part because
+      // '(0 | x) == x'
+      return msbBit | G(nbits-1, n);
+   }
+   else {
+      int nWithoutMsb = n & ~msbBit;
+      int nonReflectedPos = 
+         (int)Math.pow(2, nbits-1)-1 - nWithoutMsb;
+      return msbBit | G(nbits-1, nonReflectedPos);
+   }
+}
+{% endhighlight %}
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">msb</span><span class="o">(</span><span class="kt">int</span> <span class="n">nbits</span><span class="o">,</span> <span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
-   <span class="k">return</span> <span class="n">n</span> <span class="o">&amp;</span> <span class="o">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="o">(</span><span class="n">nbits</span><span class="o">-</span><span class="mi">1</span><span class="o">));</span>
-<span class="o">}</span>
+#### Using Strings to represent binary values
 
-<span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">G</span><span class="o">(</span><span class="kt">int</span> <span class="n">nbits</span><span class="o">,</span> <span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
-   <span class="k">if</span> <span class="o">(</span><span class="n">nbits</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="o">)</span> <span class="k">return</span> <span class="n">n</span><span class="o">;</span>
-
-   <span class="kt">int</span> <span class="n">msbBit</span> <span class="o">=</span> <span class="n">msb</span><span class="o">(</span><span class="n">nbits</span><span class="o">,</span> <span class="n">n</span><span class="o">);</span>
-   <span class="k">if</span> <span class="o">(</span><span class="n">msbBit</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="o">{</span>
-      <span class="c1">// We can skip 'msbBit |' part because</span>
-      <span class="c1">// '(0 | x) == x'</span>
-      <span class="k">return</span> <span class="n">msbBit</span> <span class="o">|</span> <span class="n">G</span><span class="o">(</span><span class="n">nbits</span><span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">n</span><span class="o">);</span>
-   <span class="o">}</span>
-   <span class="k">else</span> <span class="o">{</span>
-      <span class="kt">int</span> <span class="n">nWithoutMsb</span> <span class="o">=</span> <span class="n">n</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">msbBit</span><span class="o">;</span>
-      <span class="kt">int</span> <span class="n">nonReflectedPos</span> <span class="o">=</span> 
-         <span class="o">(</span><span class="kt">int</span><span class="o">)</span><span class="n">Math</span><span class="o">.</span><span class="na">pow</span><span class="o">(</span><span class="mi">2</span><span class="o">,</span> <span class="n">nbits</span><span class="o">-</span><span class="mi">1</span><span class="o">)-</span><span class="mi">1</span> <span class="o">-</span> <span class="n">nWithoutMsb</span><span class="o">;</span>
-      <span class="k">return</span> <span class="n">msbBit</span> <span class="o">|</span> <span class="n">G</span><span class="o">(</span><span class="n">nbits</span><span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">nonReflectedPos</span><span class="o">);</span>
-   <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<h4 id="using-strings-to-represent-binary-values">Using Strings to represent binary values</h4>
-
-<p>To further improve our algorithm we need to change
+To further improve our algorithm we need to change
 our representation of binary values from 32-bit integers
-to strings. For example a string <code class="highlighter-rouge">"110"</code> will represent
-a <code class="highlighter-rouge">3</code>-bit binary value. We will also use empty string
-<code class="highlighter-rouge">""</code> to represent a sole zero-bit binary value
-(after all <code class="highlighter-rouge">2**0 = 1</code>, so there is one such value).</p>
+to strings. For example a string `"110"` will represent
+a `3`-bit binary value. We will also use empty string
+`""` to represent a sole zero-bit binary value
+(after all `2**0 = 1`, so there is one such value).
 
-<p>To proceed further, we need two simple facts.
-Fact 1: Numbers in form <code class="highlighter-rouge">2**k - 1</code> are represented in
-binary by sequence of <code class="highlighter-rouge">k</code> ones.
-For example <code class="highlighter-rouge">2**3-1 = 7</code> is <code class="highlighter-rouge">111</code> in binary.</p>
+To proceed further, we need two simple facts.
+Fact 1: Numbers in form `2**k - 1` are represented in
+binary by sequence of `k` ones.
+For example `2**3-1 = 7` is `111` in binary.
 
-<p>Fact 2: Substracting <code class="highlighter-rouge">k</code>-bit value <code class="highlighter-rouge">p</code> from <code class="highlighter-rouge">1...1</code> (<code class="highlighter-rouge">k</code> ones)
-is equal to negating <code class="highlighter-rouge">p</code>:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">  11111111
+Fact 2: Substracting `k`-bit value `p` from `1...1` (`k` ones)
+is equal to negating `p`:
+{% highlight no-highlight %}
+  11111111
 - 01010011
 ----------
-  10101100</code></pre></figure>
+  10101100
+{% endhighlight %}
 
-<p>These both facts will allow us to rewrite
-the expression for computing <code class="highlighter-rouge">nonReflectedPos</code> value from:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">// n is a nbits-bit number
+These both facts will allow us to rewrite
+the expression for computing `nonReflectedPos` value from:
+{% highlight no-highlight %}
+// n is a nbits-bit number
 // nWithoutMsb is a (nbits-1)-bit number
 // 2**(nbits-1)-1 = 1...1 (nbits-1 ones in binary)
 int nonReflectedPos = 
-   (int)Math.pow(2, nbits-1)-1 - nWithoutMsb;</code></pre></figure>
+   (int)Math.pow(2, nbits-1)-1 - nWithoutMsb;
+{% endhighlight %}
+to
+{% highlight no-highlight %}
+// Simple binary negation
+String nonReflectedPos = not(nWithoutMsb);
+{% endhighlight %}
 
-<p>to</p>
+Our previous algorithm changed to use strings
+and expressed in JavaScript:
+{% highlight js %}
+function not(bits) {
+  return bits.split('').
+    map(function(c) { return c == '0' ? '1' : '0'; }).
+    join('')
+}
 
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">// Simple binary negation
-String nonReflectedPos = not(nWithoutMsb);</code></pre></figure>
-
-<p>Our previous algorithm changed to use strings
-and expressed in JavaScript:</p>
-
-<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">not</span><span class="p">(</span><span class="nx">bits</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">return</span> <span class="nx">bits</span><span class="p">.</span><span class="nx">split</span><span class="p">(</span><span class="s1">''</span><span class="p">).</span>
-    <span class="nx">map</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">c</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="nx">c</span> <span class="o">==</span> <span class="s1">'0'</span> <span class="p">?</span> <span class="s1">'1'</span> <span class="p">:</span> <span class="s1">'0'</span><span class="p">;</span> <span class="p">}).</span>
-    <span class="nx">join</span><span class="p">(</span><span class="s1">''</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="kd">function</span> <span class="nx">G</span><span class="p">(</span><span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="p">(</span><span class="nx">b</span> <span class="o">===</span> <span class="s1">''</span><span class="p">)</span> <span class="k">return</span> <span class="s1">''</span><span class="p">;</span> <span class="c1">// zero bit code</span>
+function G(b) {
+  if (b === '') return ''; // zero bit code
   
-  <span class="kd">var</span> <span class="nx">firstBit</span> <span class="o">=</span> <span class="nx">b</span><span class="p">.</span><span class="nx">charAt</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
-  <span class="k">if</span> <span class="p">(</span><span class="nx">firstBit</span> <span class="o">==</span> <span class="s1">'0'</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="s1">'0'</span> <span class="o">+</span> <span class="nx">G</span><span class="p">(</span><span class="nx">b</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
-  <span class="p">}</span>
-  <span class="k">else</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="s1">'1'</span> <span class="o">+</span> <span class="nx">G</span><span class="p">(</span><span class="nx">not</span><span class="p">(</span><span class="nx">b</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="mi">1</span><span class="p">)));</span>
-  <span class="p">}</span>
-<span class="p">}</span></code></pre></figure>
+  var firstBit = b.charAt(0);
+  if (firstBit == '0') {
+    return '0' + G(b.substring(1));
+  }
+  else {
+    return '1' + G(not(b.substring(1)));
+  }
+}
+{% endhighlight %}
 
-<h4 id="the-single-line-algorithm">The single-line algorithm</h4>
+#### The single-line algorithm
 
-<p>If we now look at the code of our algorithm, we
+If we now look at the code of our algorithm, we
 may see that all it does is to negate the unseen part of the
-input every time we encounter <code class="highlighter-rouge">1</code> bit:
-<img src="assets/images/2019-12-17/g4.svg" alt="Workings of the string based algorithm" /></p>
+input every time we encounter `1` bit:
+![Workings of the string based algorithm](assets/images/2019-12-17/g4.svg)
 
-<p>Let us consider how our algorithm will transform
-groups of ones followed by a single zero bit (<code class="highlighter-rouge">11...110</code>):
-<img src="assets/images/2019-12-17/g5.svg" alt="How groups of 11...110 are transformed" />
-As we can see group of <code class="highlighter-rouge">11...110</code> bits is transformed into <code class="highlighter-rouge">10...01</code>,
+Let us consider how our algorithm will transform
+groups of ones followed by a single zero bit (`11...110`):
+![How groups of 11...110 are transformed](assets/images/2019-12-17/g5.svg)
+As we can see group of `11...110` bits is transformed into `10...01`,
 but what is more important: bits that are after this group remain unchanged.
-Similarly groups of ones without trailing zero (<code class="highlighter-rouge">1...1</code>),
-which may only occur at the end of the input are transformed into <code class="highlighter-rouge">10...0</code>.</p>
+Similarly groups of ones without trailing zero (`1...1`),
+which may only occur at the end of the input are transformed into `10...0`.
 
-<p>Now is the time for another key observation: the above
+Now is the time for another key observation: the above
 transformations can be performed by XORing value with
-itself shifted right by one:</p>
+itself shifted right by one:
 
-<p><img src="assets/images/2019-12-17/g6.svg" alt="Transforming groups of ones using XOR" /></p>
+![Transforming groups of ones using XOR](assets/images/2019-12-17/g6.svg)
 
-<p>This works because after the shift every group of ones must
+This works because after the shift every group of ones must
 be preceded by at least a single zero bit. 
 Additionally every group of ones
 (except when the ones occur at the end of the input)
 must be followed by at least one zero bit.
 In other words different groups of ones are not interfering with
-each other while XORing.</p>
+each other while XORing.
 
-<p>Also notice that we must use right-shift operation that always
+Also notice that we must use right-shift operation that always
 shifts-in a zero bit.
-In Java this means using <code class="highlighter-rouge">&gt;&gt;&gt;</code> (unsigned right shift) 
-instead of <code class="highlighter-rouge">&gt;&gt;</code> operator.</p>
+In Java this means using `>>>` (unsigned right shift) 
+instead of `>>` operator.
+{% highlight java %}
+int binaryToGray(int num) {
+    return num ^ (num >>> 1);
+}
+{% endhighlight %}
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">binaryToGray</span><span class="o">(</span><span class="kt">int</span> <span class="n">num</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="n">num</span> <span class="o">^</span> <span class="o">(</span><span class="n">num</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">1</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Source code (GitHub Gist): <a href="https://gist.github.com/marcin-chwedczuk/efc4df9fbc1928afcb0466e34b3d94c3">grayBin.js</a></p>
+Source code (GitHub Gist): [grayBin.js](https://gist.github.com/marcin-chwedczuk/efc4df9fbc1928afcb0466e34b3d94c3)
 
 
 	  ]]></description>
@@ -280,199 +286,219 @@ instead of <code class="highlighter-rouge">&gt;&gt;</code> operator.</p>
 	  <pubDate>2018-05-06T02:00:00+02:00</pubDate>
 	  <guid>//ray-tracing-torus</guid>
 	  <description><![CDATA[
-	     <p>In this blog post I will show you how to ray trace a torus.
+	     In this blog post I will show you how to ray trace a torus.
 I will assume that you already know how to ray trace simple shapes
 like spheres and cubes. I will also assume some basic familiarity
-with shading and ray tracing in general.</p>
+with shading and ray tracing in general.
 
-<h3 id="obtaining-torus-equation">Obtaining torus equation</h3>
+### Obtaining torus equation
 
-<p>Before we start I must introduce some terminology.
-I will use <script type="math/tex">R</script> to denote torus major radius 
+Before we start I must introduce some terminology.
+I will use $$R$$ to denote torus major radius 
 (the distance from the center of the tube to the center of the torus),
-and <script type="math/tex">r</script> to denote torus minor radius
+and $$r$$ to denote torus minor radius
 (the radius of the tube). 
-<img src="assets/images/2018-05-06/torusrR.png" alt="Torus geometry" /></p>
+![Torus geometry](assets/images/2018-05-06/torusrR.png)
 
-<p>Let us consider torus <script type="math/tex">T</script> centered at point 
-<script type="math/tex">(0,0,0)</script> with radiuses <script type="math/tex">R</script> and <script type="math/tex">r</script>.
-Torus <script type="math/tex">T</script> can be defined as a set of points for which
-certain function <script type="math/tex">F</script> returns zero:</p>
+Let us consider torus $$T$$ centered at point 
+$$(0,0,0)$$ with radiuses $$R$$ and $$r$$.
+Torus $$T$$ can be defined as a set of points for which
+certain function $$F$$ returns zero:
 
-<script type="math/tex; mode=display">T = \{ p \in \mathbb{R}^3 \mid F(p) = 0 \}</script>
+$$
+	T = \{ p \in \mathbb{R}^3 \mid F(p) = 0 \}
+$$
 
-<p>Our task will be to find a suitable definition of function <script type="math/tex">F</script>
-that properly describes torus <script type="math/tex">T</script>.</p>
+Our task will be to find a suitable definition of function $$F$$
+that properly describes torus $$T$$.
 
-<p>We will start by looking at the intersection of torus <script type="math/tex">T</script> with <script type="math/tex">XY</script> plane:
-<img src="assets/images/2018-05-06/torus-def.svg" alt="Torus-XY plane intersection" />
-Every point <script type="math/tex">P=(x,y)</script> on the circumference of the 
-right circle satisfies equation:</p>
+We will start by looking at the intersection of torus $$T$$ with $$XY$$ plane:
+![Torus-XY plane intersection](assets/images/2018-05-06/torus-def.svg)
+Every point $$P=(x,y)$$ on the circumference of the 
+right circle satisfies equation:
 
-<script type="math/tex; mode=display">(x - R)^2 + y^2 = r^2</script>
+$$
+(x - R)^2 + y^2 = r^2
+$$
 
-<p>Now imagine that we are taking some point <script type="math/tex">P</script> on the circumference
+Now imagine that we are taking some point $$P$$ on the circumference
 and we are rotating it around
-<script type="math/tex">Y</script> axis. 
-<img src="assets/images/2018-05-06/torus-def2b.svg" alt="Rotating point around Y axis" />
-This way point <script type="math/tex">P</script> becomes a set of points in 3D space:</p>
+$$Y$$ axis. 
+![Rotating point around Y axis](assets/images/2018-05-06/torus-def2b.svg)
+This way point $$P$$ becomes a set of points in 3D space:
 
-<script type="math/tex; mode=display">P=(x,y,0) \Rightarrow \{(x',y,z') \in \mathbb{R}^3 | x'^2 + z'^2 = x^2 \}</script>
+$$
+	P=(x,y,0) \Rightarrow \{(x',y,z') \in \mathbb{R}^3 | x'^2 + z'^2 = x^2 \}
+$$
 
-<p>Torus can be obtained by rotating all points on the circumference
+Torus can be obtained by rotating all points on the circumference
 of the circle. In
-other words points <script type="math/tex">(x',y,z')</script> on the surface of a torus satisfy equations:</p>
+other words points $$(x',y,z')$$ on the surface of a torus satisfy equations:
 
-<script type="math/tex; mode=display">\begin{cases}
+$$
+\begin{cases}
 (x - R)^2 + y^2 = r^2 \\
 x'^2 + z'^2 = x^2 
-\end{cases}</script>
+\end{cases}
+$$
 
-<p>This equations can be simplified by removal of <script type="math/tex">x</script> variable into:</p>
+This equations can be simplified by removal of $$x$$ variable into:
 
-<script type="math/tex; mode=display">(x'^2 + y^2 + z'^2)^2 - 2 (R^2 + r^2) (x'^2 + y^2 + z'^2) + 4 R^2 y^2 + (R^2 - r^2)^2 = 0</script>
+$$
+(x'^2 + y^2 + z'^2)^2 - 2 (R^2 + r^2) (x'^2 + y^2 + z'^2) + 4 R^2 y^2 + (R^2 - r^2)^2 = 0
+$$
 
-<p>And this is exactly what we were looking for, a suitable definition
-for our function <script type="math/tex">F</script>. 
-After a bit of renaming (<script type="math/tex">x' \rightarrow x</script>, <script type="math/tex">z' \rightarrow z</script>) 
-we can write our final equation:</p>
+And this is exactly what we were looking for, a suitable definition
+for our function $$F$$. 
+After a bit of renaming ($$x' \rightarrow x$$, $$z' \rightarrow z$$) 
+we can write our final equation:
 
-<script type="math/tex; mode=display">F(x,y,z) = (x^2 + y^2 + z^2)^2 - 2 (R^2 + r^2) (x^2 + y^2 + z^2) + 4 R^2 y^2 + (R^2 - r^2)^2</script>
+$$
+F(x,y,z) = (x^2 + y^2 + z^2)^2 - 2 (R^2 + r^2) (x^2 + y^2 + z^2) + 4 R^2 y^2 + (R^2 - r^2)^2
+$$
 
-<h3 id="solving-torus-equation">Solving torus equation</h3>
+### Solving torus equation
 
-<p>Given ray definition:</p>
+Given ray definition:
 
-<script type="math/tex; mode=display">r(t) = o + \vec{d} * t</script>
+$$
+r(t) = o + \vec{d} * t
+$$
 
-<script type="math/tex; mode=display">o = \begin{bmatrix}o_x\\o_y\\o_z\end{bmatrix}, \;
-\vec{d} = \begin{bmatrix}d_x\\d_y\\d_z\end{bmatrix}</script>
+$$
+o = \begin{bmatrix}o_x\\o_y\\o_z\end{bmatrix}, \;
+\vec{d} = \begin{bmatrix}d_x\\d_y\\d_z\end{bmatrix}
+$$
 
-<p>where <script type="math/tex">o</script> is the ray origin (starting point) 
-and <script type="math/tex">d</script> is a unit vector (<script type="math/tex">\left\lVert d \right\rVert = 1</script>) that
+where $$o$$ is the ray origin (starting point) 
+and $$d$$ is a unit vector ($$ \left\lVert d \right\rVert = 1 $$) that
 represents the ray direction,
-we will try to find all positive (<script type="math/tex">t > 0</script>)
-solutions to the equation:</p>
+we will try to find all positive ($$t > 0$$)
+solutions to the equation:
 
-<script type="math/tex; mode=display">F(r(t)) = 0,\; t > 0</script>
+$$
+F(r(t)) = 0,\; t > 0
+$$
 
-<p>Notice that for a particular ray this equation can have
+Notice that for a particular ray this equation can have
 0, 1, 2, 3 or 4 solutions:
-<img src="assets/images/2018-05-06/torus-sol4.svg" alt="Visual illustration of number of the solutions" /></p>
+![Visual illustration of number of the solutions](assets/images/2018-05-06/torus-sol4.svg)
 
-<p>We will start by substituting <script type="math/tex">x, y, z</script> variables
-by <script type="math/tex">r(t)</script> point components 
-in the formula of function <script type="math/tex">F(x,y,z)</script>:</p>
+We will start by substituting $$x, y, z$$ variables
+by $$r(t)$$ point components 
+in the formula of function $$F(x,y,z)$$:
 
-<script type="math/tex; mode=display">r(t) = \begin{bmatrix}r_x\\r_y\\r_z\end{bmatrix}</script>
+$$
+r(t) = \begin{bmatrix}r_x\\r_y\\r_z\end{bmatrix}
+$$
 
-<script type="math/tex; mode=display">F(r_x,r_y,r_z) = (r_x^2 + r_y^2 + r_z^2)^2 - 2 (R^2 + r^2) (r_x^2 + r_y^2 + r_z^2) + 4 R^2 r_y^2 + (R^2 - r^2)^2</script>
+$$
+F(r_x,r_y,r_z) = (r_x^2 + r_y^2 + r_z^2)^2 - 2 (R^2 + r^2) (r_x^2 + r_y^2 + r_z^2) + 4 R^2 r_y^2 + (R^2 - r^2)^2
+$$
 
-<p>And then we expand them to their full definition:</p>
+And then we expand them to their full definition:
 
-<script type="math/tex; mode=display">r_x = o_x + d_x*t \\
+$$
+r_x = o_x + d_x*t \\
 r_y = o_y + d_y*t \\
-r_z = o_z + d_z*t \\</script>
+r_z = o_z + d_z*t \\
+$$
 
-<p>After long and tedious calculations and a lot of grouping and 
-simplifications we finally get:</p>
+After long and tedious calculations and a lot of grouping and 
+simplifications we finally get:
 
-<script type="math/tex; mode=display">F(r(t)) = c_4 t^4 + c_3 t^3 + c_2 t^2 + c_1 t + c_0 = 0</script>
+$$
+F(r(t)) = c_4 t^4 + c_3 t^3 + c_2 t^2 + c_1 t + c_0 = 0
+$$
 
-<p>where</p>
+where
 
-<script type="math/tex; mode=display">\begin{cases}
+$$
+\begin{cases}
 c_4 = (d_x^2 + d_y^2 + d_z^2)^2 \\
 c_3 = 4 (d_x^2 + d_y^2 + d_z^2) (o_x d_x + o_y d_y + o_z d_z) \\
 c_2 = 2 (d_x^2 + d_y^2 + d_z^2) (o_x^2 + o_y^2 + o_z^2 - (r^2 + R^2)) + 4 (o_x d_x + o_y d_y + o_z d_z)^2 + 4 R^2 d_y^2 \\
 c_1 = 4 (o_x^2 + o_y^2 + o_z^2 - (r^2 + R^2)) (o_x d_x + o_y d_y + o_z d_z) + 8 R^2 o_y d_y \\
 c_0 = (o_x^2 + o_y^2 + o_z^2 - (r^2 + R^2))^2 - 4 R^2 (r^2 - o_y^2)
-\end{cases}</script>
+\end{cases}
+$$
 
-<p>Since our equation is just a polynomial of 4th degree, we may use 
+Since our equation is just a polynomial of 4th degree, we may use 
 one of the standard algorithms to solve it. 
 In my demo application I used algorithm from 
-<a href="http://a.co/abkZKRO">Graphic Gems</a> book, freely available at
-<a href="https://github.com/erich666/GraphicsGems/blob/master/gems/Roots3And4.c">GitHub</a>.
+[Graphic Gems](http://a.co/abkZKRO) book, freely available at
+[GitHub](https://github.com/erich666/GraphicsGems/blob/master/gems/Roots3And4.c).
 But you are free to use any other algorithm. In particular 
-<a href="http://www.nrbook.com/a/bookcpdf.php">Numerical Recipes in C</a> 
-book is a good source of numerical algorithms.</p>
+[Numerical Recipes in C](http://www.nrbook.com/a/bookcpdf.php) 
+book is a good source of numerical algorithms.
 
-<p>TIP: Unfortunately <code class="highlighter-rouge">Roots3And4.c</code> file from Graphic Gems (called <code class="highlighter-rouge">solver.js</code> 
+TIP: Unfortunately `Roots3And4.c` file from Graphic Gems (called `solver.js` 
 in my demo app) is sparsely 
 documented. If you want to know how finding roots of 4th
 degree polynomial actually works please
 read section from Wikipedia about 
-<a href="https://en.wikipedia.org/wiki/Quartic_function#Ferrari's_solution">Ferrari method</a>,
-but use second definition of the <em>resolvent cubic</em> described in <a href="https://en.wikipedia.org/wiki/Resolvent_cubic#Second_definition">this Wikipedia article</a>.
+[Ferrari method](https://en.wikipedia.org/wiki/Quartic_function#Ferrari's_solution),
+but use second definition of the _resolvent cubic_ described in [this Wikipedia article](https://en.wikipedia.org/wiki/Resolvent_cubic#Second_definition).
 With a bit of effort you should be able to follow and understand source
-code of the solver then.</p>
+code of the solver then.
 
-<h3 id="practical-considerations">Practical considerations</h3>
+### Practical considerations
 
-<ol>
-  <li>
-    <p>Currently we can only render tori centered at point <script type="math/tex">(0,0,0)</script> and laying
- on <script type="math/tex">XZ</script> plane. To obtain tori located at arbitrary points and/or in arbitrary
+1. Currently we can only render tori centered at point $$(0,0,0)$$ and laying
+ on $$XZ$$ plane. To obtain tori located at arbitrary points and/or in arbitrary
  positions,
- we must apply matrix transformations to the <em>ray</em>
+ we must apply matrix transformations to the _ray_
  just before computing intersections with the torus surface.
  For example from the viewer point of view
  the results of the following operations are the same:
- translating ray by vector <script type="math/tex">(0,2,0)</script>,
- translating torus by vector <script type="math/tex">(0,-2,0)</script>.
- In my demo app this transformation is done in <code class="highlighter-rouge">RayTracer.js#rotationEnd</code>
- method. For more details please see <em>Ray Tracing from the Ground Up</em> book.</p>
-  </li>
-  <li>
-    <p>Due to limited accuracy of the floating point computations
+ translating ray by vector $$(0,2,0)$$,
+ translating torus by vector $$(0,-2,0)$$.
+ In my demo app this transformation is done in `RayTracer.js#rotationEnd`
+ method. For more details please see _Ray Tracing from the Ground Up_ book.
+
+2. Due to limited accuracy of the floating point computations
  artifacts may be seen when we use huge numerical values for torus radiuses.
- For the best results we should keep <script type="math/tex">% <![CDATA[
-R,r < 10 %]]></script>.
+ For the best results we should keep $$R,r < 10$$.
  If you need huge tori in your scenes please use
  ray transformation technique described in point (1) to scale 
- small tori as needed.</p>
-  </li>
-  <li>
-    <p>From performance point of view rendering a torus by solving its equation
+ small tori as needed.
+
+3. From performance point of view rendering a torus by solving its equation
  is slow. Rendering may be speed up considerably if we manage to avoid
  solving the equation altogether e.g. by using 
- <a href="https://en.wikipedia.org/wiki/Triangle_mesh">triangle meshes</a>.</p>
-  </li>
-</ol>
+ [triangle meshes](https://en.wikipedia.org/wiki/Triangle_mesh).
 
-<h4 id="source-code">Source code</h4>
+#### Source code
 
-<p>As a part of preparations to write this post I created a
+As a part of preparations to write this post I created a
 simple demo app that ray traces a torus:
-<img src="assets/images/2018-05-06/demo-app-thumbnail.png" alt="Demo application" /></p>
+![Demo application](assets/images/2018-05-06/demo-app-thumbnail.png)
 
-<p>Source code can be downloaded from
-<a href="https://github.com/marcin-chwedczuk/ray_tracing_torus_js">this GitHub repository</a>.</p>
+Source code can be downloaded from
+[this GitHub repository](https://github.com/marcin-chwedczuk/ray_tracing_torus_js).
 
-<p>Application is written in JavaScript.
-To run demo app execute:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cd path/to/ray_tracing_torus_js/repo
+Application is written in JavaScript.
+To run demo app execute:
+{% highlight no-highlight %}
+$ cd path/to/ray_tracing_torus_js/repo
 $ npm install
 $ bower install
-$ gulp serve</code></pre></figure>
-
-<p><code class="highlighter-rouge">npm install</code> command may take a while to finish, so please be patient.
-Also notice that you have to had both <code class="highlighter-rouge">bower</code> and <code class="highlighter-rouge">gulp</code> installed
+$ gulp serve
+{% endhighlight %}
+`npm install` command may take a while to finish, so please be patient.
+Also notice that you have to had both `bower` and `gulp` installed
 on you local machine to make this work. 
-You can install them by executing:</p>
+You can install them by executing:
+{% highlight no-highlight %}
+$ sudo npm install --global gulp-cli
+$ sudo npm install --global bower
+{% endhighlight %}
 
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ sudo npm install --global gulp-cli
-$ sudo npm install --global bower</code></pre></figure>
+#### References
 
-<h4 id="references">References</h4>
-
-<ul>
-  <li>Ray Tracing from the Ground Up, Kevin Suffern, <a href="http://a.co/c5YAorf">Buy on Amazon</a></li>
-  <li>Wikipedia, <a href="https://en.wikipedia.org/wiki/Torus">Torus entry</a></li>
-  <li><a href="https://github.com/erich666/GraphicsGems/blob/master/gems/Roots3And4.c">Roots3And4.c from Graphic Gems</a></li>
-</ul>
+* Ray Tracing from the Ground Up, Kevin Suffern, [Buy on Amazon](http://a.co/c5YAorf)
+* Wikipedia, [Torus entry](https://en.wikipedia.org/wiki/Torus)
+* [Roots3And4.c from Graphic Gems](https://github.com/erich666/GraphicsGems/blob/master/gems/Roots3And4.c)
 
 
 	  ]]></description>
@@ -485,289 +511,295 @@ $ sudo npm install --global bower</code></pre></figure>
 	  <pubDate>2017-12-16T01:00:00+01:00</pubDate>
 	  <guid>//how-to-check-if-a-number-is-a-power-of-two</guid>
 	  <description><![CDATA[
-	     <p>In this blog post we will learn about two algorithms that
+	     In this blog post we will learn about two algorithms that
 allow us to quickly check that a given integer is
 a power of two. 
 Both of these algorithms use only bit operators - they are
-very efficient.</p>
+very efficient.
 
-<h4 id="algorithm-i">Algorithm I</h4>
+#### Algorithm I
 
-<p>We will start by looking at the algorithm implementation,
-then I will explain how it works:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**
+We will start by looking at the algorithm implementation,
+then I will explain how it works:
+{% highlight java %}
+/**
  * Checks if a {@code number} is a power of two.
- * &lt;p&gt;
+ * <p>
  *     Zero and negative numbers are not considered powers of two.
- * &lt;/p&gt;
+ * </p>
  * @param number any integer.
  * @return {@code true} when {@code number} is a power of two,
  *  {@code} false otherwise.
- */</span>
-<span class="kt">boolean</span> <span class="nf">isPowerOfTwo</span><span class="o">(</span><span class="kt">int</span> <span class="n">number</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">return</span> 
-        <span class="o">(</span> <span class="o">(</span><span class="n">number</span> <span class="o">&amp;</span> <span class="o">(-</span><span class="n">number</span><span class="o">))</span> <span class="o">==</span> <span class="n">number</span> <span class="o">)</span> <span class="o">&amp;&amp;</span> 
-        <span class="o">(</span><span class="n">number</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
+ */
+boolean isPowerOfTwo(int number) {
+    return 
+        ( (number & (-number)) == number ) && 
+        (number > 0);
+}
+{% endhighlight %}
 
-<p>Before we move on it is a good time to remind ourselves that
+Before we move on it is a good time to remind ourselves that
 along an algorithm implementation we 
 should always specify the range of valid inputs 
 and expected outputs.
 In the code above I used Javadoc comments to state that our algorithm
 accepts any number (positive, negative or zero) but it
 considers only positive numbers to be powers of two.
-For example <code class="highlighter-rouge">isPowerOfTwo(8)</code> should return <code class="highlighter-rouge">true</code> but 
-<code class="highlighter-rouge">isPowerOfTwo(-16)</code> should return <code class="highlighter-rouge">false</code>.</p>
+For example `isPowerOfTwo(8)` should return `true` but 
+`isPowerOfTwo(-16)` should return `false`.
 
-<p>Now let’s explain how the algorithm works.
+Now let's explain how the algorithm works.
 If we look at the binary representation of the powers of
 two we can see the following bit pattern - there is
 only a single bit set:
-<img src="assets/images/2017-12-16/powers_of_two.svg" alt="powers of two" /></p>
+![powers of two](assets/images/2017-12-16/powers_of_two.svg)
 
-<p>Now comes the tricky part. Computers use 
-<a href="https://en.wikipedia.org/wiki/Two%27s_complement">two’s complement</a>
+Now comes the tricky part. Computers use 
+[two's complement](https://en.wikipedia.org/wiki/Two%27s_complement)
 encoding to efficiently store 
-and perform operations on both positive and negative numbers.</p>
+and perform operations on both positive and negative numbers.
 
-<p>To explain how two’s complement works we must first 
+To explain how two's complement works we must first 
 realise that pure binary encoding can only be used 
 to store positive numbers:
-<img src="assets/images/2017-12-16/b_17.svg" alt="binary representation of 17" />
+![binary representation of 17](assets/images/2017-12-16/b_17.svg)
 One naive extension to pure binary encoding that supports
 storing negative numbers is to
 sacrifice MSB (the most significant bit) to represent number sign:
-<img src="assets/images/2017-12-16/bsgn.svg" alt="Naive negative numbers" />
+![Naive negative numbers](assets/images/2017-12-16/bsgn.svg)
 But this solution comes with its own problems,
 for example we will end up with two different
-bit patterns that represent the value of zero (<code class="highlighter-rouge">+0</code> and <code class="highlighter-rouge">-0</code>).
+bit patterns that represent the value of zero (`+0` and `-0`).
 This also unnecessary complicates CPU design 
 (we will need two different circuits to perform unsigned and signed
 arithmetic) and reduces the range of
 possible values that can be represented within a single byte
 (again because zero is now unnecessarily 
-represented by two distinct values).</p>
+represented by two distinct values).
 
-<p>Two’s complement encoding solves all these problem.
+Two's complement encoding solves all these problem.
 The main idea is to assign negative weight to the most significant
 bit of the number, for example:
-<img src="assets/images/2017-12-16/u2_17.svg" alt="binary representation of -17" />
+![binary representation of -17](assets/images/2017-12-16/u2_17.svg)
 The positive numbers have the same representation as they have in
 pure binary encoding. There is also a simple procedure to negate a number,
 first negate all bits and then add one to the result:
-<img src="assets/images/2017-12-16/u2_neg.svg" alt="Twos complement negation" /></p>
+![Twos complement negation](assets/images/2017-12-16/u2_neg.svg)
 
-<p>Above procedure works for all numbers except one - the maximum negative
-value (<code class="highlighter-rouge">-128</code> for a single byte, <code class="highlighter-rouge">-2147483648</code> for a 4-byte <code class="highlighter-rouge">int</code>):
-<img src="assets/images/2017-12-16/u2_min.svg" alt="Twos complement negation" />
+Above procedure works for all numbers except one - the maximum negative
+value (`-128` for a single byte, `-2147483648` for a 4-byte `int`):
+![Twos complement negation](assets/images/2017-12-16/u2_min.svg)
 This is the consequence of the fact that 
-range of numbers that can be represented using two’s complement
+range of numbers that can be represented using two's complement
 is asymmetric around zero. For example in a single byte we can
-represent values from <code class="highlighter-rouge">-128</code> up to <code class="highlighter-rouge">127</code>.</p>
+represent values from `-128` up to `127`.
 
-<p>Since we are here it is also worth to mention that we may use
+Since we are here it is also worth to mention that we may use
 the same addition algorithm to add numbers encoded in pure
-binary encoding and in two’s complement encoding.
+binary encoding and in two's complement encoding.
 Subtraction is also very easy. Say you want to subtract 
-numbers <code class="highlighter-rouge">a</code> and <code class="highlighter-rouge">b</code>, you just negate <code class="highlighter-rouge">b</code> 
-(using <code class="highlighter-rouge">NOT</code> and <code class="highlighter-rouge">INC</code> instructions) 
-and then add it to <code class="highlighter-rouge">a</code>.</p>
+numbers `a` and `b`, you just negate `b` 
+(using `NOT` and `INC` instructions) 
+and then add it to `a`.
 
-<p>Now let’s go back to our algorithm.
-Let’s assume that we have a number that is a power of two,
+Now let's go back to our algorithm.
+Let's assume that we have a number that is a power of two,
 such a number has only one bit set. So we may assume that
-our number <code class="highlighter-rouge">n</code> has form:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">0...010...0</code></pre></figure>
-
-<p>As discussed above arithmetic negation is performed by first negating all
-bits and then adding one, in our case:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">0...010...0
+our number `n` has form:
+{% highlight no-highlight %}
+0...010...0
+{% endhighlight %}
+As discussed above arithmetic negation is performed by first negating all
+bits and then adding one, in our case:
+{% highlight no-highlight %}
+0...010...0
 1...101...1 (NOT)
-1...110...0 (+1)</code></pre></figure>
-
-<p>As we can see <code class="highlighter-rouge">n</code> and <code class="highlighter-rouge">-n</code> share a single common bit, <code class="highlighter-rouge">AND</code>ing both
-values yields:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">0...010...0  n
+1...110...0 (+1)
+{% endhighlight %}
+As we can see `n` and `-n` share a single common bit, `AND`ing both
+values yields:
+{% highlight no-highlight %}
+0...010...0  n
 1...110...0 -n
 AND
-0...010...0 = n</code></pre></figure>
+0...010...0 = n
+{% endhighlight %}
+So we ended up with the same value as we started. 
+In other words `(n & -n) == n` returns true.
+This is illustrated for `n = 32` on the diagram below:
+![How algorithm works for n=32](assets/images/2017-12-16/a1_w.svg)
 
-<p>So we ended up with the same value as we started. 
-In other words <code class="highlighter-rouge">(n &amp; -n) == n</code> returns true.
-This is illustrated for <code class="highlighter-rouge">n = 32</code> on the diagram below:
-<img src="assets/images/2017-12-16/a1_w.svg" alt="How algorithm works for n=32" /></p>
-
-<p>Now consider a number that is not a power of two, such a number
+Now consider a number that is not a power of two, such a number
 will have at least two bits set (we will deal with zero later).
 We will divide number into three parts, the bits before first set
 bit on the left, the bits after the last set bit on the right and the
 middle bits. 
-Let’s see what will happen when we use our algorithm on such a number:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">0..01?...?10..0 n
+Let's see what will happen when we use our algorithm on such a number:
+{% highlight no-highlight %}
+0..01?...?10..0 n
 1..10?...?01..1 (NOT)
-1..10?...?10..0 (+1) = -n</code></pre></figure>
-
-<p>I used <code class="highlighter-rouge">?</code> to mark middle bits that can have any value.
+1..10?...?10..0 (+1) = -n
+{% endhighlight %}
+I used `?` to mark middle bits that can have any value.
 The most important observation is that the leftmost set bit 
-in <code class="highlighter-rouge">n</code> is cleared after negation.</p>
+in `n` is cleared after negation.
 
-<p>Now let’s see what will be returned by <code class="highlighter-rouge">AND</code>:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">0..01?...?10..0  n
+Now let's see what will be returned by `AND`:
+{% highlight no-highlight %}
+0..01?...?10..0  n
 1..10?...?10..0 -n
 AND
-0..00?...?10..0 != n</code></pre></figure>
+0..00?...?10..0 != n
+{% endhighlight %}
+As we can see all bits before `?` are cleared after performing `AND`
+operation. This guarantees that `(n & -n)` expression returns
+different value than `n` which has one bit set before `?...?` bits.
+And so `(n & -n) == n` returns `false` as expected.
 
-<p>As we can see all bits before <code class="highlighter-rouge">?</code> are cleared after performing <code class="highlighter-rouge">AND</code>
-operation. This guarantees that <code class="highlighter-rouge">(n &amp; -n)</code> expression returns
-different value than <code class="highlighter-rouge">n</code> which has one bit set before <code class="highlighter-rouge">?...?</code> bits.
-And so <code class="highlighter-rouge">(n &amp; -n) == n</code> returns <code class="highlighter-rouge">false</code> as expected.</p>
+Diagram below illustrates how algorithm works for `n = 36`:
+![How algorithm works for n=36](assets/images/2017-12-16/a1_w2.svg)
 
-<p>Diagram below illustrates how algorithm works for <code class="highlighter-rouge">n = 36</code>:
-<img src="assets/images/2017-12-16/a1_w2.svg" alt="How algorithm works for n=36" /></p>
-
-<p>There are two special values that need more attention.
+There are two special values that need more attention.
 One is of course zero which is handled explicitly by the condition
-<code class="highlighter-rouge">(number &gt; 0)</code>. The other value is <code class="highlighter-rouge">Integer.MIN_VALUE</code>.
-The <code class="highlighter-rouge">Integer.MIN_VALUE</code> may be treated either as a power of two
+`(number > 0)`. The other value is `Integer.MIN_VALUE`.
+The `Integer.MIN_VALUE` may be treated either as a power of two
 (it has only single bit in the binary representation) or not. 
-This depends on how we want to tread <code class="highlighter-rouge">int</code> value in Java 
+This depends on how we want to tread `int` value in Java 
 (as a singed number or as an unsigned one).
 At the beginning we decided that our algorithm accepts negative values
-and so <code class="highlighter-rouge">number</code> is a signed value.
-To be consistent we again use <code class="highlighter-rouge">(number &gt; 0)</code> condition to return
-<code class="highlighter-rouge">false</code> for <code class="highlighter-rouge">Integer.MIN_VALUE</code>.</p>
+and so `number` is a signed value.
+To be consistent we again use `(number > 0)` condition to return
+`false` for `Integer.MIN_VALUE`.
 
-<h4 id="algorithm-ii">Algorithm II</h4>
+#### Algorithm II
 
-<p>Again we will start with the implementation:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="cm">/**
+Again we will start with the implementation:
+{% highlight java %}
+/**
  * Checks if a {@code number} is a power of two.
- * &lt;p&gt;
+ * <p>
  *     Zero and negative numbers are not considered powers of two.
- * &lt;/p&gt;
+ * </p>
  * @param number any integer.
  * @return {@code true} when {@code number} is a power of two,
  *  {@code} false otherwise.
- */</span>
-<span class="kt">boolean</span> <span class="nf">isPowerOfTwo2</span><span class="o">(</span><span class="kt">int</span> <span class="n">number</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">return</span> 
-        <span class="o">(</span> <span class="o">(</span><span class="n">number</span> <span class="o">&amp;</span> <span class="o">(</span><span class="n">number</span><span class="o">-</span><span class="mi">1</span><span class="o">))</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">)</span> <span class="o">&amp;&amp;</span> 
-        <span class="o">(</span><span class="n">number</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
+ */
+boolean isPowerOfTwo2(int number) {
+    return 
+        ( (number & (number-1)) == 0 ) && 
+        (number > 0);
+}
+{% endhighlight %}
 
-<p>This algorithm is much more simpler than previous one.
+This algorithm is much more simpler than previous one.
 So how does it work?
 We already know that numbers that are powers of two
-have only single bit set in their binary representation:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">0..010..0</code></pre></figure>
-
-<p>When we substract one from such a number we get:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">0..010..0 n
-0..001..1 n-1</code></pre></figure>
-
-<p>As we can see the leftmost bit of <code class="highlighter-rouge">n</code> is cleared
-after subtraction. When we <code class="highlighter-rouge">AND</code> <code class="highlighter-rouge">n</code> and <code class="highlighter-rouge">n-1</code> 
-we get zero:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">0..010..0 n
+have only single bit set in their binary representation:
+{% highlight no-highlight %}
+0..010..0
+{% endhighlight %}
+When we substract one from such a number we get:
+{% highlight no-highlight %}
+0..010..0 n
 0..001..1 n-1
-0..000..0 (n AND n-1)</code></pre></figure>
+{% endhighlight %}
+As we can see the leftmost bit of `n` is cleared
+after subtraction. When we `AND` `n` and `n-1` 
+we get zero:
+{% highlight no-highlight %}
+0..010..0 n
+0..001..1 n-1
+0..000..0 (n AND n-1)
+{% endhighlight %}
 
-<p>Numbers that are not powers of two (except zero)
+Numbers that are not powers of two (except zero)
 have at least two bits set. Again we use our trick
 with dividing number into three parts:
 bits before first set bit, bits after last set bit and
-the middle bits.</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">0..01?...?10..0 n
+the middle bits.
+{% highlight no-highlight %}
+0..01?...?10..0 n
 0..01?...?01..1 n-1
-0..01?...?00000 (n AND n-1)</code></pre></figure>
+0..01?...?00000 (n AND n-1)
+{% endhighlight %}
+This shows us that the leftmost bit of `n` is not cleared by the `AND`
+operation and so the final value cannot be equal to zero.
 
-<p>This shows us that the leftmost bit of <code class="highlighter-rouge">n</code> is not cleared by the <code class="highlighter-rouge">AND</code>
-operation and so the final value cannot be equal to zero.</p>
+Two special cases for zero and maximum negative value are
+handled in exactly the same way as in Algorithm I by `(number > 0)`
+condition.
 
-<p>Two special cases for zero and maximum negative value are
-handled in exactly the same way as in Algorithm I by <code class="highlighter-rouge">(number &gt; 0)</code>
-condition.</p>
+Diagram below illustrates how Algorithm II works for `113`:
+![How algorithm II works for 113](assets/images/2017-12-16/a2_w.svg)
 
-<p>Diagram below illustrates how Algorithm II works for <code class="highlighter-rouge">113</code>:
-<img src="assets/images/2017-12-16/a2_w.svg" alt="How algorithm II works for 113" /></p>
+#### Versions of algorithm I and II for unsigned numbers
 
-<h4 id="versions-of-algorithm-i-and-ii-for-unsigned-numbers">Versions of algorithm I and II for unsigned numbers</h4>
-
-<p>Some programming languages e.g. C# and C++ supports
+Some programming languages e.g. C\# and C++ supports
 unsigned numbers. Such numbers can only store zero and positive values.
 We may use the fact that all values are non-negative to
-simplify condition <code class="highlighter-rouge">(number &gt; 0)</code> into <code class="highlighter-rouge">(number != 0)</code> which
-may be better optimized by some compilers.</p>
+simplify condition `(number > 0)` into `(number != 0)` which
+may be better optimized by some compilers.
 
-<p>It may be surprising that unsigned numbers support 
-arithmetic negation operator <code class="highlighter-rouge">(-)</code>.
-For them negation just means combination of <code class="highlighter-rouge">NOT</code> and <code class="highlighter-rouge">INC (+1)</code>
-instructions that we described previously.</p>
+It may be surprising that unsigned numbers support 
+arithmetic negation operator `(-)`.
+For them negation just means combination of `NOT` and `INC (+1)`
+instructions that we described previously.
 
-<p>Here are versions of both algorithms that operate on unsigned
-numbers in C#:</p>
+Here are versions of both algorithms that operate on unsigned
+numbers in C\#:
+{% highlight csharp %}
+/// <summary>
+///     Checks if a <paramref="number" /> is a power of two.
+/// </summary>
+/// <remarks>
+///     Zero is not considered power of two.
+/// </remarks>
+/// <param name="number">Any unsigned value</param>
+/// <returns>
+///     <c>true</c> when <c>number</c> is a power of two,
+///     <c>false</c> otherwise.
+/// </returns>
+bool IsPowerOfTwo(uint number) {
+    return
+        ( (number & (-number)) == number ) &&
+        (number != 0);
+}
 
-<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="c1">/// &lt;summary&gt;</span>
-<span class="c1">///     Checks if a &lt;paramref="number" /&gt; is a power of two.</span>
-<span class="c1">/// &lt;/summary&gt;</span>
-<span class="c1">/// &lt;remarks&gt;</span>
-<span class="c1">///     Zero is not considered power of two.</span>
-<span class="c1">/// &lt;/remarks&gt;</span>
-<span class="c1">/// &lt;param name="number"&gt;Any unsigned value&lt;/param&gt;</span>
-<span class="c1">/// &lt;returns&gt;</span>
-<span class="c1">///     &lt;c&gt;true&lt;/c&gt; when &lt;c&gt;number&lt;/c&gt; is a power of two,</span>
-<span class="c1">///     &lt;c&gt;false&lt;/c&gt; otherwise.</span>
-<span class="c1">/// &lt;/returns&gt;</span>
-<span class="kt">bool</span> <span class="nf">IsPowerOfTwo</span><span class="p">(</span><span class="kt">uint</span> <span class="n">number</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span>
-        <span class="p">(</span> <span class="p">(</span><span class="n">number</span> <span class="p">&amp;</span> <span class="p">(-</span><span class="n">number</span><span class="p">))</span> <span class="p">==</span> <span class="n">number</span> <span class="p">)</span> <span class="p">&amp;&amp;</span>
-        <span class="p">(</span><span class="n">number</span> <span class="p">!=</span> <span class="m">0</span><span class="p">);</span>
-<span class="p">}</span>
+/// ... documentation ommited ...
+bool IsPowerOfTwo2(uint number) {
+    return 
+        ( (number & (number-1)) == 0 ) && 
+        (number != 0);
+}
+{% endhighlight %}
 
-<span class="c1">/// ... documentation ommited ...</span>
-<span class="kt">bool</span> <span class="nf">IsPowerOfTwo2</span><span class="p">(</span><span class="kt">uint</span> <span class="n">number</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">return</span> 
-        <span class="p">(</span> <span class="p">(</span><span class="n">number</span> <span class="p">&amp;</span> <span class="p">(</span><span class="n">number</span><span class="p">-</span><span class="m">1</span><span class="p">))</span> <span class="p">==</span> <span class="m">0</span> <span class="p">)</span> <span class="p">&amp;&amp;</span> 
-        <span class="p">(</span><span class="n">number</span> <span class="p">!=</span> <span class="m">0</span><span class="p">);</span>
-<span class="p">}</span></code></pre></figure>
+#### JavsScript peculiarities
 
-<h4 id="javsscript-peculiarities">JavsScript peculiarities</h4>
-
-<p>JavaScript uses <code class="highlighter-rouge">double</code> type to represent all numbers.
-<code class="highlighter-rouge">double</code>s are capable of accurately storing integers in range
-<code class="highlighter-rouge">-2^53 .. +2^53</code>. Unfortunately when we perform bit operations
+JavaScript uses `double` type to represent all numbers.
+`double`s are capable of accurately storing integers in range
+`-2^53 .. +2^53`. Unfortunately when we perform bit operations
 in JavaScript
 both operands are first converted to 32 bit signed integers and
 then operation proceeds.
 This means that both presented algorithms will work in JS only 
-for numbers in range <code class="highlighter-rouge">-2^30 .. +2^30-1</code>.
-This is demonstrated by program:</p>
+for numbers in range `-2^30 .. +2^30-1`.
+This is demonstrated by program:
+{% highlight js %}
+function isPowerOfTwo(number) {
+  return( 
+    (number & (-number)) == number &&
+    (number > 0));
+}
 
-<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">isPowerOfTwo</span><span class="p">(</span><span class="nx">number</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">return</span><span class="p">(</span> 
-    <span class="p">(</span><span class="nx">number</span> <span class="o">&amp;</span> <span class="p">(</span><span class="o">-</span><span class="nx">number</span><span class="p">))</span> <span class="o">==</span> <span class="nx">number</span> <span class="o">&amp;&amp;</span>
-    <span class="p">(</span><span class="nx">number</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">));</span>
-<span class="p">}</span>
+let two_power_30 = Math.pow(2, 30);
+// true
+console.log(isPowerOfTwo(two_power_30));
 
-<span class="kd">let</span> <span class="nx">two_power_30</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">30</span><span class="p">);</span>
-<span class="c1">// true</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">isPowerOfTwo</span><span class="p">(</span><span class="nx">two_power_30</span><span class="p">));</span>
+let two_power_31 = Math.pow(2, 31);
+// false
+console.log(isPowerOfTwo(two_power_31));
+{% endhighlight %}
 
-<span class="kd">let</span> <span class="nx">two_power_31</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">pow</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">31</span><span class="p">);</span>
-<span class="c1">// false</span>
-<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">isPowerOfTwo</span><span class="p">(</span><span class="nx">two_power_31</span><span class="p">));</span></code></pre></figure>
 
 
 	  ]]></description>
@@ -780,16 +812,16 @@ This is demonstrated by program:</p>
 	  <pubDate>2016-11-26T01:00:00+01:00</pubDate>
 	  <guid>//iterative-solution-to-towers-of-hanoi-problem</guid>
 	  <description><![CDATA[
-	     <p>Towers of Hanoi is a simple programming riddle often used 
+	     Towers of Hanoi is a simple programming riddle often used 
 in programming courses to
 introduce recursion.
 Not many people are aware that Towers of Hanoi has
-also a beautiful iterative solution.</p>
+also a beautiful iterative solution.
 
-<p>Here I assume that you already know this problem if not 
-<a href="https://en.wikipedia.org/wiki/Tower_of_Hanoi">please check Wikipedia Tower of Hanoi page</a>.</p>
+Here I assume that you already know this problem if not 
+[please check Wikipedia Tower of Hanoi page](https://en.wikipedia.org/wiki/Tower_of_Hanoi).
 
-<p>The key to discover how iterative algorithm work is to actually observe how
+The key to discover how iterative algorithm work is to actually observe how
 disks are moved by recursive algorithm.
 To make move patterns more visible we will put rots 
 on a circle, we will be moving discs from rot marked by FROM label to
@@ -799,95 +831,97 @@ observe how disks move. We will start by observing how the smallest disk (red)
 is moving when total number of disk is even (so try it for 2, 4, 6 and 8 disks).
 After you find the pattern how smallest disk moves try to find out how other
 disk are moving - this should not be difficult.
-Then repeat observation for odd number of disks (1,3,5 and 7).<br />
-TIP: Patterns may be more easily revealed when you use x3 or x5 animation speed</p>
+Then repeat observation for odd number of disks (1,3,5 and 7).  
+TIP: Patterns may be more easily revealed when you use x3 or x5 animation speed
 
-<iframe src="assets/apps/hanoi/index.html" width="850" height="810" style="border:none; margin-left:-48px; margin-top:-20px;"></iframe>
+<iframe src="assets/apps/hanoi/index.html" 
+	width="850" height="810"
+	style="border:none; margin-left:-48px; margin-top:-20px;"></iframe>
+
 
 <p style="color: gray;">
 Scroll below when you have enough of pattern finding or if want to check if
 your patterns are correct.
 </p>
 
-<p>For any number of disks we start by moving the smallest disk.
+For any number of disks we start by moving the smallest disk.
 For even total number of disks we move the smallest disk clockwise for
 odd total number of disks we move the smallest disk counterclockwise.
 After every move that involves the smallest disk we perform one
 valid move 
 (we move smaller disk on top of bigger, or we move disk to empty rod)
-that doesn’t involve the
-smallest disk. We stop when all disks were moved to TO rod.</p>
+that doesn't involve the
+smallest disk. We stop when all disks were moved to TO rod.
 
-<p>Formal proof that above algorithm works can be found in 
-<a href="http://www.cs.nott.ac.uk/~psarb2/MPC/Hanoi.ps.gz">The Associativity of Equivalence and the Towers of Hanoi Problem</a>.</p>
+Formal proof that above algorithm works can be found in 
+[The Associativity of Equivalence and the Towers of Hanoi Problem](http://www.cs.nott.ac.uk/~psarb2/MPC/Hanoi.ps.gz).
 
-<p>Iterative algorithm implemented in JavaScript:</p>
+Iterative algorithm implemented in JavaScript:
+{% highlight javascript %}
+var generateHanoiMovesIterative = function(numberOfDisks) {
+  // direction of rotation of the smallest disk
+  var dir = (numberOfDisks % 2 === 0) ? 1 : -1;
 
-<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">generateHanoiMovesIterative</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">numberOfDisks</span><span class="p">)</span> <span class="p">{</span>
-  <span class="c1">// direction of rotation of the smallest disk</span>
-  <span class="kd">var</span> <span class="nx">dir</span> <span class="o">=</span> <span class="p">(</span><span class="nx">numberOfDisks</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">?</span> <span class="mi">1</span> <span class="p">:</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+  var rods = [[], [], []];
+  var i, rodMin;
 
-  <span class="kd">var</span> <span class="nx">rods</span> <span class="o">=</span> <span class="p">[[],</span> <span class="p">[],</span> <span class="p">[]];</span>
-  <span class="kd">var</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">rodMin</span><span class="p">;</span>
+  // push disks on our virtual rod's
+  for (i = 0; i < numberOfDisks; i += 1) {
+    rods[0].push(numberOfDisks - i);
+  }
 
-  <span class="c1">// push disks on our virtual rod's</span>
-  <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">numberOfDisks</span><span class="p">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">rods</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">push</span><span class="p">(</span><span class="nx">numberOfDisks</span> <span class="o">-</span> <span class="nx">i</span><span class="p">);</span>
-  <span class="p">}</span>
+  // rodMin will point to rod with smallest disk
+  rodMin = 0;
 
-  <span class="c1">// rodMin will point to rod with smallest disk</span>
-  <span class="nx">rodMin</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  // we need (2^numberOfDisks - 1) moves
+  var numberOfMoves = (1 << numberOfDisks) - 1;
 
-  <span class="c1">// we need (2^numberOfDisks - 1) moves</span>
-  <span class="kd">var</span> <span class="nx">numberOfMoves</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="nx">numberOfDisks</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+  // To avoid using % operator we precompute next and prev tables
+  var next = [1, 2, 0];
+  var prev = [2, 0, 1];
 
-  <span class="c1">// To avoid using % operator we precompute next and prev tables</span>
-  <span class="kd">var</span> <span class="nx">next</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">];</span>
-  <span class="kd">var</span> <span class="nx">prev</span> <span class="o">=</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">];</span>
+  var moves = [];
+  var moveSmallest = true;
 
-  <span class="kd">var</span> <span class="nx">moves</span> <span class="o">=</span> <span class="p">[];</span>
-  <span class="kd">var</span> <span class="nx">moveSmallest</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  for (i = 0; i < numberOfMoves; i++) {
+      if (moveSmallest) {
+        var oldRodMin = rodMin;
+        // in JS -1 % 3 === -1, we add 3 to get positive result
+        rodMin = (oldRodMin + dir + 3) % 3;
 
-  <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">numberOfMoves</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
-      <span class="k">if</span> <span class="p">(</span><span class="nx">moveSmallest</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">var</span> <span class="nx">oldRodMin</span> <span class="o">=</span> <span class="nx">rodMin</span><span class="p">;</span>
-        <span class="c1">// in JS -1 % 3 === -1, we add 3 to get positive result</span>
-        <span class="nx">rodMin</span> <span class="o">=</span> <span class="p">(</span><span class="nx">oldRodMin</span> <span class="o">+</span> <span class="nx">dir</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span> <span class="o">%</span> <span class="mi">3</span><span class="p">;</span>
+        moveDisk(oldRodMin, rodMin);
+      }
+      else {
+        if (topDiskSize(next[rodMin]) > topDiskSize(prev[rodMin])) {
+          moveDisk(prev[rodMin], next[rodMin]);
+        }
+        else {
+          moveDisk(next[rodMin], prev[rodMin]);
+        }
+    }
+    moveSmallest = !moveSmallest;
+  }
 
-        <span class="nx">moveDisk</span><span class="p">(</span><span class="nx">oldRodMin</span><span class="p">,</span> <span class="nx">rodMin</span><span class="p">);</span>
-      <span class="p">}</span>
-      <span class="k">else</span> <span class="p">{</span>
-        <span class="k">if</span> <span class="p">(</span><span class="nx">topDiskSize</span><span class="p">(</span><span class="nx">next</span><span class="p">[</span><span class="nx">rodMin</span><span class="p">])</span> <span class="o">&gt;</span> <span class="nx">topDiskSize</span><span class="p">(</span><span class="nx">prev</span><span class="p">[</span><span class="nx">rodMin</span><span class="p">]))</span> <span class="p">{</span>
-          <span class="nx">moveDisk</span><span class="p">(</span><span class="nx">prev</span><span class="p">[</span><span class="nx">rodMin</span><span class="p">],</span> <span class="nx">next</span><span class="p">[</span><span class="nx">rodMin</span><span class="p">]);</span>
-        <span class="p">}</span>
-        <span class="k">else</span> <span class="p">{</span>
-          <span class="nx">moveDisk</span><span class="p">(</span><span class="nx">next</span><span class="p">[</span><span class="nx">rodMin</span><span class="p">],</span> <span class="nx">prev</span><span class="p">[</span><span class="nx">rodMin</span><span class="p">]);</span>
-        <span class="p">}</span>
-    <span class="p">}</span>
-    <span class="nx">moveSmallest</span> <span class="o">=</span> <span class="o">!</span><span class="nx">moveSmallest</span><span class="p">;</span>
-  <span class="p">}</span>
+  return moves;
 
-  <span class="k">return</span> <span class="nx">moves</span><span class="p">;</span>
+  function topDiskSize(rodIndex) {
+    if (rods[rodIndex].length === 0) return Number.MAX_VALUE;
 
-  <span class="kd">function</span> <span class="nx">topDiskSize</span><span class="p">(</span><span class="nx">rodIndex</span><span class="p">)</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="p">(</span><span class="nx">rods</span><span class="p">[</span><span class="nx">rodIndex</span><span class="p">].</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="nb">Number</span><span class="p">.</span><span class="nx">MAX_VALUE</span><span class="p">;</span>
+    var rod = rods[rodIndex]
+    return rod[rod.length-1];
+  }
 
-    <span class="kd">var</span> <span class="nx">rod</span> <span class="o">=</span> <span class="nx">rods</span><span class="p">[</span><span class="nx">rodIndex</span><span class="p">]</span>
-    <span class="k">return</span> <span class="nx">rod</span><span class="p">[</span><span class="nx">rod</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">1</span><span class="p">];</span>
-  <span class="p">}</span>
+  function moveDisk(from, to) {
+    // 1-FROM ROD, 2-USING ROD, 3-TO ROD
+    moves.push([from+1, to+1].join(' -> '));
+    rods[to].push(rods[from].pop());
+  }
+};
+{% endhighlight %}
 
-  <span class="kd">function</span> <span class="nx">moveDisk</span><span class="p">(</span><span class="k">from</span><span class="p">,</span> <span class="nx">to</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// 1-FROM ROD, 2-USING ROD, 3-TO ROD</span>
-    <span class="nx">moves</span><span class="p">.</span><span class="nx">push</span><span class="p">([</span><span class="k">from</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nx">to</span><span class="o">+</span><span class="mi">1</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">' -&gt; '</span><span class="p">));</span>
-    <span class="nx">rods</span><span class="p">[</span><span class="nx">to</span><span class="p">].</span><span class="nx">push</span><span class="p">(</span><span class="nx">rods</span><span class="p">[</span><span class="k">from</span><span class="p">].</span><span class="nx">pop</span><span class="p">());</span>
-  <span class="p">}</span>
-<span class="p">};</span></code></pre></figure>
+References:
 
-<p>References:</p>
-
-<ul>
-  <li>[1] <a href="http://www.cs.nott.ac.uk/~psarb2/MPC/Hanoi.ps.gz">The Associativity of Equivalence and the Towers of Hanoi Problem</a></li>
-</ul>
+* [1] [The Associativity of Equivalence and the Towers of Hanoi Problem](http://www.cs.nott.ac.uk/~psarb2/MPC/Hanoi.ps.gz)
 
 
 	  ]]></description>
@@ -900,151 +934,156 @@ smallest disk. We stop when all disks were moved to TO rod.</p>
 	  <pubDate>2016-08-06T02:00:00+02:00</pubDate>
 	  <guid>//iterative-algorithm-for-drawing-hilbert-curve</guid>
 	  <description><![CDATA[
-	     <p>In this post I will describe how to draw Hilbert curve iteratively.
-To avoid recursion we will use <code class="highlighter-rouge">hindex2xy</code> algorithm that
+	     In this post I will describe how to draw Hilbert curve iteratively.
+To avoid recursion we will use `hindex2xy` algorithm that
 translates Hilbert curve node index to 
-Cartesian coordinates.</p>
+Cartesian coordinates.
 
-<p>To index Hilbert curve nodes we assume that
+To index Hilbert curve nodes we assume that
 curve starts in the left bottom corner and ends in the right bottom corner.
-Indexes start at zero. Here is example numbering of <code class="highlighter-rouge">N=8</code> Hilbert curve:
-<img src="assets/images/2016-08-13/hnumbering.svg" alt="N=8 Hilbert curve node indexing" />
-We expect that <code class="highlighter-rouge">hindex2xy(17) = (x:1, y:4)</code> and <code class="highlighter-rouge">hindex2xy(40) = (x:6, y:6)</code>.</p>
+Indexes start at zero. Here is example numbering of `N=8` Hilbert curve:
+![N=8 Hilbert curve node indexing](assets/images/2016-08-13/hnumbering.svg)
+We expect that `hindex2xy(17) = (x:1, y:4)` and `hindex2xy(40) = (x:6, y:6)`.
 
-<p><code class="highlighter-rouge">hindex2xy</code> algorithm uses bottom-up approach to compute node coordinates without
+`hindex2xy` algorithm uses bottom-up approach to compute node coordinates without
 using recursion. When we look at the binary representation of the node indexes we may
-notice that the last two bits represent node position inside <code class="highlighter-rouge">N=2</code> Hilbert curve.
-Next two bits represent where that <code class="highlighter-rouge">N=2</code> Hilbert curve is located inside bigger
-<code class="highlighter-rouge">N=4</code> curve etc.</p>
+notice that the last two bits represent node position inside `N=2` Hilbert curve.
+Next two bits represent where that `N=2` Hilbert curve is located inside bigger
+`N=4` curve etc.
 
-<p>Example will show us
-how it works for <code class="highlighter-rouge">N=4</code> Hilbert curve and <code class="highlighter-rouge">index=7</code>:
-<img src="assets/images/2016-08-13/hbottomup.svg" alt="Computing coordinates bottom-up" />
-Let’s start by writing index value as binary number: 7 <sub>dec</sub> is equal 0111<sub>bin</sub>.
+Example will show us
+how it works for `N=4` Hilbert curve and `index=7`:
+![Computing coordinates bottom-up](assets/images/2016-08-13/hbottomup.svg)
+Let's start by writing index value as binary number: 7 <sub>dec</sub> is equal 0111<sub>bin</sub>.
 The last two bits of 0111<sub>bin</sub> are
 11<sub>bin</sub>, they
-corresponds to the bottom right node of the <code class="highlighter-rouge">N=2</code> Hilbert curve (marked green on the image).
-This node has Cartesian coordinates <code class="highlighter-rouge">(x:1, y:0)</code>.
-Now let’s move to the next two bits:
-01<sub>bin</sub>, these bits corresponds to the left upper corner of <code class="highlighter-rouge">N=4</code> Hilbert curve
+corresponds to the bottom right node of the `N=2` Hilbert curve (marked green on the image).
+This node has Cartesian coordinates `(x:1, y:0)`.
+Now let's move to the next two bits:
+01<sub>bin</sub>, these bits corresponds to the left upper corner of `N=4` Hilbert curve
 (marked yellow on the image).
-To transform <code class="highlighter-rouge">N=2</code> into <code class="highlighter-rouge">N=4</code> coords we must notice that 
-left upper corner of <code class="highlighter-rouge">N=4</code> curve is just translated copy of <code class="highlighter-rouge">N=2</code> curve.
-So to get <code class="highlighter-rouge">N=4</code> coords we must apply translation <code class="highlighter-rouge">(x:0, y:2)</code> to <code class="highlighter-rouge">N=2</code> coords:</p>
+To transform `N=2` into `N=4` coords we must notice that 
+left upper corner of `N=4` curve is just translated copy of `N=2` curve.
+So to get `N=4` coords we must apply translation `(x:0, y:2)` to `N=2` coords:
+{% highlight no-highlight %}
+(x:1, y:2) = (x:1, y:0) + (x:0, y:2)
+{% endhighlight %}
+We end with `(x:1, y:2)` point that correctly 
+represent node with index 7 inside `N=4` curve.
 
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">(x:1, y:2) = (x:1, y:0) + (x:0, y:2)</code></pre></figure>
-
-<p>We end with <code class="highlighter-rouge">(x:1, y:2)</code> point that correctly 
-represent node with index 7 inside <code class="highlighter-rouge">N=4</code> curve.</p>
-
-<p>Let’s assume that we want to find out coords of node in <code class="highlighter-rouge">N=2K</code> Hilbert curve,
-given that we have coords <code class="highlighter-rouge">(x,y)</code> of node in <code class="highlighter-rouge">N=K</code> curve.
+Let's assume that we want to find out coords of node in `N=2K` Hilbert curve,
+given that we have coords `(x,y)` of node in `N=K` curve.
 In general when computing coords bottom-up we have four cases:
-<img src="assets/images/2016-08-13/hblocks.svg" alt="Computing coordinates bottom-up" />
-Cases B and C are really simple since <code class="highlighter-rouge">N=2K</code> curve contains copies
-of <code class="highlighter-rouge">N=K</code> curve in B and C squares. In case B we should
-transform coords using equation:</p>
+![Computing coordinates bottom-up](assets/images/2016-08-13/hblocks.svg)
+Cases B and C are really simple since `N=2K` curve contains copies
+of `N=K` curve in B and C squares. In case B we should
+transform coords using equation:
+{% highlight no-highlight %}
+coords_2K = coords_K + (x:0, y:K)
+{% endhighlight %}
+And in case C we should use equation:
+{% highlight no-highlight %}
+coords_2K = coords_K + (x:K, y:K)
+{% endhighlight %}
 
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">coords_2K = coords_K + (x:0, y:K)</code></pre></figure>
-
-<p>And in case C we should use equation:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">coords_2K = coords_K + (x:K, y:K)</code></pre></figure>
-
-<p>In cases A and D we must be careful when transforming coords because we must
-preserve order of traversal of <code class="highlighter-rouge">N=K</code> curve inside <code class="highlighter-rouge">N=2K</code> curve.
+In cases A and D we must be careful when transforming coords because we must
+preserve order of traversal of `N=K` curve inside `N=2K` curve.
 I marked each curve start and end with red and blue dots so we can
-see better how we should perform transformation.</p>
+see better how we should perform transformation.
 
-<p>In case A first node of <code class="highlighter-rouge">N=K</code> curve should coincide with first node of <code class="highlighter-rouge">N=2K</code> curve
-and <code class="highlighter-rouge">N=K</code> curve should end next to the start of “case B” curve.
+In case A first node of `N=K` curve should coincide with first node of `N=2K` curve
+and `N=K` curve should end next to the start of "case B" curve.
 We can achieve this by flipping coords around diagonal:
-<img src="assets/images/2016-08-13/casea.svg" alt="Case A transformation" /></p>
+![Case A transformation](assets/images/2016-08-13/casea.svg)
+{% highlight no-highlight %}
+coords_2K.x = coords_K.y
+coords_2K.y = coords_K.x
+{% endhighlight %}
 
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">coords_2K.x = coords_K.y
-coords_2K.y = coords_K.x</code></pre></figure>
-
-<p>Case D is similar to case A, we must flip coords but around second diagonal:
-<img src="assets/images/2016-08-13/cased.svg" alt="Case D transformation" />
-In addition to that we must translate node coords to the right:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">coords_2K.x = (K-1) - coords_K.y
+Case D is similar to case A, we must flip coords but around second diagonal:
+![Case D transformation](assets/images/2016-08-13/cased.svg)
+In addition to that we must translate node coords to the right:
+{% highlight no-highlight %}
+coords_2K.x = (K-1) - coords_K.y
 coords_2K.y = (K-1) - coords_K.x
 
-coords_2K.x = coords_2K.x + K</code></pre></figure>
+coords_2K.x = coords_2K.x + K
+{% endhighlight %}
 
-<p>Finally let’s see full algorithm code in JavaScript:</p>
+Finally let's see full algorithm code in JavaScript:
+{% highlight js %}
+function last2bits(x) { return (x & 3); }
 
-<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">function</span> <span class="nx">last2bits</span><span class="p">(</span><span class="nx">x</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">(</span><span class="nx">x</span> <span class="o">&amp;</span> <span class="mi">3</span><span class="p">);</span> <span class="p">}</span>
+function hindex2xy(hindex, N) {
+    // 1. compute position of node in N=2 curve
+    var positions = [
+    /* 0: */ [0, 0],
+    /* 1: */ [0, 1],
+    /* 2: */ [1, 1],
+    /* 3: */ [1, 0]
+    ];
 
-<span class="kd">function</span> <span class="nx">hindex2xy</span><span class="p">(</span><span class="nx">hindex</span><span class="p">,</span> <span class="nx">N</span><span class="p">)</span> <span class="p">{</span>
-    <span class="c1">// 1. compute position of node in N=2 curve</span>
-    <span class="kd">var</span> <span class="nx">positions</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="cm">/* 0: */</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-    <span class="cm">/* 1: */</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
-    <span class="cm">/* 2: */</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
-    <span class="cm">/* 3: */</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
-    <span class="p">];</span>
+    var tmp = positions[last2bits(hindex)];
+    hindex = (hindex >>> 2);
 
-    <span class="kd">var</span> <span class="nx">tmp</span> <span class="o">=</span> <span class="nx">positions</span><span class="p">[</span><span class="nx">last2bits</span><span class="p">(</span><span class="nx">hindex</span><span class="p">)];</span>
-    <span class="nx">hindex</span> <span class="o">=</span> <span class="p">(</span><span class="nx">hindex</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">2</span><span class="p">);</span>
-
-    <span class="c1">// 2. iteratively compute coords</span>
-    <span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">tmp</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
-    <span class="kd">var</span> <span class="nx">y</span> <span class="o">=</span> <span class="nx">tmp</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+    // 2. iteratively compute coords
+    var x = tmp[0];
+    var y = tmp[1];
     
-    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">n</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span> <span class="nx">n</span> <span class="o">&lt;=</span> <span class="nx">N</span><span class="p">;</span> <span class="nx">n</span> <span class="o">*=</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
-        <span class="kd">var</span> <span class="nx">n2</span> <span class="o">=</span> <span class="nx">n</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span>
+    for (var n = 4; n <= N; n *= 2) {
+        var n2 = n / 2;
 
-        <span class="k">switch</span> <span class="p">(</span><span class="nx">last2bits</span><span class="p">(</span><span class="nx">hindex</span><span class="p">))</span> <span class="p">{</span>
-        <span class="k">case</span> <span class="mi">0</span><span class="p">:</span> <span class="cm">/* case A: left-bottom */</span>
-            <span class="nx">tmp</span> <span class="o">=</span> <span class="nx">x</span><span class="p">;</span> <span class="nx">x</span> <span class="o">=</span> <span class="nx">y</span><span class="p">;</span> <span class="nx">y</span> <span class="o">=</span> <span class="nx">tmp</span><span class="p">;</span>
-            <span class="k">break</span><span class="p">;</span>
+        switch (last2bits(hindex)) {
+        case 0: /* case A: left-bottom */
+            tmp = x; x = y; y = tmp;
+            break;
 
-        <span class="k">case</span> <span class="mi">1</span><span class="p">:</span> <span class="cm">/* case B: left-upper */</span>
-            <span class="nx">x</span> <span class="o">=</span> <span class="nx">x</span><span class="p">;</span>
-            <span class="nx">y</span> <span class="o">=</span> <span class="nx">y</span> <span class="o">+</span> <span class="nx">n2</span><span class="p">;</span>
-            <span class="k">break</span><span class="p">;</span>
+        case 1: /* case B: left-upper */
+            x = x;
+            y = y + n2;
+            break;
 
-        <span class="k">case</span> <span class="mi">2</span><span class="p">:</span> <span class="cm">/* case C: right-upper */</span>
-            <span class="nx">x</span> <span class="o">=</span> <span class="nx">x</span> <span class="o">+</span> <span class="nx">n2</span><span class="p">;</span>
-            <span class="nx">y</span> <span class="o">=</span> <span class="nx">y</span> <span class="o">+</span> <span class="nx">n2</span><span class="p">;</span>
-            <span class="k">break</span><span class="p">;</span>
+        case 2: /* case C: right-upper */
+            x = x + n2;
+            y = y + n2;
+            break;
 
-        <span class="k">case</span> <span class="mi">3</span><span class="p">:</span> <span class="cm">/* case D: right-bottom */</span>
-            <span class="nx">tmp</span> <span class="o">=</span> <span class="nx">y</span><span class="p">;</span>
-            <span class="nx">y</span> <span class="o">=</span> <span class="p">(</span><span class="nx">n2</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="nx">x</span><span class="p">;</span>
-            <span class="nx">x</span> <span class="o">=</span> <span class="p">(</span><span class="nx">n2</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="nx">tmp</span><span class="p">;</span>
-            <span class="nx">x</span> <span class="o">=</span> <span class="nx">x</span> <span class="o">+</span> <span class="nx">n2</span><span class="p">;</span>
-            <span class="k">break</span><span class="p">;</span>
-        <span class="p">}</span>
+        case 3: /* case D: right-bottom */
+            tmp = y;
+            y = (n2-1) - x;
+            x = (n2-1) - tmp;
+            x = x + n2;
+            break;
+        }
         
-        <span class="nx">hindex</span> <span class="o">=</span> <span class="p">(</span><span class="nx">hindex</span> <span class="o">&gt;&gt;&gt;</span> <span class="mi">2</span><span class="p">);</span>
-    <span class="p">}</span>
-    <span class="k">return</span> <span class="p">[</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">];</span>
-<span class="p">}</span></code></pre></figure>
+        hindex = (hindex >>> 2);
+    }
+    return [x, y];
+}
+{% endhighlight %}
 
-<p>Having this algorithm we may draw Hilbert curve as follows:</p>
+Having this algorithm we may draw Hilbert curve as follows:
+{% highlight js %}
+var N = 32;
 
-<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">N</span> <span class="o">=</span> <span class="mi">32</span><span class="p">;</span>
+var prev = [0, 0],
+    curr;
 
-<span class="kd">var</span> <span class="nx">prev</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
-    <span class="nx">curr</span><span class="p">;</span>
+for (var i = 0; i < N*N; i += 1) {
+    curr = hindex2xy(i, N);
 
-<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">N</span><span class="o">*</span><span class="nx">N</span><span class="p">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
-    <span class="nx">curr</span> <span class="o">=</span> <span class="nx">hindex2xy</span><span class="p">(</span><span class="nx">i</span><span class="p">,</span> <span class="nx">N</span><span class="p">);</span>
+    dot(curr);
+    line(prev, curr);
 
-    <span class="nx">dot</span><span class="p">(</span><span class="nx">curr</span><span class="p">);</span>
-    <span class="nx">line</span><span class="p">(</span><span class="nx">prev</span><span class="p">,</span> <span class="nx">curr</span><span class="p">);</span>
+    prev = curr;
+}
+{% endhighlight %}
 
-    <span class="nx">prev</span> <span class="o">=</span> <span class="nx">curr</span><span class="p">;</span>
-<span class="p">}</span></code></pre></figure>
+And here are results:
+![Hilbert curve](assets/images/2016-08-13/hilb.png)
 
-<p>And here are results:
-<img src="assets/images/2016-08-13/hilb.png" alt="Hilbert curve" /></p>
-
-<h5 id="github">Github</h5>
-<p>Source code: <a href="https://github.com/marcin-chwedczuk/hilbert_curve">hilbert_curve</a></p>
+##### Github
+Source code: [hilbert_curve](https://github.com/marcin-chwedczuk/hilbert_curve)
 
 
 	  ]]></description>
@@ -1057,384 +1096,381 @@ coords_2K.x = coords_2K.x + K</code></pre></figure>
 	  <pubDate>2016-06-25T02:00:00+02:00</pubDate>
 	  <guid>//find-cycle-start-in-singly-linked-list</guid>
 	  <description><![CDATA[
-	     <p>In this post I will present solution to the following problem:</p>
+	     In this post I will present solution to the following problem:
 
-<blockquote>
-  <p>We have a non empty singly linked list with a cycle in it.<br />
-We must find first
-element of a cycle in a linear time.</p>
-</blockquote>
+> We have a non empty singly linked list with a cycle in it.  
+> We must find first
+> element of a cycle in a linear time.
 
-<p>For example, given a singly linked list:
-<img src="assets/images/2016-06-25/llcycle1.svg" alt="List with cycle 1" />
-Algorithm should return node <code class="highlighter-rouge">N3</code> as it is the first node counting
-from head of a list that is part of cycle.</p>
+For example, given a singly linked list:
+![List with cycle 1](assets/images/2016-06-25/llcycle1.svg)
+Algorithm should return node `N3` as it is the first node counting
+from head of a list that is part of cycle.
 
-<h5 id="boundary-conditions">Boundary conditions</h5>
+##### Boundary conditions
 
-<p>To better understand this problem let’s think about boundary conditions for
-our algorithm.</p>
+To better understand this problem let's think about boundary conditions for
+our algorithm.
 
-<p>One of the boundary conditions is that entire list forms single cycle:
-<img src="assets/images/2016-06-25/llcycle2.svg" alt="Entire list forms cycle" />
-In this case our algorithm should return first element of a list (<code class="highlighter-rouge">N1</code> node for a list
-presented on picture above).</p>
+One of the boundary conditions is that entire list forms single cycle:
+![Entire list forms cycle](assets/images/2016-06-25/llcycle2.svg)
+In this case our algorithm should return first element of a list (`N1` node for a list
+presented on picture above).
 
-<p>Another boundary condition is that only last element 
+Another boundary condition is that only last element 
 of the list forms a cycle:
-<img src="assets/images/2016-06-25/llcycle3.svg" alt="Only last element of the list forms a cycle" />
-In this case algorithm should return last element of the list (<code class="highlighter-rouge">N4</code> node for
-a list presented on picture above).</p>
+![Only last element of the list forms a cycle](assets/images/2016-06-25/llcycle3.svg)
+In this case algorithm should return last element of the list (`N4` node for
+a list presented on picture above).
 
-<p>The last boundary condition is a list that consists of only one element:
-<img src="assets/images/2016-06-25/llcycle4.svg" alt="Single element list" />
-In this case algorithm should return that single element.</p>
+The last boundary condition is a list that consists of only one element:
+![Single element list](assets/images/2016-06-25/llcycle4.svg)
+In this case algorithm should return that single element.
 
-<p>For all except last described boundary conditions we should consider lists with odd and even number of elements.</p>
+For all except last described boundary conditions we should consider lists with odd and even number of elements.
 
-<h5 id="create-test-suite">Create test suite</h5>
+##### Create test suite
 
-<p>Let’s code these boundary conditions and a few of other generic cases as a set of unit tests.
-To represent list nodes we will use following Java class:</p>
+Let's code these boundary conditions and a few of other generic cases as a set of unit tests.
+To represent list nodes we will use following Java class:
+{% highlight java %}
+public class ListNode {
+    public int value;
+    public ListNode next;
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ListNode</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kt">int</span> <span class="n">value</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="n">ListNode</span> <span class="n">next</span><span class="o">;</span>
+    public ListNode(int value) { this(value, null); }
 
-    <span class="kd">public</span> <span class="nf">ListNode</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">)</span> <span class="o">{</span> <span class="k">this</span><span class="o">(</span><span class="n">value</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span> <span class="o">}</span>
+    public ListNode(int value, ListNode next) {
+        this.value = value;
+        this.next = next;
+    }
 
-    <span class="kd">public</span> <span class="nf">ListNode</span><span class="o">(</span><span class="kt">int</span> <span class="n">value</span><span class="o">,</span> <span class="n">ListNode</span> <span class="n">next</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">;</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">next</span> <span class="o">=</span> <span class="n">next</span><span class="o">;</span>
-    <span class="o">}</span>
+    @Override
+    public String toString() {
+        return "ListNode{" +
+                "value=" + value +
+                '}';
+    }
+}
+{% endhighlight %}
+Our algorithm will be represented by `CycleStart.find` method:
+{% highlight java %}
+public final class CycleStart {
+    private CycleStart() { }
 
-    <span class="nd">@Override</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="s">"ListNode{"</span> <span class="o">+</span>
-                <span class="s">"value="</span> <span class="o">+</span> <span class="n">value</span> <span class="o">+</span>
-                <span class="sc">'}'</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Our algorithm will be represented by <code class="highlighter-rouge">CycleStart.find</code> method:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">CycleStart</span> <span class="o">{</span>
-    <span class="kd">private</span> <span class="nf">CycleStart</span><span class="o">()</span> <span class="o">{</span> <span class="o">}</span>
-
-    <span class="kd">public</span> <span class="kd">static</span> <span class="n">ListNode</span> <span class="nf">find</span><span class="o">(</span><span class="n">ListNode</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">// TODO: Implement algorithm</span>
-        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>To avoid code duplication we will use JUnit 4 parameterized unit tests.
+    public static ListNode find(ListNode list) {
+        // TODO: Implement algorithm
+        return null;
+    }
+}
+{% endhighlight %}
+To avoid code duplication we will use JUnit 4 parameterized unit tests.
 AssertJ will be used
-as an assertion library:</p>
+as an assertion library:
+{% highlight java %}
+@RunWith(Parameterized.class)
+public class CycleStartTest {
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@RunWith</span><span class="o">(</span><span class="n">Parameterized</span><span class="o">.</span><span class="na">class</span><span class="o">)</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">CycleStartTest</span> <span class="o">{</span>
+    @Parameterized.Parameters(name =
+        "testcase {index}: CycleStart_find_works_with(listSize={0}, cycleSize={1})")
+    public static Iterable<Object[]> data() {
+        return Arrays.asList(new Object[][] {
+        /* LIST_SIZE    CYCLE_SIZE */
 
-    <span class="nd">@Parameterized</span><span class="o">.</span><span class="na">Parameters</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span>
-        <span class="s">"testcase {index}: CycleStart_find_works_with(listSize={0}, cycleSize={1})"</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Iterable</span><span class="o">&lt;</span><span class="n">Object</span><span class="o">[]&gt;</span> <span class="nf">data</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">Arrays</span><span class="o">.</span><span class="na">asList</span><span class="o">(</span><span class="k">new</span> <span class="n">Object</span><span class="o">[][]</span> <span class="o">{</span>
-        <span class="cm">/* LIST_SIZE    CYCLE_SIZE */</span>
+        /* single element list */
+        {  1,  1 },
 
-        <span class="cm">/* single element list */</span>
-        <span class="o">{</span>  <span class="mi">1</span><span class="o">,</span>  <span class="mi">1</span> <span class="o">},</span>
+        /* every element of list is part of cycle (odd and even list size cases) */
+        { 10, 10 },
+        {  9,  9 },
 
-        <span class="cm">/* every element of list is part of cycle (odd and even list size cases) */</span>
-        <span class="o">{</span> <span class="mi">10</span><span class="o">,</span> <span class="mi">10</span> <span class="o">},</span>
-        <span class="o">{</span>  <span class="mi">9</span><span class="o">,</span>  <span class="mi">9</span> <span class="o">},</span>
+        /* only last element of list is part of cycle */
+        { 10,  1 },
+        {  9,  1 },
 
-        <span class="cm">/* only last element of list is part of cycle */</span>
-        <span class="o">{</span> <span class="mi">10</span><span class="o">,</span>  <span class="mi">1</span> <span class="o">},</span>
-        <span class="o">{</span>  <span class="mi">9</span><span class="o">,</span>  <span class="mi">1</span> <span class="o">},</span>
+        /* random number of elements are part of cycle (with odd/even variants) */
+        { 10,  5 },
+        { 9,   5 },
+        { 10,  6 },
+        { 9,   6 },
+        { 34, 11 }
+        });
+    }
 
-        <span class="cm">/* random number of elements are part of cycle (with odd/even variants) */</span>
-        <span class="o">{</span> <span class="mi">10</span><span class="o">,</span>  <span class="mi">5</span> <span class="o">},</span>
-        <span class="o">{</span> <span class="mi">9</span><span class="o">,</span>   <span class="mi">5</span> <span class="o">},</span>
-        <span class="o">{</span> <span class="mi">10</span><span class="o">,</span>  <span class="mi">6</span> <span class="o">},</span>
-        <span class="o">{</span> <span class="mi">9</span><span class="o">,</span>   <span class="mi">6</span> <span class="o">},</span>
-        <span class="o">{</span> <span class="mi">34</span><span class="o">,</span> <span class="mi">11</span> <span class="o">}</span>
-        <span class="o">});</span>
-    <span class="o">}</span>
+    private final int listSize;
+    private final int cycleSize;
 
-    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">listSize</span><span class="o">;</span>
-    <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">cycleSize</span><span class="o">;</span>
+    public CycleStartTest(int listSize, int cycleSize) {
+        this.listSize = listSize;
+        this.cycleSize = cycleSize;
+    }
 
-    <span class="kd">public</span> <span class="nf">CycleStartTest</span><span class="o">(</span><span class="kt">int</span> <span class="n">listSize</span><span class="o">,</span> <span class="kt">int</span> <span class="n">cycleSize</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">listSize</span> <span class="o">=</span> <span class="n">listSize</span><span class="o">;</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">cycleSize</span> <span class="o">=</span> <span class="n">cycleSize</span><span class="o">;</span>
-    <span class="o">}</span>
+    @Test
+    public void runTest() {
+        ListWithCycle testData = ListWithCycle.having()
+                .listSize(listSize)
+                .cycleSize(cycleSize)
+                .create();
 
-    <span class="nd">@Test</span>
-    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">runTest</span><span class="o">()</span> <span class="o">{</span>
-        <span class="n">ListWithCycle</span> <span class="n">testData</span> <span class="o">=</span> <span class="n">ListWithCycle</span><span class="o">.</span><span class="na">having</span><span class="o">()</span>
-                <span class="o">.</span><span class="na">listSize</span><span class="o">(</span><span class="n">listSize</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">cycleSize</span><span class="o">(</span><span class="n">cycleSize</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">create</span><span class="o">();</span>
+        ListNode cycleStart = CycleStart.find(testData.list);
 
-        <span class="n">ListNode</span> <span class="n">cycleStart</span> <span class="o">=</span> <span class="n">CycleStart</span><span class="o">.</span><span class="na">find</span><span class="o">(</span><span class="n">testData</span><span class="o">.</span><span class="na">list</span><span class="o">);</span>
+        assertThat(cycleStart)
+                .isNotNull()
+                .isEqualTo(testData.cycleStart);
+    }
+}
+{% endhighlight %}
+Each of arrays returned by static `data()` method contains
+`CycleStartTest` constructor parameters. For each of these arrays JUnit will create
+`CycleStartTest` instance with parameters passed to class constructor. Then
+JUnit will call all methods annotated with `@Test` on that instance.
+In our case we have two parameters `listSize` and `cycleSize`, I think these
+are pretty self explanatory.
 
-        <span class="n">assertThat</span><span class="o">(</span><span class="n">cycleStart</span><span class="o">)</span>
-                <span class="o">.</span><span class="na">isNotNull</span><span class="o">()</span>
-                <span class="o">.</span><span class="na">isEqualTo</span><span class="o">(</span><span class="n">testData</span><span class="o">.</span><span class="na">cycleStart</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
+The last missing piece is `ListWithCycle` helper that creates list of given size
+with cycle of given size:
+{% highlight java %}
+class ListWithCycle {
+    public final ListNode list;
+    public final ListNode cycleStart;
 
-<p>Each of arrays returned by static <code class="highlighter-rouge">data()</code> method contains
-<code class="highlighter-rouge">CycleStartTest</code> constructor parameters. For each of these arrays JUnit will create
-<code class="highlighter-rouge">CycleStartTest</code> instance with parameters passed to class constructor. Then
-JUnit will call all methods annotated with <code class="highlighter-rouge">@Test</code> on that instance.
-In our case we have two parameters <code class="highlighter-rouge">listSize</code> and <code class="highlighter-rouge">cycleSize</code>, I think these
-are pretty self explanatory.</p>
+    private ListWithCycle(ListNode listHead, ListNode cycleStart) {
+        this.list = listHead;
+        this.cycleStart = cycleStart;
+    }
 
-<p>The last missing piece is <code class="highlighter-rouge">ListWithCycle</code> helper that creates list of given size
-with cycle of given size:</p>
+    public static Builder having() {
+        return new Builder();
+    }
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">class</span> <span class="nc">ListWithCycle</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">final</span> <span class="n">ListNode</span> <span class="n">list</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">final</span> <span class="n">ListNode</span> <span class="n">cycleStart</span><span class="o">;</span>
+    public static class Builder {
+        private int listSize;
+        private int cycleSize;
 
-    <span class="kd">private</span> <span class="nf">ListWithCycle</span><span class="o">(</span><span class="n">ListNode</span> <span class="n">listHead</span><span class="o">,</span> <span class="n">ListNode</span> <span class="n">cycleStart</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">list</span> <span class="o">=</span> <span class="n">listHead</span><span class="o">;</span>
-        <span class="k">this</span><span class="o">.</span><span class="na">cycleStart</span> <span class="o">=</span> <span class="n">cycleStart</span><span class="o">;</span>
-    <span class="o">}</span>
+        public Builder listSize(int listSize) {
+            if (listSize < 0) throw new IllegalArgumentException("listSize must be >= 0");
 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Builder</span> <span class="nf">having</span><span class="o">()</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="k">new</span> <span class="nf">Builder</span><span class="o">();</span>
-    <span class="o">}</span>
+            this.listSize = listSize;
+            this.cycleSize = listSize;
+            return this;
+        }
 
-    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">Builder</span> <span class="o">{</span>
-        <span class="kd">private</span> <span class="kt">int</span> <span class="n">listSize</span><span class="o">;</span>
-        <span class="kd">private</span> <span class="kt">int</span> <span class="n">cycleSize</span><span class="o">;</span>
+        public Builder cycleSize(int cycleSize) {
+            if (cycleSize <= 0) throw new IllegalArgumentException("cycleSize must be > 0");
+            if (cycleSize > listSize) throw new IllegalArgumentException("cycleSize must be <= listSize");
 
-        <span class="kd">public</span> <span class="n">Builder</span> <span class="nf">listSize</span><span class="o">(</span><span class="kt">int</span> <span class="n">listSize</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">listSize</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">"listSize must be &gt;= 0"</span><span class="o">);</span>
+            this.cycleSize = cycleSize;
+            return this;
+        }
 
-            <span class="k">this</span><span class="o">.</span><span class="na">listSize</span> <span class="o">=</span> <span class="n">listSize</span><span class="o">;</span>
-            <span class="k">this</span><span class="o">.</span><span class="na">cycleSize</span> <span class="o">=</span> <span class="n">listSize</span><span class="o">;</span>
-            <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
-        <span class="o">}</span>
+        public ListWithCycle create() {
+            List<ListNode> nodes = new ArrayList<>();
+            ListNode prev = null;
 
-        <span class="kd">public</span> <span class="n">Builder</span> <span class="nf">cycleSize</span><span class="o">(</span><span class="kt">int</span> <span class="n">cycleSize</span><span class="o">)</span> <span class="o">{</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">cycleSize</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">"cycleSize must be &gt; 0"</span><span class="o">);</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">cycleSize</span> <span class="o">&gt;</span> <span class="n">listSize</span><span class="o">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">IllegalArgumentException</span><span class="o">(</span><span class="s">"cycleSize must be &lt;= listSize"</span><span class="o">);</span>
+            // create list
+            for (int i = 0; i < listSize; i++) {
+                ListNode curr = new ListNode(i);
+                if (prev != null)
+                    prev.next = curr;
+                prev = curr;
 
-            <span class="k">this</span><span class="o">.</span><span class="na">cycleSize</span> <span class="o">=</span> <span class="n">cycleSize</span><span class="o">;</span>
-            <span class="k">return</span> <span class="k">this</span><span class="o">;</span>
-        <span class="o">}</span>
+                nodes.add(curr);
+            }
 
-        <span class="kd">public</span> <span class="n">ListWithCycle</span> <span class="nf">create</span><span class="o">()</span> <span class="o">{</span>
-            <span class="n">List</span><span class="o">&lt;</span><span class="n">ListNode</span><span class="o">&gt;</span> <span class="n">nodes</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;&gt;();</span>
-            <span class="n">ListNode</span> <span class="n">prev</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+            // create list cycle
+            ListNode tail = prev;
+            ListNode cycleStart = nodes.get(nodes.size() - cycleSize);
+            tail.next = cycleStart;
 
-            <span class="c1">// create list</span>
-            <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">listSize</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-                <span class="n">ListNode</span> <span class="n">curr</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ListNode</span><span class="o">(</span><span class="n">i</span><span class="o">);</span>
-                <span class="k">if</span> <span class="o">(</span><span class="n">prev</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span>
-                    <span class="n">prev</span><span class="o">.</span><span class="na">next</span> <span class="o">=</span> <span class="n">curr</span><span class="o">;</span>
-                <span class="n">prev</span> <span class="o">=</span> <span class="n">curr</span><span class="o">;</span>
+            return new ListWithCycle(nodes.get(0), cycleStart);
+        }
+    }
+}
+{% endhighlight %}
+Now with unit tests covering all normal and border cases we can
+start implementing our algorithm.
 
-                <span class="n">nodes</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">curr</span><span class="o">);</span>
-            <span class="o">}</span>
-
-            <span class="c1">// create list cycle</span>
-            <span class="n">ListNode</span> <span class="n">tail</span> <span class="o">=</span> <span class="n">prev</span><span class="o">;</span>
-            <span class="n">ListNode</span> <span class="n">cycleStart</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">nodes</span><span class="o">.</span><span class="na">size</span><span class="o">()</span> <span class="o">-</span> <span class="n">cycleSize</span><span class="o">);</span>
-            <span class="n">tail</span><span class="o">.</span><span class="na">next</span> <span class="o">=</span> <span class="n">cycleStart</span><span class="o">;</span>
-
-            <span class="k">return</span> <span class="k">new</span> <span class="nf">ListWithCycle</span><span class="o">(</span><span class="n">nodes</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="mi">0</span><span class="o">),</span> <span class="n">cycleStart</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Now with unit tests covering all normal and border cases we can
-start implementing our algorithm.</p>
-
-<h5 id="create-simple-implementation">Create simple implementation</h5>
-<p>Let’s start with simple implementation that works in <code class="highlighter-rouge">O(N)</code> time but uses <code class="highlighter-rouge">O(N)</code>
+##### Create simple implementation
+Let's start with simple implementation that works in `O(N)` time but uses `O(N)`
 additional memory. 
 The idea behind this algorithm is simple. We will be tracking all
 already visited nodes, when we visit some node N twice we will know that
-node N must be start of a cycle.</p>
+node N must be start of a cycle.
 
-<p>This is implemented in Java as:</p>
+This is implemented in Java as:
+{% highlight java %}
+public static ListNode find(ListNode list) {
+    Map<ListNode, Object> visitedNodes =
+                    new IdentityHashMap<ListNode, Object>();
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="n">ListNode</span> <span class="nf">find</span><span class="o">(</span><span class="n">ListNode</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">Map</span><span class="o">&lt;</span><span class="n">ListNode</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;</span> <span class="n">visitedNodes</span> <span class="o">=</span>
-                    <span class="k">new</span> <span class="n">IdentityHashMap</span><span class="o">&lt;</span><span class="n">ListNode</span><span class="o">,</span> <span class="n">Object</span><span class="o">&gt;();</span>
+    for (ListNode curr = list; curr != null; curr = curr.next) {
+        if (visitedNodes.containsKey(curr)) {
+            // curr was already visited so we visit it twice
+            return curr;
+        }
+        else {
+            // mark as visited
+            visitedNodes.put(curr, null);
+        }
+    }
 
-    <span class="k">for</span> <span class="o">(</span><span class="n">ListNode</span> <span class="n">curr</span> <span class="o">=</span> <span class="n">list</span><span class="o">;</span> <span class="n">curr</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">;</span> <span class="n">curr</span> <span class="o">=</span> <span class="n">curr</span><span class="o">.</span><span class="na">next</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(</span><span class="n">visitedNodes</span><span class="o">.</span><span class="na">containsKey</span><span class="o">(</span><span class="n">curr</span><span class="o">))</span> <span class="o">{</span>
-            <span class="c1">// curr was already visited so we visit it twice</span>
-            <span class="k">return</span> <span class="n">curr</span><span class="o">;</span>
-        <span class="o">}</span>
-        <span class="k">else</span> <span class="o">{</span>
-            <span class="c1">// mark as visited</span>
-            <span class="n">visitedNodes</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">curr</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-
-    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>We use <code class="highlighter-rouge">IdentityHashMap&lt;K,V&gt;</code> to track already visited nodes. 
-<code class="highlighter-rouge">IdentityHashMap&lt;K,V&gt;</code> is special purpose <code class="highlighter-rouge">Map&lt;K,V&gt;</code> 
-implementation that uses <em>references</em> to objects
+    return null;
+}
+{% endhighlight %}
+We use `IdentityHashMap<K,V>` to track already visited nodes. 
+`IdentityHashMap<K,V>` is special purpose `Map<K,V>` 
+implementation that uses *references* to objects
 as a keys. 
-Internally it uses <code class="highlighter-rouge">==</code> instead of <code class="highlighter-rouge">Object.equals()</code> to compare keys for equality, and
-<code class="highlighter-rouge">System.identityHashCode()</code> instead of <code class="highlighter-rouge">Object.hashCode()</code> to compute hashes.</p>
+Internally it uses `==` instead of `Object.equals()` to compare keys for equality, and
+`System.identityHashCode()` instead of `Object.hashCode()` to compute hashes.
 
-<p>This algorithm passes all unit tests but can’t we do any better?<br />
-In fact we can, there is a beautiful algorithm that runs in <code class="highlighter-rouge">O(N)</code> time and 
-uses <code class="highlighter-rouge">O(1)</code> memory.</p>
+This algorithm passes all unit tests but can't we do any better?  
+In fact we can, there is a beautiful algorithm that runs in `O(N)` time and 
+uses `O(1)` memory.
 
-<h5 id="create-efficient-implementation">Create efficient implementation</h5>
-<p>Let’s create a more efficient implementation.
+##### Create efficient implementation
+Let's create a more efficient implementation.
 To understand how it works we must first familiarize ourselves with fast and slow pointer
 method. Main usage of fast and slow pointer method is cycle detection in singly
 linked lists. The main idea is to have two pointers that traverse the same list. One pointer
-“slow” moves only one element at time, other pointer “fast” moves two elements at time.
+"slow" moves only one element at time, other pointer "fast" moves two elements at time.
 Singly linked list contains cycle if both pointers met. 
-This can be implemented in Java as:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">boolean</span> <span class="nf">hasCycle</span><span class="o">(</span><span class="n">ListNode</span> <span class="n">head</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">ListNode</span> <span class="n">slow</span> <span class="o">=</span> <span class="n">head</span><span class="o">;</span>
-    <span class="n">ListNode</span> <span class="n">fast</span> <span class="o">=</span> <span class="n">head</span><span class="o">;</span>
+This can be implemented in Java as:
+{% highlight java %}
+boolean hasCycle(ListNode head) {
+    ListNode slow = head;
+    ListNode fast = head;
         
-    <span class="k">while</span> <span class="o">(</span><span class="n">fast</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">fast</span><span class="o">.</span><span class="na">next</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">slow</span> <span class="o">=</span> <span class="n">slow</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
-        <span class="n">fast</span> <span class="o">=</span> <span class="n">fast</span><span class="o">.</span><span class="na">next</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
+    while (fast != null && fast.next != null) {
+        slow = slow.next;
+        fast = fast.next.next;
         
-        <span class="c1">// fast caught up to slow, so there is a loop</span>
-        <span class="k">if</span><span class="o">(</span><span class="n">slow</span> <span class="o">==</span> <span class="n">fast</span><span class="o">)</span>  
-            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
-    <span class="o">}</span>
+        // fast caught up to slow, so there is a loop
+        if(slow == fast)  
+            return true;
+    }
     
-    <span class="c1">// fast reached null, so the list terminates</span>
-    <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>  
-<span class="o">}</span></code></pre></figure>
+    // fast reached null, so the list terminates
+    return false;  
+}
+{% endhighlight %}
 
-<p>In our algorithm we’ll use simple fact from fast/slow pointer method: when
-fast and slow pointers are inside cycle, fast pointer cannot “jump over” slow pointer.
+In our algorithm we'll use simple fact from fast/slow pointer method: when
+fast and slow pointers are inside cycle, fast pointer cannot "jump over" slow pointer.
 In other words situation like:
-<img src="assets/images/2016-06-25/proof1.svg" alt="FAST pointer cannot jump over SLOW pointer" />
-is not possible.</p>
+![FAST pointer cannot jump over SLOW pointer](assets/images/2016-06-25/proof1.svg)
+is not possible.
 
-<p>PROOF: First we assume that slow pointer always moves first and that
+PROOF: First we assume that slow pointer always moves first and that
 we stop algorithm when fast and slow pointer meet. (If entire list is one
 cycle we would not count first step - when fast and slow pointers point to the list head).
-Let’s assume that fast pointer jumped over slow pointer as depicted on image above.
+Let's assume that fast pointer jumped over slow pointer as depicted on image above.
 We know that slow pointer always moves first and it moves only one element at time,
-so before slow pointer moved it was at <code class="highlighter-rouge">N2</code> node. But that was the node that
+so before slow pointer moved it was at `N2` node. But that was the node that
 fast pointer was pointing to before it moved. In other words before slow and fast pointers
-moved they pointed to the same node so our algorithm should have stopped, but it didn’t.
-Here we have contradiction that completes the proof.</p>
+moved they pointed to the same node so our algorithm should have stopped, but it didn't.
+Here we have contradiction that completes the proof.
 
-<p>Consequence of above proof is simple fact: let’s say slow and fast pointers are pointing
+Consequence of above proof is simple fact: let's say slow and fast pointers are pointing
 at cycle first element and that cycle has C elements in total. After at most C slow pointer
-moves, pointers must meed again.</p>
+moves, pointers must meed again. 
 
-<p>Now let’s go back to our cycle start finding algorithm. 
-To help us reason we will introduce some variables:</p>
+Now let's go back to our cycle start finding algorithm. 
+To help us reason we will introduce some variables:
 
-<ul>
-  <li>N - number of nodes in list before cycle (<code class="highlighter-rouge">N = 3</code> in our example below)</li>
-  <li>C - number of nodes in cycle (<code class="highlighter-rouge">C = 4</code> in our example below)</li>
-  <li>K - position of slow pointer inside cycle 
- (first element of cycle has <code class="highlighter-rouge">k: 0</code>, second <code class="highlighter-rouge">k: 1</code> etc.)</li>
-</ul>
+* N - number of nodes in list before cycle (`N = 3` in our example below)
+* C - number of nodes in cycle (`C = 4` in our example below)
+* K - position of slow pointer inside cycle 
+ (first element of cycle has `k: 0`, second `k: 1` etc.)
 
-<p>Let’s consider following situation, we ran fast/slow pointer algorithm on 7 element list
+Let's consider following situation, we ran fast/slow pointer algorithm on 7 element list
 depicted below:
-<img src="assets/images/2016-06-25/proof2.svg" alt="SLOW pointer entering cycle" />
+![SLOW pointer entering cycle](assets/images/2016-06-25/proof2.svg)
 After N iterations of algorithm slow pointer enters
-first element of the cycle and has position <code class="highlighter-rouge">K = 0</code>. Meanwhile fast
-pointer that moves 2 times faster has position <code class="highlighter-rouge">Kfast = N % C</code>.
-From this point every iteration of algorithm moves slow pointer from position <code class="highlighter-rouge">K</code> to <code class="highlighter-rouge">K+1</code>,
-and fast pointer from position <code class="highlighter-rouge">Kfast</code> to <code class="highlighter-rouge">Kfast+2</code>. In other words after <code class="highlighter-rouge">S</code> iterations
-of algorithm slow pointer has position <code class="highlighter-rouge">S % C</code> and fast pointer has position <code class="highlighter-rouge">(N+2*S) % C</code>.
+first element of the cycle and has position `K = 0`. Meanwhile fast
+pointer that moves 2 times faster has position `Kfast = N % C`.
+From this point every iteration of algorithm moves slow pointer from position `K` to `K+1`,
+and fast pointer from position `Kfast` to `Kfast+2`. In other words after `S` iterations
+of algorithm slow pointer has position `S % C` and fast pointer has position `(N+2*S) % C`.
 We know that fast pointer cannot jump over slow pointer, both pointers must met 
-in some <code class="highlighter-rouge">Smet</code> iteration (where <code class="highlighter-rouge">Smet &lt;= C</code>). When this happens we have:</p>
+in some `Smet` iteration (where `Smet <= C`). When this happens we have:
 
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">Smet % C = (N + 2*Smet) % C</code></pre></figure>
+{% highlight no-highlight %}
+Smet % C = (N + 2*Smet) % C
+{% endhighlight %}
+or in more mathematical notation:
+{% highlight no-highlight %}
+Smet = N + 2*Smet (mod C)
+{% endhighlight %}
+We can transform this equation using modulo arithmetic into:
+{% highlight no-highlight %}
+0 = N + Smet (mod C)
+{% endhighlight %}
+and finally into:
+{% highlight no-highlight %}
+-Smet = N (mod C)
+{% endhighlight %}
+This last equation is very important, it tells us that after another `N` iterations of the
+algorithm slow pointer will point at cycle first element:
+{% highlight no-highlight %}
+slow_pointer_pos_after_another_N_iterations = 
+        Smet + N = Smet + (-Smet) = 0 (mod C)
+{% endhighlight %}
 
-<p>or in more mathematical notation:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">Smet = N + 2*Smet (mod C)</code></pre></figure>
-
-<p>We can transform this equation using modulo arithmetic into:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">0 = N + Smet (mod C)</code></pre></figure>
-
-<p>and finally into:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">-Smet = N (mod C)</code></pre></figure>
-
-<p>This last equation is very important, it tells us that after another <code class="highlighter-rouge">N</code> iterations of the
-algorithm slow pointer will point at cycle first element:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">slow_pointer_pos_after_another_N_iterations = 
-        Smet + N = Smet + (-Smet) = 0 (mod C)</code></pre></figure>
-
-<p>From this we can get main idea of our new algorithm. First run fast/slow pointer algorithm
+From this we can get main idea of our new algorithm. First run fast/slow pointer algorithm
 until pointers met. Then we know that after another N iterations slow pointer will point
 at cycle first element. But hey if we start moving from list head after N iterations we will
-point at first cycle element too! We don’t know N but if we start moving slow pointer
+point at first cycle element too! We don't know N but if we start moving slow pointer
 one element at time and simultaneously we start moving another pointer from list head
 one element at time they must met at cycle first element:
-<img src="assets/images/2016-06-25/proof3.svg" alt="Final algorithm illustrated" /></p>
+![Final algorithm illustrated](assets/images/2016-06-25/proof3.svg)
 
-<p>Above description of algorithm will work only when <code class="highlighter-rouge">C &gt; 1</code> and <code class="highlighter-rouge">N &gt; 1</code>. Case when <code class="highlighter-rouge">C = 1</code>
+Above description of algorithm will work only when `C > 1` and `N > 1`. Case when `C = 1`
 is simple and I leave it as an exercise to reader.
-Case when <code class="highlighter-rouge">N = 0</code>: entire list forms a single cycle is easy too, we solve it now.
-Slow and fast pointers will met after <code class="highlighter-rouge">Smet</code> iterations, then:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">slow_pos = Smet % C
+Case when `N = 0`: entire list forms a single cycle is easy too, we solve it now.
+Slow and fast pointers will met after `Smet` iterations, then:
+{% highlight no-highlight %}
+slow_pos = Smet % C
 fast_pos = Smet*2 % C
 
 Smet = Smet*2 (mod C)
-0 = Smet (mod C)</code></pre></figure>
-
-<p>In other words because <code class="highlighter-rouge">Smet &lt;= C</code> and <code class="highlighter-rouge">Smet = 0 (mod C)</code> 
+0 = Smet (mod C)
+{% endhighlight %}
+In other words because `Smet <= C` and `Smet = 0 (mod C)` 
 pointers can met only at the first element of the cycle (at position 0 or C).
-First element of the cycle is a list head, so in this case our algorithm will work too!</p>
+First element of the cycle is a list head, so in this case our algorithm will work too!
 
-<p>Now let’s move to implementation:</p>
+Now let's move to implementation:
+{% highlight java %}
+private static ListNode find(ListNode list) {
+    ListNode slow = list;
+    ListNode fast = list;
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="n">ListNode</span> <span class="nf">find</span><span class="o">(</span><span class="n">ListNode</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">ListNode</span> <span class="n">slow</span> <span class="o">=</span> <span class="n">list</span><span class="o">;</span>
-    <span class="n">ListNode</span> <span class="n">fast</span> <span class="o">=</span> <span class="n">list</span><span class="o">;</span>
+    // find meeting point
+    do {
+        slow = slow.next;
+        fast = fast.next.next;
+    }
+    while (slow != fast);
 
-    <span class="c1">// find meeting point</span>
-    <span class="k">do</span> <span class="o">{</span>
-        <span class="n">slow</span> <span class="o">=</span> <span class="n">slow</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
-        <span class="n">fast</span> <span class="o">=</span> <span class="n">fast</span><span class="o">.</span><span class="na">next</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
-    <span class="o">}</span>
-    <span class="k">while</span> <span class="o">(</span><span class="n">slow</span> <span class="o">!=</span> <span class="n">fast</span><span class="o">);</span>
+    // find cycle start
+    ListNode k = slow;
+    ListNode head = list;
 
-    <span class="c1">// find cycle start</span>
-    <span class="n">ListNode</span> <span class="n">k</span> <span class="o">=</span> <span class="n">slow</span><span class="o">;</span>
-    <span class="n">ListNode</span> <span class="n">head</span> <span class="o">=</span> <span class="n">list</span><span class="o">;</span>
+    while (k != head) {
+        k = k.next;
+        head = head.next;
+    }
 
-    <span class="k">while</span> <span class="o">(</span><span class="n">k</span> <span class="o">!=</span> <span class="n">head</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">k</span> <span class="o">=</span> <span class="n">k</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
-        <span class="n">head</span> <span class="o">=</span> <span class="n">head</span><span class="o">.</span><span class="na">next</span><span class="o">;</span>
-    <span class="o">}</span>
+    return head;
+}
+{% endhighlight %}
+All tests are green so we are done, yay!
 
-    <span class="k">return</span> <span class="n">head</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
+##### References
 
-<p>All tests are green so we are done, yay!</p>
-
-<h5 id="references">References</h5>
-
-<ul>
-  <li><a href="http://stackoverflow.com/questions/2663115/how-to-detect-a-loop-in-a-linked-list">How to detect loop in linked list</a></li>
-  <li><a href="https://betterexplained.com/articles/fun-with-modular-arithmetic/">Fun with modulo arithmetic</a></li>
-</ul>
+* [How to detect loop in linked list](http://stackoverflow.com/questions/2663115/how-to-detect-a-loop-in-a-linked-list)
+* [Fun with modulo arithmetic](https://betterexplained.com/articles/fun-with-modular-arithmetic/)
 
 
 	  ]]></description>
@@ -1447,101 +1483,98 @@ First element of the cycle is a list head, so in this case our algorithm will wo
 	  <pubDate>2016-06-15T02:00:00+02:00</pubDate>
 	  <guid>//get-day-of-week-from-date</guid>
 	  <description><![CDATA[
-	     <p>Today we will try to solve the following problem:</p>
+	     Today we will try to solve the following problem:
 
-<blockquote>
-  <p>Given year, month and day tell what day of week it is (Sunday, Monday etc.).</p>
+> Given year, month and day tell what day of week it is (Sunday, Monday etc.).
+>
+> INPUT: Three numbers `year`, `month` and `day` representing valid date.
+> `year` must be `> 0`, months and days are numbered from 1.
+> For example 3 January 2016 will be represented by `year = 2016`, `month = 1` and `day = 3`.
+>
+> OUTPUT: A single number that represents day of week, we assume that `0` will represent
+> Sunday, `1` Monday, `2` Tuesday, ..., `6` Saturday.
 
-  <p>INPUT: Three numbers <code class="highlighter-rouge">year</code>, <code class="highlighter-rouge">month</code> and <code class="highlighter-rouge">day</code> representing valid date.
-<code class="highlighter-rouge">year</code> must be <code class="highlighter-rouge">&gt; 0</code>, months and days are numbered from 1.
-For example 3 January 2016 will be represented by <code class="highlighter-rouge">year = 2016</code>, <code class="highlighter-rouge">month = 1</code> and <code class="highlighter-rouge">day = 3</code>.</p>
+We will start by solving simpler problem:
 
-  <p>OUTPUT: A single number that represents day of week, we assume that <code class="highlighter-rouge">0</code> will represent
-Sunday, <code class="highlighter-rouge">1</code> Monday, <code class="highlighter-rouge">2</code> Tuesday, …, <code class="highlighter-rouge">6</code> Saturday.</p>
-</blockquote>
+> Assume that you know what day of week is 31th December of previous year.
+> Given day and month in current year tell what day of week it is.
 
-<p>We will start by solving simpler problem:</p>
-
-<blockquote>
-  <p>Assume that you know what day of week is 31th December of previous year.
-Given day and month in current year tell what day of week it is.</p>
-</blockquote>
-
-<p>Formula to solve this problem is simple:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">day_of_week = (
+Formula to solve this problem is simple:
+{% highlight no-highlight %}
+day_of_week = (
         day_of_week_31_dec_prev_year + 
         number_of_days_since_year_start(month, day)
-        ) % 7</code></pre></figure>
+        ) % 7
+{% endhighlight %}
+Only tricky part is that `number_of_days_since_year_start(month, day)` must take into
+account leap years.
 
-<p>Only tricky part is that <code class="highlighter-rouge">number_of_days_since_year_start(month, day)</code> must take into
-account leap years.</p>
+Testing for [leap years is easy](https://en.wikipedia.org/wiki/Leap_year#Algorithm):
+{% highlight java %}
+boolean isLeap(int year) {
+    return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+}
+{% endhighlight %}
 
-<p>Testing for <a href="https://en.wikipedia.org/wiki/Leap_year#Algorithm">leap years is easy</a>:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">boolean</span> <span class="nf">isLeap</span><span class="o">(</span><span class="kt">int</span> <span class="n">year</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="o">(</span><span class="n">year</span> <span class="o">%</span> <span class="mi">4</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">year</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">!=</span> <span class="mi">0</span><span class="o">)</span> <span class="o">||</span> <span class="o">(</span><span class="n">year</span> <span class="o">%</span> <span class="mi">400</span> <span class="o">==</span> <span class="mi">0</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Now we can write <code class="highlighter-rouge">number_of_days_since_year_start</code> function:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">numberOfDaysSinceYearStart</span><span class="o">(</span><span class="kt">int</span> <span class="n">year</span><span class="o">,</span> <span class="kt">int</span> <span class="n">month</span><span class="o">,</span> <span class="kt">int</span> <span class="n">day</span><span class="o">)</span> <span class="o">{</span>
-    <span class="c1">// (1) number of days in months: </span>
-    <span class="c1">// [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]</span>
+Now we can write `number_of_days_since_year_start` function:
+{% highlight java %}
+int numberOfDaysSinceYearStart(int year, int month, int day) {
+    // (1) number of days in months: 
+    // [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
         
-    <span class="c1">// days[month-1] - number of days in year </span>
-    <span class="c1">//                 before month first day.</span>
-    <span class="c1">//</span>
-    <span class="c1">// This can be computed using (1). </span>
-    <span class="c1">// We don't take into account leap years.</span>
-    <span class="kt">int</span><span class="o">[]</span> <span class="n">days</span> <span class="o">=</span> <span class="o">{</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">31</span><span class="o">,</span> <span class="mi">59</span><span class="o">,</span> <span class="mi">90</span><span class="o">,</span> <span class="mi">120</span><span class="o">,</span> <span class="mi">151</span><span class="o">,</span> 
-                   <span class="mi">181</span><span class="o">,</span> <span class="mi">212</span><span class="o">,</span> <span class="mi">243</span><span class="o">,</span> <span class="mi">273</span><span class="o">,</span> <span class="mi">304</span><span class="o">,</span> <span class="mi">334</span> <span class="o">};</span>
+    // days[month-1] - number of days in year 
+    //                 before month first day.
+    //
+    // This can be computed using (1). 
+    // We don't take into account leap years.
+    int[] days = { 0, 31, 59, 90, 120, 151, 
+                   181, 212, 243, 273, 304, 334 };
         
-    <span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="n">days</span><span class="o">[</span><span class="n">month</span><span class="o">-</span><span class="mi">1</span><span class="o">]</span> <span class="o">+</span> <span class="n">day</span><span class="o">;</span>
+    int result = days[month-1] + day;
 
-    <span class="k">if</span> <span class="o">(</span><span class="n">month</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">// add February 29th for leap years</span>
-        <span class="n">result</span> <span class="o">+=</span> <span class="n">isLeap</span><span class="o">(</span><span class="n">year</span><span class="o">)</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
-    <span class="o">}</span>
+    if (month > 2) {
+        // add February 29th for leap years
+        result += isLeap(year) ? 1 : 0;
+    }
 
-    <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
+    return result;
+}
+{% endhighlight %}
+And finally we may implement `day_of_week` function:
+{% highlight java %}
+int dayOfWeek(
+    int dayOfWeek31DecPrevYear, 
+    int year, int month, int day)
+{
+    return (
+        dayOfWeek31DecPrevYear +
+        numberOfDaysSinceYearStart(year, month, day)
+    ) % 7;
+}
+{% endhighlight %}
+Let's test it:
+{% highlight java %}
+// 31 December 2015 is Thursday (= 4)
+> dayOfWeek(4, 2016, 6, 15)
+3 // Wednesday OK
+> dayOfWeek(4, 2016, 9, 13) 
+2 // Tuesday OK
+{% endhighlight %}
+Looks like it works, so now we may return to our original problem.
 
-<p>And finally we may implement <code class="highlighter-rouge">day_of_week</code> function:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeek</span><span class="o">(</span>
-    <span class="kt">int</span> <span class="n">dayOfWeek31DecPrevYear</span><span class="o">,</span> 
-    <span class="kt">int</span> <span class="n">year</span><span class="o">,</span> <span class="kt">int</span> <span class="n">month</span><span class="o">,</span> <span class="kt">int</span> <span class="n">day</span><span class="o">)</span>
-<span class="o">{</span>
-    <span class="k">return</span> <span class="o">(</span>
-        <span class="n">dayOfWeek31DecPrevYear</span> <span class="o">+</span>
-        <span class="n">numberOfDaysSinceYearStart</span><span class="o">(</span><span class="n">year</span><span class="o">,</span> <span class="n">month</span><span class="o">,</span> <span class="n">day</span><span class="o">)</span>
-    <span class="o">)</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Let’s test it:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// 31 December 2015 is Thursday (= 4)</span>
-<span class="o">&gt;</span> <span class="n">dayOfWeek</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">2016</span><span class="o">,</span> <span class="mi">6</span><span class="o">,</span> <span class="mi">15</span><span class="o">)</span>
-<span class="mi">3</span> <span class="c1">// Wednesday OK</span>
-<span class="o">&gt;</span> <span class="n">dayOfWeek</span><span class="o">(</span><span class="mi">4</span><span class="o">,</span> <span class="mi">2016</span><span class="o">,</span> <span class="mi">9</span><span class="o">,</span> <span class="mi">13</span><span class="o">)</span> 
-<span class="mi">2</span> <span class="c1">// Tuesday OK</span></code></pre></figure>
-
-<p>Looks like it works, so now we may return to our original problem.</p>
-
-<p>Let’s start with 
-<a href="https://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week">this Wikipedia article</a>
+Let's start with 
+[this Wikipedia article](https://en.wikipedia.org/wiki/Determination_of_the_day_of_the_week)
 which tell us that 1 January 0001 is a Monday. But for us it will be more convenient to count days
 not from 1 January of given year but from 31 December of the previous year. 
 It is interesting that
 there is no year 0000, year that precedes year 0001 or 1 AD is 1 BC (or in other words
 years are intervals not points). To sum up we start counting days
-from 31 December 1 BC.</p>
+from 31 December 1 BC.
 
-<p>We already have function that returns day of week if we know day of week of 31 December 
-of the previous year. We can find out day of week of any date using formula:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">day_of_week_31_dec_1bc = 0; // Sunday
+We already have function that returns day of week if we know day of week of 31 December 
+of the previous year. We can find out day of week of any date using formula:
+{% highlight no-highlight %}
+day_of_week_31_dec_1bc = 0; // Sunday
 
 day_of_week_31_dec_prev_year = (
         day_of_week_31_dec_1bc +
@@ -1550,233 +1583,235 @@ day_of_week_31_dec_prev_year = (
 
 day_of_week = dayOfWeek(
         day_of_week_31_dec_prev_year,
-        year, month, day);</code></pre></figure>
+        year, month, day);
+{% endhighlight %}
 
-<p>Let’s start by implementing <code class="highlighter-rouge">number_of_days_in_years(year)</code> function that will return
-number of days since 31 December 1 BC up to 31 December of given <code class="highlighter-rouge">year</code>:</p>
+Let's start by implementing `number_of_days_in_years(year)` function that will return
+number of days since 31 December 1 BC up to 31 December of given `year`:
+{% highlight java %}
+int numberOfDaysInYears(int year) {
+    int normalDays = 365 * year;
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">numberOfDaysInYears</span><span class="o">(</span><span class="kt">int</span> <span class="n">year</span><span class="o">)</span> <span class="o">{</span>
-    <span class="kt">int</span> <span class="n">normalDays</span> <span class="o">=</span> <span class="mi">365</span> <span class="o">*</span> <span class="n">year</span><span class="o">;</span>
+    // number of leap years = number of leap days
+    int leapDays = year/4 - year/100 + year/400;
 
-    <span class="c1">// number of leap years = number of leap days</span>
-    <span class="kt">int</span> <span class="n">leapDays</span> <span class="o">=</span> <span class="n">year</span><span class="o">/</span><span class="mi">4</span> <span class="o">-</span> <span class="n">year</span><span class="o">/</span><span class="mi">100</span> <span class="o">+</span> <span class="n">year</span><span class="o">/</span><span class="mi">400</span><span class="o">;</span>
+    return normalDays+leapDays;
+}
+{% endhighlight %}
+To count number of leap years I used [inclusion-exclusion principle](https://en.wikipedia.org/wiki/Inclusion–exclusion_principle).
 
-    <span class="k">return</span> <span class="n">normalDays</span><span class="o">+</span><span class="n">leapDays</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
+And finally we may implement our `day_of_week` routine:
+{% highlight java %}
+int dayOfWeek(int year, int month, int day) {
+    int dayOfWeek31Dec1BC = 0; // Sunday
 
-<p>To count number of leap years I used <a href="https://en.wikipedia.org/wiki/Inclusion–exclusion_principle">inclusion-exclusion principle</a>.</p>
+    int dayOfWeek31DecPrevYear = (
+            dayOfWeek31Dec1BC +
+            numberOfDaysInYears(year-1)
+    ) % 7;
 
-<p>And finally we may implement our <code class="highlighter-rouge">day_of_week</code> routine:</p>
+    int result = dayOfWeek(
+            dayOfWeek31DecPrevYear,
+            year, month, day);
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeek</span><span class="o">(</span><span class="kt">int</span> <span class="n">year</span><span class="o">,</span> <span class="kt">int</span> <span class="n">month</span><span class="o">,</span> <span class="kt">int</span> <span class="n">day</span><span class="o">)</span> <span class="o">{</span>
-    <span class="kt">int</span> <span class="n">dayOfWeek31Dec1BC</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="c1">// Sunday</span>
-
-    <span class="kt">int</span> <span class="n">dayOfWeek31DecPrevYear</span> <span class="o">=</span> <span class="o">(</span>
-            <span class="n">dayOfWeek31Dec1BC</span> <span class="o">+</span>
-            <span class="n">numberOfDaysInYears</span><span class="o">(</span><span class="n">year</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span>
-    <span class="o">)</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
-
-    <span class="kt">int</span> <span class="n">result</span> <span class="o">=</span> <span class="n">dayOfWeek</span><span class="o">(</span>
-            <span class="n">dayOfWeek31DecPrevYear</span><span class="o">,</span>
-            <span class="n">year</span><span class="o">,</span> <span class="n">month</span><span class="o">,</span> <span class="n">day</span><span class="o">);</span>
-
-    <span class="k">return</span> <span class="n">result</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Now we may test it but we must be careful here. Our routine returns day of week
+    return result;
+}
+{% endhighlight %}
+Now we may test it but we must be careful here. Our routine returns day of week
 using Gregorian calendar that was introduced in 1582 AD (or later depending on country). 
 If we want to test it
-in Java we should avoid using <code class="highlighter-rouge">GregorianCalendar</code> class since it will switch to
+in Java we should avoid using `GregorianCalendar` class since it will switch to
 Julian calendar mode for years before 1582 AD. More informations on this
-subject can be found in this <a href="http://stackoverflow.com/questions/23975205/why-does-converting-java-dates-before-1582-to-localdate-with-instant-give-a-diff">Stackoverflow question</a>.
-To avoid problems we will use <code class="highlighter-rouge">LocalDate</code> class
-that always uses Gregorian calendar:</p>
+subject can be found in this [Stackoverflow question](http://stackoverflow.com/questions/23975205/why-does-converting-java-dates-before-1582-to-localdate-with-instant-give-a-diff).
+To avoid problems we will use `LocalDate` class
+that always uses Gregorian calendar:
+{% highlight java %}
+Random r = new Random();
+int[] days = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Random</span> <span class="n">r</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Random</span><span class="o">();</span>
-<span class="kt">int</span><span class="o">[]</span> <span class="n">days</span> <span class="o">=</span> <span class="o">{</span><span class="mi">31</span><span class="o">,</span> <span class="mi">28</span><span class="o">,</span> <span class="mi">31</span><span class="o">,</span> <span class="mi">30</span><span class="o">,</span> <span class="mi">31</span><span class="o">,</span> <span class="mi">30</span><span class="o">,</span> <span class="mi">31</span><span class="o">,</span> <span class="mi">31</span><span class="o">,</span> <span class="mi">30</span><span class="o">,</span> <span class="mi">31</span><span class="o">,</span> <span class="mi">30</span><span class="o">,</span> <span class="mi">31</span><span class="o">};</span>
+for (int i = 0; i < 1000; i++) {
+    int year = 1 + r.nextInt(13000);
 
-<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-    <span class="kt">int</span> <span class="n">year</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">r</span><span class="o">.</span><span class="na">nextInt</span><span class="o">(</span><span class="mi">13000</span><span class="o">);</span>
+    for (int m = 1; m <= 12; m++) {
+        for (int d = 1; d <= days[m-1]; d++) {
+            int actual = dayOfWeek(year, m, d);
+            int expected = LocalDate.of(year, m, d)
+                        .getDayOfWeek()
+                        .getValue() % 7;
 
-    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">m</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">m</span> <span class="o">&lt;=</span> <span class="mi">12</span><span class="o">;</span> <span class="n">m</span><span class="o">++)</span> <span class="o">{</span>
-        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">d</span> <span class="o">=</span> <span class="mi">1</span><span class="o">;</span> <span class="n">d</span> <span class="o">&lt;=</span> <span class="n">days</span><span class="o">[</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="o">];</span> <span class="n">d</span><span class="o">++)</span> <span class="o">{</span>
-            <span class="kt">int</span> <span class="n">actual</span> <span class="o">=</span> <span class="n">dayOfWeek</span><span class="o">(</span><span class="n">year</span><span class="o">,</span> <span class="n">m</span><span class="o">,</span> <span class="n">d</span><span class="o">);</span>
-            <span class="kt">int</span> <span class="n">expected</span> <span class="o">=</span> <span class="n">LocalDate</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="n">year</span><span class="o">,</span> <span class="n">m</span><span class="o">,</span> <span class="n">d</span><span class="o">)</span>
-                        <span class="o">.</span><span class="na">getDayOfWeek</span><span class="o">()</span>
-                        <span class="o">.</span><span class="na">getValue</span><span class="o">()</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
+            if (actual != expected)
+                throw new RuntimeException(String.format(
+                        "failed for yyyy-mm-dd: %d-%d-%d, " + 
+                        "expected: %d, actual: %d.",
+                        year, m, d, expected, actual));
+        }
+    }
+}
+{% endhighlight %}
+Our curde testing function returns without throwing any exceptions, so we may
+rest assured that our function works.
 
-            <span class="k">if</span> <span class="o">(</span><span class="n">actual</span> <span class="o">!=</span> <span class="n">expected</span><span class="o">)</span>
-                <span class="k">throw</span> <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span>
-                        <span class="s">"failed for yyyy-mm-dd: %d-%d-%d, "</span> <span class="o">+</span> 
-                        <span class="s">"expected: %d, actual: %d."</span><span class="o">,</span>
-                        <span class="n">year</span><span class="o">,</span> <span class="n">m</span><span class="o">,</span> <span class="n">d</span><span class="o">,</span> <span class="n">expected</span><span class="o">,</span> <span class="n">actual</span><span class="o">));</span>
-        <span class="o">}</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
+#### Tomohiko Sakamoto algorithm
 
-<p>Our curde testing function returns without throwing any exceptions, so we may
-rest assured that our function works.</p>
+Before we end this post let's challenge ourselves one more time.
+Here is Tomohiko Sakamoto algorithm for computing day of week:
+{% highlight java %}
+int dayOfWeek2(int y, int m, int d)
+{
+    int t[] = {0, 3, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4};
+    y -= (m < 3) ? 1 : 0;
+    return (y + y/4 - y/100 + y/400 + t[m-1] + d) % 7;
+}
+{% endhighlight %}
+With our newly gained knowledge about computing day of week let's find out
+how it works!
 
-<h4 id="tomohiko-sakamoto-algorithm">Tomohiko Sakamoto algorithm</h4>
-
-<p>Before we end this post let’s challenge ourselves one more time.
-Here is Tomohiko Sakamoto algorithm for computing day of week:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeek2</span><span class="o">(</span><span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">m</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span>
-<span class="o">{</span>
-    <span class="kt">int</span> <span class="n">t</span><span class="o">[]</span> <span class="o">=</span> <span class="o">{</span><span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">6</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">4</span><span class="o">};</span>
-    <span class="n">y</span> <span class="o">-=</span> <span class="o">(</span><span class="n">m</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">)</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
-    <span class="k">return</span> <span class="o">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">y</span><span class="o">/</span><span class="mi">4</span> <span class="o">-</span> <span class="n">y</span><span class="o">/</span><span class="mi">100</span> <span class="o">+</span> <span class="n">y</span><span class="o">/</span><span class="mi">400</span> <span class="o">+</span> <span class="n">t</span><span class="o">[</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="o">]</span> <span class="o">+</span> <span class="n">d</span><span class="o">)</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>With our newly gained knowledge about computing day of week let’s find out
-how it works!</p>
-
-<p>The main idea behind the algorithm is to compute day of week from 31 December of the previous
+The main idea behind the algorithm is to compute day of week from 31 December of the previous
 year for January and February (just as we do in our algorithm) and to compute day of week
-for all other months from 31 December of the <strong>current</strong> year. This greatly simplifies dealing
+for all other months from 31 December of the **current** year. This greatly simplifies dealing
 with leap years.
-<img src="assets/images/2016-06-15/compute_from.svg" alt="Computing day of week from beginning or from ending of the year" /></p>
+![Computing day of week from beginning or from ending of the year](assets/images/2016-06-15/compute_from.svg)
 
-<p>To compute day of week from year end we will do as follows: say we want to know day of week
+To compute day of week from year end we will do as follows: say we want to know day of week
 for 7 April 2016. We know that 31 December 2016 is Saturday. Next we must get day of week
 for last day of month that precedes April, in other words we must find out day of week for 31 March
-(that’s Thursday).
+(that's Thursday).
 Then we just add days and take rest modulo seven and we are done: 7 April is Thursday too. 
 This is illustrated on image below:
-<img src="assets/images/2016-06-15/backwards.svg" alt="Computing day of week backwards example" /></p>
+![Computing day of week backwards example](assets/images/2016-06-15/backwards.svg)
 
-<p>To compute day of week for last day of prev month we will use formula:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">// DOW = day of week
+To compute day of week for last day of prev month we will use formula:
+{% highlight no-highlight %}
+// DOW = day of week
 dow_last_day_of_prev_month = (
     dow_last_day_of_year - 
     number_of_days_from_prev_month_last_day_to_end_of_year
-    ) % 7;</code></pre></figure>
-
-<p>Notice that we are <em>subtracting</em> two values modulo seven to move backwards.
-Unfortunately in Java modulo can return negative values when used with negative numbers e.g.</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="o">&gt;</span> <span class="o">-</span><span class="mi">32</span> <span class="o">%</span> <span class="mi">7</span>
-<span class="o">-</span><span class="mi">4</span></code></pre></figure>
-
-<p>To solve this problem we will use simple fact from
-<a href="https://en.wikipedia.org/wiki/Modular_arithmetic">modular arithmetic</a>:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">(a - b) % 7 = (a + (7 - (b%7))) % 7
+    ) % 7;
+{% endhighlight %}
+Notice that we are *subtracting* two values modulo seven to move backwards.
+Unfortunately in Java modulo can return negative values when used with negative numbers e.g.
+{% highlight Java %}
+> -32 % 7
+-4
+{% endhighlight %}
+To solve this problem we will use simple fact from
+[modular arithmetic](https://en.wikipedia.org/wiki/Modular_arithmetic):
+{% highlight no-highlight %}
+(a - b) % 7 = (a + (7 - (b%7))) % 7
 notice that (7 - (b%7)) cannot be negative 
-because 0 &lt;= (b%7) &lt; 7
+because 0 <= (b%7) < 7
     
 for example:
 (5 - 3) % 7 = 2 % 7 = 2
 (5 + (7 - (3%7)) % 7 = (5 + (7 - 3)) % 7 =
-        = (5 + 4) % 7 = 9 % 7 = 2</code></pre></figure>
+        = (5 + 4) % 7 = 9 % 7 = 2
+{% endhighlight %}
+Now we will be guaranteed to get a number that represents valid day of week.
 
-<p>Now we will be guaranteed to get a number that represents valid day of week.</p>
+Full algorithm looks like this:
+{% highlight Java %}
+int dayOfWeekBackwards(
+        int dayOfWeek31DecCurrYear, int year, int month, int day) 
+{
+// number of days from last day of previous month to the year end
+// int[] daysToEndOfTheYear = 
+//    { 365, 334, 306, 275, 245, 214, 184, 153, 122, 92, 61, 31 };
 
-<p>Full algorithm looks like this:</p>
+    // notice: we use our modulo formula here
+    // days[i] = 7-(daysToTheEndOfTheYear[i]%7)
+    // thanks to this we may write later
+    // (lastDay + days[i]) % 7 instead of
+    // (lastDay - daysToEndOfTheYear[i]) % 7
+    int[] days = { 6, 2, 2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
+    int delta = days[month-1];
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeekBackwards</span><span class="o">(</span>
-        <span class="kt">int</span> <span class="n">dayOfWeek31DecCurrYear</span><span class="o">,</span> <span class="kt">int</span> <span class="n">year</span><span class="o">,</span> <span class="kt">int</span> <span class="n">month</span><span class="o">,</span> <span class="kt">int</span> <span class="n">day</span><span class="o">)</span> 
-<span class="o">{</span>
-<span class="c1">// number of days from last day of previous month to the year end</span>
-<span class="c1">// int[] daysToEndOfTheYear = </span>
-<span class="c1">//    { 365, 334, 306, 275, 245, 214, 184, 153, 122, 92, 61, 31 };</span>
+    if (month <= 2) {
+        // for leap years in Jan or Feb
+        // there is one more day to year end
 
-    <span class="c1">// notice: we use our modulo formula here</span>
-    <span class="c1">// days[i] = 7-(daysToTheEndOfTheYear[i]%7)</span>
-    <span class="c1">// thanks to this we may write later</span>
-    <span class="c1">// (lastDay + days[i]) % 7 instead of</span>
-    <span class="c1">// (lastDay - daysToEndOfTheYear[i]) % 7</span>
-    <span class="kt">int</span><span class="o">[]</span> <span class="n">days</span> <span class="o">=</span> <span class="o">{</span> <span class="mi">6</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">6</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">4</span> <span class="o">};</span>
-    <span class="kt">int</span> <span class="n">delta</span> <span class="o">=</span> <span class="n">days</span><span class="o">[</span><span class="n">month</span><span class="o">-</span><span class="mi">1</span><span class="o">];</span>
-
-    <span class="k">if</span> <span class="o">(</span><span class="n">month</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">// for leap years in Jan or Feb</span>
-        <span class="c1">// there is one more day to year end</span>
-
-        <span class="c1">// again we add to avoid subtraction</span>
-        <span class="c1">// (x - 1) % 7 == (x + 6) % 7</span>
-        <span class="n">delta</span> <span class="o">+=</span> <span class="n">isLeap</span><span class="o">(</span><span class="n">year</span><span class="o">)</span> <span class="o">?</span> <span class="mi">6</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
-    <span class="o">}</span>
+        // again we add to avoid subtraction
+        // (x - 1) % 7 == (x + 6) % 7
+        delta += isLeap(year) ? 6 : 0;
+    }
     
-    <span class="kt">int</span> <span class="n">dayOfWeekLastDayPrevMonth</span> <span class="o">=</span> 
-        <span class="o">(</span><span class="n">dayOfWeek31DecCurrYear</span> <span class="o">+</span> <span class="n">delta</span><span class="o">)</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
+    int dayOfWeekLastDayPrevMonth = 
+        (dayOfWeek31DecCurrYear + delta) % 7;
 
-    <span class="k">return</span> <span class="o">(</span><span class="n">dayOfWeekLastDayPrevMonth</span> <span class="o">+</span> <span class="n">day</span><span class="o">)</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
+    return (dayOfWeekLastDayPrevMonth + day) % 7;
+}
+{% endhighlight %}
 
-<p>Now we can combine our forward and backward approaches to create one simple algorithm:</p>
+Now we can combine our forward and backward approaches to create one simple algorithm:
+{% highlight Java %}
+int dayOfWeekComb(int y, int m, int d) {
+    int dayOfWeekDec31 = (m <= 2)
+            // count from prev year
+            ? numberOfDaysInYears(y-1)
+            // count from end of curr year
+            : numberOfDaysInYears(y);
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeekComb</span><span class="o">(</span><span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">m</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
-    <span class="kt">int</span> <span class="n">dayOfWeekDec31</span> <span class="o">=</span> <span class="o">(</span><span class="n">m</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">)</span>
-            <span class="c1">// count from prev year</span>
-            <span class="o">?</span> <span class="n">numberOfDaysInYears</span><span class="o">(</span><span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span>
-            <span class="c1">// count from end of curr year</span>
-            <span class="o">:</span> <span class="n">numberOfDaysInYears</span><span class="o">(</span><span class="n">y</span><span class="o">);</span>
+    // number of days -> day of week
+    dayOfWeekDec31 = dayOfWeekDec31 % 7;
 
-    <span class="c1">// number of days -&gt; day of week</span>
-    <span class="n">dayOfWeekDec31</span> <span class="o">=</span> <span class="n">dayOfWeekDec31</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
+    // 0,31 - comes from our first algorithm
+    // rest of values comes from backward algorithm
+    int[] days = { 0, 31,  2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
 
-    <span class="c1">// 0,31 - comes from our first algorithm</span>
-    <span class="c1">// rest of values comes from backward algorithm</span>
-    <span class="kt">int</span><span class="o">[]</span> <span class="n">days</span> <span class="o">=</span> <span class="o">{</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">31</span><span class="o">,</span>  <span class="mi">2</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">6</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">4</span> <span class="o">};</span>
+    int dayOfWeekPrevMonthLastDay = 
+        (dayOfWeekDec31 + days[m-1]) % 7;
 
-    <span class="kt">int</span> <span class="n">dayOfWeekPrevMonthLastDay</span> <span class="o">=</span> 
-        <span class="o">(</span><span class="n">dayOfWeekDec31</span> <span class="o">+</span> <span class="n">days</span><span class="o">[</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="o">])</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
+    return (dayOfWeekPrevMonthLastDay + d) % 7;
+}
+{% endhighlight %}
+Before we end let's try to use refactoring to simplify code further.
+Let's start with statement:
+{% highlight java %}
+int dayOfWeekDec31 = (m <= 2)
+        // count from prev year
+        ? numberOfDaysInYears(y-1)
+        // count from end of curr year
+        : numberOfDaysInYears(y);
+{% endhighlight %}
+Since this is the only place that use `y` we can refactor this code into:
+{% highlight java %}
+y -= (m <= 2) ? 1 : 0;
+int dayOfWeekDec31 = numberOfDaysInYears(y);
+{% endhighlight %}
+Then we can inline `numberOfDaysInYears` function:
+{% highlight java %}
+y -= (m <= 2) ? 1 : 0;
+int dayOfWeekDec31 = 365*y + y/4 - y/100 + y/400;
 
-    <span class="k">return</span> <span class="o">(</span><span class="n">dayOfWeekPrevMonthLastDay</span> <span class="o">+</span> <span class="n">d</span><span class="o">)</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
+dayOfWeekDec31 = dayOfWeekDec31 % 7;
+{% endhighlight %}
+Next since `365*y % 7 == 1*y % 7` and `(a + b) % 7 == (a % 7 + b % 7) % 7` we can
+simplify further:
+{% highlight java %}
+int dayOfWeekComb(int y, int m, int d) {
+    y -= (m <= 2) ? 1 : 0;
+    int dayOfWeekDec31 = (y + y/4 - y/100 + y/400) % 7;
 
-<p>Before we end let’s try to use refactoring to simplify code further.
-Let’s start with statement:</p>
+    int[] days = { 0, 31,  2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">dayOfWeekDec31</span> <span class="o">=</span> <span class="o">(</span><span class="n">m</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">)</span>
-        <span class="c1">// count from prev year</span>
-        <span class="o">?</span> <span class="n">numberOfDaysInYears</span><span class="o">(</span><span class="n">y</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span>
-        <span class="c1">// count from end of curr year</span>
-        <span class="o">:</span> <span class="n">numberOfDaysInYears</span><span class="o">(</span><span class="n">y</span><span class="o">);</span></code></pre></figure>
+    int dayOfWeekPrevMonthLastDay = 
+        (dayOfWeekDec31 + days[m-1]) % 7;
 
-<p>Since this is the only place that use <code class="highlighter-rouge">y</code> we can refactor this code into:</p>
+    return (dayOfWeekPrevMonthLastDay + d) % 7;
+}
+{% endhighlight %}
+Finally because `31 % 7 == 3`, and combining all additions into single expression we get:
+{% highlight java %}
+int dayOfWeekComb(int y, int m, int d) {
+    int[] days = { 0, 3,  2, 5, 0, 3, 5, 1, 4, 6, 2, 4 };
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">y</span> <span class="o">-=</span> <span class="o">(</span><span class="n">m</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">)</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
-<span class="kt">int</span> <span class="n">dayOfWeekDec31</span> <span class="o">=</span> <span class="n">numberOfDaysInYears</span><span class="o">(</span><span class="n">y</span><span class="o">);</span></code></pre></figure>
+    y -= (m <= 2) ? 1 : 0;
+    return (y + y/4 - y/100 + y/400 + days[m-1] + d) % 7;
+}
+{% endhighlight %}
+which is exactly Tomohiko Sakamoto algorithm.
 
-<p>Then we can inline <code class="highlighter-rouge">numberOfDaysInYears</code> function:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">y</span> <span class="o">-=</span> <span class="o">(</span><span class="n">m</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">)</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
-<span class="kt">int</span> <span class="n">dayOfWeekDec31</span> <span class="o">=</span> <span class="mi">365</span><span class="o">*</span><span class="n">y</span> <span class="o">+</span> <span class="n">y</span><span class="o">/</span><span class="mi">4</span> <span class="o">-</span> <span class="n">y</span><span class="o">/</span><span class="mi">100</span> <span class="o">+</span> <span class="n">y</span><span class="o">/</span><span class="mi">400</span><span class="o">;</span>
-
-<span class="n">dayOfWeekDec31</span> <span class="o">=</span> <span class="n">dayOfWeekDec31</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span></code></pre></figure>
-
-<p>Next since <code class="highlighter-rouge">365*y % 7 == 1*y % 7</code> and <code class="highlighter-rouge">(a + b) % 7 == (a % 7 + b % 7) % 7</code> we can
-simplify further:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeekComb</span><span class="o">(</span><span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">m</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">y</span> <span class="o">-=</span> <span class="o">(</span><span class="n">m</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">)</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
-    <span class="kt">int</span> <span class="n">dayOfWeekDec31</span> <span class="o">=</span> <span class="o">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">y</span><span class="o">/</span><span class="mi">4</span> <span class="o">-</span> <span class="n">y</span><span class="o">/</span><span class="mi">100</span> <span class="o">+</span> <span class="n">y</span><span class="o">/</span><span class="mi">400</span><span class="o">)</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
-
-    <span class="kt">int</span><span class="o">[]</span> <span class="n">days</span> <span class="o">=</span> <span class="o">{</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">31</span><span class="o">,</span>  <span class="mi">2</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">6</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">4</span> <span class="o">};</span>
-
-    <span class="kt">int</span> <span class="n">dayOfWeekPrevMonthLastDay</span> <span class="o">=</span> 
-        <span class="o">(</span><span class="n">dayOfWeekDec31</span> <span class="o">+</span> <span class="n">days</span><span class="o">[</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="o">])</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
-
-    <span class="k">return</span> <span class="o">(</span><span class="n">dayOfWeekPrevMonthLastDay</span> <span class="o">+</span> <span class="n">d</span><span class="o">)</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Finally because <code class="highlighter-rouge">31 % 7 == 3</code>, and combining all additions into single expression we get:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="nf">dayOfWeekComb</span><span class="o">(</span><span class="kt">int</span> <span class="n">y</span><span class="o">,</span> <span class="kt">int</span> <span class="n">m</span><span class="o">,</span> <span class="kt">int</span> <span class="n">d</span><span class="o">)</span> <span class="o">{</span>
-    <span class="kt">int</span><span class="o">[]</span> <span class="n">days</span> <span class="o">=</span> <span class="o">{</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span>  <span class="mi">2</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="mi">5</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="mi">4</span><span class="o">,</span> <span class="mi">6</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="mi">4</span> <span class="o">};</span>
-
-    <span class="n">y</span> <span class="o">-=</span> <span class="o">(</span><span class="n">m</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="o">)</span> <span class="o">?</span> <span class="mi">1</span> <span class="o">:</span> <span class="mi">0</span><span class="o">;</span>
-    <span class="k">return</span> <span class="o">(</span><span class="n">y</span> <span class="o">+</span> <span class="n">y</span><span class="o">/</span><span class="mi">4</span> <span class="o">-</span> <span class="n">y</span><span class="o">/</span><span class="mi">100</span> <span class="o">+</span> <span class="n">y</span><span class="o">/</span><span class="mi">400</span> <span class="o">+</span> <span class="n">days</span><span class="o">[</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="o">]</span> <span class="o">+</span> <span class="n">d</span><span class="o">)</span> <span class="o">%</span> <span class="mi">7</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>which is exactly Tomohiko Sakamoto algorithm.</p>
-
-<p>Wow! This post turned out to be rather lengthy, 
-if you are still with me thank you for your effort and hard work!</p>
+Wow! This post turned out to be rather lengthy, 
+if you are still with me thank you for your effort and hard work!
 
 
 	  ]]></description>

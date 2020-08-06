@@ -18,109 +18,104 @@
 	  <pubDate>2016-10-31T01:00:00+01:00</pubDate>
 	  <guid>//using-tomcat-8.5-with-eclipse-neon</guid>
 	  <description><![CDATA[
-	     <p>When you start learning Spring MVC development configuring
+	     When you start learning Spring MVC development configuring
 Tomcat server in Eclipse Neon IDE can be a difficult task.
-This tutorial will help you setup your development environment.</p>
+This tutorial will help you setup your development environment.
 
-<h4 id="installing-tomcat-85">Installing Tomcat 8.5</h4>
+#### Installing Tomcat 8.5
 
-<ul>
-  <li>Visit <a href="https://tomcat.apache.org/download-80.cgi">Apache Tomcat download page</a> and grab <code class="highlighter-rouge">apache-tomcat-8.5.6.tar.gz</code> file.
- You can also download file from terminal:</li>
-</ul>
+* Visit [Apache Tomcat download page](https://tomcat.apache.org/download-80.cgi) and grab `apache-tomcat-8.5.6.tar.gz` file.
+ You can also download file from terminal:
 
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ wget http://ftp.ps.pl/pub/apache/tomcat/tomcat-8/v8.5.6/bin/apache-tomcat-8.5.6.tar.gz</code></pre></figure>
+{% highlight no-highlight %}
+$ wget http://ftp.ps.pl/pub/apache/tomcat/tomcat-8/v8.5.6/bin/apache-tomcat-8.5.6.tar.gz
+{% endhighlight %}
 
-<ul>
-  <li>To make things easier you will install Tomcat inside your home directory.
+* To make things easier you will install Tomcat inside your home directory.
  I assume that you already installed Java on your box, 
- if not now is the time to do this. To instal Java follow tutorial at <a href="http://www.webupd8.org/2012/09/install-oracle-java-8-in-ubuntu-via-ppa.html">webupd8</a>.</li>
-</ul>
+ if not now is the time to do this. To instal Java follow tutorial at [webupd8](http://www.webupd8.org/2012/09/install-oracle-java-8-in-ubuntu-via-ppa.html).
 
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ # We will install Tomcat in $HOME/bin/tomcat
+{% highlight no-highlight %}
+$ # We will install Tomcat in $HOME/bin/tomcat
 
 $ mkdir -p ~/bin/tomcat
 $ tar xzvf ~/Downloads/apache-tomcat-8.5.6.tar.gz \
  -C ~/bin/tomcat/ \
- --strip-components=1</code></pre></figure>
+ --strip-components=1
+{% endhighlight %}
 
-<ul>
-  <li>Let’s check if everything is OK by starting Tomcat and opening 
- <code class="highlighter-rouge">http://localhost:8080</code> in your favorite browser:</li>
-</ul>
+* Let's check if everything is OK by starting Tomcat and opening 
+ `http://localhost:8080` in your favorite browser:
 
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cd ~/bin/tomcat/bin
+{% highlight no-highlight %}
+$ cd ~/bin/tomcat/bin
 $ ./catalina.sh run
-# To stop server press Ctrl+C</code></pre></figure>
+# To stop server press Ctrl+C
+{% endhighlight %}
 
-<p>You should see Tomcat welcome page:
-<img src="assets/images/2016-10-31/1_tomcat_welcome.png" alt="Tomcat Welcome screen" /></p>
+You should see Tomcat welcome page:
+![Tomcat Welcome screen](assets/images/2016-10-31/1_tomcat_welcome.png)
 
-<ul>
-  <li>Now we will add an administrator account on Tomcat server. This is not needed
+* Now we will add an administrator account on Tomcat server. This is not needed
  by Eclipse but it may come in handy when you will later want to play
- with Tomcat:</li>
-</ul>
+ with Tomcat:
 
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ cd ~/bin/tomcat/conf
-$ vim tomcat-users.xml</code></pre></figure>
+{% highlight no-highlight %}
+$ cd ~/bin/tomcat/conf
+$ vim tomcat-users.xml
+{% endhighlight %}
 
-<p>Now you must add the following line to <code class="highlighter-rouge">tomcat-users.xml</code> file:</p>
-
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;tomcat-users</span> <span class="err">...</span><span class="nt">&gt;</span>
+Now you must add the following line to `tomcat-users.xml` file:
+{% highlight xml %}
+<tomcat-users ...>
   ...
-  <span class="nt">&lt;user</span> <span class="na">username=</span><span class="s">"admin"</span> <span class="na">password=</span><span class="s">"1234"</span> <span class="na">roles=</span><span class="s">"manager-gui,admin-gui"</span><span class="nt">/&gt;</span>
-<span class="nt">&lt;/tomcat-users&gt;</span></code></pre></figure>
-
-<p>Here we are creating <code class="highlighter-rouge">admin</code> user with <code class="highlighter-rouge">1234</code> password and we give him (or her)
+  <user username="admin" password="1234" roles="manager-gui,admin-gui"/>
+</tomcat-users>
+{% endhighlight %}
+Here we are creating `admin` user with `1234` password and we give him (or her)
 permissions to administration gui.
-Let’s start Tomcat again (using <code class="highlighter-rouge">./catalina.sh run</code>) and check that
-we can visit Tomcat manager page (located at <code class="highlighter-rouge">http://localhost:8080/manager/html</code>):
-<img src="assets/images/2016-10-31/2_tomcat_manager.png" alt="Tomcat Welcome screen" /></p>
+Let's start Tomcat again (using `./catalina.sh run`) and check that
+we can visit Tomcat manager page (located at `http://localhost:8080/manager/html`):
+![Tomcat Welcome screen](assets/images/2016-10-31/2_tomcat_manager.png)
 
-<h4 id="configuring-eclipse-neon">Configuring Eclipse Neon</h4>
+#### Configuring Eclipse Neon
 
-<p>Before we start check that you have following plugins installed:</p>
+Before we start check that you have following plugins installed:
 
-<ul>
-  <li>
-    <p><a href="https://marketplace.eclipse.org/content/eclipse-jst-server-adapters-apache-tomcat-jonas-j2ee">JST Server Adapters</a>
-<img src="assets/images/2016-10-31/3_market_1.png" alt="Eclipse marketplace 1" /></p>
-  </li>
-  <li>
-    <p><a href="https://www.eclipse.org/m2e-wtp/">Maven integration for WTP</a>
-<img src="assets/images/2016-10-31/3_market_2.png" alt="Eclipse marketplace 2" /></p>
-  </li>
-</ul>
+* [JST Server Adapters](https://marketplace.eclipse.org/content/eclipse-jst-server-adapters-apache-tomcat-jonas-j2ee)
+![Eclipse marketplace 1](assets/images/2016-10-31/3_market_1.png)
 
-<p>Now we must create new Server Runtime Environment. Go to Preferences -&gt; Server -&gt; Runtime Environment -&gt; Add…
-<img src="assets/images/2016-10-31/4_env_2.png" alt="Tomcat Welcome screen" /></p>
+* [Maven integration for WTP](https://www.eclipse.org/m2e-wtp/)
+![Eclipse marketplace 2](assets/images/2016-10-31/3_market_2.png)
 
-<p>Then specify path to your Tomcat installation (<code class="highlighter-rouge">/home/user_name/tomcat</code>)
+Now we must create new Server Runtime Environment. Go to Preferences -> Server -> Runtime Environment -> Add...
+![Tomcat Welcome screen](assets/images/2016-10-31/4_env_2.png)
+
+Then specify path to your Tomcat installation (`/home/user_name/tomcat`)
 and optionally JRE (use Oracle Java 8 if available) and click Finish.
-<img src="assets/images/2016-10-31/4_env_3.png" alt="Tomcat Welcome screen" /></p>
+![Tomcat Welcome screen](assets/images/2016-10-31/4_env_3.png)
 
-<h4 id="there-is-no-tomcat-85-in-my-wizard-if-you-completed-previous-steps-skip-this-secion">There is no Tomcat 8.5 in my wizard (if you completed previous steps skip this secion)</h4>
+#### There is no Tomcat 8.5 in my wizard (if you completed previous steps skip this secion)
 
-<p>There is a bug in Eclipse that prevents some users from seeing
+There is a bug in Eclipse that prevents some users from seeing
 Tomcat 8.5 option in their wizards:
-<img src="assets/images/2016-10-31/4_env_1.png" alt="Tomcat Welcome screen" /></p>
+![Tomcat Welcome screen](assets/images/2016-10-31/4_env_1.png)
 
-<p>The solution is simple, we manually change Tomcat version number say
+The solution is simple, we manually change Tomcat version number say
 from 8.5.6 to 8.0.8.5.6 and this will allow us to use newer Tomcat version
 with buggy Eclipse.
-More details can be found in <a href="http://stackoverflow.com/questions/37024876/how-to-use-tomcat-8-5-x-and-tomee-7-x-with-eclipse">this SO question</a>.</p>
+More details can be found in [this SO question](http://stackoverflow.com/questions/37024876/how-to-use-tomcat-8-5-x-and-tomee-7-x-with-eclipse).
 
-<p>Following script will will patch Tomcat server:</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">#!/bin/bash
+Following script will will patch Tomcat server:
+{% highlight no-highlight %}
+#!/bin/bash
 cd ~/bin/tomcat
 
 # Create backup
 cp ../lib/catalina.jar ../lib/catalina.jar.backup
 
 # Create patch directory and extract catalina.jar there
-mkdir patch &amp;&amp; cd patch
+mkdir patch && cd patch
 jar xvf ../lib/catalina.jar
 
 # Change version number
@@ -135,158 +130,165 @@ jar cvf catalina.jar .
 cp ./catalina.jar ../lib/
 
 # Cleanup
-cd .. &amp;&amp; rm -rf patch</code></pre></figure>
+cd .. && rm -rf patch
+{% endhighlight %}
+After running script try to start Tomcat server to check if it is working.
+Then if everything is OK create new Runtime Environment in Eclipse using Tomcat 8 option.
 
-<p>After running script try to start Tomcat server to check if it is working.
-Then if everything is OK create new Runtime Environment in Eclipse using Tomcat 8 option.</p>
+#### Starting Tomcat from Eclipse
 
-<h4 id="starting-tomcat-from-eclipse">Starting Tomcat from Eclipse</h4>
-
-<p>Open Servers window (press Ctrl+3 and write in search box Servers).
+Open Servers window (press Ctrl+3 and write in search box Servers).
 Use link in Servers window to open New Server wizard and create a new server:
-<img src="assets/images/2016-10-31/5_servers.png" alt="Tomcat Welcome screen" /></p>
+![Tomcat Welcome screen](assets/images/2016-10-31/5_servers.png)
 
-<p>You should see new server created:
-<img src="assets/images/2016-10-31/5_servers_2.png" alt="Tomcat Welcome screen" /></p>
+You should see new server created:
+![Tomcat Welcome screen](assets/images/2016-10-31/5_servers_2.png)
 
-<p>Click on server and choose Clean option, then click again and select Start.
-If you have Tomcat running in terminal (<code class="highlighter-rouge">./catalina.sh run</code>) stop it before 
+Click on server and choose Clean option, then click again and select Start.
+If you have Tomcat running in terminal (`./catalina.sh run`) stop it before 
 you start Tomcat via Eclipse. Console window should display various
-log entries from starting Tomcat. Now click on server and select Stop.</p>
+log entries from starting Tomcat. Now click on server and select Stop.
 
-<p>Now it’s time to restart Eclipse and check if everything works after
-restart.</p>
+Now it's time to restart Eclipse and check if everything works after
+restart.
 
-<h4 id="creating-simple-spring-mvc-app">Creating simple Spring MVC app</h4>
+#### Creating simple Spring MVC app
 
-<p>We will create simple Spring MVC application to check if everything is working.
-Let’s start by creating new Maven project (New Project -&gt; Maven Project and check Create simple project):
-<img src="assets/images/2016-10-31/6_mvn.png" alt="Tomcat Welcome screen" />
-Don’t forget to select WAR as packaging method.</p>
+We will create simple Spring MVC application to check if everything is working.
+Let's start by creating new Maven project (New Project -> Maven Project and check Create simple project):
+![Tomcat Welcome screen](assets/images/2016-10-31/6_mvn.png)
+Don't forget to select WAR as packaging method.
 
-<p>Open your POM file in XML editor and add following lines to it:</p>
-
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="nt">&lt;project</span> <span class="na">xmlns=</span><span class="s">"http://maven.apache.org/POM/4.0.0"</span> <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span> <span class="na">xsi:schemaLocation=</span><span class="s">"http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"</span><span class="nt">&gt;</span>
+Open your POM file in XML editor and add following lines to it:
+{% highlight xml %}
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	...
 
-  <span class="c">&lt;!-- Spring MVC and Servlet API --&gt;</span>
-  <span class="nt">&lt;dependencies&gt;</span>
-    <span class="nt">&lt;dependency&gt;</span>
-      <span class="nt">&lt;groupId&gt;</span>org.springframework<span class="nt">&lt;/groupId&gt;</span>
-      <span class="nt">&lt;artifactId&gt;</span>spring-webmvc<span class="nt">&lt;/artifactId&gt;</span>
-      <span class="nt">&lt;version&gt;</span>4.3.3.RELEASE<span class="nt">&lt;/version&gt;</span>
-    <span class="nt">&lt;/dependency&gt;</span>
-    <span class="nt">&lt;dependency&gt;</span>
-      <span class="nt">&lt;groupId&gt;</span>javax.servlet<span class="nt">&lt;/groupId&gt;</span>
-      <span class="nt">&lt;artifactId&gt;</span>jstl<span class="nt">&lt;/artifactId&gt;</span>
-      <span class="nt">&lt;version&gt;</span>1.2<span class="nt">&lt;/version&gt;</span>
-    <span class="nt">&lt;/dependency&gt;</span>
-    <span class="nt">&lt;dependency&gt;</span>
-      <span class="nt">&lt;groupId&gt;</span>javax.servlet<span class="nt">&lt;/groupId&gt;</span>
-      <span class="nt">&lt;artifactId&gt;</span>javax.servlet-api<span class="nt">&lt;/artifactId&gt;</span>
-      <span class="nt">&lt;version&gt;</span>3.1.0<span class="nt">&lt;/version&gt;</span>
-      <span class="nt">&lt;scope&gt;</span>provided<span class="nt">&lt;/scope&gt;</span>
-    <span class="nt">&lt;/dependency&gt;</span>
-  <span class="nt">&lt;/dependencies&gt;</span>
+  <!-- Spring MVC and Servlet API -->
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
+      <version>4.3.3.RELEASE</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>jstl</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
 
-  <span class="c">&lt;!-- enable java 8 --&gt;</span>
-  <span class="nt">&lt;properties&gt;</span>
-    <span class="nt">&lt;maven.compiler.source&gt;</span>1.8<span class="nt">&lt;/maven.compiler.source&gt;</span>
-    <span class="nt">&lt;maven.compiler.target&gt;</span>1.8<span class="nt">&lt;/maven.compiler.target&gt;</span>
-  <span class="nt">&lt;/properties&gt;</span>
-<span class="nt">&lt;/project&gt;</span></code></pre></figure>
+  <!-- enable java 8 -->
+  <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+  </properties>
+</project>
+{% endhighlight %}
 
-<p>Then let’s add four more files to our project:
-<img src="assets/images/2016-10-31/6_proj.png" alt="Tomcat Welcome screen" /></p>
+Then let's add four more files to our project:
+![Tomcat Welcome screen](assets/images/2016-10-31/6_proj.png)
 
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// HelloController.java</span>
-<span class="kn">package</span> <span class="n">hellotomcat</span><span class="o">;</span>
+{% highlight java %}
+// HelloController.java
+package hellotomcat;
 
-<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Controller</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.ui.Model</span><span class="o">;</span>
-<span class="kn">import</span> <span class="nn">org.springframework.web.bind.annotation.RequestMapping</span><span class="o">;</span>
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-<span class="nd">@Controller</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">HomeController</span> <span class="o">{</span>
+@Controller
+public class HomeController {
 
-    <span class="nd">@RequestMapping</span><span class="o">(</span><span class="s">"/"</span><span class="o">)</span>
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">welcome</span><span class="o">(</span><span class="n">Model</span> <span class="n">model</span><span class="o">)</span> <span class="o">{</span>
-        <span class="n">model</span><span class="o">.</span><span class="na">addAttribute</span><span class="o">(</span><span class="s">"greeting"</span><span class="o">,</span> <span class="s">"gretting!!!"</span><span class="o">);</span>
-        <span class="n">model</span><span class="o">.</span><span class="na">addAttribute</span><span class="o">(</span><span class="s">"tagline"</span><span class="o">,</span> <span class="s">"it works"</span><span class="o">);</span>
+    @RequestMapping("/")
+    public String welcome(Model model) {
+        model.addAttribute("greeting", "gretting!!!");
+        model.addAttribute("tagline", "it works");
         
-        <span class="k">return</span> <span class="s">"welcome"</span><span class="o">;</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
+        return "welcome";
+    }
+}
+{% endhighlight %}
+{% highlight xml %}
+<!-- WEB-INF/web.xml -->
 
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- WEB-INF/web.xml --&gt;</span>
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+  <servlet>
+    <servlet-name>DefaultServlet</servlet-name>
+    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DefaultServlet</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
+</web-app>
+{% endhighlight %}
+{% highlight xml %}
+<!-- DefaultServlet-servlet.xml -->
 
-<span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;web-app</span> <span class="na">version=</span><span class="s">"3.0"</span> <span class="na">xmlns=</span><span class="s">"http://java.sun.com/xml/ns/javaee"</span>
-  <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span>
-  <span class="na">xsi:schemaLocation=</span><span class="s">"http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"</span><span class="nt">&gt;</span>
-  <span class="nt">&lt;servlet&gt;</span>
-    <span class="nt">&lt;servlet-name&gt;</span>DefaultServlet<span class="nt">&lt;/servlet-name&gt;</span>
-    <span class="nt">&lt;servlet-class&gt;</span>org.springframework.web.servlet.DispatcherServlet<span class="nt">&lt;/servlet-class&gt;</span>
-  <span class="nt">&lt;/servlet&gt;</span>
-  <span class="nt">&lt;servlet-mapping&gt;</span>
-    <span class="nt">&lt;servlet-name&gt;</span>DefaultServlet<span class="nt">&lt;/servlet-name&gt;</span>
-    <span class="nt">&lt;url-pattern&gt;</span>/<span class="nt">&lt;/url-pattern&gt;</span>
-  <span class="nt">&lt;/servlet-mapping&gt;</span>
-<span class="nt">&lt;/web-app&gt;</span></code></pre></figure>
-
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- DefaultServlet-servlet.xml --&gt;</span>
-
-<span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
-<span class="nt">&lt;beans</span> <span class="na">xmlns=</span><span class="s">"http://www.springframework.org/schema/beans"</span>
-  <span class="na">xmlns:xsi=</span><span class="s">"http://www.w3.org/2001/XMLSchema-instance"</span> <span class="na">xmlns:context=</span><span class="s">"http://www.springframework.org/schema/context"</span>
-  <span class="na">xmlns:mvc=</span><span class="s">"http://www.springframework.org/schema/mvc"</span>
-  <span class="na">xsi:schemaLocation=</span><span class="s">"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd"</span><span class="nt">&gt;</span>
-  <span class="nt">&lt;mvc:annotation-driven</span> <span class="nt">/&gt;</span>
-  <span class="nt">&lt;context:component-scan</span> <span class="na">base-package=</span><span class="s">"hellotomcat"</span> <span class="nt">/&gt;</span>
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:mvc="http://www.springframework.org/schema/mvc"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+  <mvc:annotation-driven />
+  <context:component-scan base-package="hellotomcat" />
   
-  <span class="nt">&lt;bean</span>
-    <span class="na">class=</span><span class="s">"org.springframework.web.servlet.view.InternalResourceViewResolver "</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"prefix"</span> <span class="na">value=</span><span class="s">"/WEB-INF/jsp/"</span> <span class="nt">/&gt;</span>
-    <span class="nt">&lt;property</span> <span class="na">name=</span><span class="s">"suffix"</span> <span class="na">value=</span><span class="s">".jsp"</span> <span class="nt">/&gt;</span>
-  <span class="nt">&lt;/bean&gt;</span>
-<span class="nt">&lt;/beans&gt;</span></code></pre></figure>
+  <bean
+    class="org.springframework.web.servlet.view.InternalResourceViewResolver ">
+    <property name="prefix" value="/WEB-INF/jsp/" />
+    <property name="suffix" value=".jsp" />
+  </bean>
+</beans>
+{% endhighlight %}
+{% highlight xml %}
+<!-- WEB-INF/jsp/welcome.jsp -->
 
-<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="c">&lt;!-- WEB-INF/jsp/welcome.jsp --&gt;</span>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<html>
+<head>
+	<link rel="stylesheet"
+		href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+	<title>Welcome</title>
+</head>
+<body>
+	<section>
+		<div class="jumbotron">
+			<div class="container">
+				<h1>${greeting}</h1>
+				<p>${tagline}</p>
+			</div>
+		</div>
+	</section>
+</body>
+</html>
+{% endhighlight %}
 
-<span class="err">&lt;</span>%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%&gt;
-<span class="nt">&lt;html&gt;</span>
-<span class="nt">&lt;head&gt;</span>
-	<span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span>
-		<span class="na">href=</span><span class="s">"//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"</span><span class="nt">&gt;</span>
-	<span class="nt">&lt;title&gt;</span>Welcome<span class="nt">&lt;/title&gt;</span>
-<span class="nt">&lt;/head&gt;</span>
-<span class="nt">&lt;body&gt;</span>
-	<span class="nt">&lt;section&gt;</span>
-		<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"jumbotron"</span><span class="nt">&gt;</span>
-			<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
-				<span class="nt">&lt;h1&gt;</span>${greeting}<span class="nt">&lt;/h1&gt;</span>
-				<span class="nt">&lt;p&gt;</span>${tagline}<span class="nt">&lt;/p&gt;</span>
-			<span class="nt">&lt;/div&gt;</span>
-		<span class="nt">&lt;/div&gt;</span>
-	<span class="nt">&lt;/section&gt;</span>
-<span class="nt">&lt;/body&gt;</span>
-<span class="nt">&lt;/html&gt;</span></code></pre></figure>
+Now click on `pom.xml` select Run As -> Maven install, this should
+create `hellotomcat-0.0.1-SNAPSHOT.war` file in target directory.
 
-<p>Now click on <code class="highlighter-rouge">pom.xml</code> select Run As -&gt; Maven install, this should
-create <code class="highlighter-rouge">hellotomcat-0.0.1-SNAPSHOT.war</code> file in target directory.</p>
+Click on project select Run As -> Run Configurations, then select Apache Tomcat and press New button.
+![Tomcat Welcome screen](assets/images/2016-10-31/7_rc.png)
+Click Apply and Close.
 
-<p>Click on project select Run As -&gt; Run Configurations, then select Apache Tomcat and press New button.
-<img src="assets/images/2016-10-31/7_rc.png" alt="Tomcat Welcome screen" />
-Click Apply and Close.</p>
+Click on project select Run As -> Run on Server:
+![Tomcat Welcome screen](assets/images/2016-10-31/7_ros.png)
+and Finish.
 
-<p>Click on project select Run As -&gt; Run on Server:
-<img src="assets/images/2016-10-31/7_ros.png" alt="Tomcat Welcome screen" />
-and Finish.</p>
+Go to `http://localhost:8080/hellotomcat/` and check if you see greetings.
+Now open `HomeController` file change text and save changes, after a few
+seconds refresh browser page - you should see your new text.
 
-<p>Go to <code class="highlighter-rouge">http://localhost:8080/hellotomcat/</code> and check if you see greetings.
-Now open <code class="highlighter-rouge">HomeController</code> file change text and save changes, after a few
-seconds refresh browser page - you should see your new text.</p>
 
 
 	  ]]></description>
