@@ -18,95 +18,99 @@
 	  <pubDate>2019-04-14T02:00:01+02:00</pubDate>
 	  <guid>//odroid-go-review</guid>
 	  <description><![CDATA[
-	     > A Master Programmer passed a novice programmer one day.
->
-> The Master noted the novice's preoccupation with a hand-held computer game.
->
-> "Excuse me," he said, "may I examine it?"
-> 
-> The novice bolted to attention and handed the device to the Master. "I see that the device claims to have three levels of play: Easy, Medium, and Hard," said the Master. "Yet every such device has another level of play, where the device seeks not to conquer the human, nor to be conquered by the human."
->
-> "Pray, Great Master," implored the novice, "how does one find this mysterious setting?"
->
-> The Master dropped the device to the ground and crushed it with his heel. Suddenly the novice was enlightened.
->
-> Excerpt from [Tao of Programming](http://www.mit.edu/~xela/tao.html)
+	     <blockquote>
+  <p>A Master Programmer passed a novice programmer one day.</p>
 
-Be warned, the device that I am going to present is both
+  <p>The Master noted the novice’s preoccupation with a hand-held computer game.</p>
+
+  <p>“Excuse me,” he said, “may I examine it?”</p>
+
+  <p>The novice bolted to attention and handed the device to the Master. “I see that the device claims to have three levels of play: Easy, Medium, and Hard,” said the Master. “Yet every such device has another level of play, where the device seeks not to conquer the human, nor to be conquered by the human.”</p>
+
+  <p>“Pray, Great Master,” implored the novice, “how does one find this mysterious setting?”</p>
+
+  <p>The Master dropped the device to the ground and crushed it with his heel. Suddenly the novice was enlightened.</p>
+
+  <p>Excerpt from <a href="http://www.mit.edu/~xela/tao.html">Tao of Programming</a></p>
+</blockquote>
+
+<p>Be warned, the device that I am going to present is both
 addictive and may cause your programming skills to deteriorate.
-Use with moderation!
+Use with moderation!</p>
 
-So 3, 2, 1... Ladies and Gentlemen, here it is Odroid GO:
-![Odroid GO](assets/images/2019-04-14/go1.jpg)
+<p>So 3, 2, 1… Ladies and Gentlemen, here it is Odroid GO:
+<img src="assets/images/2019-04-14/go1.jpg" alt="Odroid GO" />
 Game console for geeks and nerds. Out of the box (I mean after
-you assemble it) it supports all popular ROM's. In practice I found
+you assemble it) it supports all popular ROM’s. In practice I found
 that GameBoy Color roms work the best. NES roms often caused
-the emulator to hang and GameBoy roms are eh... without colors.
+the emulator to hang and GameBoy roms are eh… without colors.
 All in all I managed to run on Odroid GO all popular games 
 from my childhood, like
-Super Mario Bross Delux and Croc without any troubles.
+Super Mario Bross Delux and Croc without any troubles.</p>
 
-One minor problem that this console has and I find annoying
+<p>One minor problem that this console has and I find annoying
 is how game state saving works.
 Usually game builtin SAVE option will not work with the emulator,
 instead Odroid GO provides its own way of saving games.
 Basically when you finished playing a game you must press
 MENU button and only then turn off the device, otherwise
 your game progress will be lost. This was a little bit annoying
-in the beginning but I quickly get used to it.
+in the beginning but I quickly get used to it.</p>
 
-One great aspect of this console is its price. I bought mine
+<p>One great aspect of this console is its price. I bought mine
 for about 200PLN which for this kind of device (multi-color screen,
 Arduino like CPU, battery included)
-should be considered a very good deal.
+should be considered a very good deal.</p>
 
-Odroid GO stores roms and game states on a microSD card that
+<p>Odroid GO stores roms and game states on a microSD card that
 is not included in the kit. 
 You can buy one e.g. Kingston micro SDHC 16GB
 for about 15PLN so this should not be a problem.
 Also remember that you will need an
-*SD card reader* to upload firmware and roms to the microSD card.
+<em>SD card reader</em> to upload firmware and roms to the microSD card.
 Maybe your laptop already has one? If not you will need to buy or
-borrow one.
+borrow one.</p>
 
-By now it should be clear that Odroid GO comes as [a DIY kit](https://wiki.odroid.com/odroid_go/go_assembling).
+<p>By now it should be clear that Odroid GO comes as <a href="https://wiki.odroid.com/odroid_go/go_assembling">a DIY kit</a>.
 In other to assemble it correctly you will need to go through the
-[official guide](https://wiki.odroid.com/odroid_go/go_assembling).
-Also watch [this video](https://www.youtube.com/watch?v=6wwHmgX5U3w)
-before you start assembling.
+<a href="https://wiki.odroid.com/odroid_go/go_assembling">official guide</a>.
+Also watch <a href="https://www.youtube.com/watch?v=6wwHmgX5U3w">this video</a>
+before you start assembling.</p>
 
-During the assembly you will need a few tools:
+<p>During the assembly you will need a few tools:</p>
 
-* A small screwdriver for "cross" screws.
- If you own a precision screwdriver set you should be fine.
-* An utility knife (box cutter) to remove buttons from the frame.
-* [OPTIONAL] A latex gloves to avoid leaving greasy marks
- on the screen while putting it into the frame.
+<ul>
+  <li>A small screwdriver for “cross” screws.
+ If you own a precision screwdriver set you should be fine.</li>
+  <li>An utility knife (box cutter) to remove buttons from the frame.</li>
+  <li>[OPTIONAL] A latex gloves to avoid leaving greasy marks
+ on the screen while putting it into the frame.</li>
+</ul>
 
-The assembly takes about half an hour to complete.
+<p>The assembly takes about half an hour to complete.
 Once you are done
 you will have to format your SD card and copy firmware and roms
 there.
 All these steps are described with much detail in the
-official guide.
+official guide.</p>
 
-For me the most difficult step was connecting the screen to the
+<p>For me the most difficult step was connecting the screen to the
 main board. The socket is very delicate and you must be
 extra careful not to damage it.
-![Screen mainboard connection](assets/images/2019-04-14/go2.jpg)
+<img src="assets/images/2019-04-14/go2.jpg" alt="Screen mainboard connection" />
 Also remember that after you close a lock on the socket it will
 be very hard to open the lock again.
 You should strive to connect the screen during the first try.
 This may sound difficult but believe me it is not.
-I am sure you will be fine!
+I am sure you will be fine!</p>
 
-After using Odroid GO for some time, I must admit that it
+<p>After using Odroid GO for some time, I must admit that it
 is quite comfortable to use. Is is not too heavy and
 quite pleasant to handle. The battery suffice for at least
-eight hours of playing Super Mario Bros.
+eight hours of playing Super Mario Bros.</p>
 
-Final verdict: If you are a fan of old school games
-definitely buy this device. You will not be disappointed!
+<p>Final verdict: If you are a fan of old school games
+definitely buy this device. You will not be disappointed!</p>
 
 
 	  ]]></description>
@@ -119,22 +123,22 @@ definitely buy this device. You will not be disappointed!
 	  <pubDate>2019-04-14T02:00:00+02:00</pubDate>
 	  <guid>//kensington-orbit-trackball-review</guid>
 	  <description><![CDATA[
-	     Since about three months I use 
-[Kensington Orbit Trackball](https://www.kensington.com/p/products/control/trackballs/orbit-trackball-with-scroll-ring/)
+	     <p>Since about three months I use 
+<a href="https://www.kensington.com/p/products/control/trackballs/orbit-trackball-with-scroll-ring/">Kensington Orbit Trackball</a>
 as my only pointing device.
-This is my very first trackball, I bought it for about 180PLN.
+This is my very first trackball, I bought it for about 180PLN.</p>
 
-![Kensington Orbit Trackball](assets/images/2019-04-14/t1.jpg)
+<p><img src="assets/images/2019-04-14/t1.jpg" alt="Kensington Orbit Trackball" /></p>
 
-Kensington Orbit Trackball is a "stationary device",
+<p>Kensington Orbit Trackball is a “stationary device”,
 good for a PC or for a laptop with docking station, but not
 very mobile.
 The device by itself takes more space than a mouse, but since
 it does not require any movements, you end up with a huge desk space savings.
 In my case I ended up needing only about one third of
-the space that I needed for my mouse.
+the space that I needed for my mouse.</p>
 
-It took me about two weeks to get used to it.
+<p>It took me about two weeks to get used to it.
 In the beginning all my movements were clumsy and
 my fingers got tired really quickly just from clicking right and
 left buttons.
@@ -149,70 +153,70 @@ Still I needed about two weeks more to get to the point when
 using my trackball was actually comfortable.
 When it comes to movement precision I still have troubles
 with selecting text fragments and 
-drawing is definitively out of the question right now.
+drawing is definitively out of the question right now.</p>
 
-I use Kensington trackball only
+<p>I use Kensington trackball only
 at home, at work I still use a mouse.
 This may explain the long time it took me to get used to it.
 On the other hand it may be too painful and uncomfortable
 to start using trackball for 8+ hours a day.
-So maybe starting small is not a bad strategy...
+So maybe starting small is not a bad strategy…</p>
 
-Instead of a scroll wheel Kensington offers a huge
+<p>Instead of a scroll wheel Kensington offers a huge
 scroll ring located around the ball, which
 is very pleasant to use.
 In case of my Kensington the ring did not rotate
 smoothly during first few days of using it, but after that
-I had no problems with it.
+I had no problems with it.</p>
 
-Kensington provides drivers for Windows and macOS,
+<p>Kensington provides drivers for Windows and macOS,
 but not for Linux (shame on you Kensington).
 One of the downsides of this
 is that the middle click that caused me so much discomfort
 does not work out of the box with Linux.
 Fortunately this is 
-[easy to fix](https://oliversmith.io/technology/2016/01/03/Enabling-middle-click-for-kensington-trackball-on-ubuntu-linux/),
-just add to your `~/.profile`:
-{% highlight bash %}
-xinput \
-  --set-prop \
-  --type=int \
-  --format=8 \
-  "Primax Kensington Eagle Trackball" \
-  "Evdev Middle Button Emulation" \
-  1
-{% endhighlight %}
-The downside of this solution is that you must reexecute this command
-every time you unplug and plug your trackball again.
+<a href="https://oliversmith.io/technology/2016/01/03/Enabling-middle-click-for-kensington-trackball-on-ubuntu-linux/">easy to fix</a>,
+just add to your <code class="highlighter-rouge">~/.profile</code>:</p>
 
-The other thing that surprised me is that this device
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">xinput <span class="se">\</span>
+  <span class="nt">--set-prop</span> <span class="se">\</span>
+  <span class="nt">--type</span><span class="o">=</span>int <span class="se">\</span>
+  <span class="nt">--format</span><span class="o">=</span>8 <span class="se">\</span>
+  <span class="s2">"Primax Kensington Eagle Trackball"</span> <span class="se">\</span>
+  <span class="s2">"Evdev Middle Button Emulation"</span> <span class="se">\</span>
+  1</code></pre></figure>
+
+<p>The downside of this solution is that you must reexecute this command
+every time you unplug and plug your trackball again.</p>
+
+<p>The other thing that surprised me is that this device
 requires regular cleaning. In my case about once a week.
 The cleaning is not too difficult, you just need to push the ball out 
 using a pencil or your pinky finger and remove dust and dirt.
-You can find a lot of tutorials how to do this properly on the internet.
+You can find a lot of tutorials how to do this properly on the internet.</p>
 
-![Cleaning](assets/images/2019-04-14/t2.jpg)
+<p><img src="assets/images/2019-04-14/t2.jpg" alt="Cleaning" /></p>
 
-If you will ever want to open this trackball e.g. to do some
+<p>If you will ever want to open this trackball e.g. to do some
 more serious cleaning, please remember that there is 
 a hidden screw:
-![Cleaning](assets/images/2019-04-14/t3.jpg)
+<img src="assets/images/2019-04-14/t3.jpg" alt="Cleaning" />
 I removed a piece of rubber that hid the screw using
 box cutter knife.
 It is really a shame that nowadays manufacturers use
 tricks like that to stop users from
-repairing their products.
+repairing their products.</p>
 
-The last thing that I want to mention is price.
+<p>The last thing that I want to mention is price.
 In my opinion this product is a bit overpriced.
 This is really sad considering how few people are using trackballs.
 I think that these devices would be much more popular if they
-where cheaper.
+where cheaper.</p>
 
-Time to sum up.
+<p>Time to sum up.
 All in all Kensington Orbit Trackball turned out to be a good
 purchase. It took me some time to get use to it, but now I like it very much
-and I do not plan to return to a mouse anytime soon.
+and I do not plan to return to a mouse anytime soon.</p>
 
 
 	  ]]></description>

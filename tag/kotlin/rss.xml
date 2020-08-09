@@ -18,629 +18,619 @@
 	  <pubDate>2017-06-10T02:00:00+02:00</pubDate>
 	  <guid>//lambda-expressions-in-kotlin</guid>
 	  <description><![CDATA[
-	     In this blog post we will learn about Kotlin lambda expressions
-and how they are compiled to JVM bytecode.
+	     <p>In this blog post we will learn about Kotlin lambda expressions
+and how they are compiled to JVM bytecode.</p>
 
-#### Basic syntax
+<h4 id="basic-syntax">Basic syntax</h4>
 
-To create lambda expression that just prints `Hello, world!`
-we write:
-{% highlight kotlin %}
-val printHelloWorld = {
-   println("Hello, world!")
-}
-{% endhighlight %}
-We may invoke this function using either syntax:
-{% highlight kotlin %}
-printHelloWorld()
-// or
-printHelloWorld.invoke()
-{% endhighlight %}
-The former is idiomatic and should be used in your code.
+<p>To create lambda expression that just prints <code class="highlighter-rouge">Hello, world!</code>
+we write:</p>
 
-When we need to create a lambda that takes parameters we
-use syntax:
-{% highlight kotlin %}
-val sayHello = { user: String -> 
-   println("Hello, $user!") 
-}
-sayHello("johnny")
-// or with multiple parameters
-val printSummary = { user: String, score: Int -> 
-   println("User '$user' get $score points.")
-}
-printSummary("johnny", 123)
-{% endhighlight %}
-When types of parameters may be inferred from the context we may skip them
-as in:
-{% highlight kotlin %}
-val names = arrayOf("joe", "ann", "molly", "dolly")
-names.sortedBy { name -> name.length }
-// equivalent to
-names.sortedBy { name: String -> name.length }
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">val</span> <span class="py">printHelloWorld</span> <span class="p">=</span> <span class="p">{</span>
+   <span class="n">println</span><span class="p">(</span><span class="s">"Hello, world!"</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
 
-When working with Kotlin Sequence library you often need to define
+<p>We may invoke this function using either syntax:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="n">printHelloWorld</span><span class="p">()</span>
+<span class="c1">// or
+</span><span class="n">printHelloWorld</span><span class="p">.</span><span class="n">invoke</span><span class="p">()</span></code></pre></figure>
+
+<p>The former is idiomatic and should be used in your code.</p>
+
+<p>When we need to create a lambda that takes parameters we
+use syntax:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">val</span> <span class="py">sayHello</span> <span class="p">=</span> <span class="p">{</span> <span class="n">user</span><span class="p">:</span> <span class="n">String</span> <span class="p">-&gt;</span> 
+   <span class="n">println</span><span class="p">(</span><span class="s">"Hello, $user!"</span><span class="p">)</span> 
+<span class="p">}</span>
+<span class="n">sayHello</span><span class="p">(</span><span class="s">"johnny"</span><span class="p">)</span>
+<span class="c1">// or with multiple parameters
+</span><span class="kd">val</span> <span class="py">printSummary</span> <span class="p">=</span> <span class="p">{</span> <span class="n">user</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span> <span class="n">score</span><span class="p">:</span> <span class="n">Int</span> <span class="p">-&gt;</span> 
+   <span class="n">println</span><span class="p">(</span><span class="s">"User '$user' get $score points."</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="n">printSummary</span><span class="p">(</span><span class="s">"johnny"</span><span class="p">,</span> <span class="m">123</span><span class="p">)</span></code></pre></figure>
+
+<p>When types of parameters may be inferred from the context we may skip them
+as in:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">val</span> <span class="py">names</span> <span class="p">=</span> <span class="n">arrayOf</span><span class="p">(</span><span class="s">"joe"</span><span class="p">,</span> <span class="s">"ann"</span><span class="p">,</span> <span class="s">"molly"</span><span class="p">,</span> <span class="s">"dolly"</span><span class="p">)</span>
+<span class="n">names</span><span class="p">.</span><span class="n">sortedBy</span> <span class="p">{</span> <span class="n">name</span> <span class="p">-&gt;</span> <span class="n">name</span><span class="p">.</span><span class="n">length</span> <span class="p">}</span>
+<span class="c1">// equivalent to
+</span><span class="n">names</span><span class="p">.</span><span class="n">sortedBy</span> <span class="p">{</span> <span class="n">name</span><span class="p">:</span> <span class="n">String</span> <span class="p">-&gt;</span> <span class="n">name</span><span class="p">.</span><span class="n">length</span> <span class="p">}</span></code></pre></figure>
+
+<p>When working with Kotlin Sequence library you often need to define
 short function literals (another name for a lambda expression) that take only
-one parameter, for example:
-{% highlight kotlin %}
-val russianNames = arrayOf("Maksim", "Artem", "Sophia", "Maria", "Maksim")
+one parameter, for example:</p>
 
-val selectedName = russianNames
-      .filter { name -> name.startsWith("m", ignoreCase = true) }
-      .sortedBy { name -> name.length }
-      .firstOrNull()
-{% endhighlight %}
-For this special case Kotlin provides a shortcut, instead of writing:
-{% highlight kotlin %}
-.filter { name -> name.startsWith("m", ignoreCase = true) }
-// we may write
-.filter { it.startsWith("m", ignoreCase = true) }
-{% endhighlight kotlin %}
-Notice that we skipped parameter declaration altogether and 
-use `it` keyword to access parameter value. 
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">val</span> <span class="py">russianNames</span> <span class="p">=</span> <span class="n">arrayOf</span><span class="p">(</span><span class="s">"Maksim"</span><span class="p">,</span> <span class="s">"Artem"</span><span class="p">,</span> <span class="s">"Sophia"</span><span class="p">,</span> <span class="s">"Maria"</span><span class="p">,</span> <span class="s">"Maksim"</span><span class="p">)</span>
+
+<span class="kd">val</span> <span class="py">selectedName</span> <span class="p">=</span> <span class="n">russianNames</span>
+      <span class="p">.</span><span class="n">filter</span> <span class="p">{</span> <span class="n">name</span> <span class="p">-&gt;</span> <span class="n">name</span><span class="p">.</span><span class="n">startsWith</span><span class="p">(</span><span class="s">"m"</span><span class="p">,</span> <span class="n">ignoreCase</span> <span class="p">=</span> <span class="k">true</span><span class="p">)</span> <span class="p">}</span>
+      <span class="p">.</span><span class="n">sortedBy</span> <span class="p">{</span> <span class="n">name</span> <span class="p">-&gt;</span> <span class="n">name</span><span class="p">.</span><span class="n">length</span> <span class="p">}</span>
+      <span class="p">.</span><span class="n">firstOrNull</span><span class="p">()</span></code></pre></figure>
+
+<p>For this special case Kotlin provides a shortcut, instead of writing:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="p">.</span><span class="n">filter</span> <span class="p">{</span> <span class="n">name</span> <span class="p">-&gt;</span> <span class="n">name</span><span class="p">.</span><span class="n">startsWith</span><span class="p">(</span><span class="s">"m"</span><span class="p">,</span> <span class="n">ignoreCase</span> <span class="p">=</span> <span class="k">true</span><span class="p">)</span> <span class="p">}</span>
+<span class="c1">// we may write
+</span><span class="p">.</span><span class="n">filter</span> <span class="p">{</span> <span class="n">it</span><span class="p">.</span><span class="n">startsWith</span><span class="p">(</span><span class="s">"m"</span><span class="p">,</span> <span class="n">ignoreCase</span> <span class="p">=</span> <span class="k">true</span><span class="p">)</span> <span class="p">}</span></code></pre></figure>
+
+<p>Notice that we skipped parameter declaration altogether and 
+use <code class="highlighter-rouge">it</code> keyword to access parameter value. 
 If we rewrite our earlier example to use this new feature
-we get not only shorter but also much more clearer code:
-{% highlight kotlin %}
-val selectedName = russianNames
-      .filter { it.startsWith("m", ignoreCase = true) }
-      .sortedBy { it.length }
-      .firstOrNull()
-{% endhighlight %}
+we get not only shorter but also much more clearer code:</p>
 
-Function literals in Kotlin always return a value. By default
-value of the last expression in a lambda body is returned, for example:
-{% highlight kotlin %}
-val produceValue = { "foo" }
-println(produceValue()) // prints "foo"
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">val</span> <span class="py">selectedName</span> <span class="p">=</span> <span class="n">russianNames</span>
+      <span class="p">.</span><span class="n">filter</span> <span class="p">{</span> <span class="n">it</span><span class="p">.</span><span class="n">startsWith</span><span class="p">(</span><span class="s">"m"</span><span class="p">,</span> <span class="n">ignoreCase</span> <span class="p">=</span> <span class="k">true</span><span class="p">)</span> <span class="p">}</span>
+      <span class="p">.</span><span class="n">sortedBy</span> <span class="p">{</span> <span class="n">it</span><span class="p">.</span><span class="n">length</span> <span class="p">}</span>
+      <span class="p">.</span><span class="n">firstOrNull</span><span class="p">()</span></code></pre></figure>
 
-val max = { a: Int, b: Int ->
-  if (a > b)
-      a
-  else
-      b
-}
-println(max(10,4)) // prints "10"
-{% endhighlight %}
-Sometimes we want to return early from a lambda body, in this case
-we must follow "return-at-label" syntax:
-{% highlight kotlin %}
-val doStuff = lambda@ { stopEarly: Boolean ->
-   println("line 1")
-   if (stopEarly) return@lambda
-   println("line 2")
-}
+<p>Function literals in Kotlin always return a value. By default
+value of the last expression in a lambda body is returned, for example:</p>
 
-doStuff(true)
-doStuff(false)
-{% endhighlight %}
-First we tag lambda expression with label `lambda@`.
-You may use any name you like but label must ends with `@` character
-(called 'at' character).
-Then inside lambda body to signify return we use `return` keyword followed
-by label name. There must be no whitespace between `return`
-and label name. 
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">val</span> <span class="py">produceValue</span> <span class="p">=</span> <span class="p">{</span> <span class="s">"foo"</span> <span class="p">}</span>
+<span class="n">println</span><span class="p">(</span><span class="n">produceValue</span><span class="p">())</span> <span class="c1">// prints "foo"
+</span>
+<span class="kd">val</span> <span class="py">max</span> <span class="p">=</span> <span class="p">{</span> <span class="n">a</span><span class="p">:</span> <span class="n">Int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="n">Int</span> <span class="p">-&gt;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="n">a</span> <span class="p">&gt;</span> <span class="n">b</span><span class="p">)</span>
+      <span class="n">a</span>
+  <span class="k">else</span>
+      <span class="n">b</span>
+<span class="p">}</span>
+<span class="n">println</span><span class="p">(</span><span class="n">max</span><span class="p">(</span><span class="m">10</span><span class="p">,</span><span class="m">4</span><span class="p">))</span> <span class="p">//</span> <span class="n">prints</span> <span class="s">"10"</span></code></pre></figure>
 
-Since "return-at-label" syntax is a bit cumbersome, we may use alternative
+<p>Sometimes we want to return early from a lambda body, in this case
+we must follow “return-at-label” syntax:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">val</span> <span class="py">doStuff</span> <span class="p">=</span> <span class="n">lambda</span><span class="err">@</span> <span class="p">{</span> <span class="n">stopEarly</span><span class="p">:</span> <span class="n">Boolean</span> <span class="p">-&gt;</span>
+   <span class="n">println</span><span class="p">(</span><span class="s">"line 1"</span><span class="p">)</span>
+   <span class="k">if</span> <span class="p">(</span><span class="n">stopEarly</span><span class="p">)</span> <span class="k">return</span><span class="n">@lambda</span>
+   <span class="n">println</span><span class="p">(</span><span class="s">"line 2"</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="n">doStuff</span><span class="p">(</span><span class="k">true</span><span class="p">)</span>
+<span class="n">doStuff</span><span class="p">(</span><span class="k">false</span><span class="p">)</span></code></pre></figure>
+
+<p>First we tag lambda expression with label <code class="highlighter-rouge">lambda@</code>.
+You may use any name you like but label must ends with <code class="highlighter-rouge">@</code> character
+(called ‘at’ character).
+Then inside lambda body to signify return we use <code class="highlighter-rouge">return</code> keyword followed
+by label name. There must be no whitespace between <code class="highlighter-rouge">return</code>
+and label name.</p>
+
+<p>Since “return-at-label” syntax is a bit cumbersome, we may use alternative
 approach.
-Instead of using a lambda expression we may use an anonymous function:
-{% highlight kotlin %}
-val doStuff = fun(stopEarly: Boolean) {
-   println("line 1")
-   if (stopEarly) return
-   println("line 2")
-}
-{% endhighlight %}
-Inside anonymous function `return` works like in any other Kotlin function.
+Instead of using a lambda expression we may use an anonymous function:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">val</span> <span class="py">doStuff</span> <span class="p">=</span> <span class="k">fun</span><span class="p">(</span><span class="n">stopEarly</span><span class="p">:</span> <span class="n">Boolean</span><span class="p">)</span> <span class="p">{</span>
+   <span class="n">println</span><span class="p">(</span><span class="s">"line 1"</span><span class="p">)</span>
+   <span class="k">if</span> <span class="p">(</span><span class="n">stopEarly</span><span class="p">)</span> <span class="k">return</span>
+   <span class="n">println</span><span class="p">(</span><span class="s">"line 2"</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Inside anonymous function <code class="highlighter-rouge">return</code> works like in any other Kotlin function.
 Anonymous functions can also be used in cases when we must specify return
-type of lambda explicitly:
-{% highlight kotlin %}
-val returnAny = {
-   "foo" as Any
-}
+type of lambda explicitly:</p>
 
-val returnAny2 = 
-   fun(): Any = "foo"
-{% endhighlight kotlin %}
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">val</span> <span class="py">returnAny</span> <span class="p">=</span> <span class="p">{</span>
+   <span class="s">"foo"</span> <span class="k">as</span> <span class="n">Any</span>
+<span class="p">}</span>
 
-Sometimes you do not need a value of particular lambda parameter,
-in this case to avoid mistakes you may replace parameter name with `_`.
-For example:
-{% highlight kotlin %}
-(1..5)
-   .map { _ -> rand.nextInt(100) }
-   .forEach { println(it) }
-{% endhighlight %}
+<span class="kd">val</span> <span class="py">returnAny2</span> <span class="p">=</span> 
+   <span class="k">fun</span><span class="p">():</span> <span class="n">Any</span> <span class="p">=</span> <span class="s">"foo"</span></code></pre></figure>
 
-##### Function types
+<p>Sometimes you do not need a value of particular lambda parameter,
+in this case to avoid mistakes you may replace parameter name with <code class="highlighter-rouge">_</code>.
+For example:</p>
 
-Kotlin provides succinct syntax for specifying function types,
-for example `() -> Unit` is type of a function that doesn't take
-any parameters and returns nothing, and `(Int) -> Int` is type
-of a function that takes single parameter of type `Int` and returns
-value of type `Int`. Here are more examples:
-{% highlight kotlin %}
-val fun1: (Int,Int)->Int = 
-   { a,b -> Math.max(a,b) }
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="p">(</span><span class="m">1</span><span class="o">..</span><span class="m">5</span><span class="p">)</span>
+   <span class="p">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">_</span> <span class="p">-&gt;</span> <span class="n">rand</span><span class="p">.</span><span class="n">nextInt</span><span class="p">(</span><span class="m">100</span><span class="p">)</span> <span class="p">}</span>
+   <span class="p">.</span><span class="n">forEach</span> <span class="p">{</span> <span class="n">println</span><span class="p">(</span><span class="n">it</span><span class="p">)</span> <span class="p">}</span></code></pre></figure>
 
-val fun2: (String,MutableList<String>)->Unit =
-   { s,list -> list.add(s) }
+<h5 id="function-types">Function types</h5>
 
-val fun3: (Int,(Int)->Int)->Int = 
-   { value, func -> func(value) }
-{% endhighlight %}
-I believe that `fun1` and `fun2` declarations needs no explanation.
-When it comes to `fun3` it is a higher level function, it
+<p>Kotlin provides succinct syntax for specifying function types,
+for example <code class="highlighter-rouge">() -&gt; Unit</code> is type of a function that doesn’t take
+any parameters and returns nothing, and <code class="highlighter-rouge">(Int) -&gt; Int</code> is type
+of a function that takes single parameter of type <code class="highlighter-rouge">Int</code> and returns
+value of type <code class="highlighter-rouge">Int</code>. Here are more examples:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">val</span> <span class="py">fun1</span><span class="p">:</span> <span class="p">(</span><span class="n">Int</span><span class="p">,</span><span class="n">Int</span><span class="p">)-&gt;</span><span class="n">Int</span> <span class="p">=</span> 
+   <span class="p">{</span> <span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="p">-&gt;</span> <span class="n">Math</span><span class="p">.</span><span class="n">max</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span> <span class="p">}</span>
+
+<span class="kd">val</span> <span class="py">fun2</span><span class="p">:</span> <span class="p">(</span><span class="n">String</span><span class="p">,</span><span class="n">MutableList</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;)-&gt;</span><span class="n">Unit</span> <span class="p">=</span>
+   <span class="p">{</span> <span class="n">s</span><span class="p">,</span><span class="n">list</span> <span class="p">-&gt;</span> <span class="n">list</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">}</span>
+
+<span class="kd">val</span> <span class="py">fun3</span><span class="p">:</span> <span class="p">(</span><span class="n">Int</span><span class="p">,(</span><span class="n">Int</span><span class="p">)-&gt;</span><span class="n">Int</span><span class="p">)-&gt;</span><span class="n">Int</span> <span class="p">=</span> 
+   <span class="p">{</span> <span class="n">value</span><span class="p">,</span> <span class="n">func</span> <span class="p">-&gt;</span> <span class="n">func</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="p">}</span></code></pre></figure>
+
+<p>I believe that <code class="highlighter-rouge">fun1</code> and <code class="highlighter-rouge">fun2</code> declarations needs no explanation.
+When it comes to <code class="highlighter-rouge">fun3</code> it is a higher level function, it
 returns an integer and takes two arguments,
 an integer and a function that takes an integer
-and returns an integer.
+and returns an integer.</p>
 
-When we use function types we may also provide names
+<p>When we use function types we may also provide names
 for parameters, this further improves clarity of
-code:
-{% highlight kotlin %}
-val sin: (angleInRadians: Double) -> Double =
-    Math::sin
-{% endhighlight %}
-In the example above I used method reference `Math::sin`,
-this is equivalent to `{ x -> Math.sin(x) }`.
+code:</p>
 
-##### Type aliases
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">val</span> <span class="py">sin</span><span class="p">:</span> <span class="p">(</span><span class="n">angleInRadians</span><span class="p">:</span> <span class="n">Double</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">Double</span> <span class="p">=</span>
+    <span class="n">Math</span><span class="o">::</span><span class="n">sin</span></code></pre></figure>
 
-Since repeating function types may be tiring and error prone,
-we should use Kotlin type aliases to give them meaningful names.
-{% highlight kotlin %}
-typealias IntToStringConverter = 
-   (Int) -> String
+<p>In the example above I used method reference <code class="highlighter-rouge">Math::sin</code>,
+this is equivalent to <code class="highlighter-rouge">{ x -&gt; Math.sin(x) }</code>.</p>
 
-typealias StringListAppender = 
-   (String,MutableList<String>)->Unit
-{% endhighlight kotlin %}
-Now we may use aliases instead of repeating types in our declarations, e.g.
-{% highlight kotlin %}
-val fun2: StringListAppender =
-   { s,list -> list.add(s) }
-{% endhighlight %}
+<h5 id="type-aliases">Type aliases</h5>
 
-The last cool thing about type aliases is that they
+<p>Since repeating function types may be tiring and error prone,
+we should use Kotlin type aliases to give them meaningful names.</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="k">typealias</span> <span class="n">IntToStringConverter</span> <span class="p">=</span> 
+   <span class="p">(</span><span class="n">Int</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">String</span>
+
+<span class="k">typealias</span> <span class="n">StringListAppender</span> <span class="p">=</span> 
+   <span class="p">(</span><span class="n">String</span><span class="p">,</span><span class="n">MutableList</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;)-&gt;</span><span class="n">Unit</span></code></pre></figure>
+
+<p>Now we may use aliases instead of repeating types in our declarations, e.g.</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">val</span> <span class="py">fun2</span><span class="p">:</span> <span class="n">StringListAppender</span> <span class="p">=</span>
+   <span class="p">{</span> <span class="n">s</span><span class="p">,</span><span class="n">list</span> <span class="p">-&gt;</span> <span class="n">list</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">}</span></code></pre></figure>
+
+<p>The last cool thing about type aliases is that they
 can use generic parameters. This allows us to
-easily create types like:
-{% highlight kotlin %}
-typealias Predicate<T> = (T) -> Boolean
-typealias Converter<FROM,TO> = (FROM) -> TO
-{% endhighlight %}
+easily create types like:</p>
 
-##### Closures
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="k">typealias</span> <span class="n">Predicate</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;</span> <span class="p">=</span> <span class="p">(</span><span class="n">T</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">Boolean</span>
+<span class="k">typealias</span> <span class="n">Converter</span><span class="p">&lt;</span><span class="n">FROM</span><span class="p">,</span><span class="n">TO</span><span class="p">&gt;</span> <span class="p">=</span> <span class="p">(</span><span class="n">FROM</span><span class="p">)</span> <span class="p">-&gt;</span> <span class="n">TO</span></code></pre></figure>
 
-Kotlin lambda expressions may be passed as arguments and returned
+<h5 id="closures">Closures</h5>
+
+<p>Kotlin lambda expressions may be passed as arguments and returned
 from functions. This allows us to apply many techniques from functional
-programming. For example:
-{% highlight kotlin %}
-typealias Counter = ()->Int
+programming. For example:</p>
 
-fun counter(initValue: Int): Counter {
-    var n = initValue
-    return { n++ }
-}
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="k">typealias</span> <span class="n">Counter</span> <span class="p">=</span> <span class="p">()-&gt;</span><span class="n">Int</span>
 
-fun main(args: Array<String>) {
-    val c1 = counter(100)
+<span class="k">fun</span> <span class="nf">counter</span><span class="p">(</span><span class="n">initValue</span><span class="p">:</span> <span class="n">Int</span><span class="p">):</span> <span class="n">Counter</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="py">n</span> <span class="p">=</span> <span class="n">initValue</span>
+    <span class="k">return</span> <span class="p">{</span> <span class="n">n</span><span class="p">++</span> <span class="p">}</span>
+<span class="p">}</span>
 
-    println(c1()) // 100
-    println(c1()) // 101
-    println(c1()) // 102
-}
-{% endhighlight %}
+<span class="k">fun</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Array</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;)</span> <span class="p">{</span>
+    <span class="kd">val</span> <span class="py">c1</span> <span class="p">=</span> <span class="n">counter</span><span class="p">(</span><span class="m">100</span><span class="p">)</span>
 
-Yet best feature of Kotlin lambdas in comparison to Java 8
+    <span class="n">println</span><span class="p">(</span><span class="n">c1</span><span class="p">())</span> <span class="c1">// 100
+</span>    <span class="n">println</span><span class="p">(</span><span class="n">c1</span><span class="p">())</span> <span class="c1">// 101
+</span>    <span class="n">println</span><span class="p">(</span><span class="n">c1</span><span class="p">())</span> <span class="c1">// 102
+</span><span class="p">}</span></code></pre></figure>
+
+<p>Yet best feature of Kotlin lambdas in comparison to Java 8
 lambdas is support of true 
-[closures](https://en.wikipedia.org/wiki/Closure_(computer_programming))
-- using simple words this is a language feature that allows lambda expression
+<a href="https://en.wikipedia.org/wiki/Closure_(computer_programming)">closures</a></p>
+<ul>
+  <li>using simple words this is a language feature that allows lambda expression
 to access and modify all variables that are in scope of their declarations.
 Java 8 lambdas can only access external variables but cannot modify
 them, this may be quite limiting when we try to use functional programming
-in Java.
+in Java.</li>
+</ul>
 
-Following program demonstrates how closures work in Kotlin:
-{% highlight kotlin %}
-fun main(args: Array<String>) {
-    var sum = 0
-    (1..10).forEach { sum += it }
-    println(sum)
-}
-{% endhighlight %}
-Here we see that `{ sum += it }` lambda can access and modify `sum` 
-variable that is declared outside of lambda body.
+<p>Following program demonstrates how closures work in Kotlin:</p>
 
-##### Implementation
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="k">fun</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Array</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="py">sum</span> <span class="p">=</span> <span class="m">0</span>
+    <span class="p">(</span><span class="m">1</span><span class="o">..</span><span class="m">10</span><span class="p">).</span><span class="n">forEach</span> <span class="p">{</span> <span class="n">sum</span> <span class="p">+=</span> <span class="n">it</span> <span class="p">}</span>
+    <span class="n">println</span><span class="p">(</span><span class="n">sum</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
 
-Now you may be wondering how lambda expressions are translated to
+<p>Here we see that <code class="highlighter-rouge">{ sum += it }</code> lambda can access and modify <code class="highlighter-rouge">sum</code> 
+variable that is declared outside of lambda body.</p>
+
+<h5 id="implementation">Implementation</h5>
+
+<p>Now you may be wondering how lambda expressions are translated to
 JVM bytecode. In Kotlin every lambda is compiled to a small class.
-For example simple expression that doesn't use any variables:
-{% highlight kotlin %}
-val printHelloWorld = {
-    println("Hello, world!")
-}
-{% endhighlight %}
-Is compiled to:
-{% highlight java %}
-@Metadata(/*...*/)
-final class AppKt$main$printHelloWorld$1 
-        extends Lambda implements Function0 {
+For example simple expression that doesn’t use any variables:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">val</span> <span class="py">printHelloWorld</span> <span class="p">=</span> <span class="p">{</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">"Hello, world!"</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Is compiled to:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@Metadata</span><span class="o">(</span><span class="cm">/*...*/</span><span class="o">)</span>
+<span class="kd">final</span> <span class="kd">class</span> <span class="nc">AppKt</span><span class="n">$main$printHelloWorld</span><span class="err">$</span><span class="mi">1</span> 
+        <span class="kd">extends</span> <span class="n">Lambda</span> <span class="kd">implements</span> <span class="n">Function0</span> <span class="o">{</span>
    
-    public static final AppKt$main$printHelloWorld$1 INSTANCE = 
-        new AppKt$main$printHelloWorld$1();
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="n">AppKt$main$printHelloWorld</span><span class="err">$</span><span class="mi">1</span> <span class="n">INSTANCE</span> <span class="o">=</span> 
+        <span class="k">new</span> <span class="n">AppKt$main$printHelloWorld</span><span class="err">$</span><span class="mi">1</span><span class="o">();</span>
 
-    AppKt$main$printHelloWorld$1() {
-        super(/*arity:*/ 0);
-    }
+    <span class="n">AppKt$main$printHelloWorld</span><span class="err">$</span><span class="mi">1</span><span class="o">()</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">(</span><span class="cm">/*arity:*/</span> <span class="mi">0</span><span class="o">);</span>
+    <span class="o">}</span>
 
-    public final void invoke() {
-        // actual body of lambda expression
-        String var1 = "Hello, world!";
-        System.out.println(var1);
-    }
-}
-{% endhighlight %}
-This class was generated by Kotlin compiler
+    <span class="kd">public</span> <span class="kd">final</span> <span class="kt">void</span> <span class="nf">invoke</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">// actual body of lambda expression</span>
+        <span class="n">String</span> <span class="n">var1</span> <span class="o">=</span> <span class="s">"Hello, world!"</span><span class="o">;</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">var1</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This class was generated by Kotlin compiler
 and uses types form Kotlin runtime to provide its
-functionality. In particular it extends `Lambda` abstract
+functionality. In particular it extends <code class="highlighter-rouge">Lambda</code> abstract
 class. 
-`Lambda` constructor takes single parameter that specify 
+<code class="highlighter-rouge">Lambda</code> constructor takes single parameter that specify 
 function arity - a number of parameters that lambda expression takes.
-`Lambda` also implements `Function` and `FunctionBase` interfaces,
-and provides simple `toString()` implementation that prints function 
-type - in our case `() -> kotlin.Unit`.
-For your convinience here are simplified definitions of the above types:
-{% highlight java %}
-// from Kotlin runtime (kotlin.* packages)
-public interface Function { }
+<code class="highlighter-rouge">Lambda</code> also implements <code class="highlighter-rouge">Function</code> and <code class="highlighter-rouge">FunctionBase</code> interfaces,
+and provides simple <code class="highlighter-rouge">toString()</code> implementation that prints function 
+type - in our case <code class="highlighter-rouge">() -&gt; kotlin.Unit</code>.
+For your convinience here are simplified definitions of the above types:</p>
 
-public interface FunctionBase extends Function, Serializable {
-   int getArity();
-}
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// from Kotlin runtime (kotlin.* packages)</span>
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Function</span> <span class="o">{</span> <span class="o">}</span>
 
-public abstract class Lambda implements FunctionBase {
-   private final int arity;
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">FunctionBase</span> <span class="kd">extends</span> <span class="n">Function</span><span class="o">,</span> <span class="n">Serializable</span> <span class="o">{</span>
+   <span class="kt">int</span> <span class="nf">getArity</span><span class="o">();</span>
+<span class="o">}</span>
 
-   public Lambda(int arity) {
-      this.arity = arity;
-   }
+<span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">Lambda</span> <span class="kd">implements</span> <span class="n">FunctionBase</span> <span class="o">{</span>
+   <span class="kd">private</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">arity</span><span class="o">;</span>
 
-   public int getArity() {
-      return this.arity;
-   }
+   <span class="kd">public</span> <span class="nf">Lambda</span><span class="o">(</span><span class="kt">int</span> <span class="n">arity</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">this</span><span class="o">.</span><span class="na">arity</span> <span class="o">=</span> <span class="n">arity</span><span class="o">;</span>
+   <span class="o">}</span>
 
-   public String toString() {
-      return Reflection.renderLambdaToString(this);
-   }
-}
-{% endhighlight %}
+   <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getArity</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="k">this</span><span class="o">.</span><span class="na">arity</span><span class="o">;</span>
+   <span class="o">}</span>
 
-Classes generated for lambda expressions also implement `FunctionN`
-interfaces, where `N` is lambda arity. Again `FunctionN` interfaces
-are provided by Kotlin runtime:
-{% highlight java %}
-public interface Function0 extends Function {
-   Object invoke();
-}
+   <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">Reflection</span><span class="o">.</span><span class="na">renderLambdaToString</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+   <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-public interface Function1 extends Function {
-   Object invoke(Object var1);
-}
+<p>Classes generated for lambda expressions also implement <code class="highlighter-rouge">FunctionN</code>
+interfaces, where <code class="highlighter-rouge">N</code> is lambda arity. Again <code class="highlighter-rouge">FunctionN</code> interfaces
+are provided by Kotlin runtime:</p>
 
-public interface Function2 extends Function {
-   Object invoke(Object var1, Object var2);
-}
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Function0</span> <span class="kd">extends</span> <span class="n">Function</span> <span class="o">{</span>
+   <span class="n">Object</span> <span class="nf">invoke</span><span class="o">();</span>
+<span class="o">}</span>
 
-// Kotlin runtime contains FunctionN defintions
-// up to N=22
-{% endhighlight %}
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Function1</span> <span class="kd">extends</span> <span class="n">Function</span> <span class="o">{</span>
+   <span class="n">Object</span> <span class="nf">invoke</span><span class="o">(</span><span class="n">Object</span> <span class="n">var1</span><span class="o">);</span>
+<span class="o">}</span>
 
-Now lets take a look at how lambda expressions are invoked,
-following code:
-{% highlight kotlin %}
-printHelloWorld()
-{% endhighlight %}
-Is translated into:
-{% highlight kotlin %}
-Function0 printHelloWorld = (Function0)
-    AppKt$main$printHelloWorld$1.INSTANCE;
+<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Function2</span> <span class="kd">extends</span> <span class="n">Function</span> <span class="o">{</span>
+   <span class="n">Object</span> <span class="nf">invoke</span><span class="o">(</span><span class="n">Object</span> <span class="n">var1</span><span class="o">,</span> <span class="n">Object</span> <span class="n">var2</span><span class="o">);</span>
+<span class="o">}</span>
 
-printHelloWorld.invoke();
-{% endhighlight %}
-Notice that since our lambda expression doesn't capture
+<span class="c1">// Kotlin runtime contains FunctionN defintions</span>
+<span class="c1">// up to N=22</span></code></pre></figure>
+
+<p>Now lets take a look at how lambda expressions are invoked,
+following code:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="n">printHelloWorld</span><span class="p">()</span></code></pre></figure>
+
+<p>Is translated into:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="n">Function0</span> <span class="n">printHelloWorld</span> <span class="p">=</span> <span class="p">(</span><span class="n">Function0</span><span class="p">)</span>
+    <span class="n">AppKt</span><span class="err">$</span><span class="n">main</span><span class="err">$</span><span class="n">printHelloWorld</span><span class="err">$</span><span class="m">1</span><span class="p">.</span><span class="n">INSTANCE</span><span class="p">;</span>
+
+<span class="n">printHelloWorld</span><span class="p">.</span><span class="n">invoke</span><span class="p">();</span></code></pre></figure>
+
+<p>Notice that since our lambda expression doesn’t capture
 any external variables in its closure, compiler is free to
 share single lambda instance (contained in
-static field `INSTANCE`) across all codebase.
+static field <code class="highlighter-rouge">INSTANCE</code>) across all codebase.</p>
 
-The case is more complicated when closures are involved,
-for example consider the following code:
-{% highlight kotlin %}
-var value = 0
+<p>The case is more complicated when closures are involved,
+for example consider the following code:</p>
 
-val incValue = { value++ }
-val decValue = { value-- }
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">var</span> <span class="py">value</span> <span class="p">=</span> <span class="m">0</span>
 
-incValue()
-decValue()
+<span class="kd">val</span> <span class="py">incValue</span> <span class="p">=</span> <span class="p">{</span> <span class="n">value</span><span class="p">++</span> <span class="p">}</span>
+<span class="kd">val</span> <span class="py">decValue</span> <span class="p">=</span> <span class="p">{</span> <span class="n">value</span><span class="p">--</span> <span class="p">}</span>
 
-println(value)
-{% endhighlight %}
-As usual Kotlin compiler generated classes for lambdas:
-{% highlight java %}
-final class AppKt$main$incValue$1 extends Lambda implements Function0 {
-   final IntRef $value;
+<span class="n">incValue</span><span class="p">()</span>
+<span class="n">decValue</span><span class="p">()</span>
 
-   AppKt$main$incValue$1(IntRef var1) {
-      super(0);
-      this.$value = var1;
-   }
+<span class="n">println</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></code></pre></figure>
 
-   public final int invoke() {
-      int var1 = this.$value.element++;
-      return var1;
-   }
-}
+<p>As usual Kotlin compiler generated classes for lambdas:</p>
 
-final class AppKt$main$decValue$1 extends Lambda implements Function0 {
-   final IntRef $value;
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">final</span> <span class="kd">class</span> <span class="nc">AppKt</span><span class="n">$main$incValue</span><span class="err">$</span><span class="mi">1</span> <span class="kd">extends</span> <span class="n">Lambda</span> <span class="kd">implements</span> <span class="n">Function0</span> <span class="o">{</span>
+   <span class="kd">final</span> <span class="n">IntRef</span> <span class="n">$value</span><span class="o">;</span>
 
-   AppKt$main$decValue$1(IntRef var1) {
-      super(0);
-      this.$value = var1;
-   }
+   <span class="n">AppKt$main$incValue</span><span class="err">$</span><span class="mi">1</span><span class="o">(</span><span class="n">IntRef</span> <span class="n">var1</span><span class="o">)</span> <span class="o">{</span>
+      <span class="kd">super</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+      <span class="k">this</span><span class="o">.</span><span class="n">$value</span> <span class="o">=</span> <span class="n">var1</span><span class="o">;</span>
+   <span class="o">}</span>
 
-   public final int invoke() {
-      int var1 = this.$value.element;
-      this.$value.element += -1;
-      return var1;
-   }
-}
-{% endhighlight %}
-Both classes generated for lambda expressions now take a single
-parameter of type `IntRef`. As you may suspect this class is a
-wrapper around `value` variable, its definition is again part of Kotlin
-runtime:
-{% highlight java %}
-public final class IntRef implements Serializable {
-   public int element;
+   <span class="kd">public</span> <span class="kd">final</span> <span class="kt">int</span> <span class="nf">invoke</span><span class="o">()</span> <span class="o">{</span>
+      <span class="kt">int</span> <span class="n">var1</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="n">$value</span><span class="o">.</span><span class="na">element</span><span class="o">++;</span>
+      <span class="k">return</span> <span class="n">var1</span><span class="o">;</span>
+   <span class="o">}</span>
+<span class="o">}</span>
 
-   public String toString() {
-      return String.valueOf(this.element);
-   }
-}
-{% endhighlight %}
-This time our original code is compiled into:
-{% highlight java %}
-// var value = 0
-IntRef value = new IntRef();
-value.element = 0;
+<span class="kd">final</span> <span class="kd">class</span> <span class="nc">AppKt</span><span class="n">$main$decValue</span><span class="err">$</span><span class="mi">1</span> <span class="kd">extends</span> <span class="n">Lambda</span> <span class="kd">implements</span> <span class="n">Function0</span> <span class="o">{</span>
+   <span class="kd">final</span> <span class="n">IntRef</span> <span class="n">$value</span><span class="o">;</span>
 
-// val incValue = { value++ }
-Function0 incValue = 
-    (Function0)(new AppKt.main.incValue.1(value));
+   <span class="n">AppKt$main$decValue</span><span class="err">$</span><span class="mi">1</span><span class="o">(</span><span class="n">IntRef</span> <span class="n">var1</span><span class="o">)</span> <span class="o">{</span>
+      <span class="kd">super</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
+      <span class="k">this</span><span class="o">.</span><span class="n">$value</span> <span class="o">=</span> <span class="n">var1</span><span class="o">;</span>
+   <span class="o">}</span>
 
-// val decValue = { value-- }
-Function0 decValue = 
-    (Function0)(new AppKt.main.decValue.1(value));
+   <span class="kd">public</span> <span class="kd">final</span> <span class="kt">int</span> <span class="nf">invoke</span><span class="o">()</span> <span class="o">{</span>
+      <span class="kt">int</span> <span class="n">var1</span> <span class="o">=</span> <span class="k">this</span><span class="o">.</span><span class="n">$value</span><span class="o">.</span><span class="na">element</span><span class="o">;</span>
+      <span class="k">this</span><span class="o">.</span><span class="n">$value</span><span class="o">.</span><span class="na">element</span> <span class="o">+=</span> <span class="o">-</span><span class="mi">1</span><span class="o">;</span>
+      <span class="k">return</span> <span class="n">var1</span><span class="o">;</span>
+   <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-// incValue()
-incValue.invoke();
+<p>Both classes generated for lambda expressions now take a single
+parameter of type <code class="highlighter-rouge">IntRef</code>. As you may suspect this class is a
+wrapper around <code class="highlighter-rouge">value</code> variable, its definition is again part of Kotlin
+runtime:</p>
 
-// decValue()
-decValue.invoke();
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">final</span> <span class="kd">class</span> <span class="nc">IntRef</span> <span class="kd">implements</span> <span class="n">Serializable</span> <span class="o">{</span>
+   <span class="kd">public</span> <span class="kt">int</span> <span class="n">element</span><span class="o">;</span>
 
-// println(value)
-int var4 = value.element;
-System.out.println(var4);
-{% endhighlight %}
-As we can see code generated for lambdas with closures is much
+   <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="k">this</span><span class="o">.</span><span class="na">element</span><span class="o">);</span>
+   <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>This time our original code is compiled into:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// var value = 0</span>
+<span class="n">IntRef</span> <span class="n">value</span> <span class="o">=</span> <span class="k">new</span> <span class="n">IntRef</span><span class="o">();</span>
+<span class="n">value</span><span class="o">.</span><span class="na">element</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+
+<span class="c1">// val incValue = { value++ }</span>
+<span class="n">Function0</span> <span class="n">incValue</span> <span class="o">=</span> 
+    <span class="o">(</span><span class="n">Function0</span><span class="o">)(</span><span class="k">new</span> <span class="n">AppKt</span><span class="o">.</span><span class="na">main</span><span class="o">.</span><span class="na">incValue</span><span class="o">.</span><span class="mi">1</span><span class="o">(</span><span class="n">value</span><span class="o">));</span>
+
+<span class="c1">// val decValue = { value-- }</span>
+<span class="n">Function0</span> <span class="n">decValue</span> <span class="o">=</span> 
+    <span class="o">(</span><span class="n">Function0</span><span class="o">)(</span><span class="k">new</span> <span class="n">AppKt</span><span class="o">.</span><span class="na">main</span><span class="o">.</span><span class="na">decValue</span><span class="o">.</span><span class="mi">1</span><span class="o">(</span><span class="n">value</span><span class="o">));</span>
+
+<span class="c1">// incValue()</span>
+<span class="n">incValue</span><span class="o">.</span><span class="na">invoke</span><span class="o">();</span>
+
+<span class="c1">// decValue()</span>
+<span class="n">decValue</span><span class="o">.</span><span class="na">invoke</span><span class="o">();</span>
+
+<span class="c1">// println(value)</span>
+<span class="kt">int</span> <span class="n">var4</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="na">element</span><span class="o">;</span>
+<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">var4</span><span class="o">);</span></code></pre></figure>
+
+<p>As we can see code generated for lambdas with closures is much
 more complicated. Value of every variable accessed by lambda expression
 must be stored in lambda class field. Primitive types must be wrapped
-in classes like `IntRef` and unwrapped when they values are needed
+in classes like <code class="highlighter-rouge">IntRef</code> and unwrapped when they values are needed
 (reference types are not wrapped).
 Also bear in mind that compiler instantiates plenty of new objects even
 for a simple code used in our example, this may negatively affect
-performance of your application if you are not careful.
+performance of your application if you are not careful.</p>
 
-#### Using receiver object
+<h4 id="using-receiver-object">Using receiver object</h4>
 
-Sometimes we want lambda expression to behave as it was
+<p>Sometimes we want lambda expression to behave as it was
 a method on some object, we will call this object receiver.
 By this I mean that lambda will have
-access to `this` value and also lambda will be able to
+access to <code class="highlighter-rouge">this</code> value and also lambda will be able to
 call other methods on receiver without any qualification. 
 This behaviour is mostly used when we create
-custom [DSLs](https://en.wikipedia.org/wiki/Domain-specific_language)
-(for more details [see Kotlin official documentation](https://kotlinlang.org/docs/reference/type-safe-builders.html)).
+custom <a href="https://en.wikipedia.org/wiki/Domain-specific_language">DSLs</a>
+(for more details <a href="https://kotlinlang.org/docs/reference/type-safe-builders.html">see Kotlin official documentation</a>).</p>
 
-Let's look at a simple example:
-{% highlight kotlin %}
-class DummyObject {
-    fun foo() { println("foo") }
-    fun bar() { println("bar") }
-}
+<p>Let’s look at a simple example:</p>
 
-fun main(args: Array<String>) {
-    val f1: DummyObject.() -> Unit = {
-        // call methods without qualification
-        foo()
-        bar()
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">class</span> <span class="nc">DummyObject</span> <span class="p">{</span>
+    <span class="k">fun</span> <span class="nf">foo</span><span class="p">()</span> <span class="p">{</span> <span class="n">println</span><span class="p">(</span><span class="s">"foo"</span><span class="p">)</span> <span class="p">}</span>
+    <span class="k">fun</span> <span class="nf">bar</span><span class="p">()</span> <span class="p">{</span> <span class="n">println</span><span class="p">(</span><span class="s">"bar"</span><span class="p">)</span> <span class="p">}</span>
+<span class="p">}</span>
 
-        // we can use this
-        this.foo()
+<span class="k">fun</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">:</span> <span class="n">Array</span><span class="p">&lt;</span><span class="n">String</span><span class="p">&gt;)</span> <span class="p">{</span>
+    <span class="kd">val</span> <span class="py">f1</span><span class="p">:</span> <span class="n">DummyObject</span><span class="p">.()</span> <span class="p">-&gt;</span> <span class="n">Unit</span> <span class="p">=</span> <span class="p">{</span>
+        <span class="c1">// call methods without qualification
+</span>        <span class="n">foo</span><span class="p">()</span>
+        <span class="n">bar</span><span class="p">()</span>
 
-        // this will have type of the receiver object
-        val this_: DummyObject = this
-        this_.bar()
-    }
+        <span class="c1">// we can use this
+</span>        <span class="k">this</span><span class="p">.</span><span class="n">foo</span><span class="p">()</span>
 
-    // we can call lambda in a classic way
-    f1(DummyObject())
+        <span class="c1">// this will have type of the receiver object
+</span>        <span class="kd">val</span> <span class="py">this_</span><span class="p">:</span> <span class="n">DummyObject</span> <span class="p">=</span> <span class="k">this</span>
+        <span class="n">this_</span><span class="p">.</span><span class="n">bar</span><span class="p">()</span>
+    <span class="p">}</span>
 
-    // or using more idiomatic syntax
-    val dummy = DummyObject()
-    dummy.f1()
+    <span class="c1">// we can call lambda in a classic way
+</span>    <span class="n">f1</span><span class="p">(</span><span class="n">DummyObject</span><span class="p">())</span>
+
+    <span class="c1">// or using more idiomatic syntax
+</span>    <span class="kd">val</span> <span class="py">dummy</span> <span class="p">=</span> <span class="n">DummyObject</span><span class="p">()</span>
+    <span class="n">dummy</span><span class="p">.</span><span class="n">f1</span><span class="p">()</span>
     
-}
-{% endhighlight %}
-First we declare `f1` to be a lambda that operates on receiver objects
-of type `DummyObject`, to do that we prepend `TypeOfReceiver.` to
+<span class="p">}</span></code></pre></figure>
+
+<p>First we declare <code class="highlighter-rouge">f1</code> to be a lambda that operates on receiver objects
+of type <code class="highlighter-rouge">DummyObject</code>, to do that we prepend <code class="highlighter-rouge">TypeOfReceiver.</code> to
 a function type.
 Then we may call methods on current receiver object without any qualification,
-and use `this` to obtain current receiver.
+and use <code class="highlighter-rouge">this</code> to obtain current receiver.
 Of course when invoking such a lambda we must provide receiver, we can
-either pass it as a first parameter or use special `receiver.lambda_name(args)` syntax.
+either pass it as a first parameter or use special <code class="highlighter-rouge">receiver.lambda_name(args)</code> syntax.</p>
 
-A bit of warning here, in our example if we add `f1()` method to
-our `DummyObject` then that method would be called and not our
-lambda if we use `receiver.lambda_name(args)` syntax:
-{% highlight kotlin %}
-val dummy = DummyObject()
-dummy.f1() // object methods have precedence
-{% endhighlight %}
+<p>A bit of warning here, in our example if we add <code class="highlighter-rouge">f1()</code> method to
+our <code class="highlighter-rouge">DummyObject</code> then that method would be called and not our
+lambda if we use <code class="highlighter-rouge">receiver.lambda_name(args)</code> syntax:</p>
 
-Lambdas with receiver were devised to allow creation of
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">val</span> <span class="py">dummy</span> <span class="p">=</span> <span class="n">DummyObject</span><span class="p">()</span>
+<span class="n">dummy</span><span class="p">.</span><span class="n">f1</span><span class="p">()</span> <span class="p">//</span> <span class="kd">object</span> <span class="nc">methods</span> <span class="n">have</span> <span class="n">precedence</span></code></pre></figure>
+
+<p>Lambdas with receiver were devised to allow creation of
 easy to use DSLs, you should not use them in you code until
-you are building custom DSL.
+you are building custom DSL.</p>
 
-One more thing, sometimes we want to convert a call to an object
-method to a lambda expression. We don't need to use lambdas with
-receiver to achieve that, plain lambda is enough:
-{% highlight kotlin %}
-val dummy = DummyObject()
+<p>One more thing, sometimes we want to convert a call to an object
+method to a lambda expression. We don’t need to use lambdas with
+receiver to achieve that, plain lambda is enough:</p>
 
-val x: ()->Unit = { dummy.foo() }
-x()
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">val</span> <span class="py">dummy</span> <span class="p">=</span> <span class="n">DummyObject</span><span class="p">()</span>
 
-val y = { dummy.bar() }
-y()
-{% endhighlight %}
-Or even better we may use method references (borrowed by Kotlin from Java 8):
-{% highlight kotlin %}
-val dummy = DummyObject()
+<span class="kd">val</span> <span class="py">x</span><span class="p">:</span> <span class="p">()-&gt;</span><span class="n">Unit</span> <span class="p">=</span> <span class="p">{</span> <span class="n">dummy</span><span class="p">.</span><span class="n">foo</span><span class="p">()</span> <span class="p">}</span>
+<span class="n">x</span><span class="p">()</span>
 
-val x: ()->Unit = dummy::foo
-x() // calls foo on dummy
+<span class="kd">val</span> <span class="py">y</span> <span class="p">=</span> <span class="p">{</span> <span class="n">dummy</span><span class="p">.</span><span class="n">bar</span><span class="p">()</span> <span class="p">}</span>
+<span class="n">y</span><span class="p">()</span></code></pre></figure>
 
-val y = dummy::bar
-y() // calls bar on dummy
-{% endhighlight %}
+<p>Or even better we may use method references (borrowed by Kotlin from Java 8):</p>
 
-#### Using lambdas with `inline` methods
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">val</span> <span class="py">dummy</span> <span class="p">=</span> <span class="n">DummyObject</span><span class="p">()</span>
 
-Kotlin supports `inline` methods, they are similar to macros in
+<span class="kd">val</span> <span class="py">x</span><span class="p">:</span> <span class="p">()-&gt;</span><span class="n">Unit</span> <span class="p">=</span> <span class="n">dummy</span><span class="o">::</span><span class="n">foo</span>
+<span class="n">x</span><span class="p">()</span> <span class="c1">// calls foo on dummy
+</span>
+<span class="kd">val</span> <span class="py">y</span> <span class="p">=</span> <span class="n">dummy</span><span class="o">::</span><span class="n">bar</span>
+<span class="n">y</span><span class="p">()</span> <span class="p">//</span> <span class="n">calls</span> <span class="n">bar</span> <span class="n">on</span> <span class="n">dummy</span></code></pre></figure>
+
+<h4 id="using-lambdas-with-inline-methods">Using lambdas with <code class="highlighter-rouge">inline</code> methods</h4>
+
+<p>Kotlin supports <code class="highlighter-rouge">inline</code> methods, they are similar to macros in
 C and LISP and allow us to add new statements to the language.
-To understand how `inline` methods work we will create a new
+To understand how <code class="highlighter-rouge">inline</code> methods work we will create a new
 statement that executes given block of code and reports how much
-time that execution took.
+time that execution took.</p>
 
-We will start with plain method:
-{% highlight kotlin %}
-fun time(blockName: String, codeBlock: ()->Unit) {
-    val startTime = System.currentTimeMillis()
+<p>We will start with plain method:</p>
 
-    try {
-        codeBlock()
-    }
-    finally {
-        val endTime = System.currentTimeMillis()
-        println("execution of $blockName took ${endTime-startTime} ms.")
-    }
-}
-{% endhighlight %}
-Then we may use this method to measure time of e.g. printing new line
-to the standard output:
-{% highlight kotlin %}
-time("simple println", {
-    println("Hello, world!")
-})
-{% endhighlight %}
-This doesn't look very readable, fortunately in Kotlin when last
-function parameter is of function type we may use alternative syntax:
-{% highlight kotlin %}
-time("simple println") {
-    println("Hello, world!")
-}
-{% endhighlight %}
-This looks more like a language statement than a function call, but we still
-call `time` function. Yet we may do even better than that, if we add `inline`
-modifier to the `time` function compiler will inline our function at callsite
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="k">fun</span> <span class="nf">time</span><span class="p">(</span><span class="n">blockName</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span> <span class="n">codeBlock</span><span class="p">:</span> <span class="p">()-&gt;</span><span class="n">Unit</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">val</span> <span class="py">startTime</span> <span class="p">=</span> <span class="n">System</span><span class="p">.</span><span class="n">currentTimeMillis</span><span class="p">()</span>
+
+    <span class="k">try</span> <span class="p">{</span>
+        <span class="n">codeBlock</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="k">finally</span> <span class="p">{</span>
+        <span class="kd">val</span> <span class="py">endTime</span> <span class="p">=</span> <span class="n">System</span><span class="p">.</span><span class="n">currentTimeMillis</span><span class="p">()</span>
+        <span class="n">println</span><span class="p">(</span><span class="s">"execution of $blockName took ${endTime-startTime} ms."</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Then we may use this method to measure time of e.g. printing new line
+to the standard output:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="n">time</span><span class="p">(</span><span class="s">"simple println"</span><span class="p">,</span> <span class="p">{</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">"Hello, world!"</span><span class="p">)</span>
+<span class="p">})</span></code></pre></figure>
+
+<p>This doesn’t look very readable, fortunately in Kotlin when last
+function parameter is of function type we may use alternative syntax:</p>
+
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="n">time</span><span class="p">(</span><span class="s">"simple println"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">"Hello, world!"</span><span class="p">)</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>This looks more like a language statement than a function call, but we still
+call <code class="highlighter-rouge">time</code> function. Yet we may do even better than that, if we add <code class="highlighter-rouge">inline</code>
+modifier to the <code class="highlighter-rouge">time</code> function compiler will inline our function at callsite
 instead of calling it.
-For example with:
-{% highlight kotlin %}
-inline fun time(blockName: String, codeBlock: ()->Unit) {
-{% endhighlight %}
-Our sample call is translated by compiler into:
-{% highlight java %}
-String blockName$iv = "simple println";
-long startTime$iv = System.currentTimeMillis();
+For example with:</p>
 
-String var4, var11;
-long endTime$iv1;
-try {
-    var4 = "Hello, world!";
-    System.out.println(var4);
-}
-finally {
-    endTime$iv1 = System.currentTimeMillis();
-    var11 = "execution of " + blockName$iv + " took " + 
-        (endTime$iv1 - startTime$iv) + " ms.";
-    System.out.println(var11);
-}
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="k">inline</span> <span class="k">fun</span> <span class="nf">time</span><span class="p">(</span><span class="n">blockName</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span> <span class="n">codeBlock</span><span class="p">:</span> <span class="p">()-&gt;</span><span class="n">Unit</span><span class="p">)</span> <span class="p">{</span></code></pre></figure>
 
-Kotlin compiler assumes that if we pass lambda expression to
+<p>Our sample call is translated by compiler into:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">String</span> <span class="n">blockName$iv</span> <span class="o">=</span> <span class="s">"simple println"</span><span class="o">;</span>
+<span class="kt">long</span> <span class="n">startTime$iv</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+
+<span class="n">String</span> <span class="n">var4</span><span class="o">,</span> <span class="n">var11</span><span class="o">;</span>
+<span class="kt">long</span> <span class="n">endTime$iv1</span><span class="o">;</span>
+<span class="k">try</span> <span class="o">{</span>
+    <span class="n">var4</span> <span class="o">=</span> <span class="s">"Hello, world!"</span><span class="o">;</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">var4</span><span class="o">);</span>
+<span class="o">}</span>
+<span class="k">finally</span> <span class="o">{</span>
+    <span class="n">endTime$iv1</span> <span class="o">=</span> <span class="n">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+    <span class="n">var11</span> <span class="o">=</span> <span class="s">"execution of "</span> <span class="o">+</span> <span class="n">blockName$iv</span> <span class="o">+</span> <span class="s">" took "</span> <span class="o">+</span> 
+        <span class="o">(</span><span class="n">endTime$iv1</span> <span class="o">-</span> <span class="n">startTime$iv</span><span class="o">)</span> <span class="o">+</span> <span class="s">" ms."</span><span class="o">;</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">var11</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Kotlin compiler assumes that if we pass lambda expression to
 inline function it also will be inlined. For this reason
-Kotlin allows us to use `break`, `continue`[1] and `return` statements
-in lambdas that are passed to inline functions, for example:
-{% highlight kotlin %}
-time("simple println") {
-    println("Hello, world!")
-    return
-}
-{% endhighlight %}
+Kotlin allows us to use <code class="highlighter-rouge">break</code>, <code class="highlighter-rouge">continue</code>[1] and <code class="highlighter-rouge">return</code> statements
+in lambdas that are passed to inline functions, for example:</p>
 
-Sometimes inline function takes lambda parameter but passes it
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="n">time</span><span class="p">(</span><span class="s">"simple println"</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">"Hello, world!"</span><span class="p">)</span>
+    <span class="k">return</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Sometimes inline function takes lambda parameter but passes it
 to another function, such parameters may not be inlined and should
-be marked with `crossinline` modifier. We may also mark 
-lambda parameter as "noninlineable" with `noinline` modifier.
+be marked with <code class="highlighter-rouge">crossinline</code> modifier. We may also mark 
+lambda parameter as “noninlineable” with <code class="highlighter-rouge">noinline</code> modifier.
 In both cases we will
-not be able to use `return` and other control flow instructions in
-lambdas passed as values to such parameters.
+not be able to use <code class="highlighter-rouge">return</code> and other control flow instructions in
+lambdas passed as values to such parameters.</p>
 
-* [1] - `break` and `continue` are not yet supported, but Kotlin team
- plans to add them to the language in a future release.
+<ul>
+  <li>[1] - <code class="highlighter-rouge">break</code> and <code class="highlighter-rouge">continue</code> are not yet supported, but Kotlin team
+ plans to add them to the language in a future release.</li>
+</ul>
 
-#### Covariance and contravariance
+<h4 id="covariance-and-contravariance">Covariance and contravariance</h4>
 
-Kotlin lambda expressions support 
-[covariance and contravariance](https://en.wikipedia.org/wiki/Covariance_and_contravariance_(computer_science))
-as is illustrated by the following example:
-{% highlight kotlin %}
-val stringProducer: ()->String = { "foo" }
-val anyProducer: ()->Any = stringProducer
+<p>Kotlin lambda expressions support 
+<a href="https://en.wikipedia.org/wiki/Covariance_and_contravariance_(computer_science)">covariance and contravariance</a>
+as is illustrated by the following example:</p>
 
-println(stringProducer())
-println(anyProducer())
+<figure class="highlight"><pre><code class="language-kotlin" data-lang="kotlin"><span class="kd">val</span> <span class="py">stringProducer</span><span class="p">:</span> <span class="p">()-&gt;</span><span class="n">String</span> <span class="p">=</span> <span class="p">{</span> <span class="s">"foo"</span> <span class="p">}</span>
+<span class="kd">val</span> <span class="py">anyProducer</span><span class="p">:</span> <span class="p">()-&gt;</span><span class="n">Any</span> <span class="p">=</span> <span class="n">stringProducer</span>
 
-val anyConsumer: (Any)->Unit = { any -> println("consumed '$any'") }
-val stringConsumer: (String)->Unit = anyConsumer
+<span class="n">println</span><span class="p">(</span><span class="n">stringProducer</span><span class="p">())</span>
+<span class="n">println</span><span class="p">(</span><span class="n">anyProducer</span><span class="p">())</span>
 
-anyConsumer("bar")
-stringConsumer("bar")
-{% endhighlight %}
-We can see that a lambda that returns `String` may be used
-anywhere where a lambda that returns `Any` is expected.
-The same goes for parameters, lambda that takes `Any` parameter
-may be used in place of a function that takes `String` parameter.
+<span class="kd">val</span> <span class="py">anyConsumer</span><span class="p">:</span> <span class="p">(</span><span class="n">Any</span><span class="p">)-&gt;</span><span class="n">Unit</span> <span class="p">=</span> <span class="p">{</span> <span class="n">any</span> <span class="p">-&gt;</span> <span class="n">println</span><span class="p">(</span><span class="s">"consumed '$any'"</span><span class="p">)</span> <span class="p">}</span>
+<span class="kd">val</span> <span class="py">stringConsumer</span><span class="p">:</span> <span class="p">(</span><span class="n">String</span><span class="p">)-&gt;</span><span class="n">Unit</span> <span class="p">=</span> <span class="n">anyConsumer</span>
 
-#### How to decompile Kotlin code
+<span class="n">anyConsumer</span><span class="p">(</span><span class="s">"bar"</span><span class="p">)</span>
+<span class="n">stringConsumer</span><span class="p">(</span><span class="s">"bar"</span><span class="p">)</span></code></pre></figure>
 
-To provide decompiled code samples I used [Bytecode Viewer](https://github.com/Konloch/bytecode-viewer/releases) with [FernFlower](https://github.com/fesh0r/fernflower) engine:
-![Bytecode Viewer main window](assets/images/2017-06-10/bytecode_viewer.png)
+<p>We can see that a lambda that returns <code class="highlighter-rouge">String</code> may be used
+anywhere where a lambda that returns <code class="highlighter-rouge">Any</code> is expected.
+The same goes for parameters, lambda that takes <code class="highlighter-rouge">Any</code> parameter
+may be used in place of a function that takes <code class="highlighter-rouge">String</code> parameter.</p>
 
+<h4 id="how-to-decompile-kotlin-code">How to decompile Kotlin code</h4>
+
+<p>To provide decompiled code samples I used <a href="https://github.com/Konloch/bytecode-viewer/releases">Bytecode Viewer</a> with <a href="https://github.com/fesh0r/fernflower">FernFlower</a> engine:
+<img src="assets/images/2017-06-10/bytecode_viewer.png" alt="Bytecode Viewer main window" /></p>
 
 
 	  ]]></description>

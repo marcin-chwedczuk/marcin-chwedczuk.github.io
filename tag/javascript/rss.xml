@@ -18,141 +18,139 @@
 	  <pubDate>2016-11-12T01:00:01+01:00</pubDate>
 	  <guid>//JavaScript-in-and-delete-operators</guid>
 	  <description><![CDATA[
-	     In this post I will describe `in` and `delete` JavaScript operators.
+	     <p>In this post I will describe <code class="highlighter-rouge">in</code> and <code class="highlighter-rouge">delete</code> JavaScript operators.</p>
 
-Operator `in` can be used to check if given object has given property:
-{% highlight javascript %}
-var obj = {
-	propA: 'xxx',
-	propB: { someData: 101 }
-};
+<p>Operator <code class="highlighter-rouge">in</code> can be used to check if given object has given property:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="na">propA</span><span class="p">:</span> <span class="s1">'xxx'</span><span class="p">,</span>
+	<span class="na">propB</span><span class="p">:</span> <span class="p">{</span> <span class="na">someData</span><span class="p">:</span> <span class="mi">101</span> <span class="p">}</span>
+<span class="p">};</span>
 	
-console.log('propA' in obj); // true
-console.log('notExisting' in obj); // false
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'propA'</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">);</span> <span class="c1">// true</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'notExisting'</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">);</span> <span class="c1">// false</span>
 	
-obj.notExisting = 'xxx';
-console.log('notExisting' in obj); // true
+<span class="nx">obj</span><span class="p">.</span><span class="nx">notExisting</span> <span class="o">=</span> <span class="s1">'xxx'</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'notExisting'</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">);</span> <span class="c1">// true</span>
 
-var propName = 'propA';
-console.log(propName in obj); // true
-{% endhighlight %}
-While checking if object has given property `in` also checks
-prototype chain:
-{% highlight javascript %}
-var proto = {
-	propA: 'xxx'
-};
+<span class="kd">var</span> <span class="nx">propName</span> <span class="o">=</span> <span class="s1">'propA'</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">propName</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">);</span> <span class="c1">// true</span></code></pre></figure>
+
+<p>While checking if object has given property <code class="highlighter-rouge">in</code> also checks
+prototype chain:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">proto</span> <span class="o">=</span> <span class="p">{</span>
+	<span class="na">propA</span><span class="p">:</span> <span class="s1">'xxx'</span>
+<span class="p">};</span>
 	
-var obj = Object.create(proto);
-obj.propB = 'yyy';
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">proto</span><span class="p">);</span>
+<span class="nx">obj</span><span class="p">.</span><span class="nx">propB</span> <span class="o">=</span> <span class="s1">'yyy'</span><span class="p">;</span>
 	
-console.log('toString' in obj); // true - from Object
-console.log('propA' in obj); // true - from proto
-console.log('propB' in obj); // true - own property
-{% endhighlight %}
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'toString'</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">);</span> <span class="c1">// true - from Object</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'propA'</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">);</span> <span class="c1">// true - from proto</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'propB'</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">);</span> <span class="c1">// true - own property</span></code></pre></figure>
 
-Adding properties to objects in JavaScript is easy, what's about removing?
-{% highlight javascript %}
-var obj = { };
-obj.prop = 1;
+<p>Adding properties to objects in JavaScript is easy, what’s about removing?</p>
 
-// attempt to remove prop
-obj.prop = undefined;
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span> <span class="p">};</span>
+<span class="nx">obj</span><span class="p">.</span><span class="nx">prop</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
 
-// assigning undefined to property doesn't remove it 
-console.log('prop' in obj); // true
-console.log(Object.keys(obj)); // ["prop"]
+<span class="c1">// attempt to remove prop</span>
+<span class="nx">obj</span><span class="p">.</span><span class="nx">prop</span> <span class="o">=</span> <span class="kc">undefined</span><span class="p">;</span>
 
-delete obj.prop;
-// or delete obj['prop'];
+<span class="c1">// assigning undefined to property doesn't remove it </span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'prop'</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">);</span> <span class="c1">// true</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">obj</span><span class="p">));</span> <span class="c1">// ["prop"]</span>
 
-// now property is gone
-console.log('prop' in obj); // false 
-console.log(Object.keys(obj)); // []
-{% endhighlight %}
-But we cannot delete anything from prototype chain:
-{% highlight javascript %}
-var proto = { prop: 1 };
-var obj = Object.create(proto);
+<span class="k">delete</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">prop</span><span class="p">;</span>
+<span class="c1">// or delete obj['prop'];</span>
 
-console.log('prop' in obj); // true
-console.log(Object.keys(obj)); // []
+<span class="c1">// now property is gone</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'prop'</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">);</span> <span class="c1">// false </span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">obj</span><span class="p">));</span> <span class="c1">// []</span></code></pre></figure>
 
-delete obj.prop;
+<p>But we cannot delete anything from prototype chain:</p>
 
-// nothing changed
-console.log('prop' in obj); // true
-console.log(Object.keys(obj)); // []
-{% endhighlight %}
-Also in strict mode we cannot delete global functions and variables
-but we can delete properties of `window` object:
-{% highlight javascript %}
-function globalFunc() { }
-var globalVar = 1;
-window.globalViaProp = 1;
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">proto</span> <span class="o">=</span> <span class="p">{</span> <span class="na">prop</span><span class="p">:</span> <span class="mi">1</span> <span class="p">};</span>
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">proto</span><span class="p">);</span>
 
-(function () {
-  'use strict';
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'prop'</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">);</span> <span class="c1">// true</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">obj</span><span class="p">));</span> <span class="c1">// []</span>
 
-  // "SyntaxError: Delete of an unqualified identifier in strict mode.
-  // delete globalFunc;
-  // delete globalVar;
-  // delete globalViaProp;
+<span class="k">delete</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">prop</span><span class="p">;</span>
+
+<span class="c1">// nothing changed</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'prop'</span> <span class="k">in</span> <span class="nx">obj</span><span class="p">);</span> <span class="c1">// true</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">Object</span><span class="p">.</span><span class="nx">keys</span><span class="p">(</span><span class="nx">obj</span><span class="p">));</span> <span class="c1">// []</span></code></pre></figure>
+
+<p>Also in strict mode we cannot delete global functions and variables
+but we can delete properties of <code class="highlighter-rouge">window</code> object:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">globalFunc</span><span class="p">()</span> <span class="p">{</span> <span class="p">}</span>
+<span class="kd">var</span> <span class="nx">globalVar</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="nb">window</span><span class="p">.</span><span class="nx">globalViaProp</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+
+<span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="s1">'use strict'</span><span class="p">;</span>
+
+  <span class="c1">// "SyntaxError: Delete of an unqualified identifier in strict mode.</span>
+  <span class="c1">// delete globalFunc;</span>
+  <span class="c1">// delete globalVar;</span>
+  <span class="c1">// delete globalViaProp;</span>
   
-  // "TypeError: Cannot delete property 'globalVar' of #<Window>
-  // delete window.globalVar;
-  // delete window.globalFunc;
-  delete window.globalViaProp; // ok
+  <span class="c1">// "TypeError: Cannot delete property 'globalVar' of #&lt;Window&gt;</span>
+  <span class="c1">// delete window.globalVar;</span>
+  <span class="c1">// delete window.globalFunc;</span>
+  <span class="k">delete</span> <span class="nb">window</span><span class="p">.</span><span class="nx">globalViaProp</span><span class="p">;</span> <span class="c1">// ok</span>
  
-})();
-{% endhighlight %}
-As usual with JavaScript without strict mode you won't get any of these errors.
+<span class="p">})();</span></code></pre></figure>
 
-And what if you want to make one of your own properties undeletable?  
-No problem just mark is as a non configurable prop:
-{% highlight javascript %}
-(function () {
-  'use strict';
+<p>As usual with JavaScript without strict mode you won’t get any of these errors.</p>
 
-  var obj = {};
-  
-  Object.defineProperty(obj, 'nonDeletable', {
-    value: 'foo forever',
-    writable: false,
-    configurable: false, // cannot be deleted
-    enumerable: true
-  });
-  
-  console.log(obj.nonDeletable);
-  
-  // strict mode again:
-  // "TypeError: Cannot delete property 'nonDeletable' 
-  // delete obj.nonDeletable;
-})();
-{% endhighlight %}
+<p>And what if you want to make one of your own properties undeletable?<br />
+No problem just mark is as a non configurable prop:</p>
 
-The last thing about `delete` to remember is that it returns `true`
-when it manages to remove property and `false` otherwise.
-If you think that this may be useful, look at the example below:
-{% highlight javascript %}
-var proto = { foo: 1};
-var obj = Object.create(proto);
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="s1">'use strict'</span><span class="p">;</span>
+
+  <span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{};</span>
+  
+  <span class="nb">Object</span><span class="p">.</span><span class="nx">defineProperty</span><span class="p">(</span><span class="nx">obj</span><span class="p">,</span> <span class="s1">'nonDeletable'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">value</span><span class="p">:</span> <span class="s1">'foo forever'</span><span class="p">,</span>
+    <span class="na">writable</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+    <span class="na">configurable</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span> <span class="c1">// cannot be deleted</span>
+    <span class="na">enumerable</span><span class="p">:</span> <span class="kc">true</span>
+  <span class="p">});</span>
+  
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">nonDeletable</span><span class="p">);</span>
+  
+  <span class="c1">// strict mode again:</span>
+  <span class="c1">// "TypeError: Cannot delete property 'nonDeletable' </span>
+  <span class="c1">// delete obj.nonDeletable;</span>
+<span class="p">})();</span></code></pre></figure>
+
+<p>The last thing about <code class="highlighter-rouge">delete</code> to remember is that it returns <code class="highlighter-rouge">true</code>
+when it manages to remove property and <code class="highlighter-rouge">false</code> otherwise.
+If you think that this may be useful, look at the example below:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">proto</span> <span class="o">=</span> <span class="p">{</span> <span class="na">foo</span><span class="p">:</span> <span class="mi">1</span><span class="p">};</span>
+<span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="nb">Object</span><span class="p">.</span><span class="nx">create</span><span class="p">(</span><span class="nx">proto</span><span class="p">);</span>
 	
-// property was not removed but we get true
-console.log(delete obj.foo); // true
-console.log(obj.foo); // 1
+<span class="c1">// property was not removed but we get true</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">delete</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">foo</span><span class="p">);</span> <span class="c1">// true</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">foo</span><span class="p">);</span> <span class="c1">// 1</span>
 	
-// property didn't exist but we get true again
-console.log(delete obj.bar); // true
-console.log(obj.bar); // undefined 
-{% endhighlight %}
-OK OK to be honest `delete` returns `true` when object 
-doesn't have *own* property after executing delete operation.
-In other words if `delete` returns `true` we may be certain 
-that property name doesn't appear
-in array returned by `Object.keys()`.
+<span class="c1">// property didn't exist but we get true again</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">delete</span> <span class="nx">obj</span><span class="p">.</span><span class="nx">bar</span><span class="p">);</span> <span class="c1">// true</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">obj</span><span class="p">.</span><span class="nx">bar</span><span class="p">);</span> <span class="c1">// undefined </span></code></pre></figure>
 
-The End
+<p>OK OK to be honest <code class="highlighter-rouge">delete</code> returns <code class="highlighter-rouge">true</code> when object 
+doesn’t have <em>own</em> property after executing delete operation.
+In other words if <code class="highlighter-rouge">delete</code> returns <code class="highlighter-rouge">true</code> we may be certain 
+that property name doesn’t appear
+in array returned by <code class="highlighter-rouge">Object.keys()</code>.</p>
+
+<p>The End</p>
 
 	  ]]></description>
 	</item>
@@ -164,328 +162,325 @@ The End
 	  <pubDate>2016-10-30T02:00:00+02:00</pubDate>
 	  <guid>//hoisting-in-javascript</guid>
 	  <description><![CDATA[
-	     In this post I will describe what is variable hoisting in JavaScript.
-But before we go into detailed explanations let's look at
-a few code examples.
+	     <p>In this post I will describe what is variable hoisting in JavaScript.
+But before we go into detailed explanations let’s look at
+a few code examples.</p>
 
-Let's start with function `bad()` that tries to
-access not defined variable:
-{% highlight javascript %}
-function bad() {
-    console.log(notDefinedVariable);
-}
+<p>Let’s start with function <code class="highlighter-rouge">bad()</code> that tries to
+access not defined variable:</p>
 
-bad();
-// result:
-// "ReferenceError: notDefinedVariable is not defined
-{% endhighlight %}
-As we would expected attempt to read `notDefinedVariable`
-ends with an error, namely `ReferenceError` exception.
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">bad</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">notDefinedVariable</span><span class="p">);</span>
+<span class="p">}</span>
 
-Now you may be wondering what will happen when we try
-to write value to not defined variable:
-{% highlight javascript %}
-function bad2() {
-    notDefinedVariable = 'fufufu';
-}
+<span class="nx">bad</span><span class="p">();</span>
+<span class="c1">// result:</span>
+<span class="c1">// "ReferenceError: notDefinedVariable is not defined</span></code></pre></figure>
 
-bad2(); // no error
+<p>As we would expected attempt to read <code class="highlighter-rouge">notDefinedVariable</code>
+ends with an error, namely <code class="highlighter-rouge">ReferenceError</code> exception.</p>
 
-console.log(notDefinedVariable);
-// prints: "fufufu"
-{% endhighlight %}
-In this case we get no error and everything seems to work,
-but after a call to `bad2()` `notDefinedVariable` is still visible.
+<p>Now you may be wondering what will happen when we try
+to write value to not defined variable:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">bad2</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">notDefinedVariable</span> <span class="o">=</span> <span class="s1">'fufufu'</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">bad2</span><span class="p">();</span> <span class="c1">// no error</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">notDefinedVariable</span><span class="p">);</span>
+<span class="c1">// prints: "fufufu"</span></code></pre></figure>
+
+<p>In this case we get no error and everything seems to work,
+but after a call to <code class="highlighter-rouge">bad2()</code> <code class="highlighter-rouge">notDefinedVariable</code> is still visible.
 What happened here is that we accidentally create 
-`notDefinedVariable` *global* variable.
+<code class="highlighter-rouge">notDefinedVariable</code> <em>global</em> variable.</p>
 
-Using global variables is regarded by many programmers as
+<p>Using global variables is regarded by many programmers as
 bad practice, especially when you can create them accidentally.
 To prevent errors and encourage good programming style 
 ECMAScript 5 standard (which defines JavaScript language)
-introduced so called *strict mode*.
-We can enable strict mode by beginning function with `'use strict';`
+introduced so called <em>strict mode</em>.
+We can enable strict mode by beginning function with <code class="highlighter-rouge">'use strict';</code>
 instruction.
-With strict mode enabled we get `ReferenceError` exception
-when we try to write to undefined variable:
-{% highlight javascript %}
-function bad3() {
-    'use strict';
-    notDefinedVariable = 'fufufu';
-}
+With strict mode enabled we get <code class="highlighter-rouge">ReferenceError</code> exception
+when we try to write to undefined variable:</p>
 
-bad3();
-// result: "ReferenceError: undefinedVariable is not defined
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">bad3</span><span class="p">()</span> <span class="p">{</span>
+    <span class="s1">'use strict'</span><span class="p">;</span>
+    <span class="nx">notDefinedVariable</span> <span class="o">=</span> <span class="s1">'fufufu'</span><span class="p">;</span>
+<span class="p">}</span>
 
-You may be wondering what will happen when we declare
-variable but didn't assign any value to it, will we get
-an error while accessing variable value or not?
-{% highlight javascript %}
-function soSo() {
-    'use strict';
+<span class="nx">bad3</span><span class="p">();</span>
+<span class="c1">// result: "ReferenceError: undefinedVariable is not defined</span></code></pre></figure>
+
+<p>You may be wondering what will happen when we declare
+variable but didn’t assign any value to it, will we get
+an error while accessing variable value or not?</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">soSo</span><span class="p">()</span> <span class="p">{</span>
+    <span class="s1">'use strict'</span><span class="p">;</span>
     
-    var foo;
-    console.log(foo);
-}
+    <span class="kd">var</span> <span class="nx">foo</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">foo</span><span class="p">);</span>
+<span class="p">}</span>
 
-soSo();
-// prints: undefined
-{% endhighlight %}
-We didn't get an error, that's because variables declared using `var` keyword
-initially have value of `undefined` until explicitly assigned by the user.
+<span class="nx">soSo</span><span class="p">();</span>
+<span class="c1">// prints: undefined</span></code></pre></figure>
 
-Now let's look on a bit more complicated example:
-{% highlight javascript %}
-function hoisting1() {
-    'use strict';
+<p>We didn’t get an error, that’s because variables declared using <code class="highlighter-rouge">var</code> keyword
+initially have value of <code class="highlighter-rouge">undefined</code> until explicitly assigned by the user.</p>
 
-    console.log(x);
+<p>Now let’s look on a bit more complicated example:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">hoisting1</span><span class="p">()</span> <span class="p">{</span>
+    <span class="s1">'use strict'</span><span class="p">;</span>
+
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
     
-    var x = 3;
-    console.log(x);
-}
+    <span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+<span class="p">}</span>
 
-hoisting1();
-// prints: undefined 3
-{% endhighlight %}
-You may wonder what happened here. We already know that reading
-from undefined variables causes `ReferenceError` exception, but
-why first call to `console.log(x)` didn't throw any?
-And what about `undefined` value that was printed, 
+<span class="nx">hoisting1</span><span class="p">();</span>
+<span class="c1">// prints: undefined 3</span></code></pre></figure>
+
+<p>You may wonder what happened here. We already know that reading
+from undefined variables causes <code class="highlighter-rouge">ReferenceError</code> exception, but
+why first call to <code class="highlighter-rouge">console.log(x)</code> didn’t throw any?
+And what about <code class="highlighter-rouge">undefined</code> value that was printed, 
 we know that this is the value of declared but not initialized variables.
-So to sum up this function behaves as if variable `x` was declared
-at the very beginning of `hoisting1` function:
-{% highlight javascript %}
-function hoisting1() {
-    'use strict';
-    
-    var x;
+So to sum up this function behaves as if variable <code class="highlighter-rouge">x</code> was declared
+at the very beginning of <code class="highlighter-rouge">hoisting1</code> function:</p>
 
-    console.log(x);
-    x = 3;
-    console.log(x);
-}
-{% endhighlight %}
-And this is what hoisting is all about. In JavaScript it doesn't
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">hoisting1</span><span class="p">()</span> <span class="p">{</span>
+    <span class="s1">'use strict'</span><span class="p">;</span>
+    
+    <span class="kd">var</span> <span class="nx">x</span><span class="p">;</span>
+
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+    <span class="nx">x</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>And this is what hoisting is all about. In JavaScript it doesn’t
 matter where you declare variables inside function body
 because they declarations will be implicitly 
 moved to the beginning of the function.
-For example `func1()` when processed by JavaScript interpreter
-behaves exactly the same as `func2()`:
-{% highlight javascript %}
-function func1() {
-    'use strict';
+For example <code class="highlighter-rouge">func1()</code> when processed by JavaScript interpreter
+behaves exactly the same as <code class="highlighter-rouge">func2()</code>:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">func1</span><span class="p">()</span> <span class="p">{</span>
+    <span class="s1">'use strict'</span><span class="p">;</span>
     
-    var x = 1;
-    console.log(x);
+    <span class="kd">var</span> <span class="nx">x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
 
-    for (var i = 0; i < 3; i += 1) {
-        console.log(i);
-    }
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+    <span class="p">}</span>
 
-    if (x > 0.5) {
-       var y = 2*x;
-       console.log(y);
-    }
-}
+    <span class="k">if</span> <span class="p">(</span><span class="nx">x</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span> <span class="p">{</span>
+       <span class="kd">var</span> <span class="nx">y</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="nx">x</span><span class="p">;</span>
+       <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">y</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 
-function func2() {
-    'use strict';
+<span class="kd">function</span> <span class="nx">func2</span><span class="p">()</span> <span class="p">{</span>
+    <span class="s1">'use strict'</span><span class="p">;</span>
 
-    var x, i, y;
+    <span class="kd">var</span> <span class="nx">x</span><span class="p">,</span> <span class="nx">i</span><span class="p">,</span> <span class="nx">y</span><span class="p">;</span>
 
-    x = 1;
-    console.log(x);
+    <span class="nx">x</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">x</span><span class="p">);</span>
 
-    for (i = 0; i < 3; i += 1) {
-        console.log(i);
-    }
+    <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+    <span class="p">}</span>
 
-    if (x > 0.5) {
-       y = 2*x;
-       console.log(y);
-    }
-}
-{% endhighlight %}
+    <span class="k">if</span> <span class="p">(</span><span class="nx">x</span> <span class="o">&gt;</span> <span class="mf">0.5</span><span class="p">)</span> <span class="p">{</span>
+       <span class="nx">y</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="nx">x</span><span class="p">;</span>
+       <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">y</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
 
-As you may expect hoisting can make troubles when we are not
-alert, for example can you spot a bug here:
-{% highlight javascript %}
-function withBug() {
-    'use strict';
-    var arrayI = [1,2,3],
-        arrayJ = [3,2,1];
+<p>As you may expect hoisting can make troubles when we are not
+alert, for example can you spot a bug here:</p>
 
-    for (var i = 0; i < arrayI.length; i += 1) {
-        arrayI[i] += 1;
-    }
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">withBug</span><span class="p">()</span> <span class="p">{</span>
+    <span class="s1">'use strict'</span><span class="p">;</span>
+    <span class="kd">var</span> <span class="nx">arrayI</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span>
+        <span class="nx">arrayJ</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">];</span>
 
-    for (var j = 0; j < arrayJ.length; j += 1) {
-        if (arrayJ[j] == 2) {
-            console.log(arrayJ[i]);
-            break;
-        }
-    }
-}
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">arrayI</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">arrayI</span><span class="p">[</span><span class="nx">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
 
-withBug();
-// prints: undefined
-{% endhighlight %}
-If `i` was accessible only inside `for(var i ...)` loop
-interpreter would spot problem with `console.log(arrayJ[i])` line
-and would thrown a `ReferenceError` exception. Unfortunately 
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="nx">arrayJ</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">j</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">arrayJ</span><span class="p">[</span><span class="nx">j</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">arrayJ</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">withBug</span><span class="p">();</span>
+<span class="c1">// prints: undefined</span></code></pre></figure>
+
+<p>If <code class="highlighter-rouge">i</code> was accessible only inside <code class="highlighter-rouge">for(var i ...)</code> loop
+interpreter would spot problem with <code class="highlighter-rouge">console.log(arrayJ[i])</code> line
+and would thrown a <code class="highlighter-rouge">ReferenceError</code> exception. Unfortunately 
 because of hoisting
-variable `i` is accessible through entire function body and only
-wrong behaviour of our program can tell us that something is wrong.
+variable <code class="highlighter-rouge">i</code> is accessible through entire function body and only
+wrong behaviour of our program can tell us that something is wrong.</p>
 
-So how can we make our programs secure against bugs caused by
+<p>So how can we make our programs secure against bugs caused by
 hoisting? The simples thing to do is to declare all function
 variables at the beginning of function body, thus making
-hoisting explicit:
-{% highlight javascript %}
-function sum(array) {
-    'use strict';
+hoisting explicit:</p>
 
-    // declare all variables at the beginning   
-    var arrSum = 0, i;
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">sum</span><span class="p">(</span><span class="nx">array</span><span class="p">)</span> <span class="p">{</span>
+    <span class="s1">'use strict'</span><span class="p">;</span>
+
+    <span class="c1">// declare all variables at the beginning   </span>
+    <span class="kd">var</span> <span class="nx">arrSum</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">i</span><span class="p">;</span>
   
-    for (i = 0; i < array.length; i += 1) {
-      arrSum += array[i];
-    }
+    <span class="k">for</span> <span class="p">(</span><span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">array</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">arrSum</span> <span class="o">+=</span> <span class="nx">array</span><span class="p">[</span><span class="nx">i</span><span class="p">];</span>
+    <span class="p">}</span>
   
-    return arrSum;
-}
-{% endhighlight %}
-This is simple and effective solution but a bit cumbersome to use,
+    <span class="k">return</span> <span class="nx">arrSum</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>This is simple and effective solution but a bit cumbersome to use,
 it would be better to declare variables in the place of their first usage
 right? So the second solution is to just ignore the problem, if
 you are keeping size of your function small (no longer than 20 lines
 of code) and you follow good coding practices (especially you give
-your variables good descriptive names, and prefer `forEach` method to
-`for` loops)
-you should have no problems with hoisting.
+your variables good descriptive names, and prefer <code class="highlighter-rouge">forEach</code> method to
+<code class="highlighter-rouge">for</code> loops)
+you should have no problems with hoisting.</p>
 
-In some cases you really want to reduce visibility of a variable to
+<p>In some cases you really want to reduce visibility of a variable to
 some block of code, the popular solution to this problem is 
-to use [IIFE pattern](https://developer.mozilla.org/en-US/docs/Glossary/IIFE):
-{% highlight javascript %}
-function iife() {
-    'use strict';
+to use <a href="https://developer.mozilla.org/en-US/docs/Glossary/IIFE">IIFE pattern</a>:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">iife</span><span class="p">()</span> <span class="p">{</span>
+    <span class="s1">'use strict'</span><span class="p">;</span>
     
-    // following line produces: ReferenceError: i is not defined
-    // console.log('before IIFE: ' + i);
+    <span class="c1">// following line produces: ReferenceError: i is not defined</span>
+    <span class="c1">// console.log('before IIFE: ' + i);</span>
   
-    // iife expression - we declare anonymous
-    // function and immediately invoke it
-    (function() {
-      for (var i = 0; i < 3; i+=1) {
-        console.log(i);
-      }
-    }());
+    <span class="c1">// iife expression - we declare anonymous</span>
+    <span class="c1">// function and immediately invoke it</span>
+    <span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="nx">i</span><span class="o">+=</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">}());</span>
   
-    // following line produces: ReferenceError: i is not defined
-    // console.log('after IIFE: ' + i);
-}
+    <span class="c1">// following line produces: ReferenceError: i is not defined</span>
+    <span class="c1">// console.log('after IIFE: ' + i);</span>
+<span class="p">}</span>
 
-iife();
-// prints: 0 1 2
-{% endhighlight %}
-Here variable `i` is visible only inside IIFE expression.
-Using IIFE has it's own problems especially when we want to
-access `this` value inside IIFE expression.
-We must either pass `this` via local variable:
-{% highlight javascript %}
-function foo() {
-	// it is a convention to call such a variable
-	// that or self
-	var that = this;
+<span class="nx">iife</span><span class="p">();</span>
+<span class="c1">// prints: 0 1 2</span></code></pre></figure>
 
-	(function() {
-		that.someMethod();
-	}());
-}
-{% endhighlight %}
-or use `call()` to invoke function:
-{% highlight javascript %}
-function foo() {
-	(function() {
-		this.someMethod();
-	}).call(this);
-}
-{% endhighlight %}
+<p>Here variable <code class="highlighter-rouge">i</code> is visible only inside IIFE expression.
+Using IIFE has it’s own problems especially when we want to
+access <code class="highlighter-rouge">this</code> value inside IIFE expression.
+We must either pass <code class="highlighter-rouge">this</code> via local variable:</p>
 
-Almost every popular language (e.g. Java, C#, C++) follows block scoping
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+	<span class="c1">// it is a convention to call such a variable</span>
+	<span class="c1">// that or self</span>
+	<span class="kd">var</span> <span class="nx">that</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+
+	<span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+		<span class="nx">that</span><span class="p">.</span><span class="nx">someMethod</span><span class="p">();</span>
+	<span class="p">}());</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>or use <code class="highlighter-rouge">call()</code> to invoke function:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+	<span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">this</span><span class="p">.</span><span class="nx">someMethod</span><span class="p">();</span>
+	<span class="p">}).</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Almost every popular language (e.g. Java, C#, C++) follows block scoping
 rules, this means that variable is visible only inside a block of
-code in which it is declared. For example in Java:
-{% highlight java %}
-int i = 0;
-{
-	int j = 3;
-	// we can use i and j here
-}
-// j no longer visible here
-for (int k = 0; k < 3; k++ ) {
-	// k and i are visible here
-}
-// k is no longer visible here
-// but we can access i
-{% endhighlight %}
-Compare this with JavaScript version:
-{% highlight javascript %}
-// can use i, j and k here
-var i = 0;
-// can use i, j and k here
-{
-	var j = 3;
-	// can use i, j and k here
-}
-// can use i, j and k here
-for (var k = 0; k < 3; k++ ) {
-	// can use i, j and k here
-}
-// can use i, j and k here
-{% endhighlight %}
-If you have this strange feeling that something is wrong here
+code in which it is declared. For example in Java:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+<span class="o">{</span>
+	<span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">3</span><span class="o">;</span>
+	<span class="c1">// we can use i and j here</span>
+<span class="o">}</span>
+<span class="c1">// j no longer visible here</span>
+<span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">k</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">;</span> <span class="n">k</span><span class="o">++</span> <span class="o">)</span> <span class="o">{</span>
+	<span class="c1">// k and i are visible here</span>
+<span class="o">}</span>
+<span class="c1">// k is no longer visible here</span>
+<span class="c1">// but we can access i</span></code></pre></figure>
+
+<p>Compare this with JavaScript version:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="c1">// can use i, j and k here</span>
+<span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="c1">// can use i, j and k here</span>
+<span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+	<span class="c1">// can use i, j and k here</span>
+<span class="p">}</span>
+<span class="c1">// can use i, j and k here</span>
+<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">k</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">k</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="nx">k</span><span class="o">++</span> <span class="p">)</span> <span class="p">{</span>
+	<span class="c1">// can use i, j and k here</span>
+<span class="p">}</span>
+<span class="c1">// can use i, j and k here</span></code></pre></figure>
+
+<p>If you have this strange feeling that something is wrong here
 you are not the only one.
 JavaScript community decided to introduce proper lexical scoping
 to JavaScript in ECMAScript 2015 standard (sometimes called ES6).
-ECMAScript 2015 introduces a new JavaScript keyword `let` that
-works like `var` but with lexical scoping.
-Here's how our example looks with `let`:
-{% highlight javascript %}
-function letTest() {
-	'use strict';
-	let i = 0;
-	{
-		let j = 3;
-	}
-	// cannot use j here
-	for (let k = 0; k < 10; k++) {
-		console.log(k);
-	}
-	// cannot use k here 
-}
+ECMAScript 2015 introduces a new JavaScript keyword <code class="highlighter-rouge">let</code> that
+works like <code class="highlighter-rouge">var</code> but with lexical scoping.
+Here’s how our example looks with <code class="highlighter-rouge">let</code>:</p>
 
-letTest();
-{% endhighlight %}
-`let` also prohibits redeclarations of variables:
-{% highlight javascript %}
-function foo() {
-	var i = 3;
-	var i = 7; // ok
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">letTest</span><span class="p">()</span> <span class="p">{</span>
+	<span class="s1">'use strict'</span><span class="p">;</span>
+	<span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="p">{</span>
+		<span class="kd">let</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="c1">// cannot use j here</span>
+	<span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">k</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">k</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span> <span class="nx">k</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">k</span><span class="p">);</span>
+	<span class="p">}</span>
+	<span class="c1">// cannot use k here </span>
+<span class="p">}</span>
 
-	let j = 3;
-	let j = 7; // error
-}
-{% endhighlight %}
-Support of ES6 among browsers is pretty good right now (you may also use it
+<span class="nx">letTest</span><span class="p">();</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">let</code> also prohibits redeclarations of variables:</p>
+
+<figure class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">function</span> <span class="nx">foo</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+	<span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span> <span class="c1">// ok</span>
+
+	<span class="kd">let</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+	<span class="kd">let</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span> <span class="c1">// error</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Support of ES6 among browsers is pretty good right now (you may also use it
 with node.js), but I guess if you have a chance to work with ES6 you most
 probably will be transpiling ES6 code into ES5 code (a plain old JavaScript)
-using Babel or some other transpiler.
+using Babel or some other transpiler.</p>
 
-I hope you now know what hoisting is and what troubles it can make.
-If you have any remarks how I can improve this article please leave a comment.
+<p>I hope you now know what hoisting is and what troubles it can make.
+If you have any remarks how I can improve this article please leave a comment.</p>
 
 	  ]]></description>
 	</item>
@@ -497,214 +492,214 @@ If you have any remarks how I can improve this article please leave a comment.
 	  <pubDate>2016-07-09T02:00:00+02:00</pubDate>
 	  <guid>//how-nulls-are-handled-in-switch-statement</guid>
 	  <description><![CDATA[
-	     Let's start with C#. In C# `null`s may show up in `switch` statement in two cases:
+	     <p>Let’s start with C#. In C# <code class="highlighter-rouge">null</code>s may show up in <code class="highlighter-rouge">switch</code> statement in two cases:</p>
 
-1. We `switch` on `string` type
-2. We `switch` on nullable `char`, nullable integral type (`byte`, `short` etc.) 
- or nullable enum
+<ol>
+  <li>We <code class="highlighter-rouge">switch</code> on <code class="highlighter-rouge">string</code> type</li>
+  <li>We <code class="highlighter-rouge">switch</code> on nullable <code class="highlighter-rouge">char</code>, nullable integral type (<code class="highlighter-rouge">byte</code>, <code class="highlighter-rouge">short</code> etc.) 
+ or nullable enum</li>
+</ol>
 
-Both cases are handled by compiler in the same way,
-we just declare `case null` label and it will work out of the box.
+<p>Both cases are handled by compiler in the same way,
+we just declare <code class="highlighter-rouge">case null</code> label and it will work out of the box.</p>
 
-This is illustrated by simple program:
-{% highlight csharp %}
-using System;
+<p>This is illustrated by simple program:</p>
 
-public class Program
-{
-   public void Main() {
-        int? n = GetDefault<int?>();
+<figure class="highlight"><pre><code class="language-csharp" data-lang="csharp"><span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+
+<span class="k">public</span> <span class="k">class</span> <span class="nc">Program</span>
+<span class="p">{</span>
+   <span class="k">public</span> <span class="k">void</span> <span class="nf">Main</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kt">int</span><span class="p">?</span> <span class="n">n</span> <span class="p">=</span> <span class="n">GetDefault</span><span class="p">&lt;</span><span class="kt">int</span><span class="p">?&gt;();</span>
  
-        // This will write null       
-        switch(n) {
-            case null: Console.WriteLine("null");    break;
-            case 1:    Console.WriteLine("value 1"); break;
-            default:   Console.WriteLine("default"); break;
-        }
+        <span class="c1">// This will write null       </span>
+        <span class="k">switch</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="k">null</span><span class="p">:</span> <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"null"</span><span class="p">);</span>    <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="m">1</span><span class="p">:</span>    <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"value 1"</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
+            <span class="k">default</span><span class="p">:</span>   <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"default"</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
 
 
-        string s = GetDefault<string>();
+        <span class="kt">string</span> <span class="n">s</span> <span class="p">=</span> <span class="n">GetDefault</span><span class="p">&lt;</span><span class="kt">string</span><span class="p">&gt;();</span>
  
-        // This will write null       
-        switch(s) {
-            case null:   Console.WriteLine("null");    break;
-            case "foo":  Console.WriteLine("foo");     break;
-            default:     Console.WriteLine("default"); break;
-        }
-    }
+        <span class="c1">// This will write null       </span>
+        <span class="k">switch</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">case</span> <span class="k">null</span><span class="p">:</span>   <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"null"</span><span class="p">);</span>    <span class="k">break</span><span class="p">;</span>
+            <span class="k">case</span> <span class="s">"foo"</span><span class="p">:</span>  <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"foo"</span><span class="p">);</span>     <span class="k">break</span><span class="p">;</span>
+            <span class="k">default</span><span class="p">:</span>     <span class="n">Console</span><span class="p">.</span><span class="nf">WriteLine</span><span class="p">(</span><span class="s">"default"</span><span class="p">);</span> <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
     
-    // GetDefault returns null for nullable and reference type T
-    private T GetDefault<T>() {
-        return default(T);   
-    }
-}
-{% endhighlight %}
+    <span class="c1">// GetDefault returns null for nullable and reference type T</span>
+    <span class="k">private</span> <span class="n">T</span> <span class="n">GetDefault</span><span class="p">&lt;</span><span class="n">T</span><span class="p">&gt;()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="k">default</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>   
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
 
-##### Java switch and null's
+<h5 id="java-switch-and-nulls">Java switch and null’s</h5>
 
-In Java `null`'s may show up in `switch` statement when we `switch` 
-on primitive type wrappers like `Integer` or on `String` or on enum type.
-In that case Java will throw `NullPointerException` as is demonstrated by program:
-{% highlight java %}
-public class Program 
-{
-  public static void main(String[] args)
-  {
-    String s = getNullString();
-    try {
-      switch(s) {
-          // case null - doesn't compile:
-          // error: constant string expression required
-          // case null:  System.out.println("null"); break;
+<p>In Java <code class="highlighter-rouge">null</code>’s may show up in <code class="highlighter-rouge">switch</code> statement when we <code class="highlighter-rouge">switch</code> 
+on primitive type wrappers like <code class="highlighter-rouge">Integer</code> or on <code class="highlighter-rouge">String</code> or on enum type.
+In that case Java will throw <code class="highlighter-rouge">NullPointerException</code> as is demonstrated by program:</p>
 
-          case "foo": System.out.println("foo"); break;
-          default:    System.out.println("default"); break;
-      }
-    }
-    catch(NullPointerException ex) {
-        // exception stack trace points to `switch(s) {` line
-        System.out.println("null pointer exception");
-    }
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Program</span> 
+<span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span>
+  <span class="o">{</span>
+    <span class="n">String</span> <span class="n">s</span> <span class="o">=</span> <span class="n">getNullString</span><span class="o">();</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="k">switch</span><span class="o">(</span><span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+          <span class="c1">// case null - doesn't compile:</span>
+          <span class="c1">// error: constant string expression required</span>
+          <span class="c1">// case null:  System.out.println("null"); break;</span>
+
+          <span class="k">case</span> <span class="s">"foo"</span><span class="o">:</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"foo"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+          <span class="k">default</span><span class="o">:</span>    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"default"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">catch</span><span class="o">(</span><span class="n">NullPointerException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// exception stack trace points to `switch(s) {` line</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"null pointer exception"</span><span class="o">);</span>
+    <span class="o">}</span>
     
-    FooEnum e = getNullFooEnum();
-    try {
-      switch(e) {
-       // case null doesn't compile
-       // error: an enum switch case label must be the unqualified name of an enumeration constant
-       // case null: System.out.println("null"); break;
+    <span class="n">FooEnum</span> <span class="n">e</span> <span class="o">=</span> <span class="n">getNullFooEnum</span><span class="o">();</span>
+    <span class="k">try</span> <span class="o">{</span>
+      <span class="k">switch</span><span class="o">(</span><span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+       <span class="c1">// case null doesn't compile</span>
+       <span class="c1">// error: an enum switch case label must be the unqualified name of an enumeration constant</span>
+       <span class="c1">// case null: System.out.println("null"); break;</span>
         
-       case OPTION_1: System.out.println("option 1"); break;
-       default:       System.out.println("default");  break;
-      }
-    }
-    catch(NullPointerException ex) {
-        // exception stack trace points to `switch(e) {` line
-        System.out.println("null pointer exception");
-    }
-  }
-  private static String getNullString() {
-        return null; 
-  }
-  private static FooEnum getNullFooEnum() {
-    return null;
-  }
-}
+       <span class="k">case</span> <span class="nl">OPTION_1:</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"option 1"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+       <span class="k">default</span><span class="o">:</span>       <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"default"</span><span class="o">);</span>  <span class="k">break</span><span class="o">;</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="k">catch</span><span class="o">(</span><span class="n">NullPointerException</span> <span class="n">ex</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// exception stack trace points to `switch(e) {` line</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"null pointer exception"</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+  <span class="kd">private</span> <span class="kd">static</span> <span class="n">String</span> <span class="nf">getNullString</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span> 
+  <span class="o">}</span>
+  <span class="kd">private</span> <span class="kd">static</span> <span class="n">FooEnum</span> <span class="nf">getNullFooEnum</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
 
-enum FooEnum {
-  OPTION_1,
-  OPTION_2
-}
-{% endhighlight %}
-Program output:
-{% highlight no-highlight %}
-null pointer exception
-null pointer exception
-{% endhighlight %}
-As we have seen it's not even possible to declare `case null` label.
+<span class="kd">enum</span> <span class="n">FooEnum</span> <span class="o">{</span>
+  <span class="n">OPTION_1</span><span class="o">,</span>
+  <span class="n">OPTION_2</span>
+<span class="o">}</span></code></pre></figure>
 
-In Java until you are 100% sure that value will not contain `null` you must
-explicitly check for `null` before switch as in:
-{% highlight java %}
-FooEnum e = getNullFooEnum();
+<p>Program output:</p>
 
-if (e == null) { 
-  System.out.println("null"); 
-}
-else {
-  switch(e) {
-    case OPTION_1: System.out.println("option 1"); break;
-    default:       System.out.println("default");  break;
-  }
-}
-{% endhighlight %}
-Or use trick with default value:
-{% highlight java %}
-Integer n = getNullableInteger();
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">null pointer exception
+null pointer exception</code></pre></figure>
 
-// -1 is default here, but you may use Integer.MIN/MAX_VALUE or any
-// other value
-switch((e != null) ? e : -1) {
-  case 1:  System.out.println("1"); break;
-  case -1: System.out.println("null"); break;
-  default: System.out.println("default"); break;
-}
-{% endhighlight %}
+<p>As we have seen it’s not even possible to declare <code class="highlighter-rouge">case null</code> label.</p>
 
-WARNING: This Java behaviour may cause problems when we translate code from C# to Java.
+<p>In Java until you are 100% sure that value will not contain <code class="highlighter-rouge">null</code> you must
+explicitly check for <code class="highlighter-rouge">null</code> before switch as in:</p>
 
-#### JavaScript switch and null
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">FooEnum</span> <span class="n">e</span> <span class="o">=</span> <span class="n">getNullFooEnum</span><span class="o">();</span>
 
-JavaScript `switch` statement is very flexible, each `case` label may contain
-an expression that will be evaluated at runtime. To compare `case` label values to
-`switch` value JavaScript uses `===` operator.
+<span class="k">if</span> <span class="o">(</span><span class="n">e</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span> 
+  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"null"</span><span class="o">);</span> 
+<span class="o">}</span>
+<span class="k">else</span> <span class="o">{</span>
+  <span class="k">switch</span><span class="o">(</span><span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">case</span> <span class="nl">OPTION_1:</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"option 1"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+    <span class="k">default</span><span class="o">:</span>       <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"default"</span><span class="o">);</span>  <span class="k">break</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-In JavaScript there is no problem with using `null` and even `undefined` as `case`
-labels. Only tricky thing is with `NaN`s because `NaN === NaN` yields `false`
+<p>Or use trick with default value:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Integer</span> <span class="n">n</span> <span class="o">=</span> <span class="n">getNullableInteger</span><span class="o">();</span>
+
+<span class="c1">// -1 is default here, but you may use Integer.MIN/MAX_VALUE or any</span>
+<span class="c1">// other value</span>
+<span class="k">switch</span><span class="o">((</span><span class="n">e</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">?</span> <span class="n">e</span> <span class="o">:</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">case</span> <span class="mi">1</span><span class="o">:</span>  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"1"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+  <span class="k">case</span> <span class="o">-</span><span class="mi">1</span><span class="o">:</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"null"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+  <span class="k">default</span><span class="o">:</span> <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"default"</span><span class="o">);</span> <span class="k">break</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>WARNING: This Java behaviour may cause problems when we translate code from C# to Java.</p>
+
+<h4 id="javascript-switch-and-null">JavaScript switch and null</h4>
+
+<p>JavaScript <code class="highlighter-rouge">switch</code> statement is very flexible, each <code class="highlighter-rouge">case</code> label may contain
+an expression that will be evaluated at runtime. To compare <code class="highlighter-rouge">case</code> label values to
+<code class="highlighter-rouge">switch</code> value JavaScript uses <code class="highlighter-rouge">===</code> operator.</p>
+
+<p>In JavaScript there is no problem with using <code class="highlighter-rouge">null</code> and even <code class="highlighter-rouge">undefined</code> as <code class="highlighter-rouge">case</code>
+labels. Only tricky thing is with <code class="highlighter-rouge">NaN</code>s because <code class="highlighter-rouge">NaN === NaN</code> yields <code class="highlighter-rouge">false</code>
 in JavaScript. This is enforced by IEEE 754 standard that describes floating point
 numbers representation and behaviour. 
-In other words we can use `NaN` as a `case` label but
+In other words we can use <code class="highlighter-rouge">NaN</code> as a <code class="highlighter-rouge">case</code> label but
 program will never enter block of code associated with that label. As a side note
-it's worth to mention that in JavaScript `NaN` is 
-the only value for which expression `x === x` yields
-`false`.
+it’s worth to mention that in JavaScript <code class="highlighter-rouge">NaN</code> is 
+the only value for which expression <code class="highlighter-rouge">x === x</code> yields
+<code class="highlighter-rouge">false</code>.</p>
 
-Following program demonstrates flexibility of JavaScript `switch` statement:
-{% highlight js %}
-var values = [undefined, null, '', 0, NaN, 1, 'foo', {}];
+<p>Following program demonstrates flexibility of JavaScript <code class="highlighter-rouge">switch</code> statement:</p>
 
-values.forEach(function(value) {
-    switch (value) {
-        case undefined:
-            console.log('undefined');
-            break;
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">values</span> <span class="o">=</span> <span class="p">[</span><span class="kc">undefined</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="s1">''</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="kc">NaN</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'foo'</span><span class="p">,</span> <span class="p">{}];</span>
 
-         case null:
-            console.log('null');
-            break;
+<span class="nx">values</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">switch</span> <span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="kc">undefined</span><span class="p">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'undefined'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+
+         <span class="k">case</span> <span class="kc">null</span><span class="p">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'null'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
         
-        case '':
-            console.log('empty string');
-            break;
+        <span class="k">case</span> <span class="s1">''</span><span class="p">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'empty string'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
         
-        case 0:
-            console.log('zero');
-            break;
+        <span class="k">case</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'zero'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
         
-        case NaN:
-            // dead code here
-            console.log('nan');
-            break;
+        <span class="k">case</span> <span class="kc">NaN</span><span class="p">:</span>
+            <span class="c1">// dead code here</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'nan'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
         
-        case 1:
-            console.log(1);
-            break;
+        <span class="k">case</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
         
-        // label with runtime expression here:
-        case 'f'+'oo':
-            console.log('foo');
-            break;
+        <span class="c1">// label with runtime expression here:</span>
+        <span class="k">case</span> <span class="s1">'f'</span><span class="o">+</span><span class="s1">'oo'</span><span class="p">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'foo'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
         
-        default:
-            console.log('default');
-            break;
-    }
-});
-{% endhighlight %}
-This program will write:
-{% highlight no-highlight %}
-"undefined"
+        <span class="nl">default</span><span class="p">:</span>
+            <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'default'</span><span class="p">);</span>
+            <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">});</span></code></pre></figure>
+
+<p>This program will write:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">"undefined"
 "null"
 "empty string"
 "zero"
 "default"
 1
 "foo"
-"default"
-{% endhighlight %}
-Notice that `"default"` was printed for `NaN` value.
+"default"</code></pre></figure>
 
-That's all for today, I hope you learned something new from this article.   
-May the Force be with you.
+<p>Notice that <code class="highlighter-rouge">"default"</code> was printed for <code class="highlighter-rouge">NaN</code> value.</p>
+
+<p>That’s all for today, I hope you learned something new from this article. <br />
+May the Force be with you.</p>
 
 
 	  ]]></description>
@@ -717,108 +712,106 @@ May the Force be with you.
 	  <pubDate>2016-06-09T02:00:00+02:00</pubDate>
 	  <guid>//augmenting-JavaScript-objects-with-toString-and-valueOf</guid>
 	  <description><![CDATA[
-	     Today I want to present two useful methods: `toString` and `valueOf`. Both of these methods are 
-used by JavaScript interpreter when converting objects to primitive types.
+	     <p>Today I want to present two useful methods: <code class="highlighter-rouge">toString</code> and <code class="highlighter-rouge">valueOf</code>. Both of these methods are 
+used by JavaScript interpreter when converting objects to primitive types.</p>
 
-We will start with `toString` that can be useful for debugging purposes, say we have an object:
-{% highlight js %}
-var point = {
-  x: 10,
-  y: 20
-};
-{% endhighlight %}
-When we try to convert it to `String` e.g. using `'' + point` expression, we get (in Chrome):
-{% highlight no-highlight %}
-[object Object]
-{% endhighlight %}
-Wouldn't it be nice to get `(10, 20)`? With support of `toString` we can do it, simply
-let's augment our point with `toString` method:
-{% highlight js %}
-point.toString = function() {
-    return '(' + this.x + ', ' + this.y + ')';
-};
-{% endhighlight %}
-now `String(point)` returns:
-{% highlight js %}
-"(10, 20)"
-{% endhighlight %}
-This works too when we concatenate our point with string, or when we are join'ing array of points:
-{% highlight js %}
-> 'current position: ' + point
-"current position: (10, 20)"
+<p>We will start with <code class="highlighter-rouge">toString</code> that can be useful for debugging purposes, say we have an object:</p>
 
-> [point, point, point].join('; ');
-"(10, 20); (10, 20); (10, 20)"
-{% endhighlight %}
-It will also work in any other situation when object is coerced to `String` type. Unfortunately
-it doesn't work with `console.log`:
-{% highlight js %}
-> console.log(point)
-Object {x: 10, y: 20}
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">point</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">x</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+  <span class="na">y</span><span class="p">:</span> <span class="mi">20</span>
+<span class="p">};</span></code></pre></figure>
 
-Now we go into interesting topic: when JavaScript objects are converted to string's?
+<p>When we try to convert it to <code class="highlighter-rouge">String</code> e.g. using <code class="highlighter-rouge">'' + point</code> expression, we get (in Chrome):</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">[object Object]</code></pre></figure>
+
+<p>Wouldn’t it be nice to get <code class="highlighter-rouge">(10, 20)</code>? With support of <code class="highlighter-rouge">toString</code> we can do it, simply
+let’s augment our point with <code class="highlighter-rouge">toString</code> method:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">point</span><span class="p">.</span><span class="nx">toString</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s1">'('</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">x</span> <span class="o">+</span> <span class="s1">', '</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">y</span> <span class="o">+</span> <span class="s1">')'</span><span class="p">;</span>
+<span class="p">};</span></code></pre></figure>
+
+<p>now <code class="highlighter-rouge">String(point)</code> returns:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="s2">"(10, 20)"</span></code></pre></figure>
+
+<p>This works too when we concatenate our point with string, or when we are join’ing array of points:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="o">&gt;</span> <span class="s1">'current position: '</span> <span class="o">+</span> <span class="nx">point</span>
+<span class="s2">"current position: (10, 20)"</span>
+
+<span class="o">&gt;</span> <span class="p">[</span><span class="nx">point</span><span class="p">,</span> <span class="nx">point</span><span class="p">,</span> <span class="nx">point</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">'; '</span><span class="p">);</span>
+<span class="s2">"(10, 20); (10, 20); (10, 20)"</span></code></pre></figure>
+
+<p>It will also work in any other situation when object is coerced to <code class="highlighter-rouge">String</code> type. Unfortunately
+it doesn’t work with <code class="highlighter-rouge">console.log</code>:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="o">&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">point</span><span class="p">)</span>
+<span class="nb">Object</span> <span class="p">{</span><span class="nl">x</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="nx">y</span><span class="p">:</span> <span class="mi">20</span><span class="p">}</span></code></pre></figure>
+
+<p>Now we go into interesting topic: when JavaScript objects are converted to string’s?
 We already given two examples: when object is concatenated with string and when we explicitly
-convert object to string via `String(obj)` call.
-But this will also happen when we use object with operators like `>` or `>=`. 
+convert object to string via <code class="highlighter-rouge">String(obj)</code> call.
+But this will also happen when we use object with operators like <code class="highlighter-rouge">&gt;</code> or <code class="highlighter-rouge">&gt;=</code>. 
 Exact rules are pretty compiled and
 if your are interested in them I advice reading chapter 8 (Type coercion) and 9 (Operators) from excellent 
-[Speaking JS book.](http://speakingjs.com/es5/ch08.html)
-For now let's consider simple example, what will happen when we try to use `>` on
-points with `toString` method:
-{% highlight js %}
-var Point = function(x, y) {
-    this.x = x;
-    this.y = y;
-};
+<a href="http://speakingjs.com/es5/ch08.html">Speaking JS book.</a>
+For now let’s consider simple example, what will happen when we try to use <code class="highlighter-rouge">&gt;</code> on
+points with <code class="highlighter-rouge">toString</code> method:</p>
 
-Point.prototype.toString = function() {
-    return '(' + this.x + ', ' + this.y + ')';
-};
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">Point</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">x</span><span class="p">,</span> <span class="nx">y</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">x</span> <span class="o">=</span> <span class="nx">x</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">y</span> <span class="o">=</span> <span class="nx">y</span><span class="p">;</span>
+<span class="p">};</span>
 
-var p1 = new Point(10, 20);
-var p2 = new Point(20, 30);
-var p3 = new Point(20, 15);
-{% endhighlight %}
-When interpreter executes expression like `p1 > p2` first it tries to convert objects to
-primitives - first by calling `valueOf` method (by default it will return `this`) and if 
-it not return primitive value then it tries `toString`. Since we are providing our own
-version of `toString` that returns primitive value (a `String`) interpreter will use values returned
-by `toString` to compare points, so:
-{% highlight js %}
-> // because '(20, 30)' > '(10, 20)'  - strings in JS are compared lexicographically
-> p1 > p2
-false
-> p2 > p1
-true
-> // because '(20, 30)' > '(20, 15)':
-> p2 > p3
-true
-{% endhighlight %}
-Looks like we overloaded `>` operator in JavaScript, yay! But we must be aware of limitations of
+<span class="nx">Point</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">toString</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s1">'('</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">x</span> <span class="o">+</span> <span class="s1">', '</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">y</span> <span class="o">+</span> <span class="s1">')'</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kd">var</span> <span class="nx">p1</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Point</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">p2</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Point</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">p3</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Point</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="mi">15</span><span class="p">);</span></code></pre></figure>
+
+<p>When interpreter executes expression like <code class="highlighter-rouge">p1 &gt; p2</code> first it tries to convert objects to
+primitives - first by calling <code class="highlighter-rouge">valueOf</code> method (by default it will return <code class="highlighter-rouge">this</code>) and if 
+it not return primitive value then it tries <code class="highlighter-rouge">toString</code>. Since we are providing our own
+version of <code class="highlighter-rouge">toString</code> that returns primitive value (a <code class="highlighter-rouge">String</code>) interpreter will use values returned
+by <code class="highlighter-rouge">toString</code> to compare points, so:</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="o">&gt;</span> <span class="c1">// because '(20, 30)' &gt; '(10, 20)'  - strings in JS are compared lexicographically</span>
+<span class="o">&gt;</span> <span class="nx">p1</span> <span class="o">&gt;</span> <span class="nx">p2</span>
+<span class="kc">false</span>
+<span class="o">&gt;</span> <span class="nx">p2</span> <span class="o">&gt;</span> <span class="nx">p1</span>
+<span class="kc">true</span>
+<span class="o">&gt;</span> <span class="c1">// because '(20, 30)' &gt; '(20, 15)':</span>
+<span class="o">&gt;</span> <span class="nx">p2</span> <span class="o">&gt;</span> <span class="nx">p3</span>
+<span class="kc">true</span></code></pre></figure>
+
+<p>Looks like we overloaded <code class="highlighter-rouge">&gt;</code> operator in JavaScript, yay! But we must be aware of limitations of
 this technique: first we are comparing strings not object properties, second string in JS are compared
-lexicographically so `'2' > '111'`. In other words don't use it in production code it may cause
+lexicographically so <code class="highlighter-rouge">'2' &gt; '111'</code>. In other words don’t use it in production code it may cause
 too much confusion, explicit method like
-`Point.compare` would be much better.
+<code class="highlighter-rouge">Point.compare</code> would be much better.</p>
 
-Now we can turn to `valueOf` method, in it's working it is similar to `toString` method, only difference
-is that it is called when object must be converted to `Number`.
-Let's see quick example:
-{% highlight js %}
-var obj = {
-    valueOf: function() {
-        return 42;
-    }
-};
+<p>Now we can turn to <code class="highlighter-rouge">valueOf</code> method, in it’s working it is similar to <code class="highlighter-rouge">toString</code> method, only difference
+is that it is called when object must be converted to <code class="highlighter-rouge">Number</code>.
+Let’s see quick example:</p>
 
-console.log(Number(obj)); // prints 42
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">var</span> <span class="nx">obj</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">valueOf</span><span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="mi">42</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
 
-Object is converted to number when used with operators like: `+`, `*` and `-`. Also `valueOf` is used
-when objects are compared using `>` or `>=` operators. `valueOf` is not as useful as `toString` IMHO,
-but it's worth to know. One more fact is that `Date` objects have custom implementation of `valueOf` method
-that returns number of milliseconds from epoch (in other words it returns same value as `getTime()`). Thanks
-to this we can use `>` to compare dates, and get difference in milliseconds between dates as: `date2 - date1`.
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nb">Number</span><span class="p">(</span><span class="nx">obj</span><span class="p">));</span> <span class="c1">// prints 42</span></code></pre></figure>
+
+<p>Object is converted to number when used with operators like: <code class="highlighter-rouge">+</code>, <code class="highlighter-rouge">*</code> and <code class="highlighter-rouge">-</code>. Also <code class="highlighter-rouge">valueOf</code> is used
+when objects are compared using <code class="highlighter-rouge">&gt;</code> or <code class="highlighter-rouge">&gt;=</code> operators. <code class="highlighter-rouge">valueOf</code> is not as useful as <code class="highlighter-rouge">toString</code> IMHO,
+but it’s worth to know. One more fact is that <code class="highlighter-rouge">Date</code> objects have custom implementation of <code class="highlighter-rouge">valueOf</code> method
+that returns number of milliseconds from epoch (in other words it returns same value as <code class="highlighter-rouge">getTime()</code>). Thanks
+to this we can use <code class="highlighter-rouge">&gt;</code> to compare dates, and get difference in milliseconds between dates as: <code class="highlighter-rouge">date2 - date1</code>.</p>
 
 
 	  ]]></description>
@@ -831,80 +824,77 @@ to this we can use `>` to compare dates, and get difference in milliseconds betw
 	  <pubDate>2016-06-04T02:00:00+02:00</pubDate>
 	  <guid>//break-out-of-code-block-in-java-and-javascript</guid>
 	  <description><![CDATA[
-	     Java and JavaScript have a common feature that allows us to break out of
-nested loops, e.g. in Java we may write:
-{% highlight java %}
-OUTER_LOOP: for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < 3; j++) {
-        System.out.printf("%d x %d = %d%n", i, j, i * j);
-        if (j == 1) break OUTER_LOOP;
-    }
-}
-{% endhighlight %}
-As you can see first we label outer for loop with `OUTER_LOOP` label, then we use
-`break label_name` syntax to tell compiler which loop we want to break.
+	     <p>Java and JavaScript have a common feature that allows us to break out of
+nested loops, e.g. in Java we may write:</p>
 
-Likewise in JavaScript we may write:
-{% highlight js %}
-OUTER_LOOP: for (var i = 0; i < 3; i++) {
-    for (var j = 0; j < 3; j++) {
-        console.log([i, 'x', j, '=', i*j].join(' '));
-        if (j == 1) break OUTER_LOOP;
-    }
-}
-{% endhighlight %}
-both programs will print:
-{% highlight no-highlight %}
-0 x 0 = 0
-0 x 1 = 0
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nl">OUTER_LOOP:</span> <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+    <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">;</span> <span class="n">j</span><span class="o">++)</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">printf</span><span class="o">(</span><span class="s">"%d x %d = %d%n"</span><span class="o">,</span> <span class="n">i</span><span class="o">,</span> <span class="n">j</span><span class="o">,</span> <span class="n">i</span> <span class="o">*</span> <span class="n">j</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">j</span> <span class="o">==</span> <span class="mi">1</span><span class="o">)</span> <span class="k">break</span> <span class="n">OUTER_LOOP</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-TIP: You can use `continue` instead of `break` and it will work too.
+<p>As you can see first we label outer for loop with <code class="highlighter-rouge">OUTER_LOOP</code> label, then we use
+<code class="highlighter-rouge">break label_name</code> syntax to tell compiler which loop we want to break.</p>
 
-I think most of you knew this already, but what's more interesting is that you can break
-out of any nested code block, for example in Java:
-{% highlight java %}
-public static void func(boolean useBreak) {
-    System.out.println("before outer");
-    OUTER: {
-        System.out.println("before break");
+<p>Likewise in JavaScript we may write:</p>
 
-        // condition needed to prevend unreachable statement error
-        if (useBreak)
-            break OUTER;
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">OUTER_LOOP</span><span class="p">:</span> <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">j</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">;</span> <span class="nx">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">([</span><span class="nx">i</span><span class="p">,</span> <span class="s1">'x'</span><span class="p">,</span> <span class="nx">j</span><span class="p">,</span> <span class="s1">'='</span><span class="p">,</span> <span class="nx">i</span><span class="o">*</span><span class="nx">j</span><span class="p">].</span><span class="nx">join</span><span class="p">(</span><span class="s1">' '</span><span class="p">));</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">j</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="k">break</span> <span class="nx">OUTER_LOOP</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
 
-        System.out.println("after break");
-    }
-    System.out.println("after outer");
-}
+<p>both programs will print:</p>
 
-public static void main(String[] args) {
-    func(true);
-}
-{% endhighlight %}
-this program will print when run:
-{% highlight no-highlight %}
-before outer
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">0 x 0 = 0
+0 x 1 = 0</code></pre></figure>
+
+<p>TIP: You can use <code class="highlighter-rouge">continue</code> instead of <code class="highlighter-rouge">break</code> and it will work too.</p>
+
+<p>I think most of you knew this already, but what’s more interesting is that you can break
+out of any nested code block, for example in Java:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">func</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">useBreak</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"before outer"</span><span class="o">);</span>
+    <span class="nl">OUTER:</span> <span class="o">{</span>
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"before break"</span><span class="o">);</span>
+
+        <span class="c1">// condition needed to prevend unreachable statement error</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">useBreak</span><span class="o">)</span>
+            <span class="k">break</span> <span class="n">OUTER</span><span class="o">;</span>
+
+        <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"after break"</span><span class="o">);</span>
+    <span class="o">}</span>
+    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"after outer"</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">func</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>this program will print when run:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">before outer
 before break
-after outer
-{% endhighlight %}
+after outer</code></pre></figure>
 
-And similarly in JavaScript you can write:
-{% highlight js %}
-console.log('before outer');
-OUTER: {
-    console.log('before break');
-    break OUTER;
-    console.log('after break');
-}
-console.log('after outer');
-{% endhighlight %}
+<p>And similarly in JavaScript you can write:</p>
 
-Ability to break nested loops and to jump out of nested code blocks is not
-something that you do on everyday job, but once in a year it may become handy.
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'before outer'</span><span class="p">);</span>
+<span class="nl">OUTER</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'before break'</span><span class="p">);</span>
+    <span class="k">break</span> <span class="nx">OUTER</span><span class="p">;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'after break'</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'after outer'</span><span class="p">);</span></code></pre></figure>
 
-Just remember to not overuse it (from [XKCD](https://xkcd.com/292/)):
-![xkcd goto](//imgs.xkcd.com/comics/goto.png)
+<p>Ability to break nested loops and to jump out of nested code blocks is not
+something that you do on everyday job, but once in a year it may become handy.</p>
+
+<p>Just remember to not overuse it (from <a href="https://xkcd.com/292/">XKCD</a>):
+<img src="//imgs.xkcd.com/comics/goto.png" alt="xkcd goto" /></p>
 
 
 	  ]]></description>

@@ -18,71 +18,90 @@
 	  <pubDate>2020-07-08T02:00:01+02:00</pubDate>
 	  <guid>//iterm2-cheat-sheet</guid>
 	  <description><![CDATA[
-	     iTerm2 is one of the best terminal emulators out there.
+	     <p>iTerm2 is one of the best terminal emulators out there.
 But to appreciate its full power you should know how to
 use it effectively.
-Here are shortcuts that I find indispensible while working with iTerm2.
+Here are shortcuts that I find indispensible while working with iTerm2.</p>
 
-#### Working with panes
+<h4 id="working-with-panes">Working with panes</h4>
 
-* `Command + D` - Split vertically
-* `Command + Shift + D` - Split horizontally
-* `Command + W` - Close pane
+<ul>
+  <li><code class="highlighter-rouge">Command + D</code> - Split vertically</li>
+  <li><code class="highlighter-rouge">Command + Shift + D</code> - Split horizontally</li>
+  <li>
+    <p><code class="highlighter-rouge">Command + W</code> - Close pane</p>
+  </li>
+  <li><code class="highlighter-rouge">Command + Option + Arrows</code> - Navigate between panes</li>
+  <li><code class="highlighter-rouge">Control + Command + Arrow</code> - Resize current pane</li>
+  <li>
+    <p><code class="highlighter-rouge">Command + Shift + Enter</code> - Maximize current pane / Restore its original size</p>
+  </li>
+  <li><code class="highlighter-rouge">Command + K</code> - Clear current pane</li>
+</ul>
 
-* `Command + Option + Arrows` - Navigate between panes
-* `Control + Command + Arrow` - Resize current pane
-* `Command + Shift + Enter` - Maximize current pane / Restore its original size
+<h4 id="text-editing">Text editing</h4>
 
-* `Command + K` - Clear current pane
+<ul>
+  <li><code class="highlighter-rouge">Control + A</code> - Move to the line beginning</li>
+  <li><code class="highlighter-rouge">Control + E</code> - Move to the line end</li>
+</ul>
 
-#### Text editing
-
-* `Control + A` - Move to the line beginning
-* `Control + E` - Move to the line end
-
-Consider enabling "Natural Text Editing" (instructions [here](https://apple.stackexchange.com/a/293988))
-if you want to use `Option + Left/Right Arrow` for
+<p>Consider enabling “Natural Text Editing” (instructions <a href="https://apple.stackexchange.com/a/293988">here</a>)
+if you want to use <code class="highlighter-rouge">Option + Left/Right Arrow</code> for
 one word forward/backward navigation instead of
-awkward `Control+] F` / `Esc F` (Escape followed by F for forward or
-B for backward).
+awkward <code class="highlighter-rouge">Control+] F</code> / <code class="highlighter-rouge">Esc F</code> (Escape followed by F for forward or
+B for backward).</p>
 
-* `Option + Delete` - Delete one world
-* `Command + Delete` - Delete entire line
+<ul>
+  <li><code class="highlighter-rouge">Option + Delete</code> - Delete one world</li>
+  <li><code class="highlighter-rouge">Command + Delete</code> - Delete entire line</li>
+</ul>
 
-#### Scrolling
+<h4 id="scrolling">Scrolling</h4>
 
-* `Fn + Shift + Up Arrow` - Page Up
-* `Fn + Shift + Down Arrow` - Page Down
+<ul>
+  <li><code class="highlighter-rouge">Fn + Shift + Up Arrow</code> - Page Up</li>
+  <li><code class="highlighter-rouge">Fn + Shift + Down Arrow</code> - Page Down</li>
+</ul>
 
-#### Tabs
+<h4 id="tabs">Tabs</h4>
 
-* `Command + T` - Create new tab
-* `Command + <num>` - Move to `num`th tab e.g. `Command + 3`
-* `Command + Left/Right arrow` - Move to left/right tab
-* `Command + Option + W` - Close tab
+<ul>
+  <li><code class="highlighter-rouge">Command + T</code> - Create new tab</li>
+  <li><code class="highlighter-rouge">Command + &lt;num&gt;</code> - Move to <code class="highlighter-rouge">num</code>th tab e.g. <code class="highlighter-rouge">Command + 3</code></li>
+  <li><code class="highlighter-rouge">Command + Left/Right arrow</code> - Move to left/right tab</li>
+  <li><code class="highlighter-rouge">Command + Option + W</code> - Close tab</li>
+</ul>
 
-Add the following function to your `~/.profile`:
-{% highlight bash %}
-title() {
-	echo -ne "\e]1;$@\a"
-}
-{% endhighlight %}
-Then you can use `title foo` to set iTerm2 tab title.
+<p>Add the following function to your <code class="highlighter-rouge">~/.profile</code>:</p>
 
-#### iTerm2 Window
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">title<span class="o">()</span> <span class="o">{</span>
+	<span class="nb">echo</span> <span class="nt">-ne</span> <span class="s2">"</span><span class="se">\e</span><span class="s2">]1;</span><span class="nv">$@</span><span class="se">\a</span><span class="s2">"</span>
+<span class="o">}</span></code></pre></figure>
 
-* `Command + Enter` - Enter / Leave full screen mode
-* `Command + ,` - Show preferences
+<p>Then you can use <code class="highlighter-rouge">title foo</code> to set iTerm2 tab title.</p>
 
-#### History search
+<h4 id="iterm2-window">iTerm2 Window</h4>
 
-* `Control + R` - Start history search (fuzzy search)
-* `Control + R` - Move to the next suggestion
+<ul>
+  <li><code class="highlighter-rouge">Command + Enter</code> - Enter / Leave full screen mode</li>
+  <li><code class="highlighter-rouge">Command + ,</code> - Show preferences</li>
+</ul>
 
-#### Other
+<h4 id="history-search">History search</h4>
 
-* `Command + ;` - Open graphical autocomplete menu in iTerm2
-* Use `open URL` command to open given file in MacOS e.g. `open 'https://google.com'` or `open .` to open current directory in Finder
+<ul>
+  <li><code class="highlighter-rouge">Control + R</code> - Start history search (fuzzy search)</li>
+  <li><code class="highlighter-rouge">Control + R</code> - Move to the next suggestion</li>
+</ul>
+
+<h4 id="other">Other</h4>
+
+<ul>
+  <li><code class="highlighter-rouge">Command + ;</code> - Open graphical autocomplete menu in iTerm2</li>
+  <li>Use <code class="highlighter-rouge">open URL</code> command to open given file in MacOS e.g. <code class="highlighter-rouge">open 'https://google.com'</code> or <code class="highlighter-rouge">open .</code> to open current directory in Finder</li>
+</ul>
+
 	  ]]></description>
 	</item>
 
