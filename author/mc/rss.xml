@@ -5,12 +5,162 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://localhost:4000</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
+	<item>
+	  <title>Future[_] vs Future[Unit] or which return type should I choose?</title>
+	  <link>//future-or-future</link>
+	  <author></author>
+	  <pubDate>2020-09-12T02:00:01+02:00</pubDate>
+	  <guid>//future-or-future</guid>
+	  <description><![CDATA[
+	     <p>Recently I have a heated debate with my colleague about
+a proper return type for async procedures 
+(procedure is just a function that returns <code class="highlighter-rouge">Unit</code> in Scala.)
+My point of view was that <code class="highlighter-rouge">Future[Unit]</code> is the right type.
+Let me present my way of reasoning here.</p>
+
+<p>Let’s start with lifting.
+Lifting in functional programming is defined as an operation that
+transforms a function <code class="highlighter-rouge">f: A =&gt; B</code> into a function <code class="highlighter-rouge">f': M[A] -&gt; M[B]</code>,
+where <code class="highlighter-rouge">M[_]</code> is a functor. A functor <code class="highlighter-rouge">M[A]</code>, in simple words, is just a wrapper around a value of 
+type <code class="highlighter-rouge">A</code> with addition of extra <code class="highlighter-rouge">map</code> operation that can be used to transform the wrapped value.
+A lot of types that we are using in our daily practice as programmers like <code class="highlighter-rouge">Option[T]</code>, <code class="highlighter-rouge">Try[T]</code> or
+<code class="highlighter-rouge">Future[T]</code> are functors. Because Scala does not define <code class="highlighter-rouge">Functor[T]</code> trait we cannot write a generic
+<code class="highlighter-rouge">lift</code> function that could work with all these types. Instead we must write specific <code class="highlighter-rouge">lift</code> functions that
+work with only single functor type e.g.</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">liftOption</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=&gt;</span> <span class="n">B</span><span class="o">)</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="nc">Option</span><span class="o">[</span><span class="kt">B</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+  <span class="n">optA</span> <span class="k">=&gt;</span> <span class="n">optA</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">f</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>We can use <code class="highlighter-rouge">liftOption</code> to e.g. make <code class="highlighter-rouge">negate</code> function work with <code class="highlighter-rouge">Option[Int]</code> argument:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">negate</span><span class="o">(</span><span class="n">a</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="o">-</span><span class="n">a</span>
+
+<span class="k">val</span> <span class="n">negateOpt</span> <span class="k">=</span> <span class="n">liftOption</span><span class="o">(</span><span class="n">negate</span><span class="o">)</span>
+
+<span class="n">println</span><span class="o">(</span><span class="n">negateOpt</span><span class="o">(</span><span class="nc">Some</span><span class="o">(</span><span class="mi">1</span><span class="o">)))</span>
+<span class="n">println</span><span class="o">(</span><span class="n">negateOpt</span><span class="o">(</span><span class="nc">None</span><span class="o">))</span>
+<span class="c1">// prints:
+//  Some(-1)
+</span><span class="o">//</span>  <span class="nc">None</span></code></pre></figure>
+
+<p>Similarly to <code class="highlighter-rouge">liftOption</code> we could define <code class="highlighter-rouge">liftFuture</code>:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">liftFuture</span><span class="o">[</span><span class="kt">A</span>,<span class="kt">B</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=&gt;</span> <span class="n">B</span><span class="o">)</span>
+                  <span class="o">(</span><span class="k">implicit</span> <span class="n">ec</span><span class="k">:</span> <span class="kt">ExecutionContext</span><span class="o">)</span>
+<span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="nc">Future</span><span class="o">[</span><span class="kt">B</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+    <span class="n">futA</span> <span class="k">=&gt;</span> <span class="n">futA</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">f</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>And then we can use it on a function that returns <code class="highlighter-rouge">Unit</code> to get an async function that,
+no surprise here, will return <code class="highlighter-rouge">Future[Unit]</code>:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">import</span> <span class="nn">ExecutionContext.Implicits.global</span>
+
+<span class="k">def</span> <span class="n">printIt</span><span class="o">(</span><span class="n">s</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">printItF</span> <span class="k">=</span> <span class="n">liftFuture</span><span class="o">(</span><span class="n">printIt</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">r</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="nc">Await</span><span class="o">.</span><span class="n">result</span><span class="o">(</span>
+    <span class="n">printItF</span><span class="o">(</span><span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="s">"ok"</span><span class="o">)),</span>
+    <span class="n">duration</span><span class="o">.</span><span class="nc">Duration</span><span class="o">.</span><span class="nc">Inf</span><span class="o">)</span></code></pre></figure>
+
+<p>But of course my colleague had his own arguments. 
+He pointed out that e.g. <code class="highlighter-rouge">ExecutorService</code> <code class="highlighter-rouge">submit</code> method returns <code class="highlighter-rouge">Future&lt;?&gt;</code>, not <code class="highlighter-rouge">Future&lt;Void&gt;</code> as my
+reasoning would suggest. So there must be a good reason why library designers
+chosen <code class="highlighter-rouge">Future&lt;?&gt;</code>, he continued, but when asked what exactly this reason could be 
+he was not able to answer. But he counter my question arguing that the standard 
+library establishes good patterns and practices, so if they use <code class="highlighter-rouge">Future&lt;?&gt;</code>
+then we should do the same in our code.
+<img src="assets/images/2020-09-12/es.png" alt="Future is there" /></p>
+
+<p>My colleague had a point. I needed to research the subject: why <code class="highlighter-rouge">Future&lt;?&gt;</code> and not <code class="highlighter-rouge">Future&lt;Void&gt;</code>?
+After a bit of googling I noticed that <code class="highlighter-rouge">runAsync</code> method of
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a>
+does not follow the <code class="highlighter-rouge">Future&lt;?&gt;</code> convention and instead returns <code class="highlighter-rouge">CompletableFuture&lt;Void&gt;</code>.
+So it looks like the library designers changed their mind and now prefer returning <code class="highlighter-rouge">Future&lt;Void&gt;</code>:
+<img src="assets/images/2020-09-12/cf.png" alt="Void is there" /></p>
+
+<p>I pointed this out to my colleague, but he countered by saying that <code class="highlighter-rouge">Future[Unit]</code>
+is just uncomfortable to use. Consider this example he said:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">findIdByName</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+  <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="mi">123</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="k">def</span> <span class="n">deleteRecord</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+  <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="k">def</span> <span class="n">doStuff</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Unit</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+  <span class="n">findIdByName</span><span class="o">(</span><span class="n">name</span><span class="o">)</span>
+    <span class="o">.</span><span class="n">flatMap</span><span class="o">(</span><span class="n">id</span> <span class="k">=&gt;</span> <span class="n">deleteRecord</span><span class="o">(</span><span class="n">id</span><span class="o">))</span>
+    <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span> <span class="k">=&gt;</span> <span class="o">())</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Look at this ugly <code class="highlighter-rouge">.map(_ =&gt; ())</code> he said, it’s awful, isn’t it?
+I pointed out that he can use for-comprehensions to get rid
+of the last <code class="highlighter-rouge">map</code>, but may argument was weak - the
+fluent interface is often nicer and faster to work with.</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">doStuff</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Unit</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+  <span class="k">for</span> <span class="o">{</span>
+    <span class="n">id</span> <span class="k">&lt;-</span> <span class="n">findIdByName</span><span class="o">(</span><span class="n">name</span><span class="o">)</span>
+    <span class="k">_</span> <span class="k">&lt;-</span> <span class="n">deleteRecord</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+  <span class="o">}</span> <span class="k">yield</span> <span class="o">()</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Indeed I find it very strange that Scala does not provide a conversion from 
+<code class="highlighter-rouge">Future[T]</code> to <code class="highlighter-rouge">Future[Unit]</code> out of the box. In sync code we could write:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">doStuff</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Unit</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+  <span class="k">val</span> <span class="n">id</span> <span class="k">&lt;-</span> <span class="n">findIdByName</span><span class="o">(</span><span class="n">name</span><span class="o">)</span>
+  <span class="n">deleteRecord</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>and the value returned by <code class="highlighter-rouge">deleteRecord</code> would be automatically discarded.
+Why can’t we have something similar in async code?</p>
+
+<p>Yet this last problem pointed me to the following issue.
+If we agree to use <code class="highlighter-rouge">Future[_]</code> everywhere, then we may return by mistake
+a value that should never be returned. 
+In other words we may inadvertently break object or module
+encapsulation. 
+There is also a small risk of a memory leak, if we return
+say a huge array and the <code class="highlighter-rouge">Future[_]</code> value will be kept for a while.
+This is illustrated by the following example:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="c1">// In some object
+</span><span class="k">private</span> <span class="k">var</span> <span class="n">balance</span> <span class="k">=</span> <span class="mi">1234</span>
+
+<span class="k">private</span> <span class="k">def</span> <span class="n">increaseBalance</span><span class="o">(</span><span class="n">amount</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+  <span class="k">val</span> <span class="n">oldBalance</span> <span class="k">=</span> <span class="n">balance</span>
+  <span class="n">balance</span> <span class="k">=</span> <span class="n">oldBalance</span> <span class="o">+</span> <span class="n">amount</span>
+  <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="n">oldBalance</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="c1">// This should return nothing
+</span><span class="k">def</span> <span class="n">doStuff</span><span class="o">()</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+  <span class="n">increaseBalance</span><span class="o">(</span><span class="mi">100</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="c1">// Calling code
+</span><span class="k">val</span> <span class="n">escapedBalance</span> <span class="k">=</span> <span class="nc">Await</span><span class="o">.</span><span class="n">result</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="n">doStuff</span><span class="o">(),</span> <span class="n">duration</span><span class="o">.</span><span class="nc">Duration</span><span class="o">.</span><span class="nc">Inf</span><span class="o">)</span>
+<span class="n">println</span><span class="o">(</span><span class="n">escapedBalance</span><span class="o">)</span> <span class="o">//</span> <span class="mi">1234</span></code></pre></figure>
+
+<p>Seeing all these arguments, in the end, we decided to go with <code class="highlighter-rouge">Future[Unit]</code> although
+it is not a perfect solution.</p>
+
+<p>There is nothing better than a healthy debate BTW ;D</p>
+
+	  ]]></description>
+	</item>
+
 	<item>
 	  <title>Passing functions as arguments in Scala. What can go wrong?</title>
 	  <link>//passing-functions-as-arguments-in-scala-what-can-go-wrong</link>
@@ -45,9 +195,9 @@ So now we are slowly migrating our <code class="highlighter-rouge">() =&gt; Long
 Of course as Scala fanboys we decided to add an extension method to <code class="highlighter-rouge">Long</code>, to make the entire
 process less painful:</p>
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">implicit</span> <span class="k">class</span> <span class="nc">MyRichLong</span><span class="o">(</span><span class="n">n</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">implicit</span> <span class="k">class</span> <span class="nc">MyRichLong</span><span class="o">(</span><span class="n">l</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="o">{</span>
   <span class="k">def</span> <span class="n">asMillisecondsDuration</span><span class="o">()</span><span class="k">:</span> <span class="kt">Duration</span> <span class="o">=</span> <span class="o">{</span>
-    <span class="nc">Duration</span><span class="o">.</span><span class="n">ofMillis</span><span class="o">(</span><span class="n">n</span><span class="o">)</span>
+    <span class="nc">Duration</span><span class="o">.</span><span class="n">ofMillis</span><span class="o">(</span><span class="n">l</span><span class="o">)</span>
   <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -68,8 +218,8 @@ process less painful:</p>
 <figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">tmp</span> <span class="k">=</span> <span class="n">currentTimeoutValue</span><span class="o">()</span>
 <span class="k">new</span> <span class="nc">MyServiceRefactored</span><span class="o">(()</span> <span class="k">=&gt;</span> <span class="n">tmp</span><span class="o">.</span><span class="n">asMillisecondsDuration</span><span class="o">())</span></code></pre></figure>
 
-<p>So <code class="highlighter-rouge">timeout</code> property value is frozen at the moment of <code class="highlighter-rouge">MyServiceRefactored</code> instance creation.
-This is not what we want.</p>
+<p>So <code class="highlighter-rouge">timeout</code> property value is frozen at the moment of <code class="highlighter-rouge">MyServiceRefactored</code> object creation,
+this is not what we want.</p>
 
 <p>Bugs like this are hard to figure out. At the first glance everything works fine.
 The problem demonstrates itself only when we try to adjust the property value at runtime.
@@ -81,7 +231,7 @@ Our extension method is declared like so</p>
 
 <figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">asMillisecondsDuration</span><span class="o">()</span><span class="k">:</span> <span class="kt">Duration</span></code></pre></figure>
 
-<p>but it should be declared like this</p>
+<p>but we should be declared like this</p>
 
 <figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">asMillisecondsDuration</span><span class="k">:</span> <span class="kt">Duration</span></code></pre></figure>
 
@@ -90,11 +240,11 @@ If we use the second declaration our bug would be quickly detected by Scala comp
 
 <p>In practice a lot of Scala programmers are confused by the optional parentheses
 in parameterless method declarations. I often see methods declared like <code class="highlighter-rouge">def foo: Unit</code>
-that mutate the state or methods declared like <code class="highlighter-rouge">def bar(): Int</code> that are just getters.
+that mutate the state or method declared like <code class="highlighter-rouge">def bar(): Int</code> that are just getters.
 For people like me, that constantly switch between Java and Scala, this is especially difficult
 and I routinely make mistakes like this (I add parentheses everywhere)…</p>
 
-<p>One solution that people often come up with when confronted with this bug is to
+<p>One solution that people often come up with when confronted with this problem is to
 replace functions by by-name parameters.</p>
 
 <p>By-name parameters are nothing new. They where first introduced more than 50 years ago in a language called
@@ -117,7 +267,7 @@ to create functions that mimic the language build-in constructs. For example:</p
 <p>The main problem with by-name parameters is that they do not follow the
 usual order of evaluation. An ordinary function call</p>
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">egg</span><span class="o">(</span><span class="n">foo</span><span class="o">(),</span> <span class="n">bar</span><span class="o">())</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">egg</span><span class="o">(</span><span class="n">foo</span><span class="o">()),</span> <span class="n">bar</span><span class="o">())</span></code></pre></figure>
 
 <p>will result in functions <code class="highlighter-rouge">foo</code> and <code class="highlighter-rouge">bar</code> being called one after another,
 followed by <code class="highlighter-rouge">egg</code> function call.
@@ -146,15 +296,15 @@ we can surround the expression with curly braces:</p>
 
 <p>But it must be noted that in Scala we can add curly braces to almost anything, 
 e.g. <code class="highlighter-rouge">println({1} + {2})</code>.
-In other words curly braces around thunks are only convention not enforced by the compiler.</p>
+In other words curly braces around thunks are only a convention not enforced by the compiler.</p>
 
-<p>Sometimes the best solution is the object-oriented one. So after being not very happy about using by-name
-params I decided to create an old plain interface:</p>
+<p>Sometimes the best solution is the object-oriented one. So after being disappointed with by-name
+params I decided to create an interface:</p>
 
 <figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="nd">@FunctionalInterface</span>
 <span class="k">trait</span> <span class="nc">Property</span><span class="o">[</span><span class="kt">V</span><span class="o">]</span> <span class="o">{</span>
   <span class="c1">// parentheses required for lambda -&gt; SAM conversion
-</span>  <span class="c1">// in Scala 2.13. Yeah this sucks...
+</span>  <span class="c1">// in Scala 2.13. Yeah this sucks!
 </span>  <span class="k">def</span> <span class="n">value</span><span class="o">()</span><span class="k">:</span> <span class="kt">V</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -169,23 +319,21 @@ so we can create <code class="highlighter-rouge">MyService</code> without too mu
 
 <p>No simplification is possible this time, and both below examples do not compile:</p>
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">({</span> <span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span> <span class="o">})</span><span class="c1">//error
-</span><span class="k">new</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span><span class="o">)//</span><span class="n">error</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">({</span> <span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span> <span class="o">})</span>
+<span class="k">new</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span><span class="o">)</span></code></pre></figure>
 
 <p>The protection is, unfortunately, not 100% bullet proof.
-For example the following code snipped will compile, but it does not work as intended:</p>
+For example the following code snipped will compile but does not work as intended:</p>
 
 <figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span> <span class="k">_</span><span class="o">)</span></code></pre></figure>
 
-<p>I can only hope that the visual clue (<code class="highlighter-rouge">_</code>) that will attract a reviewer attention during the code review process.</p>
+<p>At least it provides a visual clue (<code class="highlighter-rouge">_</code>) that will attract reviewer attention during the code review.</p>
 
 <p>Now I fully understand why Java designers decided to introduce a new operator <code class="highlighter-rouge">::</code> for creating method
 references. It makes it clear which part of the expression will be evaluated only once and which part
 will become the functional interface implementation:</p>
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">static</span> <span class="n">void</span> <span class="n">print</span><span class="o">(</span><span class="nc">Supplier</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
-
-<span class="n">public</span> <span class="n">static</span> <span class="n">void</span> <span class="n">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">){</span>
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">public</span> <span class="n">static</span> <span class="n">void</span> <span class="n">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">){</span>
   <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">()::</span><span class="n">toString</span><span class="o">);</span>
   <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">()::</span><span class="n">toUpperCase</span><span class="o">);</span>
   <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">().</span><span class="n">toUpperCase</span><span class="o">()::</span><span class="n">trim</span><span class="o">);</span>
@@ -195,9 +343,7 @@ will become the functional interface implementation:</p>
 
 <p>Compare this with Scala:</p>
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">print</span><span class="o">(</span><span class="n">s</span><span class="k">:</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="nc">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">???</span>
-
-<span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
   <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">)</span>
   <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">.</span><span class="n">toUpperCase</span><span class="o">)</span>
   <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">.</span><span class="n">toUpperCase</span><span class="o">.</span><span class="n">trim</span><span class="o">)</span>
@@ -1750,288 +1896,6 @@ will have a very bad performance. This is a common problem
 not only in our matcher but in most regex libraries
 that use backtracking algorithms. You can 
 read more about this problem on <a href="https://en.wikipedia.org/wiki/ReDoS">Wikipedia</a>.</p>
-
-	  ]]></description>
-	</item>
-
-	<item>
-	  <title>Continuations in Java</title>
-	  <link>//continuations-in-java</link>
-	  <author></author>
-	  <pubDate>2020-06-27T02:00:01+02:00</pubDate>
-	  <guid>//continuations-in-java</guid>
-	  <description><![CDATA[
-	     <p>CSP or Continuation-Passing Style is a style of programming in which
-functions return results via callbacks.
-For example <code class="highlighter-rouge">+</code> operator is a function that takes two numbers and
-returns their sum. In CSP <code class="highlighter-rouge">+</code> operator becomes a function that takes
-three arguments, two terms and a callback, usually called a continuation in
-the context of CSP.
-In Java we can express this as:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">add</span><span class="o">(</span><span class="kt">int</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">b</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="o">);</span>
-<span class="o">}</span>
-
-<span class="nd">@FunctionalInterface</span>
-<span class="kd">private</span> <span class="kd">interface</span> <span class="nc">Cont</span><span class="o">&lt;</span><span class="n">R</span><span class="o">&gt;</span> <span class="o">{</span>
-  <span class="kt">void</span> <span class="nf">apply</span><span class="o">(</span><span class="n">R</span> <span class="n">result</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Because functions’ results are always returned via callback calls,
-CSP is forcing us to name the returned values by naming callback parameters.
-In addition CSP makes the order of evaluation of an expression explicit.
-For example, a simple Java program in imperative style:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">3</span><span class="o">);</span>
-<span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span></code></pre></figure>
-
-<p>Can be expressed in CSP as follows:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">add</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="n">partialSum</span> <span class="o">-&gt;</span>
-  <span class="n">add</span><span class="o">(</span><span class="n">partialSum</span><span class="o">,</span> <span class="mi">3</span><span class="o">,</span> <span class="n">sum</span> <span class="o">-&gt;</span>
-    <span class="n">print</span><span class="o">(</span><span class="n">sum</span><span class="o">,</span> <span class="n">unit</span> <span class="o">-&gt;</span>
-      <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">0</span><span class="o">))));</span>
-
-<span class="kd">static</span> <span class="kt">void</span> <span class="nf">print</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Void</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">n</span><span class="o">);</span>
-  <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>While transforming imperative programs into CSP form we may encounter
-problems with handling procedures (methods returning <code class="highlighter-rouge">void</code> in Java).
-A lot of functional programming languages do not support procedures,
-instead they define a special type called <code class="highlighter-rouge">Unit</code>, that has only
-a single value and use that type to signify that function does
-not return any meaningful data.
-So defined <code class="highlighter-rouge">Unit</code> type is often identified with the empty tuple <code class="highlighter-rouge">()</code>.
-In Java we do not have <code class="highlighter-rouge">Unit</code>, but we may use <code class="highlighter-rouge">Void</code> type with its only
-allowed value <code class="highlighter-rouge">null</code> to simulate it.</p>
-
-<p>While looking at our last example we may notice that in CSP form,
-function arguments can be in one of three forms:
-a constant, a variable or a lambda expression.
-There is no rule preventing us from passing two or more
-callbacks to a single function. 
-Indeed this is necessary to translate <code class="highlighter-rouge">if</code> statement to CSP counterpart:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">void</span> <span class="nf">iff</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">expr</span><span class="o">,</span>
-         <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Boolean</span><span class="o">&gt;</span> <span class="n">trueBranch</span><span class="o">,</span>
-         <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Boolean</span><span class="o">&gt;</span> <span class="n">falseBranch</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">expr</span><span class="o">)</span> <span class="n">trueBranch</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
-    <span class="k">else</span> <span class="n">falseBranch</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Instead of <code class="highlighter-rouge">Cont&lt;Boolean&gt;</code> we could use here <code class="highlighter-rouge">Cont&lt;Void&gt;</code> as well.</p>
-
-<p>To get a better feel for CSP we will look at three more examples.
-We will start with a simple (naive) program for computing sum
-of all numbers between given two numbers:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">long</span> <span class="nf">sum</span><span class="o">(</span><span class="kt">int</span> <span class="n">from</span><span class="o">,</span> <span class="kt">int</span> <span class="n">to</span><span class="o">)</span> <span class="o">{</span>
-  <span class="kt">long</span> <span class="n">sum</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
-  <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="n">from</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">to</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
-    <span class="n">sum</span> <span class="o">+=</span> <span class="n">i</span><span class="o">;</span>
-  <span class="o">}</span>
-  <span class="k">return</span> <span class="n">sum</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>The transformation to CSP will become easier
-if we first replace <code class="highlighter-rouge">for</code> loop with recursion:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">long</span> <span class="nf">sum_rec</span><span class="o">(</span><span class="kt">int</span> <span class="n">from</span><span class="o">,</span> <span class="kt">int</span> <span class="n">to</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">return</span> <span class="o">(</span><span class="n">from</span> <span class="o">&gt;</span> <span class="n">to</span><span class="o">)</span>
-    <span class="o">?</span> <span class="mi">0</span>
-    <span class="o">:</span> <span class="n">from</span> <span class="o">+</span> <span class="n">sum_rec</span><span class="o">(</span><span class="n">from</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">to</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>This version can be easily translated into CSP:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">void</span> <span class="nf">sumCC</span><span class="o">(</span><span class="kt">int</span> <span class="n">from</span><span class="o">,</span> <span class="kt">int</span> <span class="n">to</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Long</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">gt</span><span class="o">(</span><span class="n">from</span><span class="o">,</span> <span class="n">to</span><span class="o">,</span> <span class="n">fromGreaterThanTo</span> <span class="o">-&gt;</span>
-    <span class="n">iff</span><span class="o">(</span><span class="n">fromGreaterThanTo</span><span class="o">,</span>
-      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="mi">0L</span><span class="o">),</span>
-      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">add</span><span class="o">(</span><span class="n">from</span><span class="o">,</span> <span class="mi">1</span><span class="o">,</span> <span class="n">from1</span> <span class="o">-&gt;</span>
-        <span class="n">sumCC</span><span class="o">(</span><span class="n">from1</span><span class="o">,</span> <span class="n">to</span><span class="o">,</span> <span class="n">sumCC1</span> <span class="o">-&gt;</span>
-          <span class="n">addLong</span><span class="o">(</span><span class="n">from</span><span class="o">,</span> <span class="n">sumCC1</span><span class="o">,</span> <span class="n">cont</span><span class="o">)))));</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Where <code class="highlighter-rouge">gt</code> is the CSP counterpart of <code class="highlighter-rouge">&gt;</code> operator.</p>
-
-<p>Next we will transform factorial computing function.
-This time we will start with a recursive definition that is 
-easier to translate:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">int</span> <span class="nf">factorial</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">if</span> <span class="o">(</span><span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="o">)</span> <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
-  <span class="k">return</span> <span class="nf">factorial</span><span class="o">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="o">)*</span><span class="n">n</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>CSP version of factorial looks like this:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">factorial</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">eq</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">isNZero</span> <span class="o">-&gt;</span>
-    <span class="n">iff</span><span class="o">(</span><span class="n">isNZero</span><span class="o">,</span>
-      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span>
-      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">add</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">nm1</span> <span class="o">-&gt;</span>
-        <span class="n">factorial</span><span class="o">(</span><span class="n">nm1</span><span class="o">,</span> <span class="n">fnm1</span> <span class="o">-&gt;</span>
-          <span class="n">multiply</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="n">fnm1</span><span class="o">,</span> <span class="n">cont</span><span class="o">)))));</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>As the last example we will transform a function
-that computes Fibonacci sequence:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">int</span> <span class="nf">fib1</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="o">)</span> <span class="k">return</span> <span class="mi">1</span><span class="o">;</span>
-    <span class="k">return</span> <span class="nf">fib1</span><span class="o">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">+</span> <span class="n">fib1</span><span class="o">(</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>In CSP it looks like this:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">void</span> <span class="nf">fib</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-  <span class="n">lt</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="mi">2</span><span class="o">,</span> <span class="n">nlt2</span> <span class="o">-&gt;</span>
-    <span class="n">iff</span><span class="o">(</span><span class="n">nlt2</span><span class="o">,</span>
-      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span>
-      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">add</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">nm1</span> <span class="o">-&gt;</span>
-        <span class="n">fib</span><span class="o">(</span><span class="n">nm1</span><span class="o">,</span> <span class="n">fnm1</span> <span class="o">-&gt;</span>
-          <span class="n">add</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="o">-</span><span class="mi">2</span><span class="o">,</span> <span class="n">nm2</span> <span class="o">-&gt;</span>
-            <span class="n">fib</span><span class="o">(</span><span class="n">nm2</span><span class="o">,</span> <span class="n">fnm2</span> <span class="o">-&gt;</span>
-              <span class="n">add</span><span class="o">(</span><span class="n">fnm1</span><span class="o">,</span> <span class="n">fnm2</span><span class="o">,</span> <span class="n">cont</span><span class="o">)))))));</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Now we should have, at least intuitive feel, how the
-transformation to CSP works. In fact any program can be
-transformed to CSP. The last point is quite interesting,
-especially if we pass <code class="highlighter-rouge">() -&gt; exit(0)</code> or some other not-returning function
-as the last continuation. Why? Because in that case we will
-never return from any of the called functions.
-Let’s see how this works on a simple example:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">factorial</span><span class="o">(</span><span class="mi">6</span><span class="o">,</span> <span class="n">fac6</span> <span class="o">-&gt;</span>
-      <span class="n">print</span><span class="o">(</span><span class="n">fac6</span><span class="o">,</span> <span class="n">x</span> <span class="o">-&gt;</span>
-        <span class="n">System</span><span class="o">.</span><span class="na">exit</span><span class="o">(</span><span class="mi">0</span><span class="o">)));</span>
-
-    <span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Will never be printed"</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>The entire idea of having a call stack is about providing a way for
-the called functions to return the control to the callers.
-But if we are never returning, then we don’t need a call stack, right?
-Not so fast, some of you may say - what about passing arguments to 
-the called functions,
-call stack is used for that too. Yes, the arguments are also stored on
-the call stack but with CSP we capture 
-the values of arguments using closures.
-Of course JVM does not know that our programs are in CSP form or that they 
-would do fine without having a call stack at all.
-Instead we get a new call stack frame every time we call something,
-this results in <code class="highlighter-rouge">StackOverflowError</code> quickly when we call
-e.g. <code class="highlighter-rouge">factorial(3000, r -&gt; ...)</code>.</p>
-
-<p>Too avoid <code class="highlighter-rouge">StackOverflowError</code>s we may use a technique called trampolining. 
-Trampolining in connection with CSP
-could reduce the required call stack space to a constant number
-of slots.
-The idea of trampolining is very simple, we split computation into
-parts and then we compute only the first part and <em>return</em> a 
-continuation (called thunk) that is responsible for computing the rest. 
-The returned continuation captures the result of the first computation in
-its closure so we don’t have to recompute it.
-Let’s see how a trampolined <code class="highlighter-rouge">+</code> operator would looks like:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="n">Thunk</span> <span class="nf">add</span><span class="o">(</span><span class="kt">int</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">b</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-    <span class="kt">int</span> <span class="n">sum</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span><span class="o">;</span>
-    <span class="k">return</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="n">sum</span><span class="o">);</span>
-<span class="o">}</span>
-
-<span class="kd">static</span> <span class="n">Thunk</span> <span class="nf">add3</span><span class="o">(</span><span class="kt">int</span> <span class="n">a</span><span class="o">,</span> <span class="kt">int</span> <span class="n">b</span><span class="o">,</span> <span class="kt">int</span> <span class="n">c</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="nf">add</span><span class="o">(</span><span class="n">a</span><span class="o">,</span> <span class="n">b</span><span class="o">,</span> <span class="n">sum</span> <span class="o">-&gt;</span>
-            <span class="n">add</span><span class="o">(</span><span class="n">sum</span><span class="o">,</span> <span class="n">c</span><span class="o">,</span> <span class="n">cont</span><span class="o">));</span>
-<span class="o">}</span>
-
-<span class="nd">@FunctionalInterface</span>
-<span class="kd">private</span> <span class="kd">interface</span> <span class="nc">Cont</span><span class="o">&lt;</span><span class="n">R</span><span class="o">&gt;</span> <span class="o">{</span>
-    <span class="n">Thunk</span> <span class="nf">apply</span><span class="o">(</span><span class="n">R</span> <span class="n">result</span><span class="o">);</span>
-<span class="o">}</span>
-
-<span class="nd">@FunctionalInterface</span>
-<span class="kd">private</span> <span class="kd">interface</span> <span class="nc">Thunk</span> <span class="o">{</span>
-    <span class="n">Thunk</span> <span class="nf">run</span><span class="o">();</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Notice that trampolined <code class="highlighter-rouge">+</code> operator splits its computation
-into two parts: computing the sum and calling the continuation.
-The called continuation will again split it’s work and so on and on.</p>
-
-<p><code class="highlighter-rouge">add3</code> function illustrates two key points. 
-One is that the logical flow of the program stays the same, we just
-call the passed continuations like in a pure CSP program.
-The other is, that to introduce trampolining we only need to modify
-primitives provided by our programming language (operators and statements).
-The program code stays the same.
-Of course because Java is a statically-typed language we need to change 
-functions return type from <code class="highlighter-rouge">void</code> into <code class="highlighter-rouge">Thunk</code>, but this is
-a simple mechanical change that would not be necessary in 
-a dynamically-typed language.</p>
-
-<p>Next example illustrates how trampolined <code class="highlighter-rouge">if</code> statement and
-<code class="highlighter-rouge">factorial</code> looks like. Notice that factorial code did not change,
-not counting the return type:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="n">Thunk</span> <span class="nf">iff</span><span class="o">(</span><span class="kt">boolean</span> <span class="n">expr</span><span class="o">,</span>
-                 <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Boolean</span><span class="o">&gt;</span> <span class="n">trueBranch</span><span class="o">,</span>
-                 <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Boolean</span><span class="o">&gt;</span> <span class="n">falseBranch</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">return</span> <span class="o">(</span><span class="n">expr</span><span class="o">)</span>
-    <span class="o">?</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="n">trueBranch</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="kc">true</span><span class="o">)</span>
-    <span class="o">:</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="n">falseBranch</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
-<span class="o">}</span>
-
-<span class="kd">static</span> <span class="n">Thunk</span> <span class="nf">factorial</span><span class="o">(</span><span class="kt">int</span> <span class="n">n</span><span class="o">,</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">Integer</span><span class="o">&gt;</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">return</span> <span class="nf">eq</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">isNZero</span> <span class="o">-&gt;</span>
-    <span class="n">iff</span><span class="o">(</span><span class="n">isNZero</span><span class="o">,</span>
-      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">cont</span><span class="o">.</span><span class="na">apply</span><span class="o">(</span><span class="mi">1</span><span class="o">),</span>
-      <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">add</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">,</span> <span class="n">nm1</span> <span class="o">-&gt;</span>
-        <span class="n">factorial</span><span class="o">(</span><span class="n">nm1</span><span class="o">,</span> <span class="n">fnm1</span> <span class="o">-&gt;</span>
-          <span class="n">multiply</span><span class="o">(</span><span class="n">n</span><span class="o">,</span> <span class="n">fnm1</span><span class="o">,</span> <span class="n">cont</span><span class="o">)))));</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Because we are now performing computation “in parts”, we need 
-a procedure that will be continually invoking returned thunks,
-thus ensuring that out computation is making progress.
-A procedure like this is called a trampoline:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">static</span> <span class="kt">void</span> <span class="nf">trampoline</span><span class="o">(</span><span class="n">Thunk</span> <span class="n">thunk</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">while</span> <span class="o">(</span><span class="n">thunk</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
-      <span class="n">thunk</span> <span class="o">=</span> <span class="n">thunk</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
-  <span class="o">}</span>
-<span class="o">}</span>
-
-<span class="kd">static</span> <span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">Cont</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="nf">endCall</span><span class="o">(</span><span class="n">Consumer</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span> <span class="n">call</span><span class="o">)</span> <span class="o">{</span>
-  <span class="k">return</span> <span class="n">r</span> <span class="o">-&gt;</span> <span class="o">{</span>
-      <span class="n">call</span><span class="o">.</span><span class="na">accept</span><span class="o">(</span><span class="n">r</span><span class="o">);</span>
-      <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-  <span class="o">};</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>We are also providing a new primitive operator <code class="highlighter-rouge">endCall</code> that
-can be used to mark the last part of the computation.
-Using <code class="highlighter-rouge">trampoline</code> we may now compute <code class="highlighter-rouge">factorial(3000)</code>
-without any troubles:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">AtomicInteger</span> <span class="n">res</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AtomicInteger</span><span class="o">(-</span><span class="mi">1</span><span class="o">);</span>
-<span class="n">trampoline</span><span class="o">(</span><span class="n">factorial</span><span class="o">(</span><span class="mi">400000</span><span class="o">,</span> <span class="n">endCall</span><span class="o">(</span><span class="nl">res:</span><span class="o">:</span><span class="n">set</span><span class="o">)));</span>
-<span class="n">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="n">res</span><span class="o">.</span><span class="na">get</span><span class="o">())</span></code></pre></figure>
-
-<p>As a side effect, we may now use trampoline to mix
-CSP and imperative code in the same program.</p>
-
-<p>CSP and trampolining are not mere theoretical concepts,
-there where and are still used to implement e.g. LISP interpreters.
-Continuations can also be used to simplify backtracking algorithms.
-Source code for this blog post can be found
-<a href="https://github.com/marcin-chwedczuk/reng/tree/master/test/pl/marcinchwedczuk/continuations">here</a>.</p>
-
 
 	  ]]></description>
 	</item>

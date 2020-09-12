@@ -5,7 +5,7 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://localhost:4000</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor> </managingEditor>
@@ -45,9 +45,9 @@ So now we are slowly migrating our <code class="highlighter-rouge">() =&gt; Long
 Of course as Scala fanboys we decided to add an extension method to <code class="highlighter-rouge">Long</code>, to make the entire
 process less painful:</p>
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">implicit</span> <span class="k">class</span> <span class="nc">MyRichLong</span><span class="o">(</span><span class="n">n</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">implicit</span> <span class="k">class</span> <span class="nc">MyRichLong</span><span class="o">(</span><span class="n">l</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="o">{</span>
   <span class="k">def</span> <span class="n">asMillisecondsDuration</span><span class="o">()</span><span class="k">:</span> <span class="kt">Duration</span> <span class="o">=</span> <span class="o">{</span>
-    <span class="nc">Duration</span><span class="o">.</span><span class="n">ofMillis</span><span class="o">(</span><span class="n">n</span><span class="o">)</span>
+    <span class="nc">Duration</span><span class="o">.</span><span class="n">ofMillis</span><span class="o">(</span><span class="n">l</span><span class="o">)</span>
   <span class="o">}</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -68,8 +68,8 @@ process less painful:</p>
 <figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">tmp</span> <span class="k">=</span> <span class="n">currentTimeoutValue</span><span class="o">()</span>
 <span class="k">new</span> <span class="nc">MyServiceRefactored</span><span class="o">(()</span> <span class="k">=&gt;</span> <span class="n">tmp</span><span class="o">.</span><span class="n">asMillisecondsDuration</span><span class="o">())</span></code></pre></figure>
 
-<p>So <code class="highlighter-rouge">timeout</code> property value is frozen at the moment of <code class="highlighter-rouge">MyServiceRefactored</code> instance creation.
-This is not what we want.</p>
+<p>So <code class="highlighter-rouge">timeout</code> property value is frozen at the moment of <code class="highlighter-rouge">MyServiceRefactored</code> object creation,
+this is not what we want.</p>
 
 <p>Bugs like this are hard to figure out. At the first glance everything works fine.
 The problem demonstrates itself only when we try to adjust the property value at runtime.
@@ -81,7 +81,7 @@ Our extension method is declared like so</p>
 
 <figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">asMillisecondsDuration</span><span class="o">()</span><span class="k">:</span> <span class="kt">Duration</span></code></pre></figure>
 
-<p>but it should be declared like this</p>
+<p>but we should be declared like this</p>
 
 <figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">asMillisecondsDuration</span><span class="k">:</span> <span class="kt">Duration</span></code></pre></figure>
 
@@ -90,11 +90,11 @@ If we use the second declaration our bug would be quickly detected by Scala comp
 
 <p>In practice a lot of Scala programmers are confused by the optional parentheses
 in parameterless method declarations. I often see methods declared like <code class="highlighter-rouge">def foo: Unit</code>
-that mutate the state or methods declared like <code class="highlighter-rouge">def bar(): Int</code> that are just getters.
+that mutate the state or method declared like <code class="highlighter-rouge">def bar(): Int</code> that are just getters.
 For people like me, that constantly switch between Java and Scala, this is especially difficult
 and I routinely make mistakes like this (I add parentheses everywhere)…</p>
 
-<p>One solution that people often come up with when confronted with this bug is to
+<p>One solution that people often come up with when confronted with this problem is to
 replace functions by by-name parameters.</p>
 
 <p>By-name parameters are nothing new. They where first introduced more than 50 years ago in a language called
@@ -117,7 +117,7 @@ to create functions that mimic the language build-in constructs. For example:</p
 <p>The main problem with by-name parameters is that they do not follow the
 usual order of evaluation. An ordinary function call</p>
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">egg</span><span class="o">(</span><span class="n">foo</span><span class="o">(),</span> <span class="n">bar</span><span class="o">())</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">egg</span><span class="o">(</span><span class="n">foo</span><span class="o">()),</span> <span class="n">bar</span><span class="o">())</span></code></pre></figure>
 
 <p>will result in functions <code class="highlighter-rouge">foo</code> and <code class="highlighter-rouge">bar</code> being called one after another,
 followed by <code class="highlighter-rouge">egg</code> function call.
@@ -146,15 +146,15 @@ we can surround the expression with curly braces:</p>
 
 <p>But it must be noted that in Scala we can add curly braces to almost anything, 
 e.g. <code class="highlighter-rouge">println({1} + {2})</code>.
-In other words curly braces around thunks are only convention not enforced by the compiler.</p>
+In other words curly braces around thunks are only a convention not enforced by the compiler.</p>
 
-<p>Sometimes the best solution is the object-oriented one. So after being not very happy about using by-name
-params I decided to create an old plain interface:</p>
+<p>Sometimes the best solution is the object-oriented one. So after being disappointed with by-name
+params I decided to create an interface:</p>
 
 <figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="nd">@FunctionalInterface</span>
 <span class="k">trait</span> <span class="nc">Property</span><span class="o">[</span><span class="kt">V</span><span class="o">]</span> <span class="o">{</span>
   <span class="c1">// parentheses required for lambda -&gt; SAM conversion
-</span>  <span class="c1">// in Scala 2.13. Yeah this sucks...
+</span>  <span class="c1">// in Scala 2.13. Yeah this sucks!
 </span>  <span class="k">def</span> <span class="n">value</span><span class="o">()</span><span class="k">:</span> <span class="kt">V</span>
 <span class="o">}</span></code></pre></figure>
 
@@ -169,23 +169,21 @@ so we can create <code class="highlighter-rouge">MyService</code> without too mu
 
 <p>No simplification is possible this time, and both below examples do not compile:</p>
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">({</span> <span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span> <span class="o">})</span><span class="c1">//error
-</span><span class="k">new</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span><span class="o">)//</span><span class="n">error</span></code></pre></figure>
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">({</span> <span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span> <span class="o">})</span>
+<span class="k">new</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span><span class="o">)</span></code></pre></figure>
 
 <p>The protection is, unfortunately, not 100% bullet proof.
-For example the following code snipped will compile, but it does not work as intended:</p>
+For example the following code snipped will compile but does not work as intended:</p>
 
 <figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span> <span class="k">_</span><span class="o">)</span></code></pre></figure>
 
-<p>I can only hope that the visual clue (<code class="highlighter-rouge">_</code>) that will attract a reviewer attention during the code review process.</p>
+<p>At least it provides a visual clue (<code class="highlighter-rouge">_</code>) that will attract reviewer attention during the code review.</p>
 
 <p>Now I fully understand why Java designers decided to introduce a new operator <code class="highlighter-rouge">::</code> for creating method
 references. It makes it clear which part of the expression will be evaluated only once and which part
 will become the functional interface implementation:</p>
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">static</span> <span class="n">void</span> <span class="n">print</span><span class="o">(</span><span class="nc">Supplier</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
-
-<span class="n">public</span> <span class="n">static</span> <span class="n">void</span> <span class="n">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">){</span>
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">public</span> <span class="n">static</span> <span class="n">void</span> <span class="n">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">){</span>
   <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">()::</span><span class="n">toString</span><span class="o">);</span>
   <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">()::</span><span class="n">toUpperCase</span><span class="o">);</span>
   <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">().</span><span class="n">toUpperCase</span><span class="o">()::</span><span class="n">trim</span><span class="o">);</span>
@@ -195,9 +193,7 @@ will become the functional interface implementation:</p>
 
 <p>Compare this with Scala:</p>
 
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">print</span><span class="o">(</span><span class="n">s</span><span class="k">:</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="nc">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">???</span>
-
-<span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
   <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">)</span>
   <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">.</span><span class="n">toUpperCase</span><span class="o">)</span>
   <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">.</span><span class="n">toUpperCase</span><span class="o">.</span><span class="n">trim</span><span class="o">)</span>
