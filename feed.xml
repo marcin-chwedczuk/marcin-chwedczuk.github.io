@@ -8,6 +8,23 @@
     
       
       <item>
+        <title>Passing functions as arguments in Scala. What can go wrong?</title>
+        
+          <description>&lt;p&gt;In microservices architecture we often designate a single service for managing the configuration of the entire system.
+Libraries like &lt;a href=&quot;https://github.com/Netflix/archaius&quot;&gt;Archaius&lt;/a&gt; make this easy. 
+As a side effect, on the code level I often see class declarations like this:&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Fri, 11 Sep 2020 02:00:01 +0200</pubDate>
+        <link>
+        /passing-functions-as-arguments-in-scala-what-can-go-wrong</link>
+        <guid isPermaLink="true">/passing-functions-as-arguments-in-scala-what-can-go-wrong</guid>
+      </item>
+      
+    
+      
+      <item>
         <title>Preparing images for Ben Eater's VGA card using Gimp</title>
         
           <description>&lt;p&gt;Recently I have completed my own version of &lt;a href=&quot;https://eater.net/vga&quot;&gt;Ben Eater video card&lt;/a&gt;.

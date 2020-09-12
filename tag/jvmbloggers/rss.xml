@@ -12,6 +12,222 @@
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
+	  <title>Passing functions as arguments in Scala. What can go wrong?</title>
+	  <link>//passing-functions-as-arguments-in-scala-what-can-go-wrong</link>
+	  <author></author>
+	  <pubDate>2020-09-11T02:00:01+02:00</pubDate>
+	  <guid>//passing-functions-as-arguments-in-scala-what-can-go-wrong</guid>
+	  <description><![CDATA[
+	     <p>In microservices architecture we often designate a single service for managing the configuration of the entire system.
+Libraries like <a href="https://github.com/Netflix/archaius">Archaius</a> make this easy. 
+As a side effect, on the code level I often see class declarations like this:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">timeoutProperty</span><span class="k">:</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="nc">Long</span><span class="o">)</span> <span class="o">{</span>
+  <span class="o">...</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Basically we inject providers for current configuration properties values into classes.
+This has two advantages. First, our classes are independent of any library that we are using
+for managing configuration. And second, our classes are easy to test - no mocks needed.</p>
+
+<p>Yet this approach can lead to subtle bugs. Say our original code that creates <code class="highlighter-rouge">MyService</code>
+looks like this:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">(()</span> <span class="k">=&gt;</span> <span class="n">currentTimeoutValue</span><span class="o">())</span></code></pre></figure>
+
+<p>Imagine that a few weeks later a Scala purist is coming by and decides to “improve” this code into:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">currentTimeoutValue</span><span class="o">)</span></code></pre></figure>
+
+<p>Shorter code, better code as they say…
+A few more weeks pass by and we realise that using <code class="highlighter-rouge">Long</code>s for storing time intervals is passé.
+So now we are slowly migrating our <code class="highlighter-rouge">() =&gt; Long</code> providers into <code class="highlighter-rouge">() =&gt; java.time.Duration</code>.
+Of course as Scala fanboys we decided to add an extension method to <code class="highlighter-rouge">Long</code>, to make the entire
+process less painful:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">implicit</span> <span class="k">class</span> <span class="nc">MyRichLong</span><span class="o">(</span><span class="n">n</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">asMillisecondsDuration</span><span class="o">()</span><span class="k">:</span> <span class="kt">Duration</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="nc">Duration</span><span class="o">.</span><span class="n">ofMillis</span><span class="o">(</span><span class="n">n</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>In meantime, the code responsible for <code class="highlighter-rouge">MyService</code> creation morphed into:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">MyServiceRefactored</span><span class="o">(</span><span class="n">timeoutProperty</span><span class="k">:</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="nc">Duration</span><span class="o">)</span> <span class="o">{</span> <span class="o">...</span> <span class="o">}</span>
+
+<span class="k">new</span> <span class="nc">MyServiceRefactored</span><span class="o">(</span><span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span><span class="o">)</span></code></pre></figure>
+
+<p>And… BOOM! It’s no longer working!</p>
+
+<p>Why this code is no longer working? Because</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyServiceRefactored</span><span class="o">(</span><span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span><span class="o">)</span></code></pre></figure>
+
+<p>is transformed by Scala compiler into</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">tmp</span> <span class="k">=</span> <span class="n">currentTimeoutValue</span><span class="o">()</span>
+<span class="k">new</span> <span class="nc">MyServiceRefactored</span><span class="o">(()</span> <span class="k">=&gt;</span> <span class="n">tmp</span><span class="o">.</span><span class="n">asMillisecondsDuration</span><span class="o">())</span></code></pre></figure>
+
+<p>So <code class="highlighter-rouge">timeout</code> property value is frozen at the moment of <code class="highlighter-rouge">MyServiceRefactored</code> instance creation.
+This is not what we want.</p>
+
+<p>Bugs like this are hard to figure out. At the first glance everything works fine.
+The problem demonstrates itself only when we try to adjust the property value at runtime.
+And even then a simple service restart will reload the property, so we may incorrectly assign
+it to a configuration server/library/networking glitch.</p>
+
+<p>Here I must mention that this bug was possible only because we broken one of Scala’s good practices.
+Our extension method is declared like so</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">asMillisecondsDuration</span><span class="o">()</span><span class="k">:</span> <span class="kt">Duration</span></code></pre></figure>
+
+<p>but it should be declared like this</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">asMillisecondsDuration</span><span class="k">:</span> <span class="kt">Duration</span></code></pre></figure>
+
+<p>as this method is actually a getter - it does not mutate the object on which it is called.
+If we use the second declaration our bug would be quickly detected by Scala compiler.</p>
+
+<p>In practice a lot of Scala programmers are confused by the optional parentheses
+in parameterless method declarations. I often see methods declared like <code class="highlighter-rouge">def foo: Unit</code>
+that mutate the state or methods declared like <code class="highlighter-rouge">def bar(): Int</code> that are just getters.
+For people like me, that constantly switch between Java and Scala, this is especially difficult
+and I routinely make mistakes like this (I add parentheses everywhere)…</p>
+
+<p>One solution that people often come up with when confronted with this bug is to
+replace functions by by-name parameters.</p>
+
+<p>By-name parameters are nothing new. They where first introduced more than 50 years ago in a language called
+Algol60. Early programmers of that language quickly found out that by-name parameters are error prone and difficult to use.
+As a result most of the contemporary programming languages do not support them.</p>
+
+<p>Scala as <del>an over-engineered</del> a versatile language supports by-name parameters, as they allow programmers
+to create functions that mimic the language build-in constructs. For example:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">repeat</span><span class="o">(</span><span class="n">times</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)(</span><span class="n">f</span><span class="k">:</span> <span class="o">=&gt;</span> <span class="nc">Unit</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+  <span class="k">for</span> <span class="o">(</span><span class="k">_</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="n">times</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">f</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="n">repeat</span><span class="o">(</span><span class="mi">3</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">println</span><span class="o">(</span><span class="s">"hurray!"</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The main problem with by-name parameters is that they do not follow the
+usual order of evaluation. An ordinary function call</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">egg</span><span class="o">(</span><span class="n">foo</span><span class="o">(),</span> <span class="n">bar</span><span class="o">())</span></code></pre></figure>
+
+<p>will result in functions <code class="highlighter-rouge">foo</code> and <code class="highlighter-rouge">bar</code> being called one after another,
+followed by <code class="highlighter-rouge">egg</code> function call.
+When we use by-name parameters no order is guaranteed, <code class="highlighter-rouge">foo</code> may be called
+before or after <code class="highlighter-rouge">bar</code> or may not be called at all, 
+or may be called three times, or four…
+This makes code difficult to reason about.
+That is why I use by-name parameters sparingly, usually only when I need to implement a
+new statement like construct.</p>
+
+<p>That being said, we may declare our new version of <code class="highlighter-rouge">MyService</code> as</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">timeoutProperty</span><span class="k">:</span> <span class="o">=&gt;</span> <span class="nc">Duration</span><span class="o">)</span> <span class="o">{</span>
+  <span class="o">...</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>and it will work flawlessly with our converted-on-the-fly property:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span><span class="o">())</span></code></pre></figure>
+
+<p>To make it clear that we are passing not a value but an expression to be evaluated
+(called a <a href="https://en.wikipedia.org/wiki/Thunk">thunk</a>), 
+we can surround the expression with curly braces:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">({</span> <span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span><span class="o">()</span> <span class="o">})</span></code></pre></figure>
+
+<p>But it must be noted that in Scala we can add curly braces to almost anything, 
+e.g. <code class="highlighter-rouge">println({1} + {2})</code>.
+In other words curly braces around thunks are only convention not enforced by the compiler.</p>
+
+<p>Sometimes the best solution is the object-oriented one. So after being not very happy about using by-name
+params I decided to create an old plain interface:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="nd">@FunctionalInterface</span>
+<span class="k">trait</span> <span class="nc">Property</span><span class="o">[</span><span class="kt">V</span><span class="o">]</span> <span class="o">{</span>
+  <span class="c1">// parentheses required for lambda -&gt; SAM conversion
+</span>  <span class="c1">// in Scala 2.13. Yeah this sucks...
+</span>  <span class="k">def</span> <span class="n">value</span><span class="o">()</span><span class="k">:</span> <span class="kt">V</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>and inject it into <code class="highlighter-rouge">MyService</code>:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">timeoutProperty</span><span class="k">:</span> <span class="kt">Property</span><span class="o">[</span><span class="kt">Duration</span><span class="o">])</span> <span class="o">{</span> <span class="o">...</span> <span class="o">}</span></code></pre></figure>
+
+<p>Scala since version 2.12 supports converting lambda expressions to SAMs (Single Method Interfaces),
+so we can create <code class="highlighter-rouge">MyService</code> without too much ceremony:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">(()</span> <span class="k">=&gt;</span> <span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span><span class="o">())</span></code></pre></figure>
+
+<p>No simplification is possible this time, and both below examples do not compile:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">({</span> <span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span> <span class="o">})</span><span class="c1">//error
+</span><span class="k">new</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span><span class="o">)//</span><span class="n">error</span></code></pre></figure>
+
+<p>The protection is, unfortunately, not 100% bullet proof.
+For example the following code snipped will compile, but it does not work as intended:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span> <span class="k">_</span><span class="o">)</span></code></pre></figure>
+
+<p>I can only hope that the visual clue (<code class="highlighter-rouge">_</code>) that will attract a reviewer attention during the code review process.</p>
+
+<p>Now I fully understand why Java designers decided to introduce a new operator <code class="highlighter-rouge">::</code> for creating method
+references. It makes it clear which part of the expression will be evaluated only once and which part
+will become the functional interface implementation:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">static</span> <span class="n">void</span> <span class="n">print</span><span class="o">(</span><span class="nc">Supplier</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span> <span class="o">}</span>
+
+<span class="n">public</span> <span class="n">static</span> <span class="n">void</span> <span class="n">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">){</span>
+  <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">()::</span><span class="n">toString</span><span class="o">);</span>
+  <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">()::</span><span class="n">toUpperCase</span><span class="o">);</span>
+  <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">().</span><span class="n">toUpperCase</span><span class="o">()::</span><span class="n">trim</span><span class="o">);</span>
+  
+  <span class="n">print</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">());</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Compare this with Scala:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">print</span><span class="o">(</span><span class="n">s</span><span class="k">:</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="nc">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">???</span>
+
+<span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+  <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">)</span>
+  <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">.</span><span class="n">toUpperCase</span><span class="o">)</span>
+  <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">.</span><span class="n">toUpperCase</span><span class="o">.</span><span class="n">trim</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Looks likes the third solution is the best one. The only thing left is to provide a fake
+implementation for <code class="highlighter-rouge">Property[V]</code> interface to make testing easy:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">ManuallySetProperty</span><span class="o">[</span><span class="kt">V</span><span class="o">](</span><span class="n">initialValue</span><span class="k">:</span> <span class="kt">V</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">Property</span><span class="o">[</span><span class="kt">V</span><span class="o">]</span> <span class="o">{</span>
+  <span class="k">private</span> <span class="k">var</span> <span class="n">v</span> <span class="k">=</span> <span class="n">initialValue</span>
+
+  <span class="k">override</span> <span class="k">def</span> <span class="n">value</span><span class="o">()</span><span class="k">:</span> <span class="kt">V</span> <span class="o">=</span> <span class="n">v</span>
+  <span class="k">def</span> <span class="n">setValue</span><span class="o">(</span><span class="n">newValue</span><span class="k">:</span> <span class="kt">V</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="n">v</span> <span class="k">=</span> <span class="n">newValue</span>
+  <span class="o">}</span>
+
+  <span class="k">override</span> <span class="k">def</span> <span class="n">toString</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="n">s</span><span class="s">"property(value=$v)"</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="k">val</span> <span class="n">timeout</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">ManuallySetProperty</span><span class="o">(</span><span class="nc">Duration</span><span class="o">.</span><span class="nc">ZERO</span><span class="o">)</span>
+<span class="n">println</span><span class="o">(</span><span class="n">timeout</span><span class="o">.</span><span class="n">value</span><span class="o">())</span>
+<span class="n">timeout</span><span class="o">.</span><span class="n">setValue</span><span class="o">(</span><span class="nc">Duration</span><span class="o">.</span><span class="n">ofMinutes</span><span class="o">(</span><span class="mi">3</span><span class="o">))</span>
+<span class="n">println</span><span class="o">(</span><span class="n">timeout</span><span class="o">.</span><span class="n">value</span><span class="o">())</span></code></pre></figure>
+
+	  ]]></description>
+	</item>
+
+	<item>
 	  <title>Devoxx Poland 2018</title>
 	  <link>//devoxx-poland-2018</link>
 	  <author></author>
