@@ -17,82 +17,79 @@
 	  <author></author>
 	  <pubDate>2016-07-15T02:00:00+02:00</pubDate>
 	  <guid>//powershell-function-declaration-pitfall</guid>
-	  <description><![CDATA[
-	     <p>Recently I had to write some scripts in PowerShell.
+	
+          <description>&lt;p&gt;Recently I had to write some scripts in PowerShell.
 Because I try to follow good software development practices I decided to split
 script logic into functions. First I defined a few functions
-that taken or returned single value:</p>
+that taken or returned single value:&lt;/p&gt;
 
-<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="k">function </span>printArg<span class="o">(</span><span class="nv">$arg1</span><span class="o">)</span> <span class="o">{</span>
-    <span class="nb">write-host</span> <span class="s2">"printArg: arg1=</span><span class="nv">$arg1</span><span class="s2">"</span>;
-<span class="o">}</span>
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;k&quot;&gt;function &lt;/span&gt;printArg&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;write-host&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;printArg: arg1=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$arg1&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
     
-<span class="k">function </span>transformArg<span class="o">(</span><span class="nv">$n</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">return</span> <span class="nv">$n</span><span class="k">*</span><span class="nv">$n</span>
-<span class="o">}</span></code></pre></figure>
+&lt;span class=&quot;k&quot;&gt;function &lt;/span&gt;transformArg&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$n&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$n&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$n&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-<p>Of course they worked brilliantly:</p>
+&lt;p&gt;Of course they worked brilliantly:&lt;/p&gt;
 
-<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="o">&gt;</span> printArg<span class="o">(</span>1<span class="o">)</span>
-printArg: <span class="nv">arg1</span><span class="o">=</span>1
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; printArg&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+printArg: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1
     
-<span class="o">&gt;</span> printArg<span class="o">(</span><span class="s2">"foo"</span><span class="o">)</span>
-printArg: <span class="nv">arg1</span><span class="o">=</span>foo
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; printArg&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;foo&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+printArg: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;foo
     
-<span class="o">&gt;</span> <span class="nb">write-host</span> <span class="k">$(</span>transformArg<span class="o">(</span>3<span class="k">)</span><span class="o">)</span>
-9</code></pre></figure>
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;write-host&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;$(&lt;/span&gt;transformArg&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;3&lt;span class=&quot;k&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+9&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-<p>But then I needed to declare function that takes three arguments,
-I started with code:</p>
+&lt;p&gt;But then I needed to declare function that takes three arguments,
+I started with code:&lt;/p&gt;
 
-<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="k">function </span>manyArgs<span class="o">(</span><span class="nv">$arg1</span>, <span class="nv">$arg2</span>, <span class="nv">$arg3</span><span class="o">)</span> <span class="o">{</span>
-    <span class="nb">write-host</span> <span class="s2">"manyArgs: arg1=</span><span class="nv">$arg1</span><span class="s2">, arg2=</span><span class="nv">$arg2</span><span class="s2">, arg3=</span><span class="nv">$arg3</span><span class="s2">"</span>
-<span class="o">}</span></code></pre></figure>
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;k&quot;&gt;function &lt;/span&gt;manyArgs&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$arg1&lt;/span&gt;, &lt;span class=&quot;nv&quot;&gt;$arg2&lt;/span&gt;, &lt;span class=&quot;nv&quot;&gt;$arg3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;write-host&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;manyArgs: arg1=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$arg1&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;, arg2=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$arg2&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;, arg3=&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$arg3&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-<p>Unfortunatelly it didn’t work as expected:</p>
+&lt;p&gt;Unfortunatelly it didn’t work as expected:&lt;/p&gt;
 
-<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="o">&gt;</span> manyArgs<span class="o">(</span>1, 2, 3<span class="o">)</span>
-manyArgs: <span class="nv">arg1</span><span class="o">=</span>1 2 3, <span class="nv">arg2</span><span class="o">=</span>, <span class="nv">arg3</span><span class="o">=</span></code></pre></figure>
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; manyArgs&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1, 2, 3&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+manyArgs: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1 2 3, &lt;span class=&quot;nv&quot;&gt;arg2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;, &lt;span class=&quot;nv&quot;&gt;arg3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-<p>After a bit of research
-it turned out that PowerShell <strong><em>uses space as argument separator</em></strong>.
-So to pass three arguments we need to write:</p>
+&lt;p&gt;After a bit of research
+it turned out that PowerShell &lt;strong&gt;&lt;em&gt;uses space as argument separator&lt;/em&gt;&lt;/strong&gt;.
+So to pass three arguments we need to write:&lt;/p&gt;
 
-<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="o">&gt;</span> manyArgs 1 2 3
-manyArgs: <span class="nv">arg1</span><span class="o">=</span>1, <span class="nv">arg2</span><span class="o">=</span>2, <span class="nv">arg3</span><span class="o">=</span>3
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; manyArgs 1 2 3
+manyArgs: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1, &lt;span class=&quot;nv&quot;&gt;arg2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;2, &lt;span class=&quot;nv&quot;&gt;arg3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;3
     
-<span class="c1"># or using more verbose syntax:</span>
-<span class="o">&gt;</span> manyArgs -arg1 1 -arg2 2 -arg3 3
-manyArgs: <span class="nv">arg1</span><span class="o">=</span>1, <span class="nv">arg2</span><span class="o">=</span>2, <span class="nv">arg3</span><span class="o">=</span>3</code></pre></figure>
+&lt;span class=&quot;c1&quot;&gt;# or using more verbose syntax:&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; manyArgs -arg1 1 -arg2 2 -arg3 3
+manyArgs: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1, &lt;span class=&quot;nv&quot;&gt;arg2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;2, &lt;span class=&quot;nv&quot;&gt;arg3&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;3&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-<p>This also works with single argument functions:</p>
+&lt;p&gt;This also works with single argument functions:&lt;/p&gt;
 
-<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="o">&gt;</span> printArg 1
-printArg: <span class="nv">arg1</span><span class="o">=</span>1
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; printArg 1
+printArg: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1
     
-<span class="o">&gt;</span> printArg -arg1 1
-printArg: <span class="nv">arg1</span><span class="o">=</span>1</code></pre></figure>
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; printArg -arg1 1
+printArg: &lt;span class=&quot;nv&quot;&gt;arg1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-<p>Before we end let’s find out what exactly is <code class="highlighter-rouge">(1, 2, 3)</code> 
-and why calling <code class="highlighter-rouge">printArg(1)</code> works. 
+&lt;p&gt;Before we end let’s find out what exactly is &lt;code class=&quot;highlighter-rouge&quot;&gt;(1, 2, 3)&lt;/code&gt; 
+and why calling &lt;code class=&quot;highlighter-rouge&quot;&gt;printArg(1)&lt;/code&gt; works. 
 It turns out that
-<code class="highlighter-rouge">(a, b, ..., z)</code> expression represents array of objects in PowerShell:</p>
+&lt;code class=&quot;highlighter-rouge&quot;&gt;(a, b, ..., z)&lt;/code&gt; expression represents array of objects in PowerShell:&lt;/p&gt;
 
-<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="o">&gt;</span> <span class="o">(</span>1, 2, 3<span class="o">)</span>.getType<span class="o">()</span>.name
-<span class="kt">Object</span><span class="o">[]</span></code></pre></figure>
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1, 2, 3&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getType&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;.name
+&lt;span class=&quot;kt&quot;&gt;Object&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-<p>And <code class="highlighter-rouge">(x)</code> expression represents just <code class="highlighter-rouge">x</code> value :</p>
+&lt;p&gt;And &lt;code class=&quot;highlighter-rouge&quot;&gt;(x)&lt;/code&gt; expression represents just &lt;code class=&quot;highlighter-rouge&quot;&gt;x&lt;/code&gt; value :&lt;/p&gt;
 
-<figure class="highlight"><pre><code class="language-powershell" data-lang="powershell"><span class="o">&gt;</span> <span class="o">(</span>1<span class="o">)</span>.getType<span class="o">()</span>.name
-Int32</code></pre></figure>
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-powershell&quot; data-lang=&quot;powershell&quot;&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;.getType&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;.name
+Int32&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 
-<p>and thats explain outputs of <code class="highlighter-rouge">printArg(1)</code> and <code class="highlighter-rouge">manyArgs(1, 2, 3)</code> command.</p>
+&lt;p&gt;and thats explain outputs of &lt;code class=&quot;highlighter-rouge&quot;&gt;printArg(1)&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;manyArgs(1, 2, 3)&lt;/code&gt; command.&lt;/p&gt;
 
-<p>This behaviour of PowerShell may be surprising for C# programmers,
-I hope this post will help you remember about this problem.</p>
-
-
-	  ]]></description>
+</description>
+        
 	</item>
 
 
