@@ -3,8 +3,7 @@
   <channel>
     <title>Programming is Magic - Articles</title>
     <description>A place where I share my thoughts about programming.</description>
-    <link>
-    http://localhost:4000</link>
+    <link></link>
     
       
       <item>
@@ -20,8 +19,8 @@ Let me present my way of reasoning here.&lt;/p&gt;
         
         <pubDate>Sat, 12 Sep 2020 02:00:01 +0200</pubDate>
         <link>
-        http://localhost:4000/future-or-future</link>
-        <guid isPermaLink="true">http://localhost:4000/future-or-future</guid>
+        /future-or-future</link>
+        <guid isPermaLink="true">/future-or-future</guid>
       </item>
       
     
@@ -37,8 +36,8 @@ As a side effect, on the code level I often see class declarations like this:&lt
         
         <pubDate>Fri, 11 Sep 2020 02:00:01 +0200</pubDate>
         <link>
-        http://localhost:4000/passing-functions-as-arguments-in-scala-what-can-go-wrong</link>
-        <guid isPermaLink="true">http://localhost:4000/passing-functions-as-arguments-in-scala-what-can-go-wrong</guid>
+        /passing-functions-as-arguments-in-scala-what-can-go-wrong</link>
+        <guid isPermaLink="true">/passing-functions-as-arguments-in-scala-what-can-go-wrong</guid>
       </item>
       
     
@@ -56,8 +55,8 @@ does not look as crisp and clear as in Ben videos:
         
         <pubDate>Thu, 10 Sep 2020 02:00:01 +0200</pubDate>
         <link>
-        http://localhost:4000/preparing-images-for-ben-eater-vga-using-gimp</link>
-        <guid isPermaLink="true">http://localhost:4000/preparing-images-for-ben-eater-vga-using-gimp</guid>
+        /preparing-images-for-ben-eater-vga-using-gimp</link>
+        <guid isPermaLink="true">/preparing-images-for-ben-eater-vga-using-gimp</guid>
       </item>
       
     
@@ -77,8 +76,8 @@ będzie wykorzystać również przy innych grach np. warcabach.&lt;/p&gt;
         
         <pubDate>Thu, 06 Aug 2020 02:00:01 +0200</pubDate>
         <link>
-        http://localhost:4000/cierpienia-mlodego-wertera</link>
-        <guid isPermaLink="true">http://localhost:4000/cierpienia-mlodego-wertera</guid>
+        /cierpienia-mlodego-wertera</link>
+        <guid isPermaLink="true">/cierpienia-mlodego-wertera</guid>
       </item>
       
     
@@ -95,8 +94,8 @@ can be very cumbersome.&lt;/p&gt;
         
         <pubDate>Sat, 01 Aug 2020 02:00:01 +0200</pubDate>
         <link>
-        http://localhost:4000/scala-nesting-monads</link>
-        <guid isPermaLink="true">http://localhost:4000/scala-nesting-monads</guid>
+        /scala-nesting-monads</link>
+        <guid isPermaLink="true">/scala-nesting-monads</guid>
       </item>
       
     
@@ -112,8 +111,8 @@ know about them. In this post we will take a look at
         
         <pubDate>Fri, 10 Jul 2020 02:00:01 +0200</pubDate>
         <link>
-        http://localhost:4000/useful-jdk-tools-part-1</link>
-        <guid isPermaLink="true">http://localhost:4000/useful-jdk-tools-part-1</guid>
+        /useful-jdk-tools-part-1</link>
+        <guid isPermaLink="true">/useful-jdk-tools-part-1</guid>
       </item>
       
     
@@ -130,8 +129,8 @@ Here are shortcuts that I find indispensible while working with iTerm2.&lt;/p&gt
         
         <pubDate>Wed, 08 Jul 2020 02:00:01 +0200</pubDate>
         <link>
-        http://localhost:4000/iterm2-cheat-sheet</link>
-        <guid isPermaLink="true">http://localhost:4000/iterm2-cheat-sheet</guid>
+        /iterm2-cheat-sheet</link>
+        <guid isPermaLink="true">/iterm2-cheat-sheet</guid>
       </item>
       
     
@@ -152,8 +151,8 @@ If your converter has such a jumper make sure that it is in 3.3V position.
         
         <pubDate>Tue, 07 Jul 2020 02:00:01 +0200</pubDate>
         <link>
-        http://localhost:4000/connecting-to-raspberry-pi-via-uart</link>
-        <guid isPermaLink="true">http://localhost:4000/connecting-to-raspberry-pi-via-uart</guid>
+        /connecting-to-raspberry-pi-via-uart</link>
+        <guid isPermaLink="true">/connecting-to-raspberry-pi-via-uart</guid>
       </item>
       
     
@@ -168,8 +167,8 @@ this program:&lt;/p&gt;
         
         <pubDate>Mon, 06 Jul 2020 02:00:01 +0200</pubDate>
         <link>
-        http://localhost:4000/scala-wtf-1</link>
-        <guid isPermaLink="true">http://localhost:4000/scala-wtf-1</guid>
+        /scala-wtf-1</link>
+        <guid isPermaLink="true">/scala-wtf-1</guid>
       </item>
       
     
@@ -184,8 +183,8 @@ The table below presents regex operators that we are going to support:&lt;/p&gt;
         
         <pubDate>Sun, 28 Jun 2020 02:00:01 +0200</pubDate>
         <link>
-        http://localhost:4000/matching-regexes-using-backtracking</link>
-        <guid isPermaLink="true">http://localhost:4000/matching-regexes-using-backtracking</guid>
+        /matching-regexes-using-backtracking</link>
+        <guid isPermaLink="true">/matching-regexes-using-backtracking</guid>
       </item>
       
     
@@ -205,8 +204,8 @@ In Java we can express this as:&lt;/p&gt;
         
         <pubDate>Sat, 27 Jun 2020 02:00:01 +0200</pubDate>
         <link>
-        http://localhost:4000/continuations-in-java</link>
-        <guid isPermaLink="true">http://localhost:4000/continuations-in-java</guid>
+        /continuations-in-java</link>
+        <guid isPermaLink="true">/continuations-in-java</guid>
       </item>
       
     
@@ -225,8 +224,8 @@ pełna frustracji i porażek.&lt;/p&gt;
         
         <pubDate>Mon, 30 Dec 2019 01:00:01 +0100</pubDate>
         <link>
-        http://localhost:4000/jak-zaczac-przygode-z-elektronika</link>
-        <guid isPermaLink="true">http://localhost:4000/jak-zaczac-przygode-z-elektronika</guid>
+        /jak-zaczac-przygode-z-elektronika</link>
+        <guid isPermaLink="true">/jak-zaczac-przygode-z-elektronika</guid>
       </item>
       
     
@@ -245,8 +244,8 @@ I open a new tab in my editor and start hacking test code.&lt;/p&gt;
         
         <pubDate>Sun, 22 Dec 2019 01:00:01 +0100</pubDate>
         <link>
-        http://localhost:4000/pitfalls-of-using-Mockito-with-Scala</link>
-        <guid isPermaLink="true">http://localhost:4000/pitfalls-of-using-Mockito-with-Scala</guid>
+        /pitfalls-of-using-Mockito-with-Scala</link>
+        <guid isPermaLink="true">/pitfalls-of-using-Mockito-with-Scala</guid>
       </item>
       
     
@@ -273,8 +272,8 @@ I open a new tab in my editor and start hacking test code.&lt;/p&gt;
         
         <pubDate>Tue, 17 Dec 2019 01:00:01 +0100</pubDate>
         <link>
-        http://localhost:4000/binary-to-gray-algorithm-explained</link>
-        <guid isPermaLink="true">http://localhost:4000/binary-to-gray-algorithm-explained</guid>
+        /binary-to-gray-algorithm-explained</link>
+        <guid isPermaLink="true">/binary-to-gray-algorithm-explained</guid>
       </item>
       
     
@@ -290,8 +289,8 @@ to &lt;code class=&quot;highlighter-rouge&quot;&gt;mobi&lt;/code&gt; dictionarie
         
         <pubDate>Mon, 02 Dec 2019 01:00:01 +0100</pubDate>
         <link>
-        http://localhost:4000/converting-dsl-files-to-kindle-dictionary</link>
-        <guid isPermaLink="true">http://localhost:4000/converting-dsl-files-to-kindle-dictionary</guid>
+        /converting-dsl-files-to-kindle-dictionary</link>
+        <guid isPermaLink="true">/converting-dsl-files-to-kindle-dictionary</guid>
       </item>
       
     
@@ -313,8 +312,8 @@ This post is the result of this few hours of hacking. Enjoy!&lt;/p&gt;
         
         <pubDate>Sat, 21 Sep 2019 02:00:01 +0200</pubDate>
         <link>
-        http://localhost:4000/fun-with-at-commands-and-old-modem</link>
-        <guid isPermaLink="true">http://localhost:4000/fun-with-at-commands-and-old-modem</guid>
+        /fun-with-at-commands-and-old-modem</link>
+        <guid isPermaLink="true">/fun-with-at-commands-and-old-modem</guid>
       </item>
       
     
@@ -335,8 +334,8 @@ works and you will be able to write your own extractors.&lt;/p&gt;
         
         <pubDate>Thu, 19 Sep 2019 02:00:01 +0200</pubDate>
         <link>
-        http://localhost:4000/ultimate-guide-to-scalas-match-expression</link>
-        <guid isPermaLink="true">http://localhost:4000/ultimate-guide-to-scalas-match-expression</guid>
+        /ultimate-guide-to-scalas-match-expression</link>
+        <guid isPermaLink="true">/ultimate-guide-to-scalas-match-expression</guid>
       </item>
       
     
@@ -354,8 +353,8 @@ Let’s see this on an example
         
         <pubDate>Wed, 18 Sep 2019 02:00:01 +0200</pubDate>
         <link>
-        http://localhost:4000/doubles-and-unit-testing</link>
-        <guid isPermaLink="true">http://localhost:4000/doubles-and-unit-testing</guid>
+        /doubles-and-unit-testing</link>
+        <guid isPermaLink="true">/doubles-and-unit-testing</guid>
       </item>
       
     
@@ -383,8 +382,8 @@ Let’s see this on an example
         
         <pubDate>Sun, 14 Apr 2019 02:00:01 +0200</pubDate>
         <link>
-        http://localhost:4000/odroid-go-review</link>
-        <guid isPermaLink="true">http://localhost:4000/odroid-go-review</guid>
+        /odroid-go-review</link>
+        <guid isPermaLink="true">/odroid-go-review</guid>
       </item>
       
     
@@ -401,8 +400,8 @@ This is my very first trackball, I bought it for about 180PLN.&lt;/p&gt;
         
         <pubDate>Sun, 14 Apr 2019 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/kensington-orbit-trackball-review</link>
-        <guid isPermaLink="true">http://localhost:4000/kensington-orbit-trackball-review</guid>
+        /kensington-orbit-trackball-review</link>
+        <guid isPermaLink="true">/kensington-orbit-trackball-review</guid>
       </item>
       
     
@@ -456,8 +455,8 @@ on the actual business problem that I try to solve.&lt;/p&gt;
         
         <pubDate>Tue, 05 Mar 2019 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/reduce-cognitive-load</link>
-        <guid isPermaLink="true">http://localhost:4000/reduce-cognitive-load</guid>
+        /reduce-cognitive-load</link>
+        <guid isPermaLink="true">/reduce-cognitive-load</guid>
       </item>
       
     
@@ -479,8 +478,8 @@ a random PESEL as a password and then we will crack it using
         
         <pubDate>Mon, 25 Feb 2019 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/why-using-pesel-as-a-password-is-a-very-bad-idea</link>
-        <guid isPermaLink="true">http://localhost:4000/why-using-pesel-as-a-password-is-a-very-bad-idea</guid>
+        /why-using-pesel-as-a-password-is-a-very-bad-idea</link>
+        <guid isPermaLink="true">/why-using-pesel-as-a-password-is-a-very-bad-idea</guid>
       </item>
       
     
@@ -513,8 +512,8 @@ Expected service.Add(1, 2) to be 3, but found 42.&lt;/code&gt;&lt;/pre&gt;&lt;/f
         
         <pubDate>Sun, 10 Feb 2019 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/fluent-assertions-and-code-formatting</link>
-        <guid isPermaLink="true">http://localhost:4000/fluent-assertions-and-code-formatting</guid>
+        /fluent-assertions-and-code-formatting</link>
+        <guid isPermaLink="true">/fluent-assertions-and-code-formatting</guid>
       </item>
       
     
@@ -528,8 +527,8 @@ Expected service.Add(1, 2) to be 3, but found 42.&lt;/code&gt;&lt;/pre&gt;&lt;/f
         
         <pubDate>Thu, 24 Jan 2019 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/spy-jvm-network-traffic-with-owasp-zap</link>
-        <guid isPermaLink="true">http://localhost:4000/spy-jvm-network-traffic-with-owasp-zap</guid>
+        /spy-jvm-network-traffic-with-owasp-zap</link>
+        <guid isPermaLink="true">/spy-jvm-network-traffic-with-owasp-zap</guid>
       </item>
       
     
@@ -582,8 +581,8 @@ a readonly property named &lt;code class=&quot;highlighter-rouge&quot;&gt;Passed
         
         <pubDate>Sun, 06 Jan 2019 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/read-only-does-not-mean-immutable</link>
-        <guid isPermaLink="true">http://localhost:4000/read-only-does-not-mean-immutable</guid>
+        /read-only-does-not-mean-immutable</link>
+        <guid isPermaLink="true">/read-only-does-not-mean-immutable</guid>
       </item>
       
     
@@ -603,8 +602,8 @@ missing value.&lt;/p&gt;
         
         <pubDate>Tue, 01 Jan 2019 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/random-thoughts-on-maybe</link>
-        <guid isPermaLink="true">http://localhost:4000/random-thoughts-on-maybe</guid>
+        /random-thoughts-on-maybe</link>
+        <guid isPermaLink="true">/random-thoughts-on-maybe</guid>
       </item>
       
     
@@ -630,8 +629,8 @@ Things like good test names and proper error messages are often forgotten.&lt;/p
         
         <pubDate>Sat, 15 Dec 2018 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/nsubstitute-and-the-search-for-perfect-error-messages</link>
-        <guid isPermaLink="true">http://localhost:4000/nsubstitute-and-the-search-for-perfect-error-messages</guid>
+        /nsubstitute-and-the-search-for-perfect-error-messages</link>
+        <guid isPermaLink="true">/nsubstitute-and-the-search-for-perfect-error-messages</guid>
       </item>
       
     
@@ -652,8 +651,8 @@ of modern object oriented programming:&lt;/p&gt;
         
         <pubDate>Wed, 12 Dec 2018 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/inheritance-just-say-no</link>
-        <guid isPermaLink="true">http://localhost:4000/inheritance-just-say-no</guid>
+        /inheritance-just-say-no</link>
+        <guid isPermaLink="true">/inheritance-just-say-no</guid>
       </item>
       
     
@@ -708,8 +707,8 @@ instead of long lambdas.&lt;/p&gt;
         
         <pubDate>Mon, 08 Oct 2018 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/abusing-local-functions-to-hide-design-problems</link>
-        <guid isPermaLink="true">http://localhost:4000/abusing-local-functions-to-hide-design-problems</guid>
+        /abusing-local-functions-to-hide-design-problems</link>
+        <guid isPermaLink="true">/abusing-local-functions-to-hide-design-problems</guid>
       </item>
       
     
@@ -732,8 +731,8 @@ Fortunately for us this can be automated using Postman pre-request scripts.&lt;/
         
         <pubDate>Sat, 29 Sep 2018 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/automatically-generate-new-oauth2-tokens-when-using-postman</link>
-        <guid isPermaLink="true">http://localhost:4000/automatically-generate-new-oauth2-tokens-when-using-postman</guid>
+        /automatically-generate-new-oauth2-tokens-when-using-postman</link>
+        <guid isPermaLink="true">/automatically-generate-new-oauth2-tokens-when-using-postman</guid>
       </item>
       
     
@@ -767,8 +766,8 @@ After half an hour, instead of a fix I get the following response:&lt;/p&gt;
         
         <pubDate>Fri, 21 Sep 2018 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/avoid-hidden-coupling-to-interface-implementation</link>
-        <guid isPermaLink="true">http://localhost:4000/avoid-hidden-coupling-to-interface-implementation</guid>
+        /avoid-hidden-coupling-to-interface-implementation</link>
+        <guid isPermaLink="true">/avoid-hidden-coupling-to-interface-implementation</guid>
       </item>
       
     
@@ -788,8 +787,8 @@ deal with recently.&lt;/p&gt;
         
         <pubDate>Tue, 18 Sep 2018 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/fluent-validation-and-complex-dependencies-between-properties</link>
-        <guid isPermaLink="true">http://localhost:4000/fluent-validation-and-complex-dependencies-between-properties</guid>
+        /fluent-validation-and-complex-dependencies-between-properties</link>
+        <guid isPermaLink="true">/fluent-validation-and-complex-dependencies-between-properties</guid>
       </item>
       
     
@@ -808,8 +807,8 @@ certain interaction between components took place.&lt;/p&gt;
         
         <pubDate>Sat, 08 Sep 2018 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/you-can-live-without-your-mocking-framework</link>
-        <guid isPermaLink="true">http://localhost:4000/you-can-live-without-your-mocking-framework</guid>
+        /you-can-live-without-your-mocking-framework</link>
+        <guid isPermaLink="true">/you-can-live-without-your-mocking-framework</guid>
       </item>
       
     
@@ -823,8 +822,8 @@ certain interaction between components took place.&lt;/p&gt;
         
         <pubDate>Sun, 08 Jul 2018 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/repository-pattern-my-way</link>
-        <guid isPermaLink="true">http://localhost:4000/repository-pattern-my-way</guid>
+        /repository-pattern-my-way</link>
+        <guid isPermaLink="true">/repository-pattern-my-way</guid>
       </item>
       
     
@@ -839,8 +838,8 @@ in main conference room.]&lt;/p&gt;
         
         <pubDate>Mon, 25 Jun 2018 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/devoxx-poland-2018</link>
-        <guid isPermaLink="true">http://localhost:4000/devoxx-poland-2018</guid>
+        /devoxx-poland-2018</link>
+        <guid isPermaLink="true">/devoxx-poland-2018</guid>
       </item>
       
     
@@ -857,8 +856,8 @@ with shading and ray tracing in general.&lt;/p&gt;
         
         <pubDate>Sun, 06 May 2018 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/ray-tracing-torus</link>
-        <guid isPermaLink="true">http://localhost:4000/ray-tracing-torus</guid>
+        /ray-tracing-torus</link>
+        <guid isPermaLink="true">/ray-tracing-torus</guid>
       </item>
       
     
@@ -874,8 +873,8 @@ though.&lt;/p&gt;
         
         <pubDate>Thu, 03 May 2018 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/dotnet-core-http-client-proxy-and-localhost</link>
-        <guid isPermaLink="true">http://localhost:4000/dotnet-core-http-client-proxy-and-localhost</guid>
+        /dotnet-core-http-client-proxy-and-localhost</link>
+        <guid isPermaLink="true">/dotnet-core-http-client-proxy-and-localhost</guid>
       </item>
       
     
@@ -893,8 +892,8 @@ very efficient.&lt;/p&gt;
         
         <pubDate>Sat, 16 Dec 2017 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/how-to-check-if-a-number-is-a-power-of-two</link>
-        <guid isPermaLink="true">http://localhost:4000/how-to-check-if-a-number-is-a-power-of-two</guid>
+        /how-to-check-if-a-number-is-a-power-of-two</link>
+        <guid isPermaLink="true">/how-to-check-if-a-number-is-a-power-of-two</guid>
       </item>
       
     
@@ -916,8 +915,8 @@ investigate using only Linux.&lt;/p&gt;
         
         <pubDate>Sat, 18 Nov 2017 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/a-closer-look-at-portable-executable-msdos-stub</link>
-        <guid isPermaLink="true">http://localhost:4000/a-closer-look-at-portable-executable-msdos-stub</guid>
+        /a-closer-look-at-portable-executable-msdos-stub</link>
+        <guid isPermaLink="true">/a-closer-look-at-portable-executable-msdos-stub</guid>
       </item>
       
     
@@ -933,8 +932,8 @@ learned from my colleagues.&lt;/p&gt;
         
         <pubDate>Wed, 08 Nov 2017 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/java-streams-best-practices</link>
-        <guid isPermaLink="true">http://localhost:4000/java-streams-best-practices</guid>
+        /java-streams-best-practices</link>
+        <guid isPermaLink="true">/java-streams-best-practices</guid>
       </item>
       
     
@@ -979,8 +978,8 @@ and we moved to other questions.&lt;/p&gt;
         
         <pubDate>Sat, 30 Sep 2017 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/dont-ask-me-about-singletons</link>
-        <guid isPermaLink="true">http://localhost:4000/dont-ask-me-about-singletons</guid>
+        /dont-ask-me-about-singletons</link>
+        <guid isPermaLink="true">/dont-ask-me-about-singletons</guid>
       </item>
       
     
@@ -995,8 +994,8 @@ warning and when ignoring it may introduce bugs in your code.&lt;/p&gt;
         
         <pubDate>Sun, 30 Jul 2017 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</link>
-        <guid isPermaLink="true">http://localhost:4000/HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</guid>
+        /HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</link>
+        <guid isPermaLink="true">/HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</guid>
       </item>
       
     
@@ -1011,8 +1010,8 @@ using Ubuntu and NetBeans IDE.&lt;/p&gt;
         
         <pubDate>Sat, 24 Jun 2017 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/debugging-openjdk8-with-netbeans-on-ubuntu</link>
-        <guid isPermaLink="true">http://localhost:4000/debugging-openjdk8-with-netbeans-on-ubuntu</guid>
+        /debugging-openjdk8-with-netbeans-on-ubuntu</link>
+        <guid isPermaLink="true">/debugging-openjdk8-with-netbeans-on-ubuntu</guid>
       </item>
       
     
@@ -1027,8 +1026,8 @@ and how they are compiled to JVM bytecode.&lt;/p&gt;
         
         <pubDate>Sat, 10 Jun 2017 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/lambda-expressions-in-kotlin</link>
-        <guid isPermaLink="true">http://localhost:4000/lambda-expressions-in-kotlin</guid>
+        /lambda-expressions-in-kotlin</link>
+        <guid isPermaLink="true">/lambda-expressions-in-kotlin</guid>
       </item>
       
     
@@ -1050,8 +1049,8 @@ to pass data between GUI and application services.&lt;/p&gt;
         
         <pubDate>Sun, 19 Feb 2017 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/zen-and-the-art-of-unit-testing</link>
-        <guid isPermaLink="true">http://localhost:4000/zen-and-the-art-of-unit-testing</guid>
+        /zen-and-the-art-of-unit-testing</link>
+        <guid isPermaLink="true">/zen-and-the-art-of-unit-testing</guid>
       </item>
       
     
@@ -1068,8 +1067,8 @@ other system, or your own entities before saving them to database.&lt;/p&gt;
         
         <pubDate>Sun, 05 Feb 2017 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/hello-hibernate-validator</link>
-        <guid isPermaLink="true">http://localhost:4000/hello-hibernate-validator</guid>
+        /hello-hibernate-validator</link>
+        <guid isPermaLink="true">/hello-hibernate-validator</guid>
       </item>
       
     
@@ -1162,8 +1161,8 @@ decorators provided by &lt;code class=&quot;highlighter-rouge&quot;&gt;Comparato
         
         <pubDate>Sat, 14 Jan 2017 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/comparing-with-nullsFirst-and-nullsLast</link>
-        <guid isPermaLink="true">http://localhost:4000/comparing-with-nullsFirst-and-nullsLast</guid>
+        /comparing-with-nullsFirst-and-nullsLast</link>
+        <guid isPermaLink="true">/comparing-with-nullsFirst-and-nullsLast</guid>
       </item>
       
     
@@ -1177,8 +1176,8 @@ decorators provided by &lt;code class=&quot;highlighter-rouge&quot;&gt;Comparato
         
         <pubDate>Sat, 07 Jan 2017 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/spring-transactional-cheat-sheet</link>
-        <guid isPermaLink="true">http://localhost:4000/spring-transactional-cheat-sheet</guid>
+        /spring-transactional-cheat-sheet</link>
+        <guid isPermaLink="true">/spring-transactional-cheat-sheet</guid>
       </item>
       
     
@@ -1195,8 +1194,8 @@ For more info see reddit comment discussion &lt;a href=&quot;https://www.reddit.
         
         <pubDate>Tue, 27 Dec 2016 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/crudest-curd-using-spring</link>
-        <guid isPermaLink="true">http://localhost:4000/crudest-curd-using-spring</guid>
+        /crudest-curd-using-spring</link>
+        <guid isPermaLink="true">/crudest-curd-using-spring</guid>
       </item>
       
     
@@ -1215,8 +1214,8 @@ your code.&lt;/p&gt;
         
         <pubDate>Tue, 27 Dec 2016 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/generics-in-java</link>
-        <guid isPermaLink="true">http://localhost:4000/generics-in-java</guid>
+        /generics-in-java</link>
+        <guid isPermaLink="true">/generics-in-java</guid>
       </item>
       
     
@@ -1236,8 +1235,8 @@ the main disadvantage is reduced functionality of aspects
         
         <pubDate>Sat, 03 Dec 2016 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/overview-of-spring-annotation-driven-aop</link>
-        <guid isPermaLink="true">http://localhost:4000/overview-of-spring-annotation-driven-aop</guid>
+        /overview-of-spring-annotation-driven-aop</link>
+        <guid isPermaLink="true">/overview-of-spring-annotation-driven-aop</guid>
       </item>
       
     
@@ -1255,8 +1254,8 @@ also a beautiful iterative solution.&lt;/p&gt;
         
         <pubDate>Sat, 26 Nov 2016 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/iterative-solution-to-towers-of-hanoi-problem</link>
-        <guid isPermaLink="true">http://localhost:4000/iterative-solution-to-towers-of-hanoi-problem</guid>
+        /iterative-solution-to-towers-of-hanoi-problem</link>
+        <guid isPermaLink="true">/iterative-solution-to-towers-of-hanoi-problem</guid>
       </item>
       
     
@@ -1270,8 +1269,8 @@ also a beautiful iterative solution.&lt;/p&gt;
         
         <pubDate>Sat, 12 Nov 2016 01:00:01 +0100</pubDate>
         <link>
-        http://localhost:4000/JavaScript-in-and-delete-operators</link>
-        <guid isPermaLink="true">http://localhost:4000/JavaScript-in-and-delete-operators</guid>
+        /JavaScript-in-and-delete-operators</link>
+        <guid isPermaLink="true">/JavaScript-in-and-delete-operators</guid>
       </item>
       
     
@@ -1293,8 +1292,8 @@ appreciate their beauty).&lt;/p&gt;
         
         <pubDate>Sat, 12 Nov 2016 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/method-references-in-java-8</link>
-        <guid isPermaLink="true">http://localhost:4000/method-references-in-java-8</guid>
+        /method-references-in-java-8</link>
+        <guid isPermaLink="true">/method-references-in-java-8</guid>
       </item>
       
     
@@ -1310,8 +1309,8 @@ This tutorial will help you setup your development environment.&lt;/p&gt;
         
         <pubDate>Mon, 31 Oct 2016 01:00:00 +0100</pubDate>
         <link>
-        http://localhost:4000/using-tomcat-8.5-with-eclipse-neon</link>
-        <guid isPermaLink="true">http://localhost:4000/using-tomcat-8.5-with-eclipse-neon</guid>
+        /using-tomcat-8.5-with-eclipse-neon</link>
+        <guid isPermaLink="true">/using-tomcat-8.5-with-eclipse-neon</guid>
       </item>
       
     
@@ -1327,8 +1326,8 @@ a few code examples.&lt;/p&gt;
         
         <pubDate>Sun, 30 Oct 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/hoisting-in-javascript</link>
-        <guid isPermaLink="true">http://localhost:4000/hoisting-in-javascript</guid>
+        /hoisting-in-javascript</link>
+        <guid isPermaLink="true">/hoisting-in-javascript</guid>
       </item>
       
     
@@ -1351,8 +1350,8 @@ while wiring beans via SpEL - Spring Expression Language.&lt;/p&gt;
         
         <pubDate>Sat, 22 Oct 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/introduction-to-spring-expression-language</link>
-        <guid isPermaLink="true">http://localhost:4000/introduction-to-spring-expression-language</guid>
+        /introduction-to-spring-expression-language</link>
+        <guid isPermaLink="true">/introduction-to-spring-expression-language</guid>
       </item>
       
     
@@ -1369,8 +1368,8 @@ find it helpful too.&lt;/p&gt;
         
         <pubDate>Sun, 16 Oct 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/notes-on-spring-xml-configuration</link>
-        <guid isPermaLink="true">http://localhost:4000/notes-on-spring-xml-configuration</guid>
+        /notes-on-spring-xml-configuration</link>
+        <guid isPermaLink="true">/notes-on-spring-xml-configuration</guid>
       </item>
       
     
@@ -1385,8 +1384,8 @@ with Java 8 Stream API.&lt;/p&gt;
         
         <pubDate>Sun, 09 Oct 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/java-8-how-to-write-custom-collector</link>
-        <guid isPermaLink="true">http://localhost:4000/java-8-how-to-write-custom-collector</guid>
+        /java-8-how-to-write-custom-collector</link>
+        <guid isPermaLink="true">/java-8-how-to-write-custom-collector</guid>
       </item>
       
     
@@ -1423,8 +1422,8 @@ We will be working with the following list of students:&lt;/p&gt;
         
         <pubDate>Sun, 02 Oct 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/grouping-using-java-8-streams</link>
-        <guid isPermaLink="true">http://localhost:4000/grouping-using-java-8-streams</guid>
+        /grouping-using-java-8-streams</link>
+        <guid isPermaLink="true">/grouping-using-java-8-streams</guid>
       </item>
       
     
@@ -1439,8 +1438,8 @@ a nice and fresh looking GUI so I decided to give it a chance and replace my old
         
         <pubDate>Tue, 27 Sep 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/use-meld-as-git-merge-diff-tool</link>
-        <guid isPermaLink="true">http://localhost:4000/use-meld-as-git-merge-diff-tool</guid>
+        /use-meld-as-git-merge-diff-tool</link>
+        <guid isPermaLink="true">/use-meld-as-git-merge-diff-tool</guid>
       </item>
       
     
@@ -1457,8 +1456,8 @@ of Windows up to Windows 10.&lt;/p&gt;
         
         <pubDate>Mon, 26 Sep 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/obfuscating-windows-batch-files</link>
-        <guid isPermaLink="true">http://localhost:4000/obfuscating-windows-batch-files</guid>
+        /obfuscating-windows-batch-files</link>
+        <guid isPermaLink="true">/obfuscating-windows-batch-files</guid>
       </item>
       
     
@@ -1474,8 +1473,8 @@ encountered in typical enterprise applications.&lt;/p&gt;
         
         <pubDate>Sun, 11 Sep 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/castle-windsor-most-popular-features</link>
-        <guid isPermaLink="true">http://localhost:4000/castle-windsor-most-popular-features</guid>
+        /castle-windsor-most-popular-features</link>
+        <guid isPermaLink="true">/castle-windsor-most-popular-features</guid>
       </item>
       
     
@@ -1535,8 +1534,8 @@ called &lt;a href=&quot;https://en.wikipedia.org/wiki/Bash_(Unix_shell)#Brace_ex
         
         <pubDate>Sat, 20 Aug 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/how-to-use-grep-command</link>
-        <guid isPermaLink="true">http://localhost:4000/how-to-use-grep-command</guid>
+        /how-to-use-grep-command</link>
+        <guid isPermaLink="true">/how-to-use-grep-command</guid>
       </item>
       
     
@@ -1553,8 +1552,8 @@ Cartesian coordinates.&lt;/p&gt;
         
         <pubDate>Sat, 06 Aug 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/iterative-algorithm-for-drawing-hilbert-curve</link>
-        <guid isPermaLink="true">http://localhost:4000/iterative-algorithm-for-drawing-hilbert-curve</guid>
+        /iterative-algorithm-for-drawing-hilbert-curve</link>
+        <guid isPermaLink="true">/iterative-algorithm-for-drawing-hilbert-curve</guid>
       </item>
       
     
@@ -1568,8 +1567,8 @@ Cartesian coordinates.&lt;/p&gt;
         
         <pubDate>Sat, 06 Aug 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/indexes-in-postgresql</link>
-        <guid isPermaLink="true">http://localhost:4000/indexes-in-postgresql</guid>
+        /indexes-in-postgresql</link>
+        <guid isPermaLink="true">/indexes-in-postgresql</guid>
       </item>
       
     
@@ -1590,8 +1589,8 @@ search conditions, so let’s begin.&lt;/p&gt;
         
         <pubDate>Tue, 26 Jul 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/how-to-use-find-command</link>
-        <guid isPermaLink="true">http://localhost:4000/how-to-use-find-command</guid>
+        /how-to-use-find-command</link>
+        <guid isPermaLink="true">/how-to-use-find-command</guid>
       </item>
       
     
@@ -1605,8 +1604,8 @@ search conditions, so let’s begin.&lt;/p&gt;
         
         <pubDate>Sat, 16 Jul 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/introduction-to-hibernate-embeddable-types</link>
-        <guid isPermaLink="true">http://localhost:4000/introduction-to-hibernate-embeddable-types</guid>
+        /introduction-to-hibernate-embeddable-types</link>
+        <guid isPermaLink="true">/introduction-to-hibernate-embeddable-types</guid>
       </item>
       
     
@@ -1624,8 +1623,8 @@ Vim is not as good as they say.&lt;/p&gt;
         
         <pubDate>Sat, 16 Jul 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/how-to-fix-vim-freezes</link>
-        <guid isPermaLink="true">http://localhost:4000/how-to-fix-vim-freezes</guid>
+        /how-to-fix-vim-freezes</link>
+        <guid isPermaLink="true">/how-to-fix-vim-freezes</guid>
       </item>
       
     
@@ -1707,8 +1706,8 @@ Int32&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
         
         <pubDate>Fri, 15 Jul 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/powershell-function-declaration-pitfall</link>
-        <guid isPermaLink="true">http://localhost:4000/powershell-function-declaration-pitfall</guid>
+        /powershell-function-declaration-pitfall</link>
+        <guid isPermaLink="true">/powershell-function-declaration-pitfall</guid>
       </item>
       
     
@@ -1722,8 +1721,8 @@ Int32&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
         
         <pubDate>Sat, 09 Jul 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/how-to-use-xargs</link>
-        <guid isPermaLink="true">http://localhost:4000/how-to-use-xargs</guid>
+        /how-to-use-xargs</link>
+        <guid isPermaLink="true">/how-to-use-xargs</guid>
       </item>
       
     
@@ -1737,8 +1736,8 @@ Int32&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
         
         <pubDate>Sat, 09 Jul 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/how-nulls-are-handled-in-switch-statement</link>
-        <guid isPermaLink="true">http://localhost:4000/how-nulls-are-handled-in-switch-statement</guid>
+        /how-nulls-are-handled-in-switch-statement</link>
+        <guid isPermaLink="true">/how-nulls-are-handled-in-switch-statement</guid>
       </item>
       
     
@@ -1753,8 +1752,8 @@ in Hibernate:&lt;/p&gt;
         
         <pubDate>Thu, 30 Jun 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/mapping-inheritance-in-hibernate</link>
-        <guid isPermaLink="true">http://localhost:4000/mapping-inheritance-in-hibernate</guid>
+        /mapping-inheritance-in-hibernate</link>
+        <guid isPermaLink="true">/mapping-inheritance-in-hibernate</guid>
       </item>
       
     
@@ -1768,8 +1767,8 @@ in Hibernate:&lt;/p&gt;
         
         <pubDate>Sat, 25 Jun 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/find-cycle-start-in-singly-linked-list</link>
-        <guid isPermaLink="true">http://localhost:4000/find-cycle-start-in-singly-linked-list</guid>
+        /find-cycle-start-in-singly-linked-list</link>
+        <guid isPermaLink="true">/find-cycle-start-in-singly-linked-list</guid>
       </item>
       
     
@@ -1786,8 +1785,8 @@ We will use:&lt;/p&gt;
         
         <pubDate>Wed, 22 Jun 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/hibernate-hello-world-app</link>
-        <guid isPermaLink="true">http://localhost:4000/hibernate-hello-world-app</guid>
+        /hibernate-hello-world-app</link>
+        <guid isPermaLink="true">/hibernate-hello-world-app</guid>
       </item>
       
     
@@ -1801,8 +1800,8 @@ We will use:&lt;/p&gt;
         
         <pubDate>Wed, 15 Jun 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/get-day-of-week-from-date</link>
-        <guid isPermaLink="true">http://localhost:4000/get-day-of-week-from-date</guid>
+        /get-day-of-week-from-date</link>
+        <guid isPermaLink="true">/get-day-of-week-from-date</guid>
       </item>
       
     
@@ -1883,8 +1882,8 @@ parameter to &lt;code class=&quot;highlighter-rouge&quot;&gt;InputStreamReader&l
         
         <pubDate>Mon, 13 Jun 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/reading-and-writing-files-in-java</link>
-        <guid isPermaLink="true">http://localhost:4000/reading-and-writing-files-in-java</guid>
+        /reading-and-writing-files-in-java</link>
+        <guid isPermaLink="true">/reading-and-writing-files-in-java</guid>
       </item>
       
     
@@ -1899,8 +1898,8 @@ initializers.&lt;/p&gt;
         
         <pubDate>Sun, 12 Jun 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/object-and-collection-initializers-in-csharp</link>
-        <guid isPermaLink="true">http://localhost:4000/object-and-collection-initializers-in-csharp</guid>
+        /object-and-collection-initializers-in-csharp</link>
+        <guid isPermaLink="true">/object-and-collection-initializers-in-csharp</guid>
       </item>
       
     
@@ -1915,8 +1914,8 @@ used by JavaScript interpreter when converting objects to primitive types.&lt;/p
         
         <pubDate>Thu, 09 Jun 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/augmenting-JavaScript-objects-with-toString-and-valueOf</link>
-        <guid isPermaLink="true">http://localhost:4000/augmenting-JavaScript-objects-with-toString-and-valueOf</guid>
+        /augmenting-JavaScript-objects-with-toString-and-valueOf</link>
+        <guid isPermaLink="true">/augmenting-JavaScript-objects-with-toString-and-valueOf</guid>
       </item>
       
     
@@ -1937,8 +1936,8 @@ element).&lt;/p&gt;
         
         <pubDate>Mon, 06 Jun 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/creating-and-using-adnotations-in-java</link>
-        <guid isPermaLink="true">http://localhost:4000/creating-and-using-adnotations-in-java</guid>
+        /creating-and-using-adnotations-in-java</link>
+        <guid isPermaLink="true">/creating-and-using-adnotations-in-java</guid>
       </item>
       
     
@@ -1963,8 +1962,8 @@ nested loops, e.g. in Java we may write:&lt;/p&gt;
         
         <pubDate>Sat, 04 Jun 2016 02:00:00 +0200</pubDate>
         <link>
-        http://localhost:4000/break-out-of-code-block-in-java-and-javascript</link>
-        <guid isPermaLink="true">http://localhost:4000/break-out-of-code-block-in-java-and-javascript</guid>
+        /break-out-of-code-block-in-java-and-javascript</link>
+        <guid isPermaLink="true">/break-out-of-code-block-in-java-and-javascript</guid>
       </item>
       
     
