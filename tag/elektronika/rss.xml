@@ -5,12 +5,33 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://localhost:4000</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
+	<item>
+	  <title>Minikomputer 8085 - Część I</title>
+	  <link>//minikomputer-8085-czesc-I</link>
+	  <author></author>
+	  <pubDate>2020-09-20T02:00:01+02:00</pubDate>
+	  <guid>//minikomputer-8085-czesc-I</guid>
+	
+          <description>&lt;p&gt;Już od dłuższego czasu myślałem o tym żeby zbudować swój własny minikomputer.
+W internecie można znaleźć mnóstwo tego typu projektów, z moich ulubionych
+mogę wymienić oparty na procesorze 6502 &lt;a href=&quot;https://eater.net/6502&quot;&gt;komputer autorstwa Bena Eatera&lt;/a&gt;
+oraz oparty na CPU Intela &lt;a href=&quot;http://www.malinov.com/Home/sergeys-projects/minimax8085&quot;&gt;MiniMax8085 Sergieja Malinova&lt;/a&gt;.
+Mój minikomputer
+postanowiłem jednak oprzeć na artykule opublikowanym na łamach czasopisma &lt;a href=&quot;https://www.nutsvolts.com/&quot;&gt;Nuts and Volts&lt;/a&gt;,
+autorstwa Davida Huntera. Dokładniej chodzi o artykuł
+&lt;a href=&quot;https://www.nutsvolts.com/magazine/article/build-a-pocket-sized-altair-computer#content-extras&quot;&gt;Build a pocket-sized ALTAIR computer&lt;/a&gt;
+z początku 2019 roku.&lt;/p&gt;
+
+</description>
+        
+	</item>
+
 	<item>
 	  <title>Jak zacząć przygodę z elektroniką</title>
 	  <link>//jak-zaczac-przygode-z-elektronika</link>

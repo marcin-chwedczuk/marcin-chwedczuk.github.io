@@ -5,12 +5,238 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://localhost:4000</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor> </managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
+	<item>
+	  <title>Minikomputer 8085 - Część I</title>
+	  <link>//minikomputer-8085-czesc-I</link>
+	  <author></author>
+	  <pubDate>2020-09-20T02:00:01+02:00</pubDate>
+	  <guid>//minikomputer-8085-czesc-I</guid>
+	  <description><![CDATA[
+	     <p>Już od dłuższego czasu myślałem o tym żeby zbudować swój własny minikomputer.
+W internecie można znaleźć mnóstwo tego typu projektów, z moich ulubionych
+mogę wymienić oparty na procesorze 6502 <a href="https://eater.net/6502">komputer autorstwa Bena Eatera</a>
+oraz oparty na CPU Intela <a href="http://www.malinov.com/Home/sergeys-projects/minimax8085">MiniMax8085 Sergieja Malinova</a>.
+Mój minikomputer
+postanowiłem jednak oprzeć na artykule opublikowanym na łamach czasopisma <a href="https://www.nutsvolts.com/">Nuts and Volts</a>,
+autorstwa Davida Huntera. Dokładniej chodzi o artykuł
+<a href="https://www.nutsvolts.com/magazine/article/build-a-pocket-sized-altair-computer#content-extras">Build a pocket-sized ALTAIR computer</a>
+z początku 2019 roku.</p>
+
+<p>Olbrzymią zaletą opisywanego w artykule komputera jest jego prostota.
+Podstawową wersję komputera, możemy zbudować przy pomocy zaledwie pięciu 
+układów scalonych (CPU, RAM, ROM, 74LS373 oraz 74LS139).
+Dodatkowo do budowy komputera możemy wykorzystać płytki stykowe, 
+dzięki czemu możemy się obejść bez lutownicy.</p>
+
+<p>Pierwszą przeszkodą z jaką musimy się zmierzyć jest zakup procesora.
+Oryginalny układa 8085 Intela jest już praktycznie niedostępny na rynku.
+Na szczęście wciąż jeszcze można kupić kompatybilne z nim zamienniki.
+Bardzo pomocna jest tutaj strona <a href="http://www.cpu-collection.de/?tn=0&amp;l0=cl&amp;l1=8085">www.cpu-collection.de</a>
+która podaje ich długą i wyczerpującą listę.
+Dla przykładu udało mi się kupić układ oznaczony jako <code class="highlighter-rouge">SAB 8085AH2P</code>,
+który jak się okazało jest nadal dostępny w sklepie <a href="https://inter-chip.pl/8085p-2630.html">inter-chip.pl</a>
+(uprzedzam strona sklepu jest okropna).
+Z kolei klon <code class="highlighter-rouge">AMD P8085A</code> zdaje się być dostępny w sklepie <a href="https://shop.tvsat.com.pl/pl/p/1szt-IC-uPC-P8085A-DIP40-AMD/31712">TVSAT-SHOP.pl</a>
+w nieco niższej cenie.
+<img src="assets/images/2020-09-20/my8085.jpeg" alt="Zakupiony przeze mnie procesor 8085" /></p>
+
+<p>Na koniec pewna uwaga techniczna: dwójka znajdująca się przy końcu oznaczenia procesora np. <code class="highlighter-rouge">SAB 8085AH2P</code>
+wskazuje na model który może być taktowany z częstotliwością do 5MHz. Układy bez dwójki np. <code class="highlighter-rouge">AMD P8085A</code> mogą być taktowane
+zegarem do 3MHz. Warto dodać że procesor pracuje z połową częstotliwości podłączonego do niego
+rezonatora kwarcowego (aka kryształu). Jeżeli więc chcemy taktować procesor z częstotliwością 5MHz, to powinniśmy
+użyć kryształu 10MHz’owego. Z drugiej strony minimalna częstotliwość z jaką mogą pracować te procesory wynosi 1MHz,
+czyli minimalna częstotliwość rezonatora kwarcowego to 2MHz.</p>
+
+<p>Zakup pozostałych części nie powinien sprawić większych kłopotów.
+Pełna lista wymaganych komponentów podana jest w <a href="https://www.nutsvolts.com/magazine/article/build-a-pocket-sized-altair-computer#Parts%20List">artykule pana Huntera</a>,
+do tego potrzebować będziemy jeszcze stabilizowanego źródła zasilania 5V, trzech płytek stykowych, 
+całej masy przewodów połączeniowych i kilku diod LED.</p>
+
+<p>Do programowania pamięci EEPROM możemy wykorzystać popularny wśród hobbystów TL866II PLUS
+(cena około 300PLN). Prosty programator można również zbudować samemu z wykorzystaniem Arduino
+(patrz <a href="https://www.youtube.com/watch?v=K88pgWhEb1M">programator Bena Eatera</a> 
+oraz <a href="https://github.com/TomNisbet/TommyPROM">TommyPROM</a>).</p>
+
+<p>Do komunikacji z PC potrzebować będziemy jeszcze konwertera <code class="highlighter-rouge">USB &lt;-&gt; UART</code>
+(aka FTDI), który możemy <a href="https://botland.com.pl/pl/konwertery-usb-uart-rs232-rs485/4501-konwerter-usb-uart-pl2303-wtyk-usb-waveshare-4037.html">kupić za około 15PLN</a>.
+Przed podłączeniem konwertera do budowanego minikomputera, należy upewnić się
+że zworka odpowiedzialna za wybór napięcia znajduje się w pozycji 5V:
+<img src="assets/images/2020-09-20/ftdi.jpeg" alt="Konwerter USB UART" />
+Po podłączeniu konwertera do komputera, system operacyjny powinien “wystawić” urządzenie jako nowy port szeregowy
+np. <code class="highlighter-rouge">COM3</code> w systemie Windows lub <code class="highlighter-rouge">/dev/ttyUSB0</code> w systemie Linux.</p>
+
+<p>Na koniec uwaga praktyczna: Układ 74HCT373 możemy zastąpić nowszym 74HCT573 który zdaje się mieć nieco
+bardziej rozsądny układ wyprowadzeń (wszystkie wejścia po jednej stronie układu).
+Zamiast 74HCT373 lub 74HCT573 możemy wykorzystać układ 74HCT574 zgodnie ze schematem:
+<img src="assets/images/2020-09-20/74.png" alt="Alternatywny zatrzask adresu" />
+(źródło: <a href="https://silo.tips/download/analisis-general-de-un-microprocesador">Análisis general de un Microprocesador</a>)</p>
+
+<p>Jako inwerter można wykorzystać np. CD40106BE.
+Testowałem powyższą konfigurację z kryształem 4MHz i wszystko działało bez problemów.</p>
+
+<h3 id="budowa-i-uruchomienie-układu">Budowa i uruchomienie układu</h3>
+
+<p>Moje pierwsze podejście do budowy komputera wyglądało następująco: 
+umieściłem wszystkie niezbędne komponenty komputera na płytkach stykowych,
+dwukrotnie sprawdziłem poprawności połączeń, podłączyłem konwerter <code class="highlighter-rouge">USB &lt;-&gt; UART</code>
+i na koniec włączyłem zasilanie. I… nic. 
+Komputer nie pracował, a ja nie miałem pojęcia dlaczego.
+Musiałem więc rozmontować cały układ i zbudować go jeszcze raz, tym razem
+krok po kroku.</p>
+
+<p>Rozpocząłem od podłączenie jedynie CPU, pamięci ROM oraz układu 74HCT573.
+<img src="assets/images/2020-09-20/ver1.jpg" alt="Alternatywny zatrzask adresu" />
+W tym układzie:</p>
+
+<ul>
+  <li>Nóżki RD i WR procesora połączyłem przez oporniki 22k z plusem zasilania (+5V)</li>
+  <li>Nóżkę WE pamięci ROM podłączyłem do plusa zasilania (zapis wyłączony)</li>
+  <li>Nóżkę CE pamięci ROM podłączyłem do masy/GND (ROM włączony na stałe)</li>
+  <li>Nóżkę OE pamięci ROM podłączyłem do nóżki RD procesora</li>
+  <li>Nóżkę RST7_5 procesora odłączyłem od nóżki SID i zamiast tego połączyłem z masą zasilania przez opornik 1k</li>
+</ul>
+
+<p>Do sprawdzenia czy procesor działa wykorzystałem pomysł pochodzący
+z <a href="http://www.glitchwrks.com/2010/09/02/8085-sbc">glitchwrks.com</a>,
+to jest wykorzystanie wyjścia SOD procesora do sterowania diodami LED:
+<img src="assets/images/2020-09-20/leds.png" alt="Podłączenie diod LED do SOD" />
+Ponieważ nasz “komputer” nie posiada jeszcze pamięci RAM to nie mogłem
+wykorzystać zamieszczonego przez GlitchWorks kodu. Brak pamięci RAM
+oznacza bowiem brak stosu wywołań funkcji. Innymi słowy rozkazy <code class="highlighter-rouge">CALL</code>
+i <code class="highlighter-rouge">RET</code> nie działają w tej konfiguracji. Zamiast wywołań funkcji wykorzystałem
+więc, będącą wciąż w powszechnym użyciu metodę Kopiego-Pasty:</p>
+
+<figure class="highlight"><pre><code class="language-asm" data-lang="asm">    ORG 0000H
+
+FLASH           MVI     A,0C0h ; LED ON
+                SIM       
+                
+                MVI A,0FFh ; Wait about half a second
+DELAY           DCR A
+                JZ CLEAR 
+BLOOP           MVI B,0FFh
+BLOOP2          DCR B
+                JNZ BLOOP2
+                JMP DELAY
+
+CLEAR           MVI A,040h ; LED OFF
+                SIM
+
+                MVI A,0FFh ; Wait about half a second
+DELAYx          DCR A
+                JZ FLASH
+BLOOPx          MVI B,0FFh
+BLOOP2x         DCR B
+                JNZ BLOOP2x
+                JMP DELAYx
+
+                HLT 
+HERE            JMP HERE
+
+    END FLASH</code></pre></figure>
+
+<p>Powyższy kod nie należy do najbardziej czytelnych i pięknych, ale pozwoli nam przetestować działanie komputera.</p>
+
+<p>Kod skompilowałem za pomocą wspomnianego w artykule assemblera <a href="https://github.com/glitchwrks/a85">a85</a>,
+który co prawda potrafi zgłaszać enigmatyczne błędy, ale posiada całkiem przyzwoity <a href="https://github.com/glitchwrks/a85/blob/master/A85.DOC">manual</a>.
+No cóż przyjaciele, RTFM!</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>./a85 test.asm <span class="nt">-o</span> test.hex
+<span class="c"># Pamiętajcie żeby użyć poprawnego typu pamięci</span>
+<span class="nv">$ </span>minipro <span class="nt">-p</span> AT28C64 <span class="nt">-w</span> test.hex </code></pre></figure>
+
+<p>Opensource’owe <a href="https://gitlab.com/DavidGriffith/minipro">oprogramowanie do programatora TL866 II PLUS</a> 
+dopiero od kilku miesięcy obsługuje format Intel HEX. 
+Jeżeli dostaniecie komunikat o nieznanym formacie pliku spróbujcie uaktualnić <code class="highlighter-rouge">minipro</code> do
+najnowszej wersji.</p>
+
+<p>Tym razem wszystko poszło zgodnie z planem i mogłem przez kika minut delektować się mruganiem diod LED.</p>
+
+<p>W kolejnym kroku dodałem do komputera układ 74HTC139 (nowszy zamiennik 74LS139) zgodnie ze schematem
+zamieszczonym w artykule i przekonałem się że dioda LED nadal miga.</p>
+
+<p>Kolejny krok polegał na dodaniu modułu RAM, który pracowicie połączyłem z resztą komputera:
+<img src="assets/images/2020-09-20/comp1.jpeg" alt="Komputer w budowie" />
+Diody nadal migały, ale teraz mogłem spróbować uruchomić na moim komputerku oryginalny kod z GlitchWorks:</p>
+
+<figure class="highlight"><pre><code class="language-asm" data-lang="asm">    ORG 0000H
+
+START          LXI     H,02060h  
+               SPHL              
+
+
+FLASH          MVI     A,0C0h    
+               SIM               
+               CALL    DELAY     
+               MVI     A,40h     
+               SIM               
+               CALL    DELAY     
+               JMP     FLASH     
+
+;Delay, return to HL when done.
+DELAY          MVI     A, 0FFh   
+               MOV     B,A       
+PT1            DCR     A         
+PT2            DCR     B         
+               JNZ     PT2       
+               CPI     00h       
+               JNZ     PT1       
+               RET               
+
+    END FLASH</code></pre></figure>
+
+<p>Po kompilacji, wgraniu programu i uruchomieniu komputera diody nadal migały - hurra!</p>
+
+<p>OK pora spróbować uruchomić <a href="https://www.nutsvolts.com/magazine/article/build-a-pocket-sized-altair-computer#content-extras">oprogramowanie</a> 
+przygotowane przez Huntera.</p>
+
+<p>Zanim jednak podłączyłem konwerter <code class="highlighter-rouge">USB &lt;-&gt; UART</code> do komputera, połączyłem ponownie nóżkę SID procesora z nóżką RST7_5
+i jeszcze raz sprawdziłem wszystkie pozostałe połączenia.</p>
+
+<p>Pin GND konwertera <code class="highlighter-rouge">USB &lt;-&gt; UART</code> podłączyłem do masy zasilania, pin <code class="highlighter-rouge">SOD</code> procesora połączyłem z pinem <code class="highlighter-rouge">RDX</code> konwertera,
+a pin <code class="highlighter-rouge">SID</code> z pinem <code class="highlighter-rouge">TXD</code>. Pin <code class="highlighter-rouge">VCC</code> konwertera pozostał niepodłączony.</p>
+
+<p>Po kompilacji pliku <code class="highlighter-rouge">AltaidsROM.asm</code> i wgraniu programu do EEPROM uruchomiłem <a href="https://www.putty.org/">Putty</a> żeby móc
+odbierać komunikaty wysyłane z komputera. Użyłem następującej konfiguracji (2400 baud, 8N1, Flow control: None):
+<img src="assets/images/2020-09-20/putty.png" alt="Konfiguracja Putty" />
+Niestety jedyne co mogłem odczytać to wydawałoby się losowe znaki. Problemem okazała się częstotliwość z jaką pracował
+mój mikrokomputer, ale sam byłem sobie winny - zamiast kryształu 4.9152MHz użyłem kryształu 4MHz.</p>
+
+<p>Na szczęście, jak sugeruje pan Hunter, jest to proste do naprawienia - wystarczy nadać stałym <code class="highlighter-rouge">HALFBIT</code> i <code class="highlighter-rouge">FULLBIT</code>
+(patrz <code class="highlighter-rouge">AltaidsROM.asm</code>) odpowiednio przeskalowane wartości. Ponieważ użyta przeze mnie częstotliwość procesora to 
+2MHz (= 4MHz / 2) to musiałem przeskalować i zaokrąglić oryginalne wartości do:</p>
+
+<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">s = 2 / 2.4576
+HALFBIT = s * 38 = 31
+FULLBIT = s * 69 = 56</code></pre></figure>
+
+<p>Obie stałe wykorzystywane są do obliczenia czasu transmisji pojedyńczego bitu (i jego środka) przy szybkości transmisji 2400 baudów.</p>
+
+<p>Po uruchomieniu komputera powitał mnie następujący widok:
+<img src="assets/images/2020-09-20/gib.png" alt="Kolejny problem" />
+Połowa tekstu była czytelna, połowa zawierała śmieci. Sam komputer nie zachowywał się poprawnie.
+Po około godzinie debugowania i zbyt dużej ilości CLUB-MATE udało mi się znaleźć problem:
+źle podłączoną linię adresową A11.</p>
+
+<p>Szybko naprawiłem to niedopatrzenie. Tym razem wszystko działało poprawnie a ja mogłem wpisać i uruchomić
+prosty program w BASIC’u (przy wpisywaniu musiałem zachować około jednosekundowy odstęp pomiędzy kolejnymi znakami,
+wspierane są tylko duże litery):
+<img src="assets/images/2020-09-20/basic1.png" alt="BASIC I" />
+<img src="assets/images/2020-09-20/basic2.png" alt="BASIC II" />
+<img src="assets/images/2020-09-20/basic3.png" alt="BASIC III" /></p>
+
+<p>Koniec części pierwszej. Ciąg dalszy nastąpi…</p>
+
+
+	  ]]></description>
+	</item>
+
 	<item>
 	  <title>Future[_] vs Future[Unit] or which return type should I choose?</title>
 	  <link>//future-or-future</link>
@@ -1407,495 +1633,6 @@ the programmer intended:</p>
     <span class="o">.</span><span class="n">collectFirst</span> <span class="o">{</span> <span class="k">case</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="k">_</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="kc">true</span> <span class="o">}</span>
     <span class="o">.</span><span class="n">getOrElse</span><span class="o">(</span><span class="kc">false</span><span class="o">)</span></code></pre></figure>
 
-
-	  ]]></description>
-	</item>
-
-	<item>
-	  <title>Matching regexes using backtracking</title>
-	  <link>//matching-regexes-using-backtracking</link>
-	  <author></author>
-	  <pubDate>2020-06-28T02:00:01+02:00</pubDate>
-	  <guid>//matching-regexes-using-backtracking</guid>
-	  <description><![CDATA[
-	     <p>In this post we will write a simple regex library.
-The table below presents regex operators that we are going to support:</p>
-
-<table>
-    <colgroup>
-        <col width="25%" />
-        <col width="75%" />
-    </colgroup>
-    <thead>
-        <tr class="header">
-            <th>Operator</th>
-            <th>Description</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>A single character e.g. <code class="highlighter-rouge">a</code>, <code class="highlighter-rouge">\n</code>, <code class="highlighter-rouge">\(</code></td>
-            <td>
-                A single character matches itself.<br />
-                Special characters need to be escaped e.g. <code class="highlighter-rouge">\n</code>.
-            </td>
-        </tr>
-        <tr>
-            <td>Character groups e.g. <code class="highlighter-rouge">[a-z]</code>, <code class="highlighter-rouge">[^xyz]</code></td>
-            <td>Character group matches any character
-                that is part of the group.<br /><br />
-                Negated character group (<code class="highlighter-rouge">[^xyz]</code>)
-                matches any character that is <em>not</em> part of the group.<br /><br />
-                Character ranges like <code class="highlighter-rouge">a-z</code> can be used inside groups.
-                A character c belongs to <code class="highlighter-rouge">a-z</code> range when its
-                numerical value falls between <code class="highlighter-rouge">(int)'a' &lt;= (int)c &lt;= (int)'z'</code>.
-            </td>
-        </tr>
-        <tr>
-            <td><code class="highlighter-rouge">.</code> wildcard</td>
-            <td>
-                <code class="highlighter-rouge">.</code> wildcard will match any single character. 
-                <br /><br />
-                For example
-                <code class="highlighter-rouge">...</code> will match any string consisting of three characters.
-            </td>
-        </tr>
-        <tr>
-            <td>Concatenation e.g. <code class="highlighter-rouge">abc</code>,<br /><code class="highlighter-rouge">[0-9]-[0-9]</code></td>
-            <td>Just as we can concatenate strings, 
-                we may also concatenate regexes. 
-                The resulting expression will match an input, only when the input can be split into two parts, so that
-                the first part of the input matches the first concatenated regex and
-                the second part of the input matches the second concatenated regex.
-                <br /><br />
-                For example input <code class="highlighter-rouge">9X</code> matches the regex <code class="highlighter-rouge">[0-9][XYZ]</code> because <code class="highlighter-rouge">9</code> matches <code class="highlighter-rouge">[0-9]</code> and <code class="highlighter-rouge">X</code> matches <code class="highlighter-rouge">[XYZ]</code>.
-            </td>
-        </tr>
-        <tr>
-            <td>Alternative e.g. <code class="highlighter-rouge">Z|X|[0-9]</code></td>
-            <td>Input matches the alternative when it matches
-                any branch of the alternative. <br /><br />
-                For example inputs <code class="highlighter-rouge">Z</code>, <code class="highlighter-rouge">X</code>
-                and <code class="highlighter-rouge">3</code> will all match <code class="highlighter-rouge">Z|X|[0-9]</code> alternative because they match
-                respectively <code class="highlighter-rouge">Z</code>, <code class="highlighter-rouge">X</code> and <code class="highlighter-rouge">[0-9]</code> branches. 
-                <br /><br />
-                Alternative has lower priority than concatenation so
-                <code class="highlighter-rouge">foo|bar</code> means <code class="highlighter-rouge">(foo)|(bar)</code>, not <code class="highlighter-rouge">fo(o|b)ar</code>.
-            </td>
-        </tr>
-        <tr>
-            <td>Repetition (quantification) 
-                e.g. <code class="highlighter-rouge">a*</code>, <code class="highlighter-rouge">[0-9]?</code>, <code class="highlighter-rouge">X{1,5}</code></td>
-            <td>
-                Preceding regex must match input specified number of times.<br />
-                Supported operators are: <br /><br />
-                <ul>
-                    <li><code>*</code> - matches zero or more times</li>
-                    <li><code>+</code> - matches one or more times</li>
-                    <li><code>?</code> - matches zero or one time</li>
-                    <li><code>{n}</code> - matches exactly n times</li>
-                    <li><code>{n,m}</code> - matches between n and m
-                     times (inclusive) 
-                    </li>
-                </ul>
-                <div>
-                    For example <code class="highlighter-rouge">[0-9]*</code> will match any string consisting of digits, including empty string.<br />
-                    On the other hand <code class="highlighter-rouge">[0-9]{2,3}</code> will match strings consisting of two or three decimal digits.<br /><br />
-                    In our limited implementation we do not support spaces
-                    (or any other whitespace characters) inside <code class="highlighter-rouge">{n,m}</code> expressions.<br /><br />
-                    Repetition has higher priority than concatenation and 
-                    alternative so <code class="highlighter-rouge">foo{5}</code> means <code class="highlighter-rouge">fo(o{5})</code>, not <code class="highlighter-rouge">(foo){5}</code>.<br /><br />
-                    Repetition operators are greedy, this means they will try
-                    to match as much input as possible.<br />
-                    For example <code class="highlighter-rouge">(a*)(a*)</code> will match the <code class="highlighter-rouge">aaaaa</code> input in
-                    the following way <code class="highlighter-rouge">(aaaaa)()</code> - the first <code class="highlighter-rouge">a*</code> will match
-                    all the characters, leaving empty string for the second <code class="highlighter-rouge">a*</code> to match.
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td><code class="highlighter-rouge">^</code> and <code class="highlighter-rouge">$</code> anchors</td>
-            <td>
-                <code class="highlighter-rouge">^</code> matches the beginning of the input.<br />
-                <code class="highlighter-rouge">$</code> matches the end of the input.<br /><br />
-                For example <code class="highlighter-rouge">^foo</code> will match strings that start with
-                <code class="highlighter-rouge">foo</code> and <code class="highlighter-rouge">bar$</code> will match strings that end with <code class="highlighter-rouge">bar</code>.
-            </td>
-        </tr>
-        <tr>
-            <td>Grouping (parentheses)</td>
-            <td>
-                Parentheses are used to alter the precedence of the operators.<br /><br />
-                For example compare <code class="highlighter-rouge">foo|bar</code> with <code class="highlighter-rouge">fo(o|b)ar</code>,
-                the first one will match <code class="highlighter-rouge">foo</code>, the second one <code class="highlighter-rouge">fooar</code>.
-            </td>
-        </tr>
-    </tbody>
-</table>
-
-<p>The library itself is quite small, it consists of two parts:
-a parser and a matcher. 
-The parser is a very simple <a href="https://en.wikipedia.org/wiki/Recursive_descent_parser">recursive descent parser</a>
-and as most of manually written parsers
-it probably contains some undiscovered bugs.
-The parser itself is not the main focus of this article,
-so we will tread it as a black box that consumes regular 
-expressions in text form and produces equivalent ASTs or Abstract Syntax Trees.</p>
-
-<p>ASTs are tree like data structures, 
-that make order of operator evaluation and the internal structure of a regular
-expression explicit.
-Let’s see this on an example. The AST representation of 
- <code class="highlighter-rouge">^a(foo|bar|egg)*b$</code> regex is:
-<img src="assets/images/2020-06-28/ast1.svg" alt="AST tree" /></p>
-
-<p>The anchors <code class="highlighter-rouge">^</code> and <code class="highlighter-rouge">$</code> are represented by their own
-AST nodes <code class="highlighter-rouge">AT_BEGINNING</code> and <code class="highlighter-rouge">AT_END</code>.
-To represent both character groups and single characters, we use
-<code class="highlighter-rouge">GROUP</code> nodes. <code class="highlighter-rouge">GROUP</code> nodes are very simple, they contain a list
-of characters that they match. A <code class="highlighter-rouge">GROUP</code> node for <code class="highlighter-rouge">[0-9]</code> regex
-contains characters <code class="highlighter-rouge">0123456789</code> in the list.
-For negated groups like <code class="highlighter-rouge">[^0-9]</code> we use <code class="highlighter-rouge">NEGATED_GROUP</code> node,
-the representation is the same as for <code class="highlighter-rouge">GROUP</code> (we keep <code class="highlighter-rouge">0123456789</code> characters
-in the list).
-Next is the tricky one, we use <code class="highlighter-rouge">NEGATED_GROUP</code> without any characters
-to represent wildcard (<code class="highlighter-rouge">.</code>). This makes sense because an empty group <code class="highlighter-rouge">[]</code> 
-does not match anything, so its negation will match all characters.</p>
-
-<p>To represent quantification operators like <code class="highlighter-rouge">?</code>, <code class="highlighter-rouge">+</code>, <code class="highlighter-rouge">*</code> and <code class="highlighter-rouge">{n,m}</code>
-we use <code class="highlighter-rouge">REPEAT</code> nodes. <code class="highlighter-rouge">REPEAT</code> nodes contain two additional attributes:
-minimum and maximum number of allowed repetitions.
-We use <code class="highlighter-rouge">Long.MAX_VALUE</code> to signify that maximum number of repetitions is unbound.
-Finally we use <code class="highlighter-rouge">CONCAT</code> node to represent concatenation of two or more
-regular expressions.</p>
-
-<p>In the code all AST nodes are represented by a single class
-called <code class="highlighter-rouge">RAst</code>:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">RAst</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">final</span> <span class="n">RAstType</span> <span class="n">type</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">final</span> <span class="n">Set</span><span class="o">&lt;</span><span class="n">Character</span><span class="o">&gt;</span> <span class="n">chars</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">final</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">RAst</span><span class="o">&gt;</span> <span class="n">exprs</span><span class="o">;</span>
-
-    <span class="c1">// Repeat from to, both inclusive</span>
-    <span class="kd">public</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">repeatMin</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">final</span> <span class="kt">long</span> <span class="n">repeatMax</span><span class="o">;</span>
-
-    <span class="c1">// ...</span></code></pre></figure>
-
-<p><code class="highlighter-rouge">type</code> field describes what kind of AST node this instance
-represents e.g. <code class="highlighter-rouge">CONCAT</code>.
-<code class="highlighter-rouge">GROUP</code> and <code class="highlighter-rouge">NEGATED_GROUP</code> nodes keep the set of matched/not-matched
-characters in <code class="highlighter-rouge">chars</code> field.
-<code class="highlighter-rouge">CONCAT</code> and <code class="highlighter-rouge">ALTERNATIVE</code> nodes keep their children in <code class="highlighter-rouge">exprs</code> field 
-(the order of children is important, hence a <code class="highlighter-rouge">List</code>).
-<code class="highlighter-rouge">REPEAT</code> node keeps its only child as a single element list in <code class="highlighter-rouge">exprs</code> field.</p>
-
-<p>The matcher is represented in the code by <code class="highlighter-rouge">BacktrackingMatcher</code> class.
-The interface of the matcher is very simple:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">class</span> <span class="nc">BacktrackingMatcher</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">static</span> <span class="n">Match</span> <span class="nf">match</span><span class="o">(</span><span class="n">String</span> <span class="n">s</span><span class="o">,</span> <span class="n">RAst</span> <span class="n">regex</span><span class="o">);</span>
-<span class="o">}</span>
-
-<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Match</span> <span class="o">{</span>
-    <span class="kd">public</span> <span class="kd">final</span> <span class="kt">boolean</span> <span class="n">hasMatch</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">input</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">start</span><span class="o">;</span>
-    <span class="kd">public</span> <span class="kd">final</span> <span class="kt">int</span> <span class="n">end</span><span class="o">;</span>
-
-    <span class="kd">public</span> <span class="n">String</span> <span class="nf">matched</span><span class="o">()</span>  <span class="o">{</span>
-        <span class="k">if</span> <span class="o">(!</span><span class="n">hasMatch</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
-        <span class="k">return</span> <span class="n">input</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="n">start</span><span class="o">,</span> <span class="n">end</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Our matcher will only find the first substring of the input that
-matches the regex. Yet it would not be too difficult to extend 
-the algorithm to find all matches (start matching again 
-after the end of the previous match).</p>
-
-<p>To implement our matcher we will use an algorithm design technique 
-called backtracking. The general idea of backtracking is
-very simple: we enumerate all the possible solution candidates
-in a smart way and then we return the first candidate that is a valid solution.
-The part “in a smart way” is very important, usually
-enumerating all solution candidates will result in a very
-slow algorithm (think <code class="highlighter-rouge">O(2^n)</code> or even <code class="highlighter-rouge">O(n!)</code>).
-The key here is to quickly and early reject some subsets of
-the solutions candidates.</p>
-
-<p>Let’s see this on a very simple example,
-say we want to solve a puzzle that is about placing various shapes in 3x3 grid. Some places in the grid are already taken. There is also a rule that describes a valid solution: in every row and column we cannot have two shapes of the same kind.
-<img src="assets/images/2020-06-28/puzzle.svg" alt="Puzzle board" />
-Simple enumeration of all possible assignments of the shapes to the free places
-will generate <code class="highlighter-rouge">3^5</code> solution candidates, most of them wrong.
-A smarter candidate generation strategy
-would be to check immediately after we fill a free place,
-if the solution conditions still holds for this place row and column.
-This would save us a lot of work, because we could discard a lot of
-solution candidates much more early in the process.
-For example we could discard all the solution candidates that have
-Cloud shape at 1B position in the first step of the algorithm.</p>
-
-<p>The name of the technique itself comes from the specific way
-in which the algorithm generates all the solution candidates.
-The naive backtracking algorithm that solves our simple puzzle looks like this:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="c1">// Board positions:</span>
-<span class="c1">// [0 | 1 | 2]</span>
-<span class="c1">// [3 | 4 | 5]</span>
-<span class="c1">// [6 | 7 | 8]</span>
-<span class="c1">// Notice that rowIndex = currentPosition / 3</span>
-<span class="c1">// and         colIndex = currentPosition % 3</span>
-<span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">solve</span><span class="o">(</span><span class="kt">char</span><span class="o">[][]</span> <span class="n">board</span><span class="o">,</span> <span class="kt">int</span> <span class="n">currentPosition</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">currentPosition</span> <span class="o">==</span> <span class="mi">9</span><span class="o">)</span> <span class="o">{</span>
-        <span class="c1">// All places are filled, check if this</span>
-        <span class="c1">// candidate is a valid solution.</span>
-        <span class="k">return</span> <span class="nf">isValidSolution</span><span class="o">(</span><span class="n">board</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="k">if</span> <span class="o">(</span><span class="n">isPlaceTaken</span><span class="o">(</span><span class="n">board</span><span class="o">,</span> <span class="n">currentPosition</span><span class="o">))</span> <span class="o">{</span>
-        <span class="c1">// Move to checking the next place.</span>
-        <span class="k">return</span> <span class="nf">solve</span><span class="o">(</span><span class="n">board</span><span class="o">,</span> <span class="n">currentPosition</span><span class="o">+</span><span class="mi">1</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="c1">// Try putting all shapes in the free place</span>
-    <span class="k">for</span> <span class="o">(</span><span class="kt">char</span> <span class="nl">shape:</span> <span class="k">new</span> <span class="kt">char</span><span class="o">[]</span> <span class="o">{</span> <span class="sc">'C'</span><span class="o">,</span> <span class="sc">'H'</span><span class="o">,</span> <span class="sc">'R'</span> <span class="o">})</span> <span class="o">{</span>
-        <span class="n">putShape</span><span class="o">(</span><span class="n">board</span><span class="o">,</span> <span class="n">currentPosition</span><span class="o">,</span> <span class="n">shape</span><span class="o">);</span>
-
-        <span class="k">if</span> <span class="o">(</span><span class="n">solve</span><span class="o">(</span><span class="n">board</span><span class="o">,</span> <span class="n">currentPosition</span> <span class="o">+</span> <span class="mi">1</span><span class="o">))</span> <span class="o">{</span>
-            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
-        <span class="o">}</span>
-
-        <span class="c1">// Clear position or BACKTRACK.</span>
-        <span class="n">putShape</span><span class="o">(</span><span class="n">board</span><span class="o">,</span> <span class="n">currentPosition</span><span class="o">,</span> <span class="sc">'?'</span><span class="o">);</span>
-    <span class="o">}</span>
-
-    <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>The key part of the algorithm is the <code class="highlighter-rouge">for</code> loop,
-where we put a shape on the free place and then remove it 
-when don’t find a solution. This removal
-or taking a move back is what gave the algorithm its name.
-Alternatively we may say that when <code class="highlighter-rouge">solve</code> returns <code class="highlighter-rouge">false</code>,
-then the <code class="highlighter-rouge">board</code> is exactly in the same state as it was
-before we called <code class="highlighter-rouge">solve</code>.</p>
-
-<p>Matching regular expression is somehow similar to solving our previous puzzle.
-At each step we have several possibilities, like should we match <code class="highlighter-rouge">foo</code>
-or <code class="highlighter-rouge">fo</code> from the alternative <code class="highlighter-rouge">(foo|fo)</code>. How much characters should
-<code class="highlighter-rouge">f+</code> expression match? Should <code class="highlighter-rouge">(bar)?</code> match <code class="highlighter-rouge">bar</code> or nothing?
-On the other hand the most complexity in matching regular expressions
-comes from the fact that we are matching a recurrent structure (tree).
-It’s like matching our puzzle, but where each empty place can contain
-another smaller version of the same puzzle that also must be solved.</p>
-
-<p>The main entry point to our regex matching algorithm is</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="nd">@FunctionalInterface</span>
-<span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Cont</span> <span class="o">{</span>
-    <span class="kt">boolean</span> <span class="nf">run</span><span class="o">();</span>
-<span class="o">}</span>
-
-<span class="kt">boolean</span> <span class="nf">match</span><span class="o">(</span><span class="n">Input</span> <span class="n">input</span><span class="o">,</span> <span class="n">RAst</span> <span class="n">ast</span><span class="o">,</span> <span class="n">Cont</span> <span class="n">cont</span><span class="o">)</span></code></pre></figure>
-
-<p>method. It takes three parameters, <code class="highlighter-rouge">input</code> which is just
-the input <code class="highlighter-rouge">String</code> plus a pointer called <code class="highlighter-rouge">pos</code> that tracks next, not yet
-matched character. <code class="highlighter-rouge">Input</code> also provides helpful methods that can
-be used to save and restore <code class="highlighter-rouge">pos</code> value (we will need that
-for backtracking). Next parameter, <code class="highlighter-rouge">ast</code>, is an AST subtree that the algorithm
-should match. The last parameter <code class="highlighter-rouge">cont</code> is the most interesting one.
-In my previous blog post I wrote about 
-<a href="/continuations-in-java">continuations</a>, please read that post before
-going further. <code class="highlighter-rouge">cont</code> is lambda expression (but we may thread it also as
-a kind of continuation), that when called will
-try to match remaining part of the regex AST (e.g. it will match parents
-and the remaining siblings nodes of <code class="highlighter-rouge">ast</code> node).</p>
-
-<p>The contract of <code class="highlighter-rouge">match</code> method is as follows.
-If the method is not able to match <code class="highlighter-rouge">ast</code> subtree it will
-return <code class="highlighter-rouge">false</code>, <code class="highlighter-rouge">cont</code> will not be called and the <code class="highlighter-rouge">input</code>
-will not be modified (or it may be restored to the original state).
-On the other hand if <code class="highlighter-rouge">ast</code> subtree could be matched then
-<code class="highlighter-rouge">cont</code> will be called with the modified <code class="highlighter-rouge">input</code> and
-<code class="highlighter-rouge">match</code> will return whatever <code class="highlighter-rouge">cont</code> returns.
-Before returning value to the client <code class="highlighter-rouge">input</code> will be restored
-to the original state (this is not strictly necessary if we
-are looking for the first match but somehow makes algorithm more elegant).</p>
-
-<p>At the top level we will call <code class="highlighter-rouge">match</code> somehow like this:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">int</span> <span class="n">startIndex</span> <span class="o">=</span> <span class="n">input</span><span class="o">.</span><span class="na">currentPos</span><span class="o">();</span>
-<span class="n">AtomicInteger</span> <span class="n">endIndex</span> <span class="o">=</span> <span class="k">new</span> <span class="n">AtomicInteger</span><span class="o">(</span><span class="mi">0</span><span class="o">);</span>
-
-<span class="kt">boolean</span> <span class="n">hasMatch</span> <span class="o">=</span> <span class="n">match</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">regex</span><span class="o">,</span> <span class="o">()</span> <span class="o">-&gt;</span> <span class="o">{</span>
-    <span class="n">endIndex</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">input</span><span class="o">.</span><span class="na">currentPos</span><span class="o">());</span>
-    <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
-<span class="o">});</span></code></pre></figure>
-
-<p>This call means that we are looking for the matches
-starting at index <code class="highlighter-rouge">startIndex</code> and if we find one
-we save the
-end of the match in the <code class="highlighter-rouge">endIndex</code> variable and return <code class="highlighter-rouge">true</code>
-to signify that matching process should stop.
-This is the only place in the algorithm where we use
-<code class="highlighter-rouge">return true</code>. Matched substring could be easily
-retrieved as <code class="highlighter-rouge">input.substring(startIndex, endIndex)</code>.</p>
-
-<p>The body of <code class="highlighter-rouge">match</code> method is a giant switch statement that
-delegates matching of different AST types to different methods (not counting simple
-operators):</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">match</span><span class="o">(</span><span class="n">Input</span> <span class="n">input</span><span class="o">,</span> <span class="n">RAst</span> <span class="n">ast</span><span class="o">,</span> <span class="n">Cont</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">RAstType</span> <span class="n">type</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="na">type</span><span class="o">;</span>
-    <span class="n">InputPositionMarker</span> <span class="n">m</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
-
-    <span class="k">switch</span> <span class="o">(</span><span class="n">type</span><span class="o">)</span> <span class="o">{</span>
-        <span class="cm">/* some cases skipped */</span>
-
-        <span class="k">case</span> <span class="nl">GROUP:</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">input</span><span class="o">.</span><span class="na">atEnd</span><span class="o">())</span> <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-            <span class="k">if</span> <span class="o">(</span><span class="n">ast</span><span class="o">.</span><span class="na">chars</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">input</span><span class="o">.</span><span class="na">current</span><span class="o">()))</span> <span class="o">{</span>
-                <span class="n">m</span> <span class="o">=</span> <span class="n">input</span><span class="o">.</span><span class="na">markPosition</span><span class="o">();</span>
-                <span class="n">input</span><span class="o">.</span><span class="na">advance</span><span class="o">(</span><span class="mi">1</span><span class="o">);</span>
-                <span class="k">try</span> <span class="o">{</span>
-                    <span class="k">return</span> <span class="n">cont</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
-                <span class="o">}</span> <span class="k">finally</span> <span class="o">{</span>
-                    <span class="n">input</span><span class="o">.</span><span class="na">restorePosition</span><span class="o">(</span><span class="n">m</span><span class="o">);</span>
-                <span class="o">}</span>
-            <span class="o">}</span>
-            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-
-        <span class="k">case</span> <span class="nl">CONCAT:</span>
-            <span class="k">return</span> <span class="nf">concatRec</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">ast</span><span class="o">.</span><span class="na">exprs</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">cont</span><span class="o">);</span>
-
-        <span class="k">case</span> <span class="nl">ALTERNATIVE:</span>
-            <span class="k">return</span> <span class="nf">alternativeRec</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">ast</span><span class="o">.</span><span class="na">exprs</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">cont</span><span class="o">);</span>
-
-        <span class="k">case</span> <span class="nl">REPEAT:</span>
-            <span class="k">return</span> <span class="nf">repeatRec</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">ast</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="n">cont</span><span class="o">);</span>
-
-        <span class="k">default</span><span class="o">:</span> <span class="k">throw</span> <span class="k">new</span> <span class="n">AssertionError</span><span class="o">(</span><span class="s">"Unknown AST type: "</span> <span class="o">+</span> <span class="n">type</span><span class="o">);</span>
-    <span class="o">}</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Let’s take a look how matching a <code class="highlighter-rouge">GROUP</code> is performed.
-If the group matches next input character, we save the current
-input pointer in <code class="highlighter-rouge">m</code> variable, then we advance the input pointer 
-and finally we call <code class="highlighter-rouge">cont</code> to match the
-rest of the regex. After <code class="highlighter-rouge">cont</code> returns we restore the input position
-using <code class="highlighter-rouge">finally</code> block. This is a bit hacky but it works.</p>
-
-<p>Matching <code class="highlighter-rouge">CONCAT</code> node is also simple. We use recursion to match
-subsequent children expressions:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">concatRec</span><span class="o">(</span><span class="n">Input</span> <span class="n">input</span><span class="o">,</span>
-                                 <span class="n">List</span><span class="o">&lt;</span><span class="n">RAst</span><span class="o">&gt;</span> <span class="n">exprs</span><span class="o">,</span>
-                                 <span class="kt">int</span> <span class="n">currExpr</span><span class="o">,</span>
-                                 <span class="n">Cont</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">currExpr</span> <span class="o">==</span> <span class="n">exprs</span><span class="o">.</span><span class="na">size</span><span class="o">())</span> <span class="o">{</span>
-        <span class="c1">// We matched all the children</span>
-        <span class="k">return</span> <span class="n">cont</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
-    <span class="o">}</span>
-
-    <span class="c1">// Match exprs.get(currExpr) child</span>
-    <span class="k">return</span> <span class="nf">match</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">exprs</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">currExpr</span><span class="o">),</span> <span class="o">()</span> <span class="o">-&gt;</span>
-        <span class="c1">// If it succeeded then match next child expression </span>
-        <span class="n">concatRec</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">exprs</span><span class="o">,</span> <span class="n">currExpr</span> <span class="o">+</span> <span class="mi">1</span><span class="o">,</span> <span class="n">cont</span><span class="o">)</span>
-    <span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Notice that because we are not consuming any input here we have
-nothing to restore.</p>
-
-<p>Similarly <code class="highlighter-rouge">ALTERNATIVE</code> is easy to match:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">alternativeRec</span><span class="o">(</span><span class="n">Input</span> <span class="n">input</span><span class="o">,</span>
-                                      <span class="n">List</span><span class="o">&lt;</span><span class="n">RAst</span><span class="o">&gt;</span> <span class="n">expr</span><span class="o">,</span>
-                                      <span class="kt">int</span> <span class="n">currExpr</span><span class="o">,</span>
-                                      <span class="n">Cont</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">currExpr</span> <span class="o">==</span> <span class="n">expr</span><span class="o">.</span><span class="na">size</span><span class="o">())</span> <span class="o">{</span>
-        <span class="c1">// We tried all branches but found no match.</span>
-        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="c1">// Try matching expr.get(currExpr) branch of the alternative</span>
-    <span class="kt">boolean</span> <span class="n">matched</span> <span class="o">=</span> <span class="n">match</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">expr</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">currExpr</span><span class="o">),</span> <span class="n">cont</span><span class="o">);</span>
-    <span class="c1">// We found a match</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">matched</span><span class="o">)</span> <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
-
-    <span class="c1">// No match found - Let's try next alternative "branch"</span>
-    <span class="k">return</span> <span class="nf">alternativeRec</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">expr</span><span class="o">,</span> <span class="n">currExpr</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">cont</span><span class="o">);</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Here <code class="highlighter-rouge">currExpr</code> points to the current alternative branch that we are matching.
-Instead of using recursion we may implement <code class="highlighter-rouge">alternativeRec</code> 
-using a simple <code class="highlighter-rouge">for</code> loop, which I left as an exercise for the reader.</p>
-
-<p>Matching <code class="highlighter-rouge">REPEAT</code> node causes the most troubles, because all
-quantification operators are greedy by default. This means that
-e.g. <code class="highlighter-rouge">a+</code> will try to match as much characters as possible.
-To implement this behavior we first attempt to match <code class="highlighter-rouge">REPEAT</code>s child subtree 
-as many times as possible, then we move “backwards” calling <code class="highlighter-rouge">cont</code>
-each time to check if we have a match.
-The diagram below illustrates this process:</p>
-
-<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">We match a+ expression:
-a
-a a
-a a a         // We matched a three times.
-a a a noMatch // Forth time we have noMatch.
-a a a cont()  // We move backwards, calling cont()
-a a cont()    // each time until it returns true.
-a cont() match // cont() returned true.
-               // We stop moving backwards and return true from a+.</code></pre></figure>
-
-<p>The code of <code class="highlighter-rouge">repeatRec</code> is:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">private</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">repeatRec</span><span class="o">(</span><span class="n">Input</span> <span class="n">input</span><span class="o">,</span>
-                                 <span class="n">RAst</span> <span class="n">repeatAst</span><span class="o">,</span>
-                                 <span class="kt">long</span> <span class="n">matchCount</span><span class="o">,</span>
-                                 <span class="n">Cont</span> <span class="n">cont</span><span class="o">)</span> <span class="o">{</span>
-    <span class="c1">// For expressions like R{n,m} do we have</span>
-    <span class="c1">// more matches than necessary?</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">matchCount</span> <span class="o">&gt;</span> <span class="n">repeatAst</span><span class="o">.</span><span class="na">repeatMax</span><span class="o">)</span>
-        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
-
-    <span class="c1">// Greedy matching as much as possible.</span>
-    <span class="kt">boolean</span> <span class="n">matched</span> <span class="o">=</span> <span class="n">match</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">repeatAst</span><span class="o">.</span><span class="na">headExpr</span><span class="o">(),</span> <span class="o">()</span> <span class="o">-&gt;</span>
-        <span class="n">repeatRec</span><span class="o">(</span><span class="n">input</span><span class="o">,</span> <span class="n">repeatAst</span><span class="o">,</span> <span class="n">matchCount</span><span class="o">+</span><span class="mi">1</span><span class="o">,</span> <span class="n">cont</span><span class="o">)</span>
-    <span class="o">);</span>
-
-    <span class="c1">// We are moving backwards, calling `cont` each time.</span>
-    <span class="c1">// We also make sure that we have min number of matches</span>
-    <span class="c1">// for expressions like R{n,m}.</span>
-    <span class="k">if</span> <span class="o">(!</span><span class="n">matched</span> <span class="o">&amp;&amp;</span> <span class="o">(</span><span class="n">matchCount</span> <span class="o">&gt;=</span> <span class="n">repeatAst</span><span class="o">.</span><span class="na">repeatMin</span><span class="o">))</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">cont</span><span class="o">.</span><span class="na">run</span><span class="o">();</span>
-    <span class="o">}</span>
-
-    <span class="k">return</span> <span class="n">matched</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>And generally that’s it. Our simple regex engine.
-There are some details left (like handling <code class="highlighter-rouge">^</code> or <code class="highlighter-rouge">$</code> or
-moving <code class="highlighter-rouge">startIndex</code>) but the idea behind the backtracking
-matcher should now be familiar to us.</p>
-
-<p>You can find source code for the engine (including tests)
-on GitHub: <a href="https://github.com/marcin-chwedczuk/reng">https://github.com/marcin-chwedczuk/reng</a>. But before you jump to see the
-code I really recommend you to write a similar engine (in your
-favorite language) yourself. This will give you a much more
-deeper understanding of the algorithm.</p>
-
-<p>Last but not least, our algorithm has a decent performance,
-given that we use reasonable regexes and inputs.
-A regex like <code class="highlighter-rouge">(a+)*c</code> matched on the input <code class="highlighter-rouge">aaaaaaaaaaaaaaaaaaaaaaaaaaaab</code>
-will have a very bad performance. This is a common problem
-not only in our matcher but in most regex libraries
-that use backtracking algorithms. You can 
-read more about this problem on <a href="https://en.wikipedia.org/wiki/ReDoS">Wikipedia</a>.</p>
 
 	  ]]></description>
 	</item>
