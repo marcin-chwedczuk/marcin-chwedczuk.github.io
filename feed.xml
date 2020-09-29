@@ -7,6 +7,28 @@
     
       
       <item>
+        <title>Minikomputer 8085 - Część II</title>
+        
+          <description>&lt;p&gt;W &lt;a href=&quot;minikomputer-8085-czesc-I&quot;&gt;poprzednim&lt;/a&gt; wpisie udało nam się zbudować działający minikomputer oraz uruchomić
+na nim napisany przez Davida Huntera monitor. Dla przypomnienia zbudowana przeze mnie
+maszyna wyglądała następująco:
+&lt;img src=&quot;assets/images/2020-09-29/comp1.jpeg&quot; alt=&quot;Minikomputer wyłaniający się z chaosu&quot; /&gt;
+Podczas kilku kolejnych godzin pracy z komputerem, szybko okazało się że taka plątanina
+przewodów znacznie utrudnia debugowanie i rozwiązywanie problemów.
+Co gorsza przewody połączeniowe nie zapewniały dobrej jakości połączeń pomiędzy układami scalonymi.
+W efekcie komputer potrafił nie startować lub zawieszał się podczas wykonywania programów.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Tue, 29 Sep 2020 02:00:01 +0200</pubDate>
+        <link>
+        /minikomputer-8085-czesc-II</link>
+        <guid isPermaLink="true">/minikomputer-8085-czesc-II</guid>
+      </item>
+      
+    
+      
+      <item>
         <title>Minikomputer 8085 - Część I</title>
         
           <description>&lt;p&gt;Już od dłuższego czasu myślałem o tym żeby zbudować swój własny minikomputer.

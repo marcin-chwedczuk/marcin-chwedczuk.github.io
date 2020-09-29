@@ -12,6 +12,213 @@
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
+	  <title>Minikomputer 8085 - Część II</title>
+	  <link>//minikomputer-8085-czesc-II</link>
+	  <author></author>
+	  <pubDate>2020-09-29T02:00:01+02:00</pubDate>
+	  <guid>//minikomputer-8085-czesc-II</guid>
+	  <description><![CDATA[
+	     <p>W <a href="minikomputer-8085-czesc-I">poprzednim</a> wpisie udało nam się zbudować działający minikomputer oraz uruchomić
+na nim napisany przez Davida Huntera monitor. Dla przypomnienia zbudowana przeze mnie
+maszyna wyglądała następująco:
+<img src="assets/images/2020-09-29/comp1.jpeg" alt="Minikomputer wyłaniający się z chaosu" />
+Podczas kilku kolejnych godzin pracy z komputerem, szybko okazało się że taka plątanina
+przewodów znacznie utrudnia debugowanie i rozwiązywanie problemów.
+Co gorsza przewody połączeniowe nie zapewniały dobrej jakości połączeń pomiędzy układami scalonymi.
+W efekcie komputer potrafił nie startować lub zawieszał się podczas wykonywania programów.</p>
+
+<p>Kolejną ważną rzeczą którą pominąłem podczas budowy komputera są 
+kondensatory odsprzęgające (ang. decoupling capacitors). 
+Układy scalone, zwłaszcza te należące do rodziny 74LS 
+potrafią emitować sporo zakłóceń podczas zmiany stanu.
+Dołączenie kondensatora foliowego lub ceramicznego o pojemności 0.1uF do linii zasilania układu
+pozwala zmniejszyć zakłócenia i poprawia stabilność jego działania.</p>
+
+<p>Teraz nadszedł czas żeby naprawić wszystkie powyższe mankamenty. 
+Przewody połączeniowe zastąpiłem
+ciętymi na wymiar przewodami jednożyłowymi. Oprócz kondensatorów odsprzęgających,
+dodałem do szyny zasilania również jeden duży kondensator elektrolityczny o
+znacznej pojemności (470uF). Generalnie dokładanie tak dużych kondensatorów nie jest
+zalecane bo potrafi mocno obciążyć zasilacz w momencie startu układu.
+Ja używam prostego zasilacza do płytek stykowych który przeżył już niejedno zwarcie,
+więc na razie postanowiłem zignorować ten problem.
+Efekt mojej pracy widać poniżej:
+<img src="assets/images/2020-09-29/comp2.jpeg" alt="Minikomputer tym razem z porządnymi połączeniami" /></p>
+
+<p>Przy okazji przebudowy komputera postanowiłem wprowadzić kilka modyfikacji.
+Po pierwsze zastąpiłem pojedyńczy rejestr wejścia/wyjścia z projektu Huntera,
+dwoma rejestrami wyjściowymi i jednym wejściowym. Dzięki temu w prosty sposób
+będziemy mogli podłączyć do komputera zarówno 2x16 znakowy wyświetlacz LCD,
+jak i parę przycisków.</p>
+
+<p>Warto tutaj zaznaczyć że oryginalny projekt Huntera również pozwala na integracje z
+wyświetlaczem LCD, jeżeli tylko wykorzystamy rejestry przesuwne 74LS595 do zwielokrotnienia liczby
+wyjść. Dokładnie tą samą sztuczkę wykorzystał Ben Eater w swoim 
+<a href="https://github.com/beneater/eeprom-programmer">programatorze EEPROM</a>.</p>
+
+<p>Ostatecznie po wszystkich modyfikacjach schemat komputera wygląda następująco:
+<img src="assets/images/2020-09-29/mikrus-85.svg" alt="Schemat minikomputera" />
+Powyższy schemat oddaje jeden do jednego układ połączeń oraz typ układów scalonych które znalazły się
+na moich płytkach stykowych. Na przykład miałem pod ręką tylko jeden układ 74HCT574.
+Przy budowie portów wyjściowych musiałem więc wykorzystać dwa starsze układy 74HCT374,
+które robią co prawda to samo co 74HCT574, ale mają znacznie mnie wygodny układ wyprowadzeń.
+Podobnie nie posiadałem 74LS373 więc użyłem 74LS574 w połączeniu z inwerterem.
+Na koniec przypomnę że układy rodzin 74LS i 74HCT są ze sobą kompatybilne i można je
+stosować zamiennie.</p>
+
+<p>Schemat minikomputera został stworzony w darmowym i popularnym wśród hobbystów programie
+<a href="https://kicad-pcb.org/">KiCad</a>. Podczas tworzenia schematu nie widziałem co wpisać w pole tytuł,
+postanowiłem więc nadać mojemu komputerowi nazwę Mikrus-85. Hurra!</p>
+
+<p>Kolejny celem jaki przed sobą postawiłem była kompilacja i uruchamianie na Mikrusie
+programów napisanych w C.
+Niestety już samo znalezienie odpowiedniego kompilatora stanowiło duży problem.
+<a href="http://sdcc.sourceforge.net/">Small Device C Compiler</a> mógłby być idealnym wyborem,
+gdyby wspierał używany przeze mnie procesor 8085. 
+Co prawda prace nad dodaniem takiego wsparcia
+rozpoczęły się <a href="https://github.com/kenyapcomau/sdcc-8080">ponad rok temu</a>, 
+ale nie zaowocowały jeszcze w pełni działającym kompilatorem.
+Warto dodać że procesor 8085 jest wstecznie kompatybilny z procesorem 8080
+(dokładnie mówiąc 8085 dodaje tylko dwie nowe instrukcje), więc
+kompilator C dla 8080 może być z powodzeniem wykorzystany również do 
+generowania kodu dla 8085.</p>
+
+<p>Ostatecznie postanowiłem użyć kompilatora <a href="https://github.com/ncb85/SmallC-85">Small-C</a>,
+napisanego ponad 30 lat temu przez Chrisa Lewisa, a przywróconego do życia dzięki wysiłkom
+użytkownika <a href="https://github.com/ncb85">ncb85</a>. ncb85 oprócz kodu kompilatora
+udostępnił też na swoim koncie <a href="https://github.com/ncb85/utilis-and-examples/tree/master/cpm_hello">przykład jego użycia</a>
+co pozwoliło mi zaoszczędzić niemało czasu.</p>
+
+<p>Wracając do samego kompilatora, jest to dość stary program który powstał jeszcze przed
+wprowadzeniem standardu C89 (sic!). Poniżej garść ciekawostek które się z tym wiążą:</p>
+
+<ul>
+  <li>Nie ma typu <code class="highlighter-rouge">void</code>. Metody domyślnie zwracają typ <code class="highlighter-rouge">int</code>. :deal-with-it-parrot:</li>
+  <li>Brak wsparcia dla inicjalizacji wartości zmiennych globalnych.</li>
+  <li>Deklaracja metod musi byc wykonana w przestarzałym stylu <a href="https://en.wikipedia.org/wiki/C_(programming_language)#K&amp;R_C">K&amp;R</a>:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">lcd</span><span class="p">(</span><span class="n">regSelect</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="kt">char</span> <span class="n">regSelect</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">data</span><span class="p">;</span>
+<span class="p">{</span>
+    <span class="c1">// code
+</span><span class="p">}</span></code></pre></figure>
+
+<p>Współcześnie napisalibyśmy:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">lcd</span><span class="p">(</span><span class="kt">char</span> <span class="n">regSelect</span><span class="p">,</span> <span class="kt">char</span> <span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// code
+</span><span class="p">}</span></code></pre></figure>
+
+<p>Ponieważ nasz procesor jest 8-bitowy do dyspozycji mamy jedynie cztery typu liczb całkowitych:
+<code class="highlighter-rouge">unsigned char</code>, <code class="highlighter-rouge">signed char</code>, <code class="highlighter-rouge">unsigned int</code> i <code class="highlighter-rouge">signed int</code>.
+Operacje na 16-bitowych typach <code class="highlighter-rouge">int</code> muszą być symulowane za pomocą dostarczanej razem z kompilatorem
+biblioteki <a href="https://github.com/marcin-chwedczuk/mikrus-85/blob/master/smallC/crun8085lib.asm">crun8085lib.asm</a>.</p>
+
+<p>Sam kompilator jest bardzo prosty, nie generuje prawie żadnych ostrzeżeń - łatwo więc sobie strzelić w stopę.
+Dla przykładu poniższa pętla jest nieskończona:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">char</span> <span class="n">c</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="mi">128</span><span class="p">;</span> <span class="n">c</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// do nothing
+</span><span class="p">}</span></code></pre></figure>
+
+<p>Od czasu do czasu kompilator kończy pracę zgłaszając Segmentation Fault.
+Praca z Small-C wymaga więc sporej dozy i cierpliwości, i wyrozumiałości, i wytrwałości.</p>
+
+<p>Stworzenie najprostszego programu w C <code class="highlighter-rouge">main() { }</code> przy użyciu Small-C wymaga
+trochę więcej wysiłku niż tylko uruchomienie kompilator. W wyniku kompilacji
+otrzymujemy bowiem nie plik binary, ale plik źródłowy assemblera który
+należy jeszcze poddać translacji do kodu maszynowego.
+Do tego celu należy wykorzystać <code class="highlighter-rouge">as8085</code> będący częścią pakietu <a href="https://shop-pdp.net/ashtml/asxxxx.php">ASxxxx</a>.
+<code class="highlighter-rouge">ASxxxx</code> jest wciąż rozwijanym projektem posiadającym naprawdę dobrą <a href="https://shop-pdp.net/ashtml/asxbld.htm">dokumentację</a>.
+Dzięki temu zbudowanie assemblera ze źródeł nie powinno sprawić nam żadnych problemów.</p>
+
+<p>Czas na małą dygresję. Po starcie procesor 8085 zaczyna
+wykonywanie kodu programu od adresu <code class="highlighter-rouge">0x0000</code>.
+Wartości rejestrów procesora, w szczególności rejestru <code class="highlighter-rouge">SP</code> odpowiedzialnego
+za zarządzaniem stosem nie są na starcie procesora dobrze zdefiniowane.
+Zanim wywołamy naszą funkcję <code class="highlighter-rouge">main()</code> powinniśmy nadać rejestrowi <code class="highlighter-rouge">SP</code> poprawną wartość.
+Zbudowany przeze mnie komputer posiada następującą mapę pamięci:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">Adresy          | Przeznaczenie
+---------------------------------
+0x0000 - 0x1FFF - ROM
+0x2000 - 0x3FFF - RAM
+0x8000          - output port 1
+0xA000          - output port 2
+0xC000          - input port</code></pre></figure>
+
+<p>Stos na 8085 podobnie jak w innych procesorach Intela rośnie w dół (w kierunku mniejszych adresów).
+Dodatkowo warto żeby adres stosu był parzysty, rozsądnym wyborem jest więc ustawienie <code class="highlighter-rouge">SP</code>
+na adres <code class="highlighter-rouge">0x3FFE</code> a więc przedostatni dostępny adres pamięci RAM.</p>
+
+<p>Ostatecznie stworzyłem plik <code class="highlighter-rouge">cstart.asm</code> odpowiedzialny za przygotowanie
+środowiska dla C:</p>
+
+<figure class="highlight"><pre><code class="language-asm" data-lang="asm">;       Run time setup for Small C.
+        .module CSTART
+        .area   CSTART (REL,CON) ;program area CRTSO is RELOCATABLE
+        .list   (err, loc, bin, eqt, cyc, lin, src, lst, md)
+        .nlist  (pag)
+        .globl  cstartend
+
+        lxi h,#0x3ffe   ; Initialize stack on even address.
+                        ; Stack grows downwards.
+        sphl            ; Load HL into SP
+
+        call    main    ; call main program
+
+stop:
+        hlt             ; stop processor
+        jmp stop        ; interrupt can wake CPU from hlt
+
+cstartend:
+       .end</code></pre></figure>
+
+<p>Pozostaje nam już tylko upewnić się że kod z pliku <code class="highlighter-rouge">cstart.asm</code> wyląduje pod
+adresem <code class="highlighter-rouge">0x0000</code>. Do tego celu musimy 1) nadać mu unikalną nazwę <code class="highlighter-rouge">CSTART</code> 
+2) wykorzystać parametr linkera <code class="highlighter-rouge">-b</code> żeby wymusić pozycje obszaru <code class="highlighter-rouge">CSTART</code>
+w pamięci EEPROM.</p>
+
+<p>Poniżej przedstawiam parametry linkera (plik <code class="highlighter-rouge">eeprom.lnk</code>):</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">-ioux
+eeprom-img
+cstart
+main
+-b CSTART=0
+-b SMALLC_GENERATED=0+cstartend
+-e</code></pre></figure>
+
+<p>Zauważmy że kod w pliku <code class="highlighter-rouge">cstart.asm</code> kończy się deklaracją labelki <code class="highlighter-rouge">cstartend</code>.
+Labelkę to wykorzystujemy żeby zmusić linker to umieszczenia kodu wygenerowanego 
+przez Small-C (<code class="highlighter-rouge">SMALLC_GENERATED</code>) zaraz po kodzie sekcji <code class="highlighter-rouge">CSTART</code>.</p>
+
+<p>Jeżeli zaczniemy pisać bardziej skomplikowane programy w C to może się okazać
+że nasz program wymaga funkcji, znajdujących się we wspomnianej już przeze mnie
+bibliotece <code class="highlighter-rouge">crun8085lib.asm</code>. Na chwilę obecną po prostu kopiuje brakujące funkcje
+do pliku <code class="highlighter-rouge">cstart.asm</code>, postaram się to poprawić w kolejnym wpisie.</p>
+
+<p>Ostatecznie wynikiem kompilacji i linkowania jest plik w formacie Intel HEX
+który możemy już wypalić w pamięci EEPROM.</p>
+
+<p>W trakcie zabawy z Mikrusem przygotowałem prosty <a href="https://github.com/marcin-chwedczuk/mikrus-85/tree/master/test/single-file-prog">program</a>
+który wypisuje wiadomość na ekran LCD oraz pozwala na obsługę dwóch przycisków:
+<img src="assets/images/2020-09-29/lcd.jpeg" alt="Obsługa LCD" /></p>
+
+<p>Na koniec zagadka dla czytelników: W tej chwili Small-C nie pozwala nam wykorzystać zmiennych
+globalnych. Odczyt zmiennych jest co prawda możliwy ale zapisy do zmiennych zdają się “znikać”?
+Dlaczego tak się dzieje?</p>
+
+<p>W następnym wpisie postaram się to naprawić.
+Koniec części drugiej.</p>
+
+	  ]]></description>
+	</item>
+
+	<item>
 	  <title>Minikomputer 8085 - Część I</title>
 	  <link>//minikomputer-8085-czesc-I</link>
 	  <author></author>
@@ -1541,97 +1748,6 @@ nevertheless they are usable.
 if you want to connect via <code class="highlighter-rouge">minicom</code>
 remember to disable “Hardware Control Flow” option 
 (they use RTS and CTS lines present on some converters that we do not use).</p>
-
-
-	  ]]></description>
-	</item>
-
-	<item>
-	  <title>Scala WTF 1</title>
-	  <link>//scala-wtf-1</link>
-	  <author></author>
-	  <pubDate>2020-07-06T02:00:01+02:00</pubDate>
-	  <guid>//scala-wtf-1</guid>
-	  <description><![CDATA[
-	     <p>So here is a puzzle. What will be written by
-this program:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">object</span> <span class="nc">Wtf1</span> <span class="o">{</span>
-  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
-    <span class="k">val</span> <span class="n">points</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Point</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span>
-      <span class="nc">Point</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">),</span>
-      <span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">),</span>
-      <span class="nc">Point</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">)</span>
-    <span class="o">)</span>
-
-    <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">points</span><span class="o">.</span><span class="n">contains</span><span class="o">(</span><span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="k">_</span><span class="o">))</span>
-    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"result: $result"</span><span class="o">)</span>
-  <span class="o">}</span>
-<span class="o">}</span>
-
-<span class="k">case</span> <span class="k">class</span> <span class="nc">Point</span><span class="o">(</span><span class="n">x</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">y</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span>
-
-<span class="c1">// ANSWER BELOW
-// ..............................................
-</span><span class="o">//</span></code></pre></figure>
-
-<p>The answer is <code class="highlighter-rouge">false</code>.
-Why? Because the line with <code class="highlighter-rouge">points.contains(Point(3, _))</code>
-instead of performing pattern matching, checks whether <code class="highlighter-rouge">points</code> 
-contain a function:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">points</span><span class="o">.</span><span class="n">contains</span><span class="o">(</span><span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="k">_</span><span class="o">))</span>
-<span class="c1">// in reality is:
-</span><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">names</span><span class="o">.</span><span class="n">contains</span><span class="o">((</span><span class="n">n</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="n">n</span><span class="o">))</span></code></pre></figure>
-
-<p>The strangest thing for me is that the compilation of 
-this code does not generate any warnings.
-From Scala compiler point of view the above code is
-perfectly valid and this in turn is the result of
-<code class="highlighter-rouge">List</code> type being covariant.
-Or in the other words because we can assign <code class="highlighter-rouge">List[Point]</code> to
-<code class="highlighter-rouge">List[Any]</code>, <code class="highlighter-rouge">contains</code> must accept
-arguments of any type:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">points</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Point</span><span class="o">]</span> <span class="k">=</span> <span class="nc">List</span><span class="o">(</span>
-    <span class="nc">Point</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="mi">2</span><span class="o">),</span>
-    <span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="mi">4</span><span class="o">),</span>
-    <span class="nc">Point</span><span class="o">(</span><span class="mi">5</span><span class="o">,</span> <span class="mi">6</span><span class="o">)</span>
-<span class="o">)</span>
-
-<span class="k">val</span> <span class="n">anys</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">Any</span><span class="o">]</span> <span class="k">=</span> <span class="n">points</span>
-
-<span class="n">anys</span><span class="o">.</span><span class="n">contains</span><span class="o">(</span><span class="k">new</span> <span class="nc">Object</span><span class="o">())</span></code></pre></figure>
-
-<p>The declaration of <code class="highlighter-rouge">contains</code> method in <code class="highlighter-rouge">List[A]</code> looks like this:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">contains</span><span class="o">[</span><span class="kt">A1</span> <span class="k">&gt;:</span> <span class="kt">A</span><span class="o">](</span><span class="n">elem</span><span class="k">:</span> <span class="kt">A1</span><span class="o">)</span><span class="k">:</span> <span class="kt">Boolean</span></code></pre></figure>
-
-<p>We may snoop the actual types assigned to the generic parameters
-using a helper method:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">detectType</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">A1</span> <span class="k">&gt;:</span> <span class="kt">A</span><span class="o">](</span><span class="n">l</span><span class="k">:</span> <span class="kt">List</span><span class="o">[</span><span class="kt">A</span><span class="o">],</span> <span class="n">obj</span><span class="k">:</span> <span class="kt">A1</span><span class="o">)</span>
-                          <span class="o">(</span><span class="k">implicit</span> <span class="n">tagA</span><span class="k">:</span> <span class="kt">ClassTag</span><span class="o">[</span><span class="kt">A</span><span class="o">],</span> <span class="n">tagA1</span><span class="k">:</span> <span class="kt">ClassTag</span><span class="o">[</span><span class="kt">A1</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
-    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"type of A : ${tagA.runtimeClass.getName}"</span><span class="o">)</span>
-    <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"type of A1: ${tagA1.runtimeClass.getName}"</span><span class="o">)</span>
-<span class="o">}</span>
-
-<span class="n">detectType</span><span class="o">(</span><span class="n">names</span><span class="o">,</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="k">_</span><span class="o">))</span>
-
-<span class="c1">// This prints:
-// type of A : Point
-// type of A1: java.lang.Object
-</span><span class="o">//</span></code></pre></figure>
-
-<p>So during the compilation <code class="highlighter-rouge">A1</code> becomes <code class="highlighter-rouge">Object</code> and everything
-type-checks.</p>
-
-<p>Let’s finish by writing a code that actually does what
-the programmer intended:</p>
-
-<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">names</span>
-    <span class="o">.</span><span class="n">collectFirst</span> <span class="o">{</span> <span class="k">case</span> <span class="nc">Point</span><span class="o">(</span><span class="mi">3</span><span class="o">,</span> <span class="k">_</span><span class="o">)</span> <span class="k">=&gt;</span> <span class="kc">true</span> <span class="o">}</span>
-    <span class="o">.</span><span class="n">getOrElse</span><span class="o">(</span><span class="kc">false</span><span class="o">)</span></code></pre></figure>
 
 
 	  ]]></description>

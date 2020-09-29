@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Document Settings -->
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- Page Meta -->
+    <title>Minikomputer 8085 - Część II</title>
+    <meta name="description" content="A place where I share my thoughts about programming." />
+
+    <!-- Mobile Meta -->
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Brand icon -->
+    <link rel="shortcut icon" href="/assets/images/favicon.ico" >
+
+    <!-- Styles'n'Scripts -->
+    <link rel="stylesheet" type="text/css" href="/assets/css/screen.css" />
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Merriweather:300,700,700italic,300italic|Open+Sans:700,400" />
+    <link rel="stylesheet" type="text/css" href="/assets/css/syntax.css" />
+
+    <!-- highlight.js -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/styles/default.min.css">
+    <style>.hljs { background: none; }</style>
+
+    <!-- Ghost outputs important style and meta data with this tag -->
+        <link rel="canonical" href="//minikomputer-8085-czesc-II" />
+    <meta name="referrer" content="origin" />
+    <link rel="next" href="/page2/" />
+
+    <meta property="og:site_name" content="Programming is Magic" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Minikomputer 8085 - Część II" />
+    <meta property="og:description" content="A place where I share my thoughts about programming." />
+    <meta property="og:url" content="//minikomputer-8085-czesc-II" />
+    <meta property="og:image" content="/assets/images/mc_cover6.jpg" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Minikomputer 8085 - Część II" />
+    <meta name="twitter:description" content="A place where I share my thoughts about programming." />
+    <meta name="twitter:url" content="//minikomputer-8085-czesc-II" />
+    <meta name="twitter:image:src" content="/assets/images/mc_cover6.jpg" />
+
+    <script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Website",
+    "publisher": "Programming is Magic",
+    "name": "Minikomputer 8085 - Część II",
+    "url": "//minikomputer-8085-czesc-II",
+    "image": "/assets/images/mc_cover6.jpg",
+    "description": "A place where I share my thoughts about programming."
+}
+    </script>
+
+    <meta name="generator" content="Jekyll 3.0.0" />
+    <link rel="alternate" type="application/rss+xml" title="Programming is Magic" href="/feed.xml" />
+
+
+</head>
+<body class="home-template nav-closed">
+
+    <!-- The blog navigation links -->
+    <div class="nav">
+    <h3 class="nav-title">Menu</h3>
+    <a href="#" class="nav-close">
+        <span class="hidden">Close</span>
+    </a>
+    <ul>
+        <li class="nav-home " role="presentation"><a href="/">Home</a></li>
+        <!-- <li class="nav-about " role="presentation"><a href="/about">About</a></li> -->
+
+        
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/java">
+                    java (28)
+                    <!-- minikomputer-8085-czesc-II name: java -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/dotnet">
+                    dotnet (11)
+                    <!-- minikomputer-8085-czesc-II name: dotnet -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/algorithms">
+                    algorithms (7)
+                    <!-- minikomputer-8085-czesc-II name: algorithms -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/architecture">
+                    architecture (7)
+                    <!-- minikomputer-8085-czesc-II name: architecture -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/scala">
+                    scala (7)
+                    <!-- minikomputer-8085-czesc-II name: scala -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/javascript">
+                    javascript (5)
+                    <!-- minikomputer-8085-czesc-II name: javascript -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/csharp">
+                    csharp (4)
+                    <!-- minikomputer-8085-czesc-II name: csharp -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/polish">
+                    polish (4)
+                    <!-- minikomputer-8085-czesc-II name: polish -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/elektronika">
+                    elektronika (3)
+                    <!-- minikomputer-8085-czesc-II name: elektronika -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/hibernate">
+                    hibernate (3)
+                    <!-- minikomputer-8085-czesc-II name: hibernate -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/linux">
+                    linux (3)
+                    <!-- minikomputer-8085-czesc-II name: linux -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/unit-testing">
+                    unit-testing (3)
+                    <!-- minikomputer-8085-czesc-II name: unit-testing -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/hardware-review">
+                    hardware-review (2)
+                    <!-- minikomputer-8085-czesc-II name: hardware-review -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/cheatsheet">
+                    cheatsheet (1)
+                    <!-- minikomputer-8085-czesc-II name: cheatsheet -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/devcon">
+                    devcon (1)
+                    <!-- minikomputer-8085-czesc-II name: devcon -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/eclipse">
+                    eclipse (1)
+                    <!-- minikomputer-8085-czesc-II name: eclipse -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/functional-programming">
+                    functional-programming (1)
+                    <!-- minikomputer-8085-czesc-II name: functional-programming -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/git">
+                    git (1)
+                    <!-- minikomputer-8085-czesc-II name: git -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/hacking">
+                    hacking (1)
+                    <!-- minikomputer-8085-czesc-II name: hacking -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/hardware">
+                    hardware (1)
+                    <!-- minikomputer-8085-czesc-II name: hardware -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/kotlin">
+                    kotlin (1)
+                    <!-- minikomputer-8085-czesc-II name: kotlin -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/low-level">
+                    low-level (1)
+                    <!-- minikomputer-8085-czesc-II name: low-level -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/other">
+                    other (1)
+                    <!-- minikomputer-8085-czesc-II name: other -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/postman">
+                    postman (1)
+                    <!-- minikomputer-8085-czesc-II name: postman -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/powershell">
+                    powershell (1)
+                    <!-- minikomputer-8085-czesc-II name: powershell -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/regex">
+                    regex (1)
+                    <!-- minikomputer-8085-czesc-II name: regex -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/security">
+                    security (1)
+                    <!-- minikomputer-8085-czesc-II name: security -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/sql">
+                    sql (1)
+                    <!-- minikomputer-8085-czesc-II name: sql -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/tips">
+                    tips (1)
+                    <!-- minikomputer-8085-czesc-II name: tips -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/vim">
+                    vim (1)
+                    <!-- minikomputer-8085-czesc-II name: vim -->
+                </a>
+            </li>
+        
+            
+            
+            <li class="nav-about " role="presentation">
+                <a href="/tag/windows">
+                    windows (1)
+                    <!-- minikomputer-8085-czesc-II name: windows -->
+                </a>
+            </li>
+        
+
+   </ul>
+    <a class="subscribe-button icon-feed" href="/feed.xml">Subscribe</a>
+</div>
+<span class="nav-cover"></span>
+
+
+    <div class="site-wrapper">
+
+        <!-- All the main content gets inserted here, index.hbs, post.hbs, etc -->
+        <!-- default -->
+
+<!-- The comment above "< default" means - insert everything in this file into -->
+    <!-- the [body] of the default.hbs template, which contains our header/footer. -->
+
+<!-- Everything inside the #post tags pulls data from the post -->
+<!-- #post -->
+
+
+
+<header class="main-header post-head " style="background-image: url(/assets/images/mc_cover6.jpg) ">
+    <nav class="main-nav  overlay  clearfix">
+        <a class="blog-logo" href="/"><img src="/assets/images/home.png" alt="Blog Logo" /></a>
+        
+            <a class="menu-button icon-menu" href="#"><span class="word">Menu</span></a>
+        
+    </nav>
+</header>
+
+<main class="content" role="main">
+
+    <article class="post tag-test tag-content">
+
+        <header class="post-header">
+            <h1 class="post-title">Minikomputer 8085 - Część II</h1>
+            <section class="post-meta">
+            <!-- <a href='/'></a> -->
+
+            
+                
+                    <a href='/author/mc'>Marcin Chwedczuk</a>
+                
+            
+            <time class="post-date" datetime="2020-09-29">29 Sep 2020</time>
+                <!-- [[tags prefix=" on "]] -->
+                
+                on
+                
+                    
+                       <a href='/tag/polish'>Polish</a>,
+                    
+                
+                    
+                       <a href='/tag/elektronika'>Elektronika</a>,
+                    
+                
+                    
+                       <a href='/tag/jvmbloggers'>Jvmbloggers</a>
+                    
+                
+                
+            </section>
+        </header>
+
+        <section class="post-content">
+
+            <p>W <a href="minikomputer-8085-czesc-I">poprzednim</a> wpisie udało nam się zbudować działający minikomputer oraz uruchomić
+na nim napisany przez Davida Huntera monitor. Dla przypomnienia zbudowana przeze mnie
+maszyna wyglądała następująco:
+<img src="assets/images/2020-09-29/comp1.jpeg" alt="Minikomputer wyłaniający się z chaosu" />
+Podczas kilku kolejnych godzin pracy z komputerem, szybko okazało się że taka plątanina
+przewodów znacznie utrudnia debugowanie i rozwiązywanie problemów.
+Co gorsza przewody połączeniowe nie zapewniały dobrej jakości połączeń pomiędzy układami scalonymi.
+W efekcie komputer potrafił nie startować lub zawieszał się podczas wykonywania programów.</p>
+
+<p>Kolejną ważną rzeczą którą pominąłem podczas budowy komputera są 
+kondensatory odsprzęgające (ang. decoupling capacitors). 
+Układy scalone, zwłaszcza te należące do rodziny 74LS 
+potrafią emitować sporo zakłóceń podczas zmiany stanu.
+Dołączenie kondensatora foliowego lub ceramicznego o pojemności 0.1uF do linii zasilania układu
+pozwala zmniejszyć zakłócenia i poprawia stabilność jego działania.</p>
+
+<p>Teraz nadszedł czas żeby naprawić wszystkie powyższe mankamenty. 
+Przewody połączeniowe zastąpiłem
+ciętymi na wymiar przewodami jednożyłowymi. Oprócz kondensatorów odsprzęgających,
+dodałem do szyny zasilania również jeden duży kondensator elektrolityczny o
+znacznej pojemności (470uF). Generalnie dokładanie tak dużych kondensatorów nie jest
+zalecane bo potrafi mocno obciążyć zasilacz w momencie startu układu.
+Ja używam prostego zasilacza do płytek stykowych który przeżył już niejedno zwarcie,
+więc na razie postanowiłem zignorować ten problem.
+Efekt mojej pracy widać poniżej:
+<img src="assets/images/2020-09-29/comp2.jpeg" alt="Minikomputer tym razem z porządnymi połączeniami" /></p>
+
+<p>Przy okazji przebudowy komputera postanowiłem wprowadzić kilka modyfikacji.
+Po pierwsze zastąpiłem pojedyńczy rejestr wejścia/wyjścia z projektu Huntera,
+dwoma rejestrami wyjściowymi i jednym wejściowym. Dzięki temu w prosty sposób
+będziemy mogli podłączyć do komputera zarówno 2x16 znakowy wyświetlacz LCD,
+jak i parę przycisków.</p>
+
+<p>Warto tutaj zaznaczyć że oryginalny projekt Huntera również pozwala na integracje z
+wyświetlaczem LCD, jeżeli tylko wykorzystamy rejestry przesuwne 74LS595 do zwielokrotnienia liczby
+wyjść. Dokładnie tą samą sztuczkę wykorzystał Ben Eater w swoim 
+<a href="https://github.com/beneater/eeprom-programmer">programatorze EEPROM</a>.</p>
+
+<p>Ostatecznie po wszystkich modyfikacjach schemat komputera wygląda następująco:
+<img src="assets/images/2020-09-29/mikrus-85.svg" alt="Schemat minikomputera" />
+Powyższy schemat oddaje jeden do jednego układ połączeń oraz typ układów scalonych które znalazły się
+na moich płytkach stykowych. Na przykład miałem pod ręką tylko jeden układ 74HCT574.
+Przy budowie portów wyjściowych musiałem więc wykorzystać dwa starsze układy 74HCT374,
+które robią co prawda to samo co 74HCT574, ale mają znacznie mnie wygodny układ wyprowadzeń.
+Podobnie nie posiadałem 74LS373 więc użyłem 74LS574 w połączeniu z inwerterem.
+Na koniec przypomnę że układy rodzin 74LS i 74HCT są ze sobą kompatybilne i można je
+stosować zamiennie.</p>
+
+<p>Schemat minikomputera został stworzony w darmowym i popularnym wśród hobbystów programie
+<a href="https://kicad-pcb.org/">KiCad</a>. Podczas tworzenia schematu nie widziałem co wpisać w pole tytuł,
+postanowiłem więc nadać mojemu komputerowi nazwę Mikrus-85. Hurra!</p>
+
+<p>Kolejny celem jaki przed sobą postawiłem była kompilacja i uruchamianie na Mikrusie
+programów napisanych w C.
+Niestety już samo znalezienie odpowiedniego kompilatora stanowiło duży problem.
+<a href="http://sdcc.sourceforge.net/">Small Device C Compiler</a> mógłby być idealnym wyborem,
+gdyby wspierał używany przeze mnie procesor 8085. 
+Co prawda prace nad dodaniem takiego wsparcia
+rozpoczęły się <a href="https://github.com/kenyapcomau/sdcc-8080">ponad rok temu</a>, 
+ale nie zaowocowały jeszcze w pełni działającym kompilatorem.
+Warto dodać że procesor 8085 jest wstecznie kompatybilny z procesorem 8080
+(dokładnie mówiąc 8085 dodaje tylko dwie nowe instrukcje), więc
+kompilator C dla 8080 może być z powodzeniem wykorzystany również do 
+generowania kodu dla 8085.</p>
+
+<p>Ostatecznie postanowiłem użyć kompilatora <a href="https://github.com/ncb85/SmallC-85">Small-C</a>,
+napisanego ponad 30 lat temu przez Chrisa Lewisa, a przywróconego do życia dzięki wysiłkom
+użytkownika <a href="https://github.com/ncb85">ncb85</a>. ncb85 oprócz kodu kompilatora
+udostępnił też na swoim koncie <a href="https://github.com/ncb85/utilis-and-examples/tree/master/cpm_hello">przykład jego użycia</a>
+co pozwoliło mi zaoszczędzić niemało czasu.</p>
+
+<p>Wracając do samego kompilatora, jest to dość stary program który powstał jeszcze przed
+wprowadzeniem standardu C89 (sic!). Poniżej garść ciekawostek które się z tym wiążą:</p>
+
+<ul>
+  <li>Nie ma typu <code class="highlighter-rouge">void</code>. Metody domyślnie zwracają typ <code class="highlighter-rouge">int</code>. :deal-with-it-parrot:</li>
+  <li>Brak wsparcia dla inicjalizacji wartości zmiennych globalnych.</li>
+  <li>Deklaracja metod musi byc wykonana w przestarzałym stylu <a href="https://en.wikipedia.org/wiki/C_(programming_language)#K&amp;R_C">K&amp;R</a>:</li>
+</ul>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">lcd</span><span class="p">(</span><span class="n">regSelect</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="kt">char</span> <span class="n">regSelect</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">data</span><span class="p">;</span>
+<span class="p">{</span>
+    <span class="c1">// code
+</span><span class="p">}</span></code></pre></figure>
+
+<p>Współcześnie napisalibyśmy:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">lcd</span><span class="p">(</span><span class="kt">char</span> <span class="n">regSelect</span><span class="p">,</span> <span class="kt">char</span> <span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// code
+</span><span class="p">}</span></code></pre></figure>
+
+<p>Ponieważ nasz procesor jest 8-bitowy do dyspozycji mamy jedynie cztery typu liczb całkowitych:
+<code class="highlighter-rouge">unsigned char</code>, <code class="highlighter-rouge">signed char</code>, <code class="highlighter-rouge">unsigned int</code> i <code class="highlighter-rouge">signed int</code>.
+Operacje na 16-bitowych typach <code class="highlighter-rouge">int</code> muszą być symulowane za pomocą dostarczanej razem z kompilatorem
+biblioteki <a href="https://github.com/marcin-chwedczuk/mikrus-85/blob/master/smallC/crun8085lib.asm">crun8085lib.asm</a>.</p>
+
+<p>Sam kompilator jest bardzo prosty, nie generuje prawie żadnych ostrzeżeń - łatwo więc sobie strzelić w stopę.
+Dla przykładu poniższa pętla jest nieskończona:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">char</span> <span class="n">c</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="mi">128</span><span class="p">;</span> <span class="n">c</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// do nothing
+</span><span class="p">}</span></code></pre></figure>
+
+<p>Od czasu do czasu kompilator kończy pracę zgłaszając Segmentation Fault.
+Praca z Small-C wymaga więc sporej dozy i cierpliwości, i wyrozumiałości, i wytrwałości.</p>
+
+<p>Stworzenie najprostszego programu w C <code class="highlighter-rouge">main() { }</code> przy użyciu Small-C wymaga
+trochę więcej wysiłku niż tylko uruchomienie kompilator. W wyniku kompilacji
+otrzymujemy bowiem nie plik binary, ale plik źródłowy assemblera który
+należy jeszcze poddać translacji do kodu maszynowego.
+Do tego celu należy wykorzystać <code class="highlighter-rouge">as8085</code> będący częścią pakietu <a href="https://shop-pdp.net/ashtml/asxxxx.php">ASxxxx</a>.
+<code class="highlighter-rouge">ASxxxx</code> jest wciąż rozwijanym projektem posiadającym naprawdę dobrą <a href="https://shop-pdp.net/ashtml/asxbld.htm">dokumentację</a>.
+Dzięki temu zbudowanie assemblera ze źródeł nie powinno sprawić nam żadnych problemów.</p>
+
+<p>Czas na małą dygresję. Po starcie procesor 8085 zaczyna
+wykonywanie kodu programu od adresu <code class="highlighter-rouge">0x0000</code>.
+Wartości rejestrów procesora, w szczególności rejestru <code class="highlighter-rouge">SP</code> odpowiedzialnego
+za zarządzaniem stosem nie są na starcie procesora dobrze zdefiniowane.
+Zanim wywołamy naszą funkcję <code class="highlighter-rouge">main()</code> powinniśmy nadać rejestrowi <code class="highlighter-rouge">SP</code> poprawną wartość.
+Zbudowany przeze mnie komputer posiada następującą mapę pamięci:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">Adresy          | Przeznaczenie
+---------------------------------
+0x0000 - 0x1FFF - ROM
+0x2000 - 0x3FFF - RAM
+0x8000          - output port 1
+0xA000          - output port 2
+0xC000          - input port</code></pre></figure>
+
+<p>Stos na 8085 podobnie jak w innych procesorach Intela rośnie w dół (w kierunku mniejszych adresów).
+Dodatkowo warto żeby adres stosu był parzysty, rozsądnym wyborem jest więc ustawienie <code class="highlighter-rouge">SP</code>
+na adres <code class="highlighter-rouge">0x3FFE</code> a więc przedostatni dostępny adres pamięci RAM.</p>
+
+<p>Ostatecznie stworzyłem plik <code class="highlighter-rouge">cstart.asm</code> odpowiedzialny za przygotowanie
+środowiska dla C:</p>
+
+<figure class="highlight"><pre><code class="language-asm" data-lang="asm">;       Run time setup for Small C.
+        .module CSTART
+        .area   CSTART (REL,CON) ;program area CRTSO is RELOCATABLE
+        .list   (err, loc, bin, eqt, cyc, lin, src, lst, md)
+        .nlist  (pag)
+        .globl  cstartend
+
+        lxi h,#0x3ffe   ; Initialize stack on even address.
+                        ; Stack grows downwards.
+        sphl            ; Load HL into SP
+
+        call    main    ; call main program
+
+stop:
+        hlt             ; stop processor
+        jmp stop        ; interrupt can wake CPU from hlt
+
+cstartend:
+       .end</code></pre></figure>
+
+<p>Pozostaje nam już tylko upewnić się że kod z pliku <code class="highlighter-rouge">cstart.asm</code> wyląduje pod
+adresem <code class="highlighter-rouge">0x0000</code>. Do tego celu musimy 1) nadać mu unikalną nazwę <code class="highlighter-rouge">CSTART</code> 
+2) wykorzystać parametr linkera <code class="highlighter-rouge">-b</code> żeby wymusić pozycje obszaru <code class="highlighter-rouge">CSTART</code>
+w pamięci EEPROM.</p>
+
+<p>Poniżej przedstawiam parametry linkera (plik <code class="highlighter-rouge">eeprom.lnk</code>):</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">-ioux
+eeprom-img
+cstart
+main
+-b CSTART=0
+-b SMALLC_GENERATED=0+cstartend
+-e</code></pre></figure>
+
+<p>Zauważmy że kod w pliku <code class="highlighter-rouge">cstart.asm</code> kończy się deklaracją labelki <code class="highlighter-rouge">cstartend</code>.
+Labelkę to wykorzystujemy żeby zmusić linker to umieszczenia kodu wygenerowanego 
+przez Small-C (<code class="highlighter-rouge">SMALLC_GENERATED</code>) zaraz po kodzie sekcji <code class="highlighter-rouge">CSTART</code>.</p>
+
+<p>Jeżeli zaczniemy pisać bardziej skomplikowane programy w C to może się okazać
+że nasz program wymaga funkcji, znajdujących się we wspomnianej już przeze mnie
+bibliotece <code class="highlighter-rouge">crun8085lib.asm</code>. Na chwilę obecną po prostu kopiuje brakujące funkcje
+do pliku <code class="highlighter-rouge">cstart.asm</code>, postaram się to poprawić w kolejnym wpisie.</p>
+
+<p>Ostatecznie wynikiem kompilacji i linkowania jest plik w formacie Intel HEX
+który możemy już wypalić w pamięci EEPROM.</p>
+
+<p>W trakcie zabawy z Mikrusem przygotowałem prosty <a href="https://github.com/marcin-chwedczuk/mikrus-85/tree/master/test/single-file-prog">program</a>
+który wypisuje wiadomość na ekran LCD oraz pozwala na obsługę dwóch przycisków:
+<img src="assets/images/2020-09-29/lcd.jpeg" alt="Obsługa LCD" /></p>
+
+<p>Na koniec zagadka dla czytelników: W tej chwili Small-C nie pozwala nam wykorzystać zmiennych
+globalnych. Odczyt zmiennych jest co prawda możliwy ale zapisy do zmiennych zdają się “znikać”?
+Dlaczego tak się dzieje?</p>
+
+<p>W następnym wpisie postaram się to naprawić.
+Koniec części drugiej.</p>
+
+
+        </section>
+
+        <footer class="post-footer">
+
+            <!-- Everything inside the #author tags pulls data from the author -->
+            <!-- #author-->
+            
+                
+                    
+                        <figure class="author-image">
+                            <a class="img" href="/author/mc" style="background-image: url(/assets/images/mc.png)"><span class="hidden">mc's Picture</span></a>
+                        </figure>
+                    
+
+                    <section class="author">
+                        <h4><a href="/author/mc">Marcin Chwedczuk</a></h4>
+
+                        
+                            <p> A programmer, a geek, a human</p>
+                        
+                        <div class="author-meta">
+                            <span class="author-location icon-location"> Warsaw, Poland</span>
+                            <span class="author-link icon-link"><a href="http://marcinchwedczuk.pl"> http://marcinchwedczuk.pl</a></span>
+                        </div>
+                    </section>
+
+                    <!-- /author  -->
+
+                    <section class="share">
+                        <h4>Share this post</h4>
+                        <a class="icon-twitter" href="http://twitter.com/share?text=Minikomputer 8085 - Część II&amp;url=minikomputer-8085-czesc-II"
+                            onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                            <span class="hidden">Twitter</span>
+                        </a>
+                        <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=minikomputer-8085-czesc-II"
+                            onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                            <span class="hidden">Facebook</span>
+                        </a>
+                        <a class="icon-google-plus" href="https://plus.google.com/share?url=minikomputer-8085-czesc-II"
+                           onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                            <span class="hidden">Google+</span>
+                        </a>
+                    </section>
+                
+            
+
+            <!-- Add Disqus Comments -->
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'marcinchwedczukgithubio'; // required: replace example with your forum shortname
+        var disqus_identifier = '/minikomputer-8085-czesc-II';
+        var disqus_url = '/minikomputer-8085-czesc-II';
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+    </div>
+
+            
+
+        </footer>
+
+    </article>
+
+</main>
+
+<aside class="read-next">
+
+    <!-- [[! next_post ]] -->
+    
+    <!-- [[! /next_post ]] -->
+    <!-- [[! prev_post ]] -->
+    
+        <a class="read-next-story prev " style="background-image: url(/assets/images/mc_cover6.jpg)" href="/minikomputer-8085-czesc-I">
+            <section class="post">
+                <h2>Minikomputer 8085 - Część I</h2>
+                <p>Już od dłuższego czasu myślałem o tym żeby zbudować swój własny minikomputer. W internecie można...</p>
+            </section>
+        </a>
+    
+    <!-- [[! /prev_post ]] -->
+</aside>
+
+<!-- /post -->
+
+
+        <!-- The tiny footer at the very bottom -->
+        <footer class="site-footer clearfix">
+          <section class="copyright"><a href="/">Programming is Magic</a> &copy; 2020</section>
+          <section class="poweredby">Proudly published with <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://github.com/jekyller/jasper">Jasper</a></section>
+        </footer>
+    </div>
+    <!-- highlight.js -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.3.0/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+
+    <!-- jQuery needs to come before `` so that jQuery can be used in code injection -->
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.12.0.min.js"></script>
+    <!-- Ghost outputs important scripts and data with this tag -->
+    <!--  -->
+    <!-- Add Google Analytics  -->
+        <!-- Google Analytics Tracking code -->
+     <script>
+	    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	    ga('create', 'UA-82096342-1', 'auto');
+	    ga('send', 'pageview');
+
+     </script>
+    <!-- Fitvids makes video embeds responsive and awesome -->
+    <script type="text/javascript" src="/assets/js/jquery.fitvids.js"></script>
+    <!-- The main JavaScript file for Casper -->
+    <script type="text/javascript" src="/assets/js/index.js"></script>
+
+</body>
+</html>
