@@ -12,6 +12,373 @@
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
+	  <title>SSH like a Pro</title>
+	  <link>//ssh-like-a-pro</link>
+	  <author></author>
+	  <pubDate>2020-10-01T02:00:01+02:00</pubDate>
+	  <guid>//ssh-like-a-pro</guid>
+	  <description><![CDATA[
+	     <p>In this post I have gathered various tips and tricks 
+that can make you a more productive SSH user.</p>
+
+<h3 id="copying-ssh-keys-to-the-server">Copying SSH keys to the server</h3>
+
+<p>A lot of beginners when faced with the problem of uploading their
+public keys to the server, follows a manual process.
+I will demonstrate this, by trying to upload my public key to a Raspberry PI manually:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>ssh pi@raspberry_pi
+pi@raspberry_pi<span class="s1">'s password:
+
+pi$ mkdir .ssh
+pi$ vi .ssh/authorized_keys
+pi$ # Append contents of key_rsa.pub to authorized_keys
+pi$ ^D # Ctrl-D to end our ssh session</span></code></pre></figure>
+
+<p>Now I can connect to Raspberry PI using my private key:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span><span class="c"># Let's load the private key so that we can use it</span>
+mac<span class="nv">$ </span>ssh-add ~/.ssh/pi_rsa
+
+mac<span class="nv">$ </span>ssh pi@raspberry_pi
+pi<span class="nv">$ </span><span class="c"># Yay!</span></code></pre></figure>
+
+<p>I was lucky - in my case everything worked, but often it doesn’t.
+The main culprit is usually a wrong access permission set either on <code class="highlighter-rouge">.ssh</code> directory
+or on <code class="highlighter-rouge">authorized_keys</code> file.
+Here is how the right permissions should look like:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">pi@raspberrypi:~ <span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-la</span> .ssh
+total 12
+drwx------  2 pi pi 4096 Oct  1 10:09 <span class="nb">.</span>
+drwxr-xr-x 17 pi pi 4096 Oct  1 10:09 ..
+<span class="nt">-rw-------</span>  1 pi pi  574 Oct  1 10:09 authorized_keys</code></pre></figure>
+
+<p>PROs do not think about permissions, nor they manually edit <code class="highlighter-rouge">authorized_keys</code> file.
+Instead they use <code class="highlighter-rouge">ssh-copy-id</code> util (a part of the official SSH distribution).</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>ssh pi@raspberry_pi <span class="s1">'rm -rf ~/.ssh'</span> <span class="c"># Let's reset everything</span>
+mac<span class="nv">$ </span>ssh-copy-id <span class="nt">-i</span> ~/.ssh/pi_rsa pi@raspberry_pi
+
+mac<span class="nv">$ </span>ssh-add ~/.ssh/pi_rsa <span class="c"># Do not forget to load the key</span>
+mac<span class="nv">$ </span>ssh pi@raspberry_pi
+pi<span class="nv">$ </span><span class="c"># Yay!</span></code></pre></figure>
+
+<p>One nice thing about <code class="highlighter-rouge">ssh-copy-id</code> is that it always uploads the public key,
+even if you (like I in the above example) specify private key file on the command line.</p>
+
+<h3 id="keys-management">Keys management</h3>
+
+<p><code class="highlighter-rouge">ssh-add</code> is a nice utility that manages currently active (loaded) private keys.
+Loaded keys can be automatically used for authentication.</p>
+
+<p>To load a key type:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c"># ssh-add path-to-key-file</span>
+mac<span class="nv">$ </span>ssh-add ~/.ssh/pi_rsa</code></pre></figure>
+
+<p>Or just <code class="highlighter-rouge">ssh-add</code> to load <code class="highlighter-rouge">id_rsa</code>.</p>
+
+<p>To list currently loaded keys:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>ssh-add <span class="nt">-l</span></code></pre></figure>
+
+<p>To remove all keys:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>ssh-add <span class="nt">-D</span></code></pre></figure>
+
+<p>When you connect to a remote machine you have an option to pass your currently
+loaded keys along. This is called ssh agent forwarding and 
+allows you to ssh into further machines using your private keys:</p>
+
+<p><img src="assets/images/2020-10-01/ssh1.svg" alt="Nested SSH connections" /></p>
+
+<p>For example without key forwarding I cannot log from my Raspberry PI into my PC:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>ssh pi@raspberry_pi
+pi<span class="nv">$ </span>ssh mc@old-pc 
+Password:</code></pre></figure>
+
+<p>With key forwarding enabled (<code class="highlighter-rouge">-A</code>) I can:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>ssh <span class="nt">-A</span> pi@raspberry_pi
+pi<span class="nv">$ </span>ssh mc@old-pc
+old-pc<span class="nv">$ </span><span class="c"># yay!</span></code></pre></figure>
+
+<p>WARNING: You should only use forwarding when logging into servers that
+you fully trust (see <code class="highlighter-rouge">man ssh</code> for details).</p>
+
+<p>TIP: With the power of <code class="highlighter-rouge">ssh-add</code> there is no reason to have a key without password protection.
+Remember to password protect all your keys. Always!</p>
+
+<h3 id="using-sshconfig">Using ~/.ssh/config</h3>
+
+<p>Sometimes your user name is too long or hard to remember or maybe the server name is
+or maybe your server uses a non-standard SSH port. Any of these can make typing the right ssh command
+in the terminal very hard. But there is a nice solution to this, 
+we just need to add an entry for our server to <code class="highlighter-rouge">~/.ssh/config</code> file.</p>
+
+<p>For example for my Raspberry PI computer I added the following entry:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight"># this is comment
+Host pi
+        Hostname raspberry_pi
+        Port 22
+        User pi
+        IdentityFile ~/.ssh/pi_rsa
+        ForwardAgent yes
+        # or ForwardAgent no</code></pre></figure>
+
+<p>Now I can ssh into it by simply typing:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>ssh pi
+pi<span class="nv">$ </span><span class="c"># yay!</span></code></pre></figure>
+
+<h3 id="copying-files">Copying files</h3>
+
+<p><code class="highlighter-rouge">scp</code> command may be used to copy files, both from a server to the local machine:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c"># Assumes that we use pi alias</span>
+mac<span class="nv">$ </span>scp pi:./myfile.txt <span class="nb">.</span> 
+<span class="c"># Without pi alias </span>
+mac<span class="nv">$ </span>scp <span class="nt">-P22</span> pi@raspberry_pi:./myfile.txt ./myfile.txt</code></pre></figure>
+
+<p>Or from the local machine to the server:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c"># Assumes that we use pi alias</span>
+mac<span class="nv">$ </span>scp map.txt pi:./map2.txt
+<span class="c"># Without pi alias</span>
+mac<span class="nv">$ </span>scp <span class="nt">-P22</span> map.txt pi@raspberry_pi:./
+<span class="c"># You may skip -P parameter if server is using default (22) port</span></code></pre></figure>
+
+<p>TIP: If are going to transfer a big file remember to <code class="highlighter-rouge">gzip</code> it first.</p>
+
+<p>For more complex scenarios we can use either <code class="highlighter-rouge">sftp</code> command:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>sftp pi
+Connected to pi.
+sftp&gt; <span class="nb">ls</span> <span class="c"># list files on the *server*</span>
+Bookshelf   Desktop     Documents   Downloads   Music       Pictures    Public
+Templates   Videos      server_file.txt
+sftp&gt; get server_file.txt ./save_as_downloaded.txt
+Fetching /home/pi/server_file.txt to ./save_as_downloaded.txt
+
+sftp&gt; put ./local_file.txt ./uploaded.txt
+Uploading ./local_file.txt to /home/pi/./uploaded.txt
+
+sftp&gt; <span class="nb">exit</span></code></pre></figure>
+
+<p>or use command line file manager like <code class="highlighter-rouge">mc</code> (Midnight Commander):</p>
+
+<ol>
+  <li>Press <code class="highlighter-rouge">F9</code> to select menu bar and <code class="highlighter-rouge">R</code> to expand <code class="highlighter-rouge">Right</code> menu.</li>
+  <li>Select <code class="highlighter-rouge">SFTP link...</code></li>
+  <li>Enter the connection URL:</li>
+</ol>
+
+<p><img src="assets/images/2020-10-01/mc2.png" alt="MC without alias" /></p>
+
+<p>And then you may use standard <code class="highlighter-rouge">mc</code> commands to copy/move/modify files
+on the server and the local machine.</p>
+
+<p>To exit SFTP mode just enter <code class="highlighter-rouge">..</code> in the top directory to which you <code class="highlighter-rouge">sftp</code>ed.</p>
+
+<h3 id="port-forwarding">Port forwarding</h3>
+
+<p>Let’s say that there there is a service running on my Raspberry PI that is accessible only
+via <code class="highlighter-rouge">localhost</code>. For example it can be a simple web server:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">pi<span class="nv">$ </span>python3 <span class="nt">-m</span> http.server 7777 <span class="nt">--bind</span> 127.0.0.1 <span class="nt">--directory</span> .</code></pre></figure>
+
+<p>Because server is listening only on <code class="highlighter-rouge">127.0.0.1</code> instead of <code class="highlighter-rouge">0.0.0.0</code>, 
+we cannot access it from outside of my Raspberry PI:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>curl raspberry_pi:7777
+curl: <span class="o">(</span>7<span class="o">)</span> Failed to connect to raspberry_pi port 7777: Connection refused</code></pre></figure>
+
+<p>To access the server we may e.g. forward connections to port 5432 on my laptop
+to port 7777 on pi (this is called tunneling or port forwarding).
+We can do this using SSH:
+<img src="assets/images/2020-10-01/tunnel.png" alt="SSH Tunnel" /></p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>ssh <span class="nt">-L</span> localhost:5432:localhost:7777 pi
+<span class="c"># In another terminal</span>
+mac<span class="nv">$ </span>curl localhost:5432
+&lt;html&gt;
+	&lt;head&gt;&lt;/head&gt;
+	&lt;body&gt;
+		Welcome on Raspberry PI!!!
+	&lt;/body&gt;
+&lt;/html&gt;</code></pre></figure>
+
+<p>The general syntax is <code class="highlighter-rouge">-L local-machine:local-port:remote-machine:remote-port</code>.
+Notice that for the <code class="highlighter-rouge">remote-machine</code> we have chosen <code class="highlighter-rouge">localhost</code>, but we could e.g.
+chose other computer to which <code class="highlighter-rouge">pi</code> can connect. 
+<code class="highlighter-rouge">local-machine</code> part can be omitted (<code class="highlighter-rouge">localhost</code> is the default).</p>
+
+<p>If you don’t need the SSH session only the tunnel, you can run <code class="highlighter-rouge">ssh</code> as a background task
+(this will not be a shell background task, so it will not show up in <code class="highlighter-rouge">bg</code> command):</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>ssh <span class="nt">-fN</span> <span class="nt">-L</span> localhost:5432:localhost:7777 pi
+mac<span class="nv">$ </span>ps | <span class="nb">grep </span>ssh
+84851 ttys001    0:00.01 <span class="nb">grep </span>ssh
+84290 ttys002    0:00.15 ssh pi</code></pre></figure>
+
+<p>Port forwarding can also work in the opposite direction. We may make a service running on
+my laptop accessible on Raspberry PI:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>python3 <span class="nt">-m</span> http.server 9999 <span class="nt">--bind</span> 127.0.0.1 <span class="nt">--directory</span> <span class="nb">.</span>
+
+<span class="c"># On PI</span>
+pi<span class="nv">$ $ </span>curl localhost:5432
+curl: <span class="o">(</span>7<span class="o">)</span> Failed to connect to localhost port 5432: Connection refused
+
+<span class="c"># On Mac</span>
+mac<span class="nv">$ </span>ssh <span class="nt">-R</span> localhost:5432:localhost:9999 pi
+pi<span class="nv">$ </span>curl localhost:5432
+&lt;html&gt;
+	&lt;head&gt;&lt;/head&gt;
+	&lt;body&gt;
+		Hello from MacOS!!!
+	&lt;/body&gt;
+&lt;/html&gt;</code></pre></figure>
+
+<p>Here syntax is <code class="highlighter-rouge">-R remote-machine:remote-port:local-machine:local-port</code>.
+Connections to <code class="highlighter-rouge">remote-machine:remote-port</code> are forwarded to <code class="highlighter-rouge">local-machine:local-port</code>.</p>
+
+<p>By default the open ports are available on <code class="highlighter-rouge">localhost</code> only (think security!).
+If you want to accept connections from outside, you need to change 
+<code class="highlighter-rouge">GatewayPorts</code> settings of sshd daemon to <code class="highlighter-rouge">yes</code> on the server (the machine to which you connect to):</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">pi<span class="nv">$ </span><span class="nb">sudo </span>vi /etc/ssh/sshd_config
+<span class="c"># Set GatewayPorts yes</span>
+pi<span class="nv">$ </span><span class="nb">sudo </span>service sshd restart</code></pre></figure>
+
+<p>Now we can make <code class="highlighter-rouge">pi</code> accept connection from the entire local network and
+forward them to my laptop:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c"># Establish tunnel</span>
+mac<span class="nv">$ </span>ssh <span class="nt">-R</span> <span class="s1">'*:5432:localhost:9999'</span> pi
+<span class="c"># From my PC</span>
+old-pc<span class="nv">$ </span>curl raspberry_pi:5432
+&lt;html&gt;
+	&lt;head&gt;&lt;/head&gt;
+	&lt;body&gt;
+		Hello from MacOS!!!
+	&lt;/body&gt;
+&lt;/html&gt;</code></pre></figure>
+
+<p>TIP: The single quotes are needed to prevent shell expansion of <code class="highlighter-rouge">*</code>.</p>
+
+<h3 id="providing-internet-connection-via-ssh">Providing internet connection via SSH</h3>
+
+<p>Say on your local machine you cannot access e.g. <code class="highlighter-rouge">facebook.com</code> for some strange reason.
+But you noticed that on a certain server there is no such restriction,
+and you can e.g. use <code class="highlighter-rouge">links</code> to browse <code class="highlighter-rouge">facebook.com</code>:
+<img src="assets/images/2020-10-01/fcrap.png" alt="Facebook in Links" />
+Since FB does not looks good in <code class="highlighter-rouge">links</code> you really need a better solution…</p>
+
+<p>Behold, SSH comes to the rescue. By using a dynamic port forwarding we may establish
+SOCKS tunnel to the server:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>ssh <span class="nt">-C</span> <span class="nt">-D</span> 1080 pi </code></pre></figure>
+
+<p><code class="highlighter-rouge">-C</code> is for compression, <code class="highlighter-rouge">1080</code> is the standard SOCKS port.</p>
+
+<p>Now we need to configure a browser. Firefox is well known for excellent SOCKS support:
+<img src="assets/images/2020-10-01/ff.png" alt="SOCKS proxy configuration in Firefox" />
+And voilà <code class="highlighter-rouge">facebook.com</code> is working again!</p>
+
+<p>A trick like this was very popular when I was living in a dormitory.
+Our dorm internet connection was very slow, but as CS students we had SSH access
+to a few servers, some of them with very fast internet connections…</p>
+
+<h3 id="x-forwarding">X Forwarding</h3>
+
+<p>Here I will explain how to do this on MacOS.
+First we need to install <a href="https://www.xquartz.org/">XQuartz</a>, which is X11
+port for MacOS:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>brew install xquartz</code></pre></figure>
+
+<p>Next we need to start XQuartz.app (it will only show in the dock).</p>
+
+<p>Now we must enable X11 forwarding support on Raspberry PI:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">pi<span class="nv">$ </span><span class="nb">sudo </span>vi /etc/ssh/sshd_config
+<span class="c"># Set: </span>
+<span class="c"># X11Forwarding yes</span>
+<span class="c"># X11DisplayOffset 10</span>
+pi<span class="nv">$ </span><span class="nb">sudo </span>service sshd restart
+pi<span class="nv">$ </span>which xauth <span class="c"># Make sure xauth is installed</span></code></pre></figure>
+
+<p>And finally we can start our X session:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ DISPLAY</span><span class="o">=</span>:0 ssh <span class="nt">-X</span> pi
+pi<span class="nv">$ </span>vlc</code></pre></figure>
+
+<p>Now when I typed <code class="highlighter-rouge">vlc</code> a VLC window popped up on my laptop. 
+The resolution isn’t great (it would look native if I used X11 port forwarding on Linux), 
+this is due to poor retina display support in XQuartz. But still it works:
+<img src="assets/images/2020-10-01/vlc.png" alt="XForwarding in MacOS" /></p>
+
+<h3 id="tmux-session-manager">Tmux session manager</h3>
+
+<p>Sometimes you want to leave some program running on the server even if you close
+you SSH connection. Or maybe you are doing something important, e.g. devops stuff and
+you want to make sure that the command you are executing will not be interrupted.
+For cases like this (…and for hacker movie lovers) terminal multiplexers where invented.
+The two most popular ones are <code class="highlighter-rouge">screen</code> and <code class="highlighter-rouge">tmux</code>.</p>
+
+<p>Here I will shortly explain what <code class="highlighter-rouge">tmux</code> is. 
+Generally <code class="highlighter-rouge">tmux</code> deserves its own blog post,
+fortunately for me <a href="https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/">this post is already written</a>.
+Here I will only show you one single use-case, just to give you the taste what <code class="highlighter-rouge">tmux</code> is all about.</p>
+
+<p>Let’s connect to Raspberry PI and start <code class="highlighter-rouge">vi</code> inside <code class="highlighter-rouge">tmux</code> session:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">pi<span class="nv">$ </span>tmux
+pi <span class="o">[</span>tmux]<span class="nv">$ </span>vi
+<span class="c"># Some serious editing</span></code></pre></figure>
+
+<p>Next I will perform some manual intervention (the physical connection got busted):
+<img src="assets/images/2020-10-01/pi.jpeg" alt="Simulating connection link failure" />
+My SSH session on my laptop hanged so I had to kill it with <code class="highlighter-rouge">pkill ssh</code>.</p>
+
+<p>Now after I fixed the Ethernet connection and reconnected to <code class="highlighter-rouge">pi</code> 
+I can execute <code class="highlighter-rouge">tmux ls</code> and see my previous
+session:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">pi<span class="nv">$ </span>tmux <span class="nb">ls
+</span>0: 1 windows <span class="o">(</span>created Thu Oct  1 15:00:01 2020<span class="o">)</span> <span class="o">[</span>90x43]</code></pre></figure>
+
+<p>Let’s attach tmux to this session:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">pi<span class="nv">$ </span>tmux attach <span class="nt">-t</span> 0
+<span class="c"># Bang! my VI is back with all the unsaved text</span></code></pre></figure>
+
+<p>Looks like after attaching I could recover all my previous work!</p>
+
+<p>WARNING: <code class="highlighter-rouge">tmux</code> session will not survive the server restart. Make sure that the server
+will not be restarted while running important computations within <code class="highlighter-rouge">tmux</code>.</p>
+
+<p>Congrats! Now you are SSH PRO!</p>
+
+<h3 id="references">References</h3>
+
+<ul>
+  <li>https://www.cyberciti.biz/faq/create-ssh-config-file-on-linux-unix/</li>
+  <li>http://www.trembath.co.za/mctutorial.html</li>
+  <li>https://phoenixnap.com/kb/ssh-port-forwarding</li>
+  <li>https://help.ubuntu.com/community/SSH/OpenSSH/PortForwarding</li>
+  <li>https://linuxize.com/post/how-to-setup-ssh-socks-tunnel-for-private-browsing/</li>
+  <li>https://unix.stackexchange.com/a/46748</li>
+</ul>
+
+	  ]]></description>
+	</item>
+
+	<item>
 	  <title>Minikomputer 8085 - Część II</title>
 	  <link>//minikomputer-8085-czesc-II</link>
 	  <author></author>
@@ -1612,143 +1979,6 @@ B for backward).</p>
   <li><code class="highlighter-rouge">Command + ;</code> - Open graphical autocomplete menu in iTerm2</li>
   <li>Use <code class="highlighter-rouge">open URL</code> command to open given file in MacOS e.g. <code class="highlighter-rouge">open 'https://google.com'</code> or <code class="highlighter-rouge">open .</code> to open current directory in Finder</li>
 </ul>
-
-	  ]]></description>
-	</item>
-
-	<item>
-	  <title>Connecting to Raspberry PI from Linux via UART</title>
-	  <link>//connecting-to-raspberry-pi-via-uart</link>
-	  <author></author>
-	  <pubDate>2020-07-07T02:00:01+02:00</pubDate>
-	  <guid>//connecting-to-raspberry-pi-via-uart</guid>
-	  <description><![CDATA[
-	     <p>In this blog post we will learn how to connect to a Raspberry PI via UART
-(think serial terminal).
-Before we begin we need to get a cheap <code class="highlighter-rouge">USB &lt;-&gt; UART</code> converter.
-Make sure that the converter supports 3.3V voltage.
-Most of the converters support other voltages e.g. 5V and you
-can select which voltage you want by moving a jumper.
-If your converter has such a jumper make sure that it is in 3.3V position.
-<img src="assets/images/2020-07-07/converter1.jpeg" alt="Converter" /></p>
-
-<p>Although converters can have from four up to six pins, we will only need three:
-GND, RXD and TXD. We should connect RXD pin on the converter to TXD pin on
-the Raspberry PI and similarly TXD pin to the Raspberry’s RXD pin (crossover).
-We also need to connect the converter GND pin to Raspberry’s Ground pin.
-Do NOT connect VCC (or VCCIO) pin, we only need three wires.
-You can find the Raspberry PI pinout in the official docs: 
-<a href="https://www.raspberrypi.org/documentation/usage/gpio/">https://www.raspberrypi.org/documentation/usage/gpio/</a> - look at the five top left pins, the first two
-are +5V, then we have Ground, TXD and RXD pins.
-<img src="assets/images/2020-07-07/connection.jpeg" alt="Connection" /></p>
-
-<p>Next thing that we need to do is to enable UART support in Raspbian, which for
-security reasons is disabled by default.
-We need to change <code class="highlighter-rouge">config.txt</code> file on the <code class="highlighter-rouge">/boot</code> partition
-on the Raspberry PI SD card. We need to add <code class="highlighter-rouge">enable_uart=1</code> line
-before <code class="highlighter-rouge">[pi4]</code> section (or at the end of the file if the section is not present).</p>
-
-<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">(some lines skipped)
-
-# Enable audio (loads snd_bcm2835)
-dtparam=audio=on
-
-# ADD THIS LINE HERE
-enable_uart=1
-
-[pi4]
-# Enable DRM VC4 V3D driver on top of the dispmanx display stack
-dtoverlay=vc4-fkms-v3d
-max_framebuffers=2</code></pre></figure>
-
-<p>When we connect the converter to both Raspberry PI and the computer it should
-be recognized by the system and a new device named <code class="highlighter-rouge">ttyUSBn</code> (where n is a number e.g. <code class="highlighter-rouge">ttyUSB0</code>)
-should appear under <code class="highlighter-rouge">/dev</code> directory.
-As always with all things hardware <code class="highlighter-rouge">dmesg</code> is your friend, so you can either <code class="highlighter-rouge">dmesg | tail -n 100</code> or
-<code class="highlighter-rouge">dmesg | grep tty</code> to find out what exactly device was created and if there where any problems.
-On my system I saw the following messages:</p>
-
-<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">$ dmesg | grep tty
-[22562.037811] usb 3-10: cp210x converter now attached to ttyUSB0</code></pre></figure>
-
-<p>There are a lot of different programs on Linux that you can use to open a session.
-We will concentrate on only two of them, <code class="highlighter-rouge">putty</code> which is a GUI tool and
-<code class="highlighter-rouge">screen</code> which is a pure command line utility.</p>
-
-<p>Let’s start with <code class="highlighter-rouge">putty</code>, first we need to configure it to read from <code class="highlighter-rouge">/dev/ttyUSB0</code> device.
-<img src="assets/images/2020-07-07/puttyconf.png" alt="Putty Config" /></p>
-
-<p>To avoid putting this info every time, when you want to connect we should save it as an profile
-(put a name and click Save button).
-<img src="assets/images/2020-07-07/profile.png" alt="Putty Profile" /></p>
-
-<p>It is also worth checking other settings like the font, keyboard or the default terminal size:
-<img src="assets/images/2020-07-07/puttyk.png" alt="Putty Other Settings 1" />
-<img src="assets/images/2020-07-07/puttyf.png" alt="Putty Other Settings 2" /></p>
-
-<p>OK its time to test our configuration. Open putty and load
-previously saved profile, click Open and restart Raspberry PI.
-You should be able to see boot messages. Try pressing Enter if the console appears to hang.
-<img src="assets/images/2020-07-07/boot.png" alt="Boot messages" /></p>
-
-<p>After we login it is easy to notice that there is no color support out of the box
-(at least on Raspbian Lite).
-This can be easily changed by selecting a different terminal type in the terminal session:</p>
-
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nb">export </span><span class="nv">TERM</span><span class="o">=</span>xterm-256color</code></pre></figure>
-
-<p><img src="assets/images/2020-07-07/colors.png" alt="Color support" /></p>
-
-<p>Another problem is that we are stuck with a fixed terminal size.
-If your Raspberry PI has xterm package installed (not available on Lite version)
-you can use <code class="highlighter-rouge">resize</code> command after you resize putty’s window.
-Otherwise you may use this script created by @pkh 
-<a href="https://unix.stackexchange.com/a/283206">https://unix.stackexchange.com/a/283206</a>:</p>
-
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">resize<span class="o">()</span> <span class="o">{</span>
-  <span class="nv">old</span><span class="o">=</span><span class="k">$(</span>stty <span class="nt">-g</span><span class="k">)</span>
-  stty raw <span class="nt">-echo</span> min 0 <span class="nb">time </span>5
-
-  <span class="nb">printf</span> <span class="s1">'\0337\033[r\033[999;999H\033[6n\0338'</span> <span class="o">&gt;</span> /dev/tty
-  <span class="nv">IFS</span><span class="o">=</span><span class="s1">'[;R'</span> <span class="nb">read</span> <span class="nt">-r</span> _ rows cols _ &lt; /dev/tty
-
-  stty <span class="s2">"</span><span class="nv">$old</span><span class="s2">"</span>
-  stty cols <span class="s2">"</span><span class="nv">$cols</span><span class="s2">"</span> rows <span class="s2">"</span><span class="nv">$rows</span><span class="s2">"</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Just copy and paste this code into the session and then enter <code class="highlighter-rouge">resize</code> (use Ctrl+Shift+Insert to paste in <code class="highlighter-rouge">putty</code>).
-After the <code class="highlighter-rouge">resize</code>, commands like <code class="highlighter-rouge">top</code> or <code class="highlighter-rouge">htop</code> should occupy the entire terminal window.
-<img src="assets/images/2020-07-07/beforeR.png" alt="Before resize" />
-After resize becomes:
-<img src="assets/images/2020-07-07/afterR.png" alt="After resize" /></p>
-
-<p>You may want to add both the <code class="highlighter-rouge">resize</code> function and <code class="highlighter-rouge">TERM</code> environment variable to <code class="highlighter-rouge">~/.profile</code>
-to avoid copy-pasting them every time.</p>
-
-<p>If you don’t use GUI at all you may use <code class="highlighter-rouge">screen</code>. <code class="highlighter-rouge">screen</code> was designed to work with SSH sessions,
-it helps you keep your programs running even after you end your SSH connection.
-Most people these day use <code class="highlighter-rouge">tmux</code> as a modern alternative, unfortunately <code class="highlighter-rouge">tmux</code> does not
-support serial communications so we are stuck with <code class="highlighter-rouge">screen</code> (which TBH I am not very familiar with).</p>
-
-<p>We start <code class="highlighter-rouge">screen</code> using the following command:</p>
-
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">screen /dev/ttyUSB0 115200</code></pre></figure>
-
-<p>To exit screen (which is on the same level of difficultly as exiting Vim) 
-press Ctrl+A followed by \ (yup backslash).
-A question will appear at the left bottom of the screen, answer y.</p>
-
-<p>If <code class="highlighter-rouge">screen</code>s window appears blank, press enter to reprint the prompt.
-For some reason programs like <code class="highlighter-rouge">htop</code> tend to look worse under <code class="highlighter-rouge">screen</code>
-(assuming that you set <code class="highlighter-rouge">TERM</code> variable and did <code class="highlighter-rouge">resize</code>). Probably I am missing some extra setup,
-nevertheless they are usable.
-<img src="assets/images/2020-07-07/screen.png" alt="screen" /></p>
-
-<p>Last but not least, for fans of ancient <code class="highlighter-rouge">minicom</code> 
-if you want to connect via <code class="highlighter-rouge">minicom</code>
-remember to disable “Hardware Control Flow” option 
-(they use RTS and CTS lines present on some converters that we do not use).</p>
-
 
 	  ]]></description>
 	</item>

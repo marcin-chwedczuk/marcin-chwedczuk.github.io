@@ -7,6 +7,22 @@
     
       
       <item>
+        <title>SSH like a Pro</title>
+        
+          <description>&lt;p&gt;In this post I have gathered various tips and tricks 
+that can make you a more productive SSH user.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Thu, 01 Oct 2020 02:00:01 +0200</pubDate>
+        <link>
+        /ssh-like-a-pro</link>
+        <guid isPermaLink="true">/ssh-like-a-pro</guid>
+      </item>
+      
+    
+      
+      <item>
         <title>Minikomputer 8085 - Część II</title>
         
           <description>&lt;p&gt;W &lt;a href=&quot;minikomputer-8085-czesc-I&quot;&gt;poprzednim&lt;/a&gt; wpisie udało nam się zbudować działający minikomputer oraz uruchomić
