@@ -5,20 +5,20 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> </managingEditor>
+   <managingEditor>mc</managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Odroid GO Review</title>
-	  <link>//odroid-go-review</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/odroid-go-review</link>
+	  <author>mc</author>
 	  <pubDate>2019-04-14T02:00:01+02:00</pubDate>
-	  <guid>//odroid-go-review</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/odroid-go-review</guid>
 	
-          <description>&lt;blockquote&gt;
+		<description>&lt;blockquote&gt;
   &lt;p&gt;A Master Programmer passed a novice programmer one day.&lt;/p&gt;
 
   &lt;p&gt;The Master noted the novice’s preoccupation with a hand-held computer game.&lt;/p&gt;
@@ -35,23 +35,23 @@
 &lt;/blockquote&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>Kensington Orbit Trackball review</title>
-	  <link>//kensington-orbit-trackball-review</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/kensington-orbit-trackball-review</link>
+	  <author>mc</author>
 	  <pubDate>2019-04-14T02:00:00+02:00</pubDate>
-	  <guid>//kensington-orbit-trackball-review</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/kensington-orbit-trackball-review</guid>
 	
-          <description>&lt;p&gt;Since about three months I use 
+		<description>&lt;p&gt;Since about three months I use 
 &lt;a href=&quot;https://www.kensington.com/p/products/control/trackballs/orbit-trackball-with-scroll-ring/&quot;&gt;Kensington Orbit Trackball&lt;/a&gt;
 as my only pointing device.
 This is my very first trackball, I bought it for about 180PLN.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 

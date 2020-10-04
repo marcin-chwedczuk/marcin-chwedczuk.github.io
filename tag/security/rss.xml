@@ -5,20 +5,20 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> </managingEditor>
+   <managingEditor>mc</managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Why using PESEL as a password is a very bad idea</title>
-	  <link>//why-using-pesel-as-a-password-is-a-very-bad-idea</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/why-using-pesel-as-a-password-is-a-very-bad-idea</link>
+	  <author>mc</author>
 	  <pubDate>2019-02-25T01:00:00+01:00</pubDate>
-	  <guid>//why-using-pesel-as-a-password-is-a-very-bad-idea</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/why-using-pesel-as-a-password-is-a-very-bad-idea</guid>
 	
-          <description>&lt;p&gt;I am sure, none of you, my dear readers would use a PESEL number
+		<description>&lt;p&gt;I am sure, none of you, my dear readers would use a PESEL number
 as a password or an encryption key.
 Still, as unbelievable as it may sounds, recently 
 I was talking with my friend on a topic of computer security and
@@ -29,7 +29,7 @@ a random PESEL as a password and then we will crack it using
 &lt;a href=&quot;https://github.com/magnumripper/JohnTheRipper&quot;&gt;John the Ripper&lt;/a&gt;.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 

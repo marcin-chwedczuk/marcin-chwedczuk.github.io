@@ -5,20 +5,20 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> </managingEditor>
+   <managingEditor>mc</managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Automatically generate new OAuth 2.0 access tokens when using Postman</title>
-	  <link>//automatically-generate-new-oauth2-tokens-when-using-postman</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/automatically-generate-new-oauth2-tokens-when-using-postman</link>
+	  <author>mc</author>
 	  <pubDate>2018-09-29T02:00:00+02:00</pubDate>
-	  <guid>//automatically-generate-new-oauth2-tokens-when-using-postman</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/automatically-generate-new-oauth2-tokens-when-using-postman</guid>
 	
-          <description>&lt;p&gt;Did you ever try to use &lt;a href=&quot;https://www.getpostman.com/&quot;&gt;Postman&lt;/a&gt;
+		<description>&lt;p&gt;Did you ever try to use &lt;a href=&quot;https://www.getpostman.com/&quot;&gt;Postman&lt;/a&gt;
 with OAuth 2.0 protected API? 
 It is pretty annoying. 
 First you must select the correct authorization type, 
@@ -30,7 +30,7 @@ you need to go through the process again.
 Fortunately for us this can be automated using Postman pre-request scripts.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 

@@ -5,20 +5,20 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> </managingEditor>
+   <managingEditor>mc</managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>ReadOnly does not mean Immutable</title>
-	  <link>//read-only-does-not-mean-immutable</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/read-only-does-not-mean-immutable</link>
+	  <author>mc</author>
 	  <pubDate>2019-01-06T01:00:00+01:00</pubDate>
-	  <guid>//read-only-does-not-mean-immutable</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/read-only-does-not-mean-immutable</guid>
 	
-          <description>&lt;p&gt;Recently I have introduced a subtle bug into my code.
+		<description>&lt;p&gt;Recently I have introduced a subtle bug into my code.
 It all started when I was creating a few
 value object classes:&lt;/p&gt;
 
@@ -60,17 +60,17 @@ Instead I just assigned &lt;code class=&quot;highlighter-rouge&quot;&gt;args&lt;
 a readonly property named &lt;code class=&quot;highlighter-rouge&quot;&gt;PassedArguments&lt;/code&gt;.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>Random thoughts on Maybe</title>
-	  <link>//random-thoughts-on-maybe</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/random-thoughts-on-maybe</link>
+	  <author>mc</author>
 	  <pubDate>2019-01-01T01:00:00+01:00</pubDate>
-	  <guid>//random-thoughts-on-maybe</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/random-thoughts-on-maybe</guid>
 	
-          <description>&lt;p&gt;With functional programming on the rise nowadays, 
+		<description>&lt;p&gt;With functional programming on the rise nowadays, 
 more and more people start using functional 
 patterns in their code.
 One of the simplest patterns is &lt;code class=&quot;highlighter-rouge&quot;&gt;Maybe&amp;lt;T&amp;gt;&lt;/code&gt; monad
@@ -79,17 +79,17 @@ also called &lt;code class=&quot;highlighter-rouge&quot;&gt;Option&amp;lt;T&amp;
 missing value.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>NSubstitute and the search for perfect error messages</title>
-	  <link>//nsubstitute-and-the-search-for-perfect-error-messages</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/nsubstitute-and-the-search-for-perfect-error-messages</link>
+	  <author>mc</author>
 	  <pubDate>2018-12-15T01:00:00+01:00</pubDate>
-	  <guid>//nsubstitute-and-the-search-for-perfect-error-messages</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/nsubstitute-and-the-search-for-perfect-error-messages</guid>
 	
-          <description>&lt;p&gt;Those of us that practice TDD daily already know how important good
+		<description>&lt;p&gt;Those of us that practice TDD daily already know how important good
 error messages in tests are. After all writing a failing test that
 &lt;em&gt;clearly&lt;/em&gt; states what functionality the program 
 is missing is the first step in TDD cycle.
@@ -104,17 +104,17 @@ making them green is already a lot of work.
 Things like good test names and proper error messages are often forgotten.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>Inheritance? Just say no!</title>
-	  <link>//inheritance-just-say-no</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/inheritance-just-say-no</link>
+	  <author>mc</author>
 	  <pubDate>2018-12-12T01:00:00+01:00</pubDate>
-	  <guid>//inheritance-just-say-no</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/inheritance-just-say-no</guid>
 	
-          <description>&lt;p&gt;Recently during a code review I have found the following piece
+		<description>&lt;p&gt;Recently during a code review I have found the following piece
 of code:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;TemplateCache&lt;/span&gt; 
@@ -124,17 +124,17 @@ of code:&lt;/p&gt;
 of modern object oriented programming:&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>Abusing local functions to hide design problems</title>
-	  <link>//abusing-local-functions-to-hide-design-problems</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/abusing-local-functions-to-hide-design-problems</link>
+	  <author>mc</author>
 	  <pubDate>2018-10-08T02:00:00+02:00</pubDate>
-	  <guid>//abusing-local-functions-to-hide-design-problems</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/abusing-local-functions-to-hide-design-problems</guid>
 	
-          <description>&lt;p&gt;Recently I was browsing through a certain code base
+		<description>&lt;p&gt;Recently I was browsing through a certain code base
 and I saw a code similar to this:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;k&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;EnterpriseNotificationSender&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
@@ -178,17 +178,17 @@ with expressions like &lt;code class=&quot;highlighter-rouge&quot;&gt;Where(User
 instead of long lambdas.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>Avoid hidden coupling to interface implementation</title>
-	  <link>//avoid-hidden-coupling-to-interface-implementation</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/avoid-hidden-coupling-to-interface-implementation</link>
+	  <author>mc</author>
 	  <pubDate>2018-09-21T02:00:00+02:00</pubDate>
-	  <guid>//avoid-hidden-coupling-to-interface-implementation</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/avoid-hidden-coupling-to-interface-implementation</guid>
 	
-          <description>&lt;p&gt;A few days ago I was reviewing a pull request at work and
+		<description>&lt;p&gt;A few days ago I was reviewing a pull request at work and
 one line of code catch my eye:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-csharp&quot; data-lang=&quot;csharp&quot;&gt;&lt;span class=&quot;kt&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;@event&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;CupOfCoffeeReadyEvent&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;cm&quot;&gt;/* ... */&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
@@ -211,20 +211,20 @@ this logging statement should be fixed.
 After half an hour, instead of a fix I get the following response:&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>How NOT to use the repository pattern</title>
-	  <link>//repository-pattern-my-way</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/repository-pattern-my-way</link>
+	  <author>mc</author>
 	  <pubDate>2018-07-08T02:00:00+02:00</pubDate>
-	  <guid>//repository-pattern-my-way</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/repository-pattern-my-way</guid>
 	
-          <description>&lt;h3 id=&quot;generic-repository-pattern&quot;&gt;Generic repository pattern&lt;/h3&gt;
+		<description>&lt;h3 id=&quot;generic-repository-pattern&quot;&gt;Generic repository pattern&lt;/h3&gt;
 
 </description>
-        
+	
 	</item>
 
 

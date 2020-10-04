@@ -5,20 +5,20 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> </managingEditor>
+   <managingEditor>mc</managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>A closer look at Portable Executable MS-DOS Stub</title>
-	  <link>//a-closer-look-at-portable-executable-msdos-stub</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/a-closer-look-at-portable-executable-msdos-stub</link>
+	  <author>mc</author>
 	  <pubDate>2017-11-18T01:00:00+01:00</pubDate>
-	  <guid>//a-closer-look-at-portable-executable-msdos-stub</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/a-closer-look-at-portable-executable-msdos-stub</guid>
 	
-          <description>&lt;p&gt;When we open native or .NET windows executables in a hex-editor
+		<description>&lt;p&gt;When we open native or .NET windows executables in a hex-editor
 we can notice that almost all of them contains strange
 “This program cannot be run in DOS mode” text at the beginning of the file.
 The original purpose on this text and surrounding it small
@@ -29,7 +29,7 @@ currently I have only GNU/Linux boxes in my flat I will
 investigate using only Linux.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 

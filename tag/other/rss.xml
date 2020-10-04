@@ -5,25 +5,25 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> </managingEditor>
+   <managingEditor>mc</managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Converting .dsl files to Kindle dictionaries</title>
-	  <link>//converting-dsl-files-to-kindle-dictionary</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/converting-dsl-files-to-kindle-dictionary</link>
+	  <author>mc</author>
 	  <pubDate>2019-12-02T01:00:01+01:00</pubDate>
-	  <guid>//converting-dsl-files-to-kindle-dictionary</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/converting-dsl-files-to-kindle-dictionary</guid>
 	
-          <description>&lt;p&gt;In this post, I will describe how to convert dictionaries
+		<description>&lt;p&gt;In this post, I will describe how to convert dictionaries
 in &lt;a href=&quot;http://lingvo.helpmax.net/en/troubleshooting/dsl-compiler/dsl-dictionary-structure/&quot;&gt;ABBYY Lingvo’s format&lt;/a&gt;
 to &lt;code class=&quot;highlighter-rouge&quot;&gt;mobi&lt;/code&gt; dictionaries that can work with Kindle.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 

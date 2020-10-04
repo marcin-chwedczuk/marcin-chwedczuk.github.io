@@ -5,20 +5,20 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> </managingEditor>
+   <managingEditor>mc</managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Binary to Gray algorithm explained</title>
-	  <link>//binary-to-gray-algorithm-explained</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/binary-to-gray-algorithm-explained</link>
+	  <author>mc</author>
 	  <pubDate>2019-12-17T01:00:01+01:00</pubDate>
-	  <guid>//binary-to-gray-algorithm-explained</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/binary-to-gray-algorithm-explained</guid>
 	
-          <description>&lt;p&gt;Binary to Gray code conversion algorithm is deceptively simple:&lt;/p&gt;
+		<description>&lt;p&gt;Binary to Gray code conversion algorithm is deceptively simple:&lt;/p&gt;
 
 &lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-cpp&quot; data-lang=&quot;cpp&quot;&gt;&lt;span class=&quot;cm&quot;&gt;/* This function converts an unsigned binary
  * number to reflected binary Gray code.
@@ -34,99 +34,99 @@
 &lt;p&gt;in this article I will explain how it works.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>Ray tracing a torus</title>
-	  <link>//ray-tracing-torus</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/ray-tracing-torus</link>
+	  <author>mc</author>
 	  <pubDate>2018-05-06T02:00:00+02:00</pubDate>
-	  <guid>//ray-tracing-torus</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/ray-tracing-torus</guid>
 	
-          <description>&lt;p&gt;In this blog post I will show you how to ray trace a torus.
+		<description>&lt;p&gt;In this blog post I will show you how to ray trace a torus.
 I will assume that you already know how to ray trace simple shapes
 like spheres and cubes. I will also assume some basic familiarity
 with shading and ray tracing in general.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>How to check if a number is a power of two</title>
-	  <link>//how-to-check-if-a-number-is-a-power-of-two</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/how-to-check-if-a-number-is-a-power-of-two</link>
+	  <author>mc</author>
 	  <pubDate>2017-12-16T01:00:00+01:00</pubDate>
-	  <guid>//how-to-check-if-a-number-is-a-power-of-two</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/how-to-check-if-a-number-is-a-power-of-two</guid>
 	
-          <description>&lt;p&gt;In this blog post we will learn about two algorithms that
+		<description>&lt;p&gt;In this blog post we will learn about two algorithms that
 allow us to quickly check that a given integer is
 a power of two. 
 Both of these algorithms use only bit operators - they are
 very efficient.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>Iterative solution to Towers of Hanoi problem</title>
-	  <link>//iterative-solution-to-towers-of-hanoi-problem</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/iterative-solution-to-towers-of-hanoi-problem</link>
+	  <author>mc</author>
 	  <pubDate>2016-11-26T01:00:00+01:00</pubDate>
-	  <guid>//iterative-solution-to-towers-of-hanoi-problem</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/iterative-solution-to-towers-of-hanoi-problem</guid>
 	
-          <description>&lt;p&gt;Towers of Hanoi is a simple programming riddle often used 
+		<description>&lt;p&gt;Towers of Hanoi is a simple programming riddle often used 
 in programming courses to
 introduce recursion.
 Not many people are aware that Towers of Hanoi has
 also a beautiful iterative solution.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>Iterative algorithm for drawing Hilbert curve</title>
-	  <link>//iterative-algorithm-for-drawing-hilbert-curve</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/iterative-algorithm-for-drawing-hilbert-curve</link>
+	  <author>mc</author>
 	  <pubDate>2016-08-06T02:00:00+02:00</pubDate>
-	  <guid>//iterative-algorithm-for-drawing-hilbert-curve</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/iterative-algorithm-for-drawing-hilbert-curve</guid>
 	
-          <description>&lt;p&gt;In this post I will describe how to draw Hilbert curve iteratively.
+		<description>&lt;p&gt;In this post I will describe how to draw Hilbert curve iteratively.
 To avoid recursion we will use &lt;code class=&quot;highlighter-rouge&quot;&gt;hindex2xy&lt;/code&gt; algorithm that
 translates Hilbert curve node index to 
 Cartesian coordinates.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>Find cycle start in singly linked list</title>
-	  <link>//find-cycle-start-in-singly-linked-list</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/find-cycle-start-in-singly-linked-list</link>
+	  <author>mc</author>
 	  <pubDate>2016-06-25T02:00:00+02:00</pubDate>
-	  <guid>//find-cycle-start-in-singly-linked-list</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/find-cycle-start-in-singly-linked-list</guid>
 	
-          <description>&lt;p&gt;In this post I will present solution to the following problem:&lt;/p&gt;
+		<description>&lt;p&gt;In this post I will present solution to the following problem:&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>Get day of week from date</title>
-	  <link>//get-day-of-week-from-date</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/get-day-of-week-from-date</link>
+	  <author>mc</author>
 	  <pubDate>2016-06-15T02:00:00+02:00</pubDate>
-	  <guid>//get-day-of-week-from-date</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/get-day-of-week-from-date</guid>
 	
-          <description>&lt;p&gt;Today we will try to solve the following problem:&lt;/p&gt;
+		<description>&lt;p&gt;Today we will try to solve the following problem:&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 

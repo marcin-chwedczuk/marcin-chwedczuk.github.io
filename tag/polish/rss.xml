@@ -5,20 +5,20 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> </managingEditor>
+   <managingEditor>mc</managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Minikomputer 8085 - Część II</title>
-	  <link>//minikomputer-8085-czesc-II</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/minikomputer-8085-czesc-II</link>
+	  <author>mc</author>
 	  <pubDate>2020-09-29T02:00:01+02:00</pubDate>
-	  <guid>//minikomputer-8085-czesc-II</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/minikomputer-8085-czesc-II</guid>
 	
-          <description>&lt;p&gt;W &lt;a href=&quot;minikomputer-8085-czesc-I&quot;&gt;poprzednim&lt;/a&gt; wpisie udało nam się zbudować działający minikomputer oraz uruchomić
+		<description>&lt;p&gt;W &lt;a href=&quot;minikomputer-8085-czesc-I&quot;&gt;poprzednim&lt;/a&gt; wpisie udało nam się zbudować działający minikomputer oraz uruchomić
 na nim napisany przez Davida Huntera monitor. Dla przypomnienia zbudowana przeze mnie
 maszyna wyglądała następująco:
 &lt;img src=&quot;assets/images/2020-09-29/comp1.jpeg&quot; alt=&quot;Minikomputer wyłaniający się z chaosu&quot; /&gt;
@@ -28,17 +28,17 @@ Co gorsza przewody połączeniowe nie zapewniały dobrej jakości połączeń po
 W efekcie komputer potrafił nie startować lub zawieszał się podczas wykonywania programów.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>Minikomputer 8085 - Część I</title>
-	  <link>//minikomputer-8085-czesc-I</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/minikomputer-8085-czesc-I</link>
+	  <author>mc</author>
 	  <pubDate>2020-09-20T02:00:01+02:00</pubDate>
-	  <guid>//minikomputer-8085-czesc-I</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/minikomputer-8085-czesc-I</guid>
 	
-          <description>&lt;p&gt;Już od dłuższego czasu myślałem o tym żeby zbudować swój własny minikomputer.
+		<description>&lt;p&gt;Już od dłuższego czasu myślałem o tym żeby zbudować swój własny minikomputer.
 W internecie można znaleźć mnóstwo tego typu projektów, z moich ulubionych
 mogę wymienić oparty na procesorze 6502 &lt;a href=&quot;https://eater.net/6502&quot;&gt;komputer autorstwa Bena Eatera&lt;/a&gt;
 oraz oparty na CPU Intela &lt;a href=&quot;http://www.malinov.com/Home/sergeys-projects/minimax8085&quot;&gt;MiniMax8085 Sergieja Malinova&lt;/a&gt;.
@@ -49,17 +49,17 @@ autorstwa Davida Huntera. Dokładniej chodzi o artykuł
 z początku 2019 roku.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>Cierpienia młodego Wertera czyli algorytm alfa-beta dla gry kółko i krzyżyk</title>
-	  <link>//cierpienia-mlodego-wertera</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/cierpienia-mlodego-wertera</link>
+	  <author>mc</author>
 	  <pubDate>2020-08-06T02:00:01+02:00</pubDate>
-	  <guid>//cierpienia-mlodego-wertera</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/cierpienia-mlodego-wertera</guid>
 	
-          <description>&lt;p&gt;W tym wpisie przyjrzymy się trudnościom które występują podczas
+		<description>&lt;p&gt;W tym wpisie przyjrzymy się trudnościom które występują podczas
 implementacji algorytmu alfa-beta dla gry kółko i krzyżyk.
 Nie będę tutaj omawiał samego algorytmu, gdyż został on już dobrze
 opisany w wielu innych miejscach, między innymi na
@@ -68,17 +68,17 @@ Zamiast tego skoncentrujemy się na technikach debugowania które można
 będzie wykorzystać również przy innych grach np. warcabach.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>Jak zacząć przygodę z elektroniką</title>
-	  <link>//jak-zaczac-przygode-z-elektronika</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/jak-zaczac-przygode-z-elektronika</link>
+	  <author>mc</author>
 	  <pubDate>2019-12-30T01:00:01+01:00</pubDate>
-	  <guid>//jak-zaczac-przygode-z-elektronika</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/jak-zaczac-przygode-z-elektronika</guid>
 	
-          <description>&lt;p&gt;Parę miesięcy temu postanowiłem powrócić do mojego
+		<description>&lt;p&gt;Parę miesięcy temu postanowiłem powrócić do mojego
 hobby z czasów dzieciństwa: elektroniki.
 Powrót, po ponad dziesięciu latach przerwy, okazał
 się być trudniejszy niż przypuszczałem,
@@ -86,7 +86,7 @@ a droga do pierwszego działającego układu
 pełna frustracji i porażek.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 

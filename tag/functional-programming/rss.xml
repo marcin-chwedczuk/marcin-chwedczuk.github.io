@@ -5,20 +5,20 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> </managingEditor>
+   <managingEditor>mc</managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Continuations in Java</title>
-	  <link>//continuations-in-java</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/continuations-in-java</link>
+	  <author>mc</author>
 	  <pubDate>2020-06-27T02:00:01+02:00</pubDate>
-	  <guid>//continuations-in-java</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/continuations-in-java</guid>
 	
-          <description>&lt;p&gt;CSP or Continuation-Passing Style is a style of programming in which
+		<description>&lt;p&gt;CSP or Continuation-Passing Style is a style of programming in which
 functions return results via callbacks.
 For example &lt;code class=&quot;highlighter-rouge&quot;&gt;+&lt;/code&gt; operator is a function that takes two numbers and
 returns their sum. In CSP &lt;code class=&quot;highlighter-rouge&quot;&gt;+&lt;/code&gt; operator becomes a function that takes
@@ -27,7 +27,7 @@ the context of CSP.
 In Java we can express this as:&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 

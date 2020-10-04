@@ -5,25 +5,25 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> </managingEditor>
+   <managingEditor>mc</managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Using Tomcat 8.5 with Eclipse Neon on Ubuntu</title>
-	  <link>//using-tomcat-8.5-with-eclipse-neon</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/using-tomcat-8.5-with-eclipse-neon</link>
+	  <author>mc</author>
 	  <pubDate>2016-10-31T01:00:00+01:00</pubDate>
-	  <guid>//using-tomcat-8.5-with-eclipse-neon</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/using-tomcat-8.5-with-eclipse-neon</guid>
 	
-          <description>&lt;p&gt;When you start learning Spring MVC development configuring
+		<description>&lt;p&gt;When you start learning Spring MVC development configuring
 Tomcat server in Eclipse Neon IDE can be a difficult task.
 This tutorial will help you setup your development environment.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 

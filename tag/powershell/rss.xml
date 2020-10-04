@@ -5,20 +5,20 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> </managingEditor>
+   <managingEditor>mc</managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>PowerShell function declaration pitfall</title>
-	  <link>//powershell-function-declaration-pitfall</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/powershell-function-declaration-pitfall</link>
+	  <author>mc</author>
 	  <pubDate>2016-07-15T02:00:00+02:00</pubDate>
-	  <guid>//powershell-function-declaration-pitfall</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/powershell-function-declaration-pitfall</guid>
 	
-          <description>&lt;p&gt;Recently I had to write some scripts in PowerShell.
+		<description>&lt;p&gt;Recently I had to write some scripts in PowerShell.
 Because I try to follow good software development practices I decided to split
 script logic into functions. First I defined a few functions
 that taken or returned single value:&lt;/p&gt;
@@ -89,7 +89,7 @@ Int32&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 &lt;p&gt;and thats explain outputs of &lt;code class=&quot;highlighter-rouge&quot;&gt;printArg(1)&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;manyArgs(1, 2, 3)&lt;/code&gt; command.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 

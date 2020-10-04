@@ -5,34 +5,34 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> </managingEditor>
+   <managingEditor>mc</managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>SSH like a Pro</title>
-	  <link>//ssh-like-a-pro</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/ssh-like-a-pro</link>
+	  <author>mc</author>
 	  <pubDate>2020-10-01T02:00:01+02:00</pubDate>
-	  <guid>//ssh-like-a-pro</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/ssh-like-a-pro</guid>
 	
-          <description>&lt;p&gt;In this post I have gathered various tips and tricks 
+		<description>&lt;p&gt;In this post I have gathered various tips and tricks 
 that can make you a more productive SSH user.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>Minikomputer 8085 - Część II</title>
-	  <link>//minikomputer-8085-czesc-II</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/minikomputer-8085-czesc-II</link>
+	  <author>mc</author>
 	  <pubDate>2020-09-29T02:00:01+02:00</pubDate>
-	  <guid>//minikomputer-8085-czesc-II</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/minikomputer-8085-czesc-II</guid>
 	
-          <description>&lt;p&gt;W &lt;a href=&quot;minikomputer-8085-czesc-I&quot;&gt;poprzednim&lt;/a&gt; wpisie udało nam się zbudować działający minikomputer oraz uruchomić
+		<description>&lt;p&gt;W &lt;a href=&quot;minikomputer-8085-czesc-I&quot;&gt;poprzednim&lt;/a&gt; wpisie udało nam się zbudować działający minikomputer oraz uruchomić
 na nim napisany przez Davida Huntera monitor. Dla przypomnienia zbudowana przeze mnie
 maszyna wyglądała następująco:
 &lt;img src=&quot;assets/images/2020-09-29/comp1.jpeg&quot; alt=&quot;Minikomputer wyłaniający się z chaosu&quot; /&gt;
@@ -42,36 +42,36 @@ Co gorsza przewody połączeniowe nie zapewniały dobrej jakości połączeń po
 W efekcie komputer potrafił nie startować lub zawieszał się podczas wykonywania programów.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>Passing functions as arguments in Scala. What can go wrong?</title>
-	  <link>//passing-functions-as-arguments-in-scala-what-can-go-wrong</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/passing-functions-as-arguments-in-scala-what-can-go-wrong</link>
+	  <author>mc</author>
 	  <pubDate>2020-09-11T02:00:01+02:00</pubDate>
-	  <guid>//passing-functions-as-arguments-in-scala-what-can-go-wrong</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/passing-functions-as-arguments-in-scala-what-can-go-wrong</guid>
 	
-          <description>&lt;p&gt;In microservices architecture we often designate a single service for managing the configuration of the entire system.
+		<description>&lt;p&gt;In microservices architecture we often designate a single service for managing the configuration of the entire system.
 Libraries like &lt;a href=&quot;https://github.com/Netflix/archaius&quot;&gt;Archaius&lt;/a&gt; make this easy. 
 As a side effect, on the code level I often see class declarations like this:&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>Devoxx Poland 2018</title>
-	  <link>//devoxx-poland-2018</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/devoxx-poland-2018</link>
+	  <author>mc</author>
 	  <pubDate>2018-06-25T02:00:00+02:00</pubDate>
-	  <guid>//devoxx-poland-2018</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/devoxx-poland-2018</guid>
 	
-          <description>&lt;p&gt;[Photo above shows Mr. Jakub Nabrdalik during his presentation about TDD 
+		<description>&lt;p&gt;[Photo above shows Mr. Jakub Nabrdalik during his presentation about TDD 
 in main conference room.]&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 

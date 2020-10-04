@@ -5,20 +5,20 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> </managingEditor>
+   <managingEditor>mc</managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Don't ask me about Singletons</title>
-	  <link>//dont-ask-me-about-singletons</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/dont-ask-me-about-singletons</link>
+	  <author>mc</author>
 	  <pubDate>2017-09-30T02:00:00+02:00</pubDate>
-	  <guid>//dont-ask-me-about-singletons</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/dont-ask-me-about-singletons</guid>
 	
-          <description>&lt;p&gt;Some time ago I attended a job interview for C# developer position in Warsaw.
+		<description>&lt;p&gt;Some time ago I attended a job interview for C# developer position in Warsaw.
 One of the tasks that I had to perform was to implement a singleton pattern
 in C#. With a bit of help from my interviewer
 (I didn’t get a cup of coffee that morning) I arrived at a solution:&lt;/p&gt;
@@ -52,49 +52,49 @@ in C#. With a bit of help from my interviewer
 and we moved to other questions.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>Castle Windsor most popular features</title>
-	  <link>//castle-windsor-most-popular-features</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/castle-windsor-most-popular-features</link>
+	  <author>mc</author>
 	  <pubDate>2016-09-11T02:00:00+02:00</pubDate>
-	  <guid>//castle-windsor-most-popular-features</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/castle-windsor-most-popular-features</guid>
 	
-          <description>&lt;p&gt;In this post I will present the most popular 
+		<description>&lt;p&gt;In this post I will present the most popular 
 &lt;a href=&quot;http://www.castleproject.org/projects/windsor/&quot;&gt;Castle Windsor&lt;/a&gt; features
 encountered in typical enterprise applications.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>How null's are handled in switch statement in C#, Java and JavaScript</title>
-	  <link>//how-nulls-are-handled-in-switch-statement</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/how-nulls-are-handled-in-switch-statement</link>
+	  <author>mc</author>
 	  <pubDate>2016-07-09T02:00:00+02:00</pubDate>
-	  <guid>//how-nulls-are-handled-in-switch-statement</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/how-nulls-are-handled-in-switch-statement</guid>
 	
-          <description>&lt;p&gt;Let’s start with C#. In C# &lt;code class=&quot;highlighter-rouge&quot;&gt;null&lt;/code&gt;s may show up in &lt;code class=&quot;highlighter-rouge&quot;&gt;switch&lt;/code&gt; statement in two cases:&lt;/p&gt;
+		<description>&lt;p&gt;Let’s start with C#. In C# &lt;code class=&quot;highlighter-rouge&quot;&gt;null&lt;/code&gt;s may show up in &lt;code class=&quot;highlighter-rouge&quot;&gt;switch&lt;/code&gt; statement in two cases:&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>Object and collection initializers in C#</title>
-	  <link>//object-and-collection-initializers-in-csharp</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/object-and-collection-initializers-in-csharp</link>
+	  <author>mc</author>
 	  <pubDate>2016-06-12T02:00:00+02:00</pubDate>
-	  <guid>//object-and-collection-initializers-in-csharp</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/object-and-collection-initializers-in-csharp</guid>
 	
-          <description>&lt;p&gt;In this post I want to present a nice C# syntax sugar: object and collection
+		<description>&lt;p&gt;In this post I want to present a nice C# syntax sugar: object and collection
 initializers.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 

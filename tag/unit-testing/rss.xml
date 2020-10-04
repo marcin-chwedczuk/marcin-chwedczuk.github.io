@@ -5,37 +5,37 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link></link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
-   <managingEditor> </managingEditor>
+   <managingEditor>mc</managingEditor>
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
 	  <title>Floating point numbers and Unit Testing</title>
-	  <link>//doubles-and-unit-testing</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/doubles-and-unit-testing</link>
+	  <author>mc</author>
 	  <pubDate>2019-09-18T02:00:01+02:00</pubDate>
-	  <guid>//doubles-and-unit-testing</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/doubles-and-unit-testing</guid>
 	
-          <description>&lt;p&gt;Floating point numbers are inherently imprecise.
+		<description>&lt;p&gt;Floating point numbers are inherently imprecise.
 This can be problematic when we try to unit test
 numerical algorithms.
 Let’s see this on an example
 (JVM/Scala, ScalaTest used as a testing framework):&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>Fluent Validation and complex dependencies between properties</title>
-	  <link>//fluent-validation-and-complex-dependencies-between-properties</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/fluent-validation-and-complex-dependencies-between-properties</link>
+	  <author>mc</author>
 	  <pubDate>2018-09-18T02:00:00+02:00</pubDate>
-	  <guid>//fluent-validation-and-complex-dependencies-between-properties</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/fluent-validation-and-complex-dependencies-between-properties</guid>
 	
-          <description>&lt;p&gt;&lt;a href=&quot;https://fluentvalidation.net/&quot;&gt;FluentValidation&lt;/a&gt; is one of the
+		<description>&lt;p&gt;&lt;a href=&quot;https://fluentvalidation.net/&quot;&gt;FluentValidation&lt;/a&gt; is one of the
 best validation libraries for .NET. I use it daily both at work
 and in my personal pet projects. Still from time to time I
 encounter situations where it is not obvious how 
@@ -44,17 +44,17 @@ In this blog post I describe one such situation that I have to
 deal with recently.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 	<item>
 	  <title>You can live without mocking frameworks</title>
-	  <link>//you-can-live-without-your-mocking-framework</link>
-	  <author></author>
+	  <link>http://blog.marcinchwedczuk.pl/you-can-live-without-your-mocking-framework</link>
+	  <author>mc</author>
 	  <pubDate>2018-09-08T02:00:00+02:00</pubDate>
-	  <guid>//you-can-live-without-your-mocking-framework</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/you-can-live-without-your-mocking-framework</guid>
 	
-          <description>&lt;p&gt;For a long time I have been fan of mocking frameworks like 
+		<description>&lt;p&gt;For a long time I have been fan of mocking frameworks like 
 &lt;a href=&quot;https://github.com/Moq/moq4/wiki/Quickstart&quot;&gt;Moq&lt;/a&gt;
 and &lt;a href=&quot;http://nsubstitute.github.io&quot;&gt;NSubstitute&lt;/a&gt;.
 These libraries seems indispensable while unit-testing.
@@ -62,7 +62,7 @@ They allow us to easily generate subs and mocks and assert that
 certain interaction between components took place.&lt;/p&gt;
 
 </description>
-        
+	
 	</item>
 
 
