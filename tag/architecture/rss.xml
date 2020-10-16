@@ -5,7 +5,7 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>http://blog.marcinchwedczuk.pl</link>
+   <link>http://localhost:4000</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor>mc</managingEditor>
@@ -13,10 +13,10 @@
    
 	<item>
 	  <title>ReadOnly does not mean Immutable</title>
-	  <link>http://blog.marcinchwedczuk.pl/read-only-does-not-mean-immutable</link>
+	  <link>http://localhost:4000/read-only-does-not-mean-immutable</link>
 	  <author>mc</author>
 	  <pubDate>2019-01-06T01:00:00+01:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/read-only-does-not-mean-immutable</guid>
+	  <guid>http://localhost:4000/read-only-does-not-mean-immutable</guid>
 	
 		<description>&lt;p&gt;Recently I have introduced a subtle bug into my code.
 It all started when I was creating a few
@@ -65,10 +65,10 @@ a readonly property named &lt;code class=&quot;highlighter-rouge&quot;&gt;Passed
 
 	<item>
 	  <title>Random thoughts on Maybe</title>
-	  <link>http://blog.marcinchwedczuk.pl/random-thoughts-on-maybe</link>
+	  <link>http://localhost:4000/random-thoughts-on-maybe</link>
 	  <author>mc</author>
 	  <pubDate>2019-01-01T01:00:00+01:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/random-thoughts-on-maybe</guid>
+	  <guid>http://localhost:4000/random-thoughts-on-maybe</guid>
 	
 		<description>&lt;p&gt;With functional programming on the rise nowadays, 
 more and more people start using functional 
@@ -84,10 +84,10 @@ missing value.&lt;/p&gt;
 
 	<item>
 	  <title>NSubstitute and the search for perfect error messages</title>
-	  <link>http://blog.marcinchwedczuk.pl/nsubstitute-and-the-search-for-perfect-error-messages</link>
+	  <link>http://localhost:4000/nsubstitute-and-the-search-for-perfect-error-messages</link>
 	  <author>mc</author>
 	  <pubDate>2018-12-15T01:00:00+01:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/nsubstitute-and-the-search-for-perfect-error-messages</guid>
+	  <guid>http://localhost:4000/nsubstitute-and-the-search-for-perfect-error-messages</guid>
 	
 		<description>&lt;p&gt;Those of us that practice TDD daily already know how important good
 error messages in tests are. After all writing a failing test that
@@ -109,10 +109,10 @@ Things like good test names and proper error messages are often forgotten.&lt;/p
 
 	<item>
 	  <title>Inheritance? Just say no!</title>
-	  <link>http://blog.marcinchwedczuk.pl/inheritance-just-say-no</link>
+	  <link>http://localhost:4000/inheritance-just-say-no</link>
 	  <author>mc</author>
 	  <pubDate>2018-12-12T01:00:00+01:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/inheritance-just-say-no</guid>
+	  <guid>http://localhost:4000/inheritance-just-say-no</guid>
 	
 		<description>&lt;p&gt;Recently during a code review I have found the following piece
 of code:&lt;/p&gt;
@@ -129,10 +129,10 @@ of modern object oriented programming:&lt;/p&gt;
 
 	<item>
 	  <title>Abusing local functions to hide design problems</title>
-	  <link>http://blog.marcinchwedczuk.pl/abusing-local-functions-to-hide-design-problems</link>
+	  <link>http://localhost:4000/abusing-local-functions-to-hide-design-problems</link>
 	  <author>mc</author>
 	  <pubDate>2018-10-08T02:00:00+02:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/abusing-local-functions-to-hide-design-problems</guid>
+	  <guid>http://localhost:4000/abusing-local-functions-to-hide-design-problems</guid>
 	
 		<description>&lt;p&gt;Recently I was browsing through a certain code base
 and I saw a code similar to this:&lt;/p&gt;
@@ -183,10 +183,10 @@ instead of long lambdas.&lt;/p&gt;
 
 	<item>
 	  <title>Avoid hidden coupling to interface implementation</title>
-	  <link>http://blog.marcinchwedczuk.pl/avoid-hidden-coupling-to-interface-implementation</link>
+	  <link>http://localhost:4000/avoid-hidden-coupling-to-interface-implementation</link>
 	  <author>mc</author>
 	  <pubDate>2018-09-21T02:00:00+02:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/avoid-hidden-coupling-to-interface-implementation</guid>
+	  <guid>http://localhost:4000/avoid-hidden-coupling-to-interface-implementation</guid>
 	
 		<description>&lt;p&gt;A few days ago I was reviewing a pull request at work and
 one line of code catch my eye:&lt;/p&gt;
@@ -216,10 +216,10 @@ After half an hour, instead of a fix I get the following response:&lt;/p&gt;
 
 	<item>
 	  <title>How NOT to use the repository pattern</title>
-	  <link>http://blog.marcinchwedczuk.pl/repository-pattern-my-way</link>
+	  <link>http://localhost:4000/repository-pattern-my-way</link>
 	  <author>mc</author>
 	  <pubDate>2018-07-08T02:00:00+02:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/repository-pattern-my-way</guid>
+	  <guid>http://localhost:4000/repository-pattern-my-way</guid>
 	
 		<description>&lt;h3 id=&quot;generic-repository-pattern&quot;&gt;Generic repository pattern&lt;/h3&gt;
 

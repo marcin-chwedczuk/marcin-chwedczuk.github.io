@@ -5,7 +5,7 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>http://blog.marcinchwedczuk.pl</link>
+   <link>http://localhost:4000</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor>mc</managingEditor>
@@ -13,10 +13,10 @@
    
 	<item>
 	  <title>Minikomputer 8085 - Część II</title>
-	  <link>http://blog.marcinchwedczuk.pl/minikomputer-8085-czesc-II</link>
+	  <link>http://localhost:4000/minikomputer-8085-czesc-II</link>
 	  <author>mc</author>
 	  <pubDate>2020-09-29T02:00:01+02:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/minikomputer-8085-czesc-II</guid>
+	  <guid>http://localhost:4000/minikomputer-8085-czesc-II</guid>
 	
 		<description>&lt;p&gt;W &lt;a href=&quot;minikomputer-8085-czesc-I&quot;&gt;poprzednim&lt;/a&gt; wpisie udało nam się zbudować działający minikomputer oraz uruchomić
 na nim napisany przez Davida Huntera monitor. Dla przypomnienia zbudowana przeze mnie
@@ -33,10 +33,10 @@ W efekcie komputer potrafił nie startować lub zawieszał się podczas wykonywa
 
 	<item>
 	  <title>Minikomputer 8085 - Część I</title>
-	  <link>http://blog.marcinchwedczuk.pl/minikomputer-8085-czesc-I</link>
+	  <link>http://localhost:4000/minikomputer-8085-czesc-I</link>
 	  <author>mc</author>
 	  <pubDate>2020-09-20T02:00:01+02:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/minikomputer-8085-czesc-I</guid>
+	  <guid>http://localhost:4000/minikomputer-8085-czesc-I</guid>
 	
 		<description>&lt;p&gt;Już od dłuższego czasu myślałem o tym żeby zbudować swój własny minikomputer.
 W internecie można znaleźć mnóstwo tego typu projektów, z moich ulubionych
@@ -54,10 +54,10 @@ z początku 2019 roku.&lt;/p&gt;
 
 	<item>
 	  <title>Cierpienia młodego Wertera czyli algorytm alfa-beta dla gry kółko i krzyżyk</title>
-	  <link>http://blog.marcinchwedczuk.pl/cierpienia-mlodego-wertera</link>
+	  <link>http://localhost:4000/cierpienia-mlodego-wertera</link>
 	  <author>mc</author>
 	  <pubDate>2020-08-06T02:00:01+02:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/cierpienia-mlodego-wertera</guid>
+	  <guid>http://localhost:4000/cierpienia-mlodego-wertera</guid>
 	
 		<description>&lt;p&gt;W tym wpisie przyjrzymy się trudnościom które występują podczas
 implementacji algorytmu alfa-beta dla gry kółko i krzyżyk.
@@ -73,10 +73,10 @@ będzie wykorzystać również przy innych grach np. warcabach.&lt;/p&gt;
 
 	<item>
 	  <title>Jak zacząć przygodę z elektroniką</title>
-	  <link>http://blog.marcinchwedczuk.pl/jak-zaczac-przygode-z-elektronika</link>
+	  <link>http://localhost:4000/jak-zaczac-przygode-z-elektronika</link>
 	  <author>mc</author>
 	  <pubDate>2019-12-30T01:00:01+01:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/jak-zaczac-przygode-z-elektronika</guid>
+	  <guid>http://localhost:4000/jak-zaczac-przygode-z-elektronika</guid>
 	
 		<description>&lt;p&gt;Parę miesięcy temu postanowiłem powrócić do mojego
 hobby z czasów dzieciństwa: elektroniki.

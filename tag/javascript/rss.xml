@@ -5,7 +5,7 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>http://blog.marcinchwedczuk.pl</link>
+   <link>http://localhost:4000</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor>mc</managingEditor>
@@ -13,10 +13,10 @@
    
 	<item>
 	  <title>JavaScript in and delete operators</title>
-	  <link>http://blog.marcinchwedczuk.pl/JavaScript-in-and-delete-operators</link>
+	  <link>http://localhost:4000/JavaScript-in-and-delete-operators</link>
 	  <author>mc</author>
 	  <pubDate>2016-11-12T01:00:01+01:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/JavaScript-in-and-delete-operators</guid>
+	  <guid>http://localhost:4000/JavaScript-in-and-delete-operators</guid>
 	
 		<description>&lt;p&gt;In this post I will describe &lt;code class=&quot;highlighter-rouge&quot;&gt;in&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;delete&lt;/code&gt; JavaScript operators.&lt;/p&gt;
 
@@ -26,10 +26,10 @@
 
 	<item>
 	  <title>Hoisting in JavaScript</title>
-	  <link>http://blog.marcinchwedczuk.pl/hoisting-in-javascript</link>
+	  <link>http://localhost:4000/hoisting-in-javascript</link>
 	  <author>mc</author>
 	  <pubDate>2016-10-30T02:00:00+02:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/hoisting-in-javascript</guid>
+	  <guid>http://localhost:4000/hoisting-in-javascript</guid>
 	
 		<description>&lt;p&gt;In this post I will describe what is variable hoisting in JavaScript.
 But before we go into detailed explanations let’s look at
@@ -41,10 +41,10 @@ a few code examples.&lt;/p&gt;
 
 	<item>
 	  <title>How null's are handled in switch statement in C#, Java and JavaScript</title>
-	  <link>http://blog.marcinchwedczuk.pl/how-nulls-are-handled-in-switch-statement</link>
+	  <link>http://localhost:4000/how-nulls-are-handled-in-switch-statement</link>
 	  <author>mc</author>
 	  <pubDate>2016-07-09T02:00:00+02:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/how-nulls-are-handled-in-switch-statement</guid>
+	  <guid>http://localhost:4000/how-nulls-are-handled-in-switch-statement</guid>
 	
 		<description>&lt;p&gt;Let’s start with C#. In C# &lt;code class=&quot;highlighter-rouge&quot;&gt;null&lt;/code&gt;s may show up in &lt;code class=&quot;highlighter-rouge&quot;&gt;switch&lt;/code&gt; statement in two cases:&lt;/p&gt;
 
@@ -54,10 +54,10 @@ a few code examples.&lt;/p&gt;
 
 	<item>
 	  <title>Augmenting JavaScript objects with toString and valueOf</title>
-	  <link>http://blog.marcinchwedczuk.pl/augmenting-JavaScript-objects-with-toString-and-valueOf</link>
+	  <link>http://localhost:4000/augmenting-JavaScript-objects-with-toString-and-valueOf</link>
 	  <author>mc</author>
 	  <pubDate>2016-06-09T02:00:00+02:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/augmenting-JavaScript-objects-with-toString-and-valueOf</guid>
+	  <guid>http://localhost:4000/augmenting-JavaScript-objects-with-toString-and-valueOf</guid>
 	
 		<description>&lt;p&gt;Today I want to present two useful methods: &lt;code class=&quot;highlighter-rouge&quot;&gt;toString&lt;/code&gt; and &lt;code class=&quot;highlighter-rouge&quot;&gt;valueOf&lt;/code&gt;. Both of these methods are 
 used by JavaScript interpreter when converting objects to primitive types.&lt;/p&gt;
@@ -68,10 +68,10 @@ used by JavaScript interpreter when converting objects to primitive types.&lt;/p
 
 	<item>
 	  <title>Break out of block of code in Java and JavaScript</title>
-	  <link>http://blog.marcinchwedczuk.pl/break-out-of-code-block-in-java-and-javascript</link>
+	  <link>http://localhost:4000/break-out-of-code-block-in-java-and-javascript</link>
 	  <author>mc</author>
 	  <pubDate>2016-06-04T02:00:00+02:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/break-out-of-code-block-in-java-and-javascript</guid>
+	  <guid>http://localhost:4000/break-out-of-code-block-in-java-and-javascript</guid>
 	
 		<description>&lt;p&gt;Java and JavaScript have a common feature that allows us to break out of
 nested loops, e.g. in Java we may write:&lt;/p&gt;

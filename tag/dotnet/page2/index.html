@@ -26,7 +26,7 @@
     <style>.hljs { background: none; }</style>
 
     <!-- Ghost outputs important style and meta data with this tag -->
-        <link rel="canonical" href="http://blog.marcinchwedczuk.pl//tag/dotnet/page2/" />
+        <link rel="canonical" href="http://localhost:4000//tag/dotnet/page2/" />
     <meta name="referrer" content="origin" />
     <link rel="next" href="/page2/" />
 
@@ -34,13 +34,13 @@
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Programming is Magic" />
     <meta property="og:description" content="A place where I share my thoughts about programming." />
-    <meta property="og:url" content="http://blog.marcinchwedczuk.pl//tag/dotnet/page2/" />
+    <meta property="og:url" content="http://localhost:4000//tag/dotnet/page2/" />
     <meta property="og:image" content="/assets/images/tag_cover.jpg" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Programming is Magic" />
     <meta name="twitter:description" content="A place where I share my thoughts about programming." />
-    <meta name="twitter:url" content="http://blog.marcinchwedczuk.pl//tag/dotnet/page2/" />
+    <meta name="twitter:url" content="http://localhost:4000//tag/dotnet/page2/" />
     <meta name="twitter:image:src" content="/assets/images/tag_cover.jpg" />
 
     <script type="application/ld+json">
@@ -49,7 +49,7 @@
     "@type": "Website",
     "publisher": "Programming is Magic",
     "name": "Programming is Magic",
-    "url": "http://blog.marcinchwedczuk.pl//tag/dotnet/page2/",
+    "url": "http://localhost:4000//tag/dotnet/page2/",
     "image": "/assets/images/tag_cover.jpg",
     "description": "A place where I share my thoughts about programming."
 }
@@ -426,7 +426,7 @@
             <h2 class="post-title"><a href="/inheritance-just-say-no">Inheritance? Just say no!</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>Recently during a code review I have found the following piece of code: public class TemplateCache : ConcurrentDictionary&lt;TemplateName, Template&gt; { } Here the programmer broke one... <a class="read-more" href="/inheritance-just-say-no">&raquo;</a></p>
+            <p>Recently during a code review I have found the following piece of code: {% highlight csharp %} public class TemplateCache : ConcurrentDictionary { } {% endhighlight... <a class="read-more" href="/inheritance-just-say-no">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             
@@ -461,7 +461,7 @@
             <h2 class="post-title"><a href="/abusing-local-functions-to-hide-design-problems">Abusing local functions to hide design problems</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>Recently I was browsing through a certain code base and I saw a code similar to this: public class EnterpriseNotificationSender { private readonly IUserManagementService _userManagementService; //... <a class="read-more" href="/abusing-local-functions-to-hide-design-problems">&raquo;</a></p>
+            <p>Recently I was browsing through a certain code base and I saw a code similar to this: {% highlight csharp %} public class EnterpriseNotificationSender { private... <a class="read-more" href="/abusing-local-functions-to-hide-design-problems">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             
@@ -496,7 +496,7 @@
             <h2 class="post-title"><a href="/avoid-hidden-coupling-to-interface-implementation">Avoid hidden coupling to interface implementation</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>A few days ago I was reviewing a pull request at work and one line of code catch my eye: var @event = new CupOfCoffeeReadyEvent(/* ...... <a class="read-more" href="/avoid-hidden-coupling-to-interface-implementation">&raquo;</a></p>
+            <p>A few days ago I was reviewing a pull request at work and one line of code catch my eye: {% highlight csharp %} var @event... <a class="read-more" href="/avoid-hidden-coupling-to-interface-implementation">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             
@@ -531,7 +531,7 @@
             <h2 class="post-title"><a href="/fluent-validation-and-complex-dependencies-between-properties">Fluent Validation and complex dependencies between properties</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>FluentValidation is one of the best validation libraries for .NET. I use it daily both at work and in my personal pet projects. Still from time... <a class="read-more" href="/fluent-validation-and-complex-dependencies-between-properties">&raquo;</a></p>
+            <p>[FluentValidation](https://fluentvalidation.net/) is one of the best validation libraries for .NET. I use it daily both at work and in my personal pet projects. Still from time... <a class="read-more" href="/fluent-validation-and-complex-dependencies-between-properties">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             
@@ -566,7 +566,7 @@
             <h2 class="post-title"><a href="/you-can-live-without-your-mocking-framework">You can live without mocking frameworks</a></h2>
         </header>
         <section class="post-excerpt">
-            <p>For a long time I have been fan of mocking frameworks like Moq and NSubstitute. These libraries seems indispensable while unit-testing. They allow us to easily... <a class="read-more" href="/you-can-live-without-your-mocking-framework">&raquo;</a></p>
+            <p>For a long time I have been fan of mocking frameworks like [Moq](https://github.com/Moq/moq4/wiki/Quickstart) and [NSubstitute](http://nsubstitute.github.io). These libraries seems indispensable while unit-testing. They allow us to easily... <a class="read-more" href="/you-can-live-without-your-mocking-framework">&raquo;</a></p>
         </section>
         <footer class="post-meta">
             

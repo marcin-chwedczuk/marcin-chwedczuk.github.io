@@ -5,7 +5,7 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>http://blog.marcinchwedczuk.pl</link>
+   <link>http://localhost:4000</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor>mc</managingEditor>
@@ -13,10 +13,10 @@
    
 	<item>
 	  <title>Floating point numbers and Unit Testing</title>
-	  <link>http://blog.marcinchwedczuk.pl/doubles-and-unit-testing</link>
+	  <link>http://localhost:4000/doubles-and-unit-testing</link>
 	  <author>mc</author>
 	  <pubDate>2019-09-18T02:00:01+02:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/doubles-and-unit-testing</guid>
+	  <guid>http://localhost:4000/doubles-and-unit-testing</guid>
 	
 		<description>&lt;p&gt;Floating point numbers are inherently imprecise.
 This can be problematic when we try to unit test
@@ -30,10 +30,10 @@ Let’s see this on an example
 
 	<item>
 	  <title>Fluent Validation and complex dependencies between properties</title>
-	  <link>http://blog.marcinchwedczuk.pl/fluent-validation-and-complex-dependencies-between-properties</link>
+	  <link>http://localhost:4000/fluent-validation-and-complex-dependencies-between-properties</link>
 	  <author>mc</author>
 	  <pubDate>2018-09-18T02:00:00+02:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/fluent-validation-and-complex-dependencies-between-properties</guid>
+	  <guid>http://localhost:4000/fluent-validation-and-complex-dependencies-between-properties</guid>
 	
 		<description>&lt;p&gt;&lt;a href=&quot;https://fluentvalidation.net/&quot;&gt;FluentValidation&lt;/a&gt; is one of the
 best validation libraries for .NET. I use it daily both at work
@@ -49,10 +49,10 @@ deal with recently.&lt;/p&gt;
 
 	<item>
 	  <title>You can live without mocking frameworks</title>
-	  <link>http://blog.marcinchwedczuk.pl/you-can-live-without-your-mocking-framework</link>
+	  <link>http://localhost:4000/you-can-live-without-your-mocking-framework</link>
 	  <author>mc</author>
 	  <pubDate>2018-09-08T02:00:00+02:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/you-can-live-without-your-mocking-framework</guid>
+	  <guid>http://localhost:4000/you-can-live-without-your-mocking-framework</guid>
 	
 		<description>&lt;p&gt;For a long time I have been fan of mocking frameworks like 
 &lt;a href=&quot;https://github.com/Moq/moq4/wiki/Quickstart&quot;&gt;Moq&lt;/a&gt;

@@ -5,7 +5,7 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>http://blog.marcinchwedczuk.pl</link>
+   <link>http://localhost:4000</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor>mc</managingEditor>
@@ -13,10 +13,10 @@
    
 	<item>
 	  <title>How to fix Vim freezes</title>
-	  <link>http://blog.marcinchwedczuk.pl/how-to-fix-vim-freezes</link>
+	  <link>http://localhost:4000/how-to-fix-vim-freezes</link>
 	  <author>mc</author>
 	  <pubDate>2016-07-16T02:00:00+02:00</pubDate>
-	  <guid>http://blog.marcinchwedczuk.pl/how-to-fix-vim-freezes</guid>
+	  <guid>http://localhost:4000/how-to-fix-vim-freezes</guid>
 	
 		<description>&lt;p&gt;When I switched from Visual Studio to using Vim I often experienced
 Vim freezes. This was really annoying. At the beginning I was thinking
