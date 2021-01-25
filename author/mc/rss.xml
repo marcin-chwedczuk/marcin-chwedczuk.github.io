@@ -12,6 +12,174 @@
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
+	  <title>Filtering log lines using exception messages in log4j2</title>
+	  <link>//filter-by-exception-message-log4j2</link>
+	  <author>mc</author>
+	  <pubDate>2021-01-25T01:00:01+01:00</pubDate>
+	  <guid>//filter-by-exception-message-log4j2</guid>
+	  <description><![CDATA[
+	     <p>Recently I needed to filter out messages logged by a bit too verbose library.
+This is not too difficult in log4j2 since we can attach filters at <code class="highlighter-rouge">Configuration</code>,
+<code class="highlighter-rouge">Appender</code> and <code class="highlighter-rouge">Logger</code> levels:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;Configuration&gt;</span>
+  <span class="nt">&lt;Filters&gt;</span>
+    <span class="c">&lt;!-- 
+    (?s) - regex DOT matches all characters including new lines 
+    --&gt;</span>
+    <span class="nt">&lt;RegexFilter</span> <span class="na">regex=</span><span class="s">"(?s).*koopa.*"</span> 
+                 <span class="na">onMatch=</span><span class="s">"DENY"</span> <span class="na">onMismatch=</span><span class="s">"NEUTRAL"</span><span class="nt">/&gt;</span>
+  <span class="nt">&lt;/Filters&gt;</span>
+  <span class="nt">&lt;Appenders&gt;</span>
+    <span class="nt">&lt;Console</span> <span class="na">name=</span><span class="s">"stdout"</span> <span class="na">target=</span><span class="s">"SYSTEM_OUT"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;Filters&gt;</span>
+        <span class="nt">&lt;RegexFilter</span> <span class="na">regex=</span><span class="s">"(?s).*koopa.*"</span> 
+                     <span class="na">onMatch=</span><span class="s">"DENY"</span> <span class="na">onMismatch=</span><span class="s">"NEUTRAL"</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;/Filters&gt;</span>
+      <span class="nt">&lt;PatternLayout</span> <span class="na">pattern=</span><span class="s">"%d %p [thread=%t][logger=%C] - %m%n"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/Console&gt;</span>
+  <span class="nt">&lt;/Appenders&gt;</span>
+  <span class="nt">&lt;Loggers&gt;</span>
+    <span class="nt">&lt;Logger</span> <span class="na">name=</span><span class="s">"pl.marcinchwedczuk.ctftools.LoggingApp"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;Filters&gt;</span>
+        <span class="nt">&lt;RegexFilter</span> <span class="na">regex=</span><span class="s">"(?s).*koopa.*"</span> 
+                     <span class="na">onMatch=</span><span class="s">"DENY"</span> <span class="na">onMismatch=</span><span class="s">"NEUTRAL"</span><span class="nt">/&gt;</span>
+      <span class="nt">&lt;/Filters&gt;</span>
+    <span class="nt">&lt;/Logger&gt;</span>
+    <span class="nt">&lt;Root</span> <span class="na">level=</span><span class="s">"DEBUG"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;AppenderRef</span> <span class="na">ref=</span><span class="s">"stdout"</span><span class="nt">/&gt;</span>
+    <span class="nt">&lt;/Root&gt;</span>
+  <span class="nt">&lt;/Loggers&gt;</span>
+<span class="nt">&lt;/Configuration&gt;</span></code></pre></figure>
+
+<p>This works well with both plain text and formatted log lines (e.g. <code class="highlighter-rouge">price = {}.</code>),
+but is not sufficient if we want to filter by the messages of logged exceptions.</p>
+
+<p>For example with the above configuration this code still prints <code class="highlighter-rouge">koopa</code> to stdout:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">logger</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"blah something bad happened"</span><span class="o">,</span> 
+        <span class="k">new</span> <span class="nf">RuntimeException</span><span class="o">(</span><span class="s">"koopa"</span><span class="o">));</span></code></pre></figure>
+
+<p>The only solution to this problem that I have found is to create our own filter:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kn">package</span> <span class="n">pl</span><span class="o">.</span><span class="na">marcinchwedczuk</span><span class="o">.</span><span class="na">ctftools</span><span class="o">.</span><span class="na">log4j2</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">org.apache.logging.log4j.Level</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.logging.log4j.Marker</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.logging.log4j.core.Filter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.logging.log4j.core.LogEvent</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.logging.log4j.core.Logger</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.logging.log4j.core.config.Node</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.logging.log4j.core.config.plugins.Plugin</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.logging.log4j.core.config.plugins.PluginAttribute</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.logging.log4j.core.config.plugins.PluginFactory</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.logging.log4j.core.filter.AbstractFilter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.apache.logging.log4j.message.Message</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">java.util.regex.Matcher</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.regex.Pattern</span><span class="o">;</span>
+
+<span class="nd">@Plugin</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="n">ExceptionMessageRegexFilter</span><span class="o">.</span><span class="na">FILTER_NAME</span><span class="o">,</span>
+    <span class="n">category</span> <span class="o">=</span> <span class="n">Node</span><span class="o">.</span><span class="na">CATEGORY</span><span class="o">,</span>
+    <span class="n">elementType</span> <span class="o">=</span> <span class="n">Filter</span><span class="o">.</span><span class="na">ELEMENT_TYPE</span><span class="o">,</span>
+    <span class="n">printObject</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ExceptionMessageRegexFilter</span> <span class="kd">extends</span> <span class="n">AbstractFilter</span> <span class="o">{</span>
+  <span class="kd">static</span> <span class="kd">final</span> <span class="n">String</span> <span class="n">FILTER_NAME</span> <span class="o">=</span> <span class="s">"ExceptionMessageRegexFilter"</span><span class="o">;</span>
+
+  <span class="kd">private</span> <span class="kd">final</span> <span class="n">Pattern</span> <span class="n">pattern</span><span class="o">;</span>
+
+  <span class="kd">private</span> <span class="nf">ExceptionMessageRegexFilter</span><span class="o">(</span>
+      <span class="n">Pattern</span> <span class="n">pattern</span><span class="o">,</span> <span class="n">Result</span> <span class="n">onMatch</span><span class="o">,</span> <span class="n">Result</span> <span class="n">onMismatch</span><span class="o">)</span>
+  <span class="o">{</span>
+    <span class="kd">super</span><span class="o">(</span><span class="n">onMatch</span><span class="o">,</span> <span class="n">onMismatch</span><span class="o">);</span>
+    <span class="k">this</span><span class="o">.</span><span class="na">pattern</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="n">Result</span> <span class="nf">filter</span><span class="o">(</span><span class="n">Logger</span> <span class="n">logger</span><span class="o">,</span> <span class="n">Level</span> <span class="n">level</span><span class="o">,</span>
+             <span class="n">Marker</span> <span class="n">marker</span><span class="o">,</span> <span class="n">Object</span> <span class="n">msg</span><span class="o">,</span>
+             <span class="n">Throwable</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nf">doFilter</span><span class="o">(</span><span class="n">t</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="n">Result</span> <span class="nf">filter</span><span class="o">(</span><span class="n">Logger</span> <span class="n">logger</span><span class="o">,</span> <span class="n">Level</span> <span class="n">level</span><span class="o">,</span>
+             <span class="n">Marker</span> <span class="n">marker</span><span class="o">,</span> <span class="n">Message</span> <span class="n">msg</span><span class="o">,</span>
+             <span class="n">Throwable</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nf">doFilter</span><span class="o">(</span><span class="n">t</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="n">Result</span> <span class="nf">filter</span><span class="o">(</span><span class="n">LogEvent</span> <span class="n">event</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="nf">doFilter</span><span class="o">(</span><span class="n">event</span><span class="o">.</span><span class="na">getThrown</span><span class="o">());</span>
+  <span class="o">}</span>
+
+  <span class="kd">private</span> <span class="n">Result</span> <span class="nf">doFilter</span><span class="o">(</span><span class="n">Throwable</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">t</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">onMismatch</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="n">String</span> <span class="n">msg</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="na">getMessage</span><span class="o">();</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">msg</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="k">return</span> <span class="n">onMismatch</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">final</span> <span class="n">Matcher</span> <span class="n">m</span> <span class="o">=</span> <span class="n">pattern</span><span class="o">.</span><span class="na">matcher</span><span class="o">(</span><span class="n">msg</span><span class="o">);</span>
+    <span class="k">return</span> <span class="n">m</span><span class="o">.</span><span class="na">matches</span><span class="o">()</span> <span class="o">?</span> <span class="n">onMatch</span> <span class="o">:</span> <span class="n">onMismatch</span><span class="o">;</span>
+  <span class="o">}</span>
+
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="n">String</span> <span class="nf">toString</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="n">String</span><span class="o">.</span><span class="na">format</span><span class="o">(</span><span class="s">"pattern=%s"</span><span class="o">,</span> <span class="n">pattern</span><span class="o">);</span>
+  <span class="o">}</span>
+
+  <span class="nd">@PluginFactory</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="n">ExceptionMessageRegexFilter</span> <span class="nf">createFilter</span><span class="o">(</span>
+      <span class="nd">@PluginAttribute</span><span class="o">(</span><span class="s">"regex"</span><span class="o">)</span> <span class="n">String</span> <span class="n">regex</span><span class="o">,</span>
+      <span class="nd">@PluginAttribute</span><span class="o">(</span><span class="s">"onMatch"</span><span class="o">)</span> <span class="n">Result</span> <span class="n">match</span><span class="o">,</span>
+      <span class="nd">@PluginAttribute</span><span class="o">(</span><span class="s">"onMismatch"</span><span class="o">)</span> <span class="n">Result</span> <span class="n">mismatch</span><span class="o">)</span>
+  <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">regex</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">LOGGER</span><span class="o">.</span><span class="na">error</span><span class="o">(</span><span class="s">"A regular expression must be provided for "</span> 
+        <span class="o">+</span> <span class="n">FILTER_NAME</span><span class="o">);</span>
+      <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="k">return</span> <span class="k">new</span> <span class="nf">ExceptionMessageRegexFilter</span><span class="o">(</span>
+            <span class="n">Pattern</span><span class="o">.</span><span class="na">compile</span><span class="o">(</span><span class="n">regex</span><span class="o">),</span> <span class="n">match</span><span class="o">,</span> <span class="n">mismatch</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The last thing to do is to use our filter in <code class="highlighter-rouge">log4j2.xml</code> file:</p>
+
+<figure class="highlight"><pre><code class="language-xml" data-lang="xml"><span class="cp">&lt;?xml version="1.0" encoding="UTF-8"?&gt;</span>
+<span class="nt">&lt;Configuration</span> <span class="na">packages=</span><span class="s">"pl.marcinchwedczuk.ctftools.log4j2"</span> 
+               <span class="na">status=</span><span class="s">"warn"</span><span class="nt">&gt;</span>
+   <span class="nt">&lt;Loggers&gt;</span>
+    <span class="nt">&lt;Logger</span> <span class="na">name=</span><span class="s">"pl.marcinchwedczuk.ctftools.LoggingApp"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;Filters&gt;</span>
+        <span class="nt">&lt;RegexFilter</span> <span class="na">regex=</span><span class="s">"(?s).*koopa.*"</span> 
+                     <span class="na">onMatch=</span><span class="s">"DENY"</span> <span class="na">onMismatch=</span><span class="s">"NEUTRAL"</span><span class="nt">/&gt;</span>
+        <span class="nt">&lt;ExceptionMessageRegexFilter</span> <span class="na">regex=</span><span class="s">"(?s).*koopa.*"</span> 
+                                     <span class="na">onMatch=</span><span class="s">"DENY"</span> 
+                                     <span class="na">onMismatch=</span><span class="s">"NEUTRAL"</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;/Filters&gt;</span>
+    <span class="nt">&lt;/Logger&gt;</span>
+  <span class="nt">&lt;/Loggers&gt;</span>
+<span class="nt">&lt;/Configuration&gt;</span></code></pre></figure>
+
+<p>Two important things to notice here before we are done:</p>
+
+<ul>
+  <li>We need to specify package containing our filter using <code class="highlighter-rouge">packages</code> attribute of <code class="highlighter-rouge">Configuration</code> XML element.</li>
+  <li>To make filters composable we should use <code class="highlighter-rouge">NEUTRAL/DENY</code> or <code class="highlighter-rouge">NEUTRAL/ACCEPT</code> pair rather than <code class="highlighter-rouge">ACCEPT/DENY</code> in <code class="highlighter-rouge">onMatch</code> and <code class="highlighter-rouge">onMismatch</code> attributes.</li>
+</ul>
+
+	  ]]></description>
+	</item>
+
+	<item>
 	  <title>SSH like a Pro</title>
 	  <link>//ssh-like-a-pro</link>
 	  <author>mc</author>
@@ -1898,81 +2066,6 @@ Run `jhat heapdump` to start `jhat` HTTP server with basic
 heapdump browser.
 
 EDIT: Unfortunately `jhat` was removed in JDK9.
-	  ]]></description>
-	</item>
-
-	<item>
-	  <title>iTerm2 cheat sheet</title>
-	  <link>//iterm2-cheat-sheet</link>
-	  <author>mc</author>
-	  <pubDate>2020-07-08T02:00:01+02:00</pubDate>
-	  <guid>//iterm2-cheat-sheet</guid>
-	  <description><![CDATA[
-	     iTerm2 is one of the best terminal emulators out there.
-But to appreciate its full power you should know how to
-use it effectively.
-Here are shortcuts that I find indispensible while working with iTerm2.
-
-#### Working with panes
-
-* `Command + D` - Split vertically
-* `Command + Shift + D` - Split horizontally
-* `Command + W` - Close pane
-
-* `Command + Option + Arrows` - Navigate between panes
-* `Control + Command + Arrow` - Resize current pane
-* `Command + Shift + Enter` - Maximize current pane / Restore its original size
-
-* `Command + K` - Clear current pane
-
-#### Text editing
-
-* `Control + A` - Move to the line beginning
-* `Control + E` - Move to the line end
-
-Consider enabling "Natural Text Editing" (instructions [here](https://apple.stackexchange.com/a/293988))
-if you want to use `Option + Left/Right Arrow` for
-one word forward/backward navigation instead of
-awkward `Control+] F` / `Esc F` (Escape followed by F for forward or
-B for backward).
-
-* `Option + Delete` - Delete one world
-* `Command + Delete` - Delete entire line
-
-#### Scrolling
-
-* `Fn + Shift + Up Arrow` - Page Up
-* `Fn + Shift + Down Arrow` - Page Down
-
-#### Tabs
-
-* `Command + T` - Create new tab
-* `Command + <num>` - Move to `num`th tab e.g. `Command + 3`
-* `Command + Left/Right arrow` - Move to left/right tab
-* `Command + Option + W` - Close tab
-
-Add the following function to your `~/.profile`:
-{% highlight bash %}
-title() {
-	echo -ne "\e]1;$@\a"
-}
-{% endhighlight %}
-Then you can use `title foo` to set iTerm2 tab title.
-
-#### iTerm2 Window
-
-* `Command + Enter` - Enter / Leave full screen mode
-* `Command + ,` - Show preferences
-
-#### History search
-
-* `Control + R` - Start history search (fuzzy search)
-* `Control + R` - Move to the next suggestion
-
-#### Other
-
-* `Command + ;` - Open graphical autocomplete menu in iTerm2
-* Use `open URL` command to open given file in MacOS e.g. `open 'https://google.com'` or `open .` to open current directory in Finder
 	  ]]></description>
 	</item>
 
