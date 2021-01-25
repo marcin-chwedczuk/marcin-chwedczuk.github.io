@@ -5,7 +5,7 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>http://localhost:4000</link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor>mc</managingEditor>
@@ -13,10 +13,10 @@
    
 	<item>
 	  <title>Lambda expressions in Kotlin</title>
-	  <link>http://localhost:4000/lambda-expressions-in-kotlin</link>
+	  <link>http://blog.marcinchwedczuk.pl/lambda-expressions-in-kotlin</link>
 	  <author>mc</author>
 	  <pubDate>2017-06-10T02:00:00+02:00</pubDate>
-	  <guid>http://localhost:4000/lambda-expressions-in-kotlin</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/lambda-expressions-in-kotlin</guid>
 	
 		<description>&lt;p&gt;In this blog post we will learn about Kotlin lambda expressions
 and how they are compiled to JVM bytecode.&lt;/p&gt;

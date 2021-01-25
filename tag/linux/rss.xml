@@ -5,7 +5,7 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>http://localhost:4000</link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor>mc</managingEditor>
@@ -13,10 +13,10 @@
    
 	<item>
 	  <title>How to use grep command</title>
-	  <link>http://localhost:4000/how-to-use-grep-command</link>
+	  <link>http://blog.marcinchwedczuk.pl/how-to-use-grep-command</link>
 	  <author>mc</author>
 	  <pubDate>2016-08-20T02:00:00+02:00</pubDate>
-	  <guid>http://localhost:4000/how-to-use-grep-command</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/how-to-use-grep-command</guid>
 	
 		<description>&lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;grep&lt;/code&gt; is a command line program that allows us to find all occurrences of given pattern
 in the text.
@@ -72,10 +72,10 @@ called &lt;a href=&quot;https://en.wikipedia.org/wiki/Bash_(Unix_shell)#Brace_ex
 
 	<item>
 	  <title>How to use find command</title>
-	  <link>http://localhost:4000/how-to-use-find-command</link>
+	  <link>http://blog.marcinchwedczuk.pl/how-to-use-find-command</link>
 	  <author>mc</author>
 	  <pubDate>2016-07-26T02:00:00+02:00</pubDate>
-	  <guid>http://localhost:4000/how-to-use-find-command</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/how-to-use-find-command</guid>
 	
 		<description>&lt;p&gt;Linux &lt;code class=&quot;highlighter-rouge&quot;&gt;find&lt;/code&gt; command may be used to find files and directories
 that meet specified conditions. The most popular
@@ -92,10 +92,10 @@ search conditions, so let’s begin.&lt;/p&gt;
 
 	<item>
 	  <title>How to use xargs</title>
-	  <link>http://localhost:4000/how-to-use-xargs</link>
+	  <link>http://blog.marcinchwedczuk.pl/how-to-use-xargs</link>
 	  <author>mc</author>
 	  <pubDate>2016-07-09T02:00:00+02:00</pubDate>
-	  <guid>http://localhost:4000/how-to-use-xargs</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/how-to-use-xargs</guid>
 	
 		<description>&lt;p&gt;In this blog post I will show you how to use &lt;code class=&quot;highlighter-rouge&quot;&gt;xargs&lt;/code&gt; command line utility.&lt;/p&gt;
 

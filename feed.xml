@@ -3,7 +3,7 @@
   <channel>
     <title>Programming is Magic - Articles</title>
     <description>A place where I share my thoughts about programming.</description>
-    <link>http://localhost:4000</link>
+    <link>http://blog.marcinchwedczuk.pl</link>
     
       
       <item>
@@ -16,8 +16,8 @@ This is not too difficult in log4j2 since we can attach filters at &lt;code clas
 </description>
         
         <pubDate>Mon, 25 Jan 2021 01:00:01 +0100</pubDate>
-        <link>http://localhost:4000/filter-by-exception-message-log4j2</link>
-        <guid isPermaLink="true">http://localhost:4000/filter-by-exception-message-log4j2</guid>
+        <link>http://blog.marcinchwedczuk.pl/filter-by-exception-message-log4j2</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/filter-by-exception-message-log4j2</guid>
       </item>
       
     
@@ -31,8 +31,8 @@ that can make you a more productive SSH user.&lt;/p&gt;
 </description>
         
         <pubDate>Thu, 01 Oct 2020 02:00:01 +0200</pubDate>
-        <link>http://localhost:4000/ssh-like-a-pro</link>
-        <guid isPermaLink="true">http://localhost:4000/ssh-like-a-pro</guid>
+        <link>http://blog.marcinchwedczuk.pl/ssh-like-a-pro</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/ssh-like-a-pro</guid>
       </item>
       
     
@@ -52,8 +52,8 @@ W efekcie komputer potrafił nie startować lub zawieszał się podczas wykonywa
 </description>
         
         <pubDate>Tue, 29 Sep 2020 02:00:01 +0200</pubDate>
-        <link>http://localhost:4000/minikomputer-8085-czesc-II</link>
-        <guid isPermaLink="true">http://localhost:4000/minikomputer-8085-czesc-II</guid>
+        <link>http://blog.marcinchwedczuk.pl/minikomputer-8085-czesc-II</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/minikomputer-8085-czesc-II</guid>
       </item>
       
     
@@ -74,8 +74,8 @@ z początku 2019 roku.&lt;/p&gt;
 </description>
         
         <pubDate>Sun, 20 Sep 2020 02:00:01 +0200</pubDate>
-        <link>http://localhost:4000/minikomputer-8085-czesc-I</link>
-        <guid isPermaLink="true">http://localhost:4000/minikomputer-8085-czesc-I</guid>
+        <link>http://blog.marcinchwedczuk.pl/minikomputer-8085-czesc-I</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/minikomputer-8085-czesc-I</guid>
       </item>
       
     
@@ -92,8 +92,8 @@ Let me present my way of reasoning here.&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 12 Sep 2020 02:00:01 +0200</pubDate>
-        <link>http://localhost:4000/future-or-future</link>
-        <guid isPermaLink="true">http://localhost:4000/future-or-future</guid>
+        <link>http://blog.marcinchwedczuk.pl/future-or-future</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/future-or-future</guid>
       </item>
       
     
@@ -108,8 +108,8 @@ As a side effect, on the code level I often see class declarations like this:&lt
 </description>
         
         <pubDate>Fri, 11 Sep 2020 02:00:01 +0200</pubDate>
-        <link>http://localhost:4000/passing-functions-as-arguments-in-scala-what-can-go-wrong</link>
-        <guid isPermaLink="true">http://localhost:4000/passing-functions-as-arguments-in-scala-what-can-go-wrong</guid>
+        <link>http://blog.marcinchwedczuk.pl/passing-functions-as-arguments-in-scala-what-can-go-wrong</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/passing-functions-as-arguments-in-scala-what-can-go-wrong</guid>
       </item>
       
     
@@ -126,8 +126,8 @@ does not look as crisp and clear as in Ben videos:
 </description>
         
         <pubDate>Thu, 10 Sep 2020 02:00:01 +0200</pubDate>
-        <link>http://localhost:4000/preparing-images-for-ben-eater-vga-using-gimp</link>
-        <guid isPermaLink="true">http://localhost:4000/preparing-images-for-ben-eater-vga-using-gimp</guid>
+        <link>http://blog.marcinchwedczuk.pl/preparing-images-for-ben-eater-vga-using-gimp</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/preparing-images-for-ben-eater-vga-using-gimp</guid>
       </item>
       
     
@@ -146,8 +146,8 @@ będzie wykorzystać również przy innych grach np. warcabach.&lt;/p&gt;
 </description>
         
         <pubDate>Thu, 06 Aug 2020 02:00:01 +0200</pubDate>
-        <link>http://localhost:4000/cierpienia-mlodego-wertera</link>
-        <guid isPermaLink="true">http://localhost:4000/cierpienia-mlodego-wertera</guid>
+        <link>http://blog.marcinchwedczuk.pl/cierpienia-mlodego-wertera</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/cierpienia-mlodego-wertera</guid>
       </item>
       
     
@@ -163,8 +163,8 @@ can be very cumbersome.&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 01 Aug 2020 02:00:01 +0200</pubDate>
-        <link>http://localhost:4000/scala-nesting-monads</link>
-        <guid isPermaLink="true">http://localhost:4000/scala-nesting-monads</guid>
+        <link>http://blog.marcinchwedczuk.pl/scala-nesting-monads</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/scala-nesting-monads</guid>
       </item>
       
     
@@ -179,8 +179,8 @@ know about them. In this post we will take a look at
 </description>
         
         <pubDate>Fri, 10 Jul 2020 02:00:01 +0200</pubDate>
-        <link>http://localhost:4000/useful-jdk-tools-part-1</link>
-        <guid isPermaLink="true">http://localhost:4000/useful-jdk-tools-part-1</guid>
+        <link>http://blog.marcinchwedczuk.pl/useful-jdk-tools-part-1</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/useful-jdk-tools-part-1</guid>
       </item>
       
     
@@ -196,8 +196,8 @@ Here are shortcuts that I find indispensible while working with iTerm2.&lt;/p&gt
 </description>
         
         <pubDate>Wed, 08 Jul 2020 02:00:01 +0200</pubDate>
-        <link>http://localhost:4000/iterm2-cheat-sheet</link>
-        <guid isPermaLink="true">http://localhost:4000/iterm2-cheat-sheet</guid>
+        <link>http://blog.marcinchwedczuk.pl/iterm2-cheat-sheet</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/iterm2-cheat-sheet</guid>
       </item>
       
     
@@ -217,8 +217,8 @@ If your converter has such a jumper make sure that it is in 3.3V position.
 </description>
         
         <pubDate>Tue, 07 Jul 2020 02:00:01 +0200</pubDate>
-        <link>http://localhost:4000/connecting-to-raspberry-pi-via-uart</link>
-        <guid isPermaLink="true">http://localhost:4000/connecting-to-raspberry-pi-via-uart</guid>
+        <link>http://blog.marcinchwedczuk.pl/connecting-to-raspberry-pi-via-uart</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/connecting-to-raspberry-pi-via-uart</guid>
       </item>
       
     
@@ -232,8 +232,8 @@ this program:&lt;/p&gt;
 </description>
         
         <pubDate>Mon, 06 Jul 2020 02:00:01 +0200</pubDate>
-        <link>http://localhost:4000/scala-wtf-1</link>
-        <guid isPermaLink="true">http://localhost:4000/scala-wtf-1</guid>
+        <link>http://blog.marcinchwedczuk.pl/scala-wtf-1</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/scala-wtf-1</guid>
       </item>
       
     
@@ -247,8 +247,8 @@ The table below presents regex operators that we are going to support:&lt;/p&gt;
 </description>
         
         <pubDate>Sun, 28 Jun 2020 02:00:01 +0200</pubDate>
-        <link>http://localhost:4000/matching-regexes-using-backtracking</link>
-        <guid isPermaLink="true">http://localhost:4000/matching-regexes-using-backtracking</guid>
+        <link>http://blog.marcinchwedczuk.pl/matching-regexes-using-backtracking</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/matching-regexes-using-backtracking</guid>
       </item>
       
     
@@ -267,8 +267,8 @@ In Java we can express this as:&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 27 Jun 2020 02:00:01 +0200</pubDate>
-        <link>http://localhost:4000/continuations-in-java</link>
-        <guid isPermaLink="true">http://localhost:4000/continuations-in-java</guid>
+        <link>http://blog.marcinchwedczuk.pl/continuations-in-java</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/continuations-in-java</guid>
       </item>
       
     
@@ -286,8 +286,8 @@ pełna frustracji i porażek.&lt;/p&gt;
 </description>
         
         <pubDate>Mon, 30 Dec 2019 01:00:01 +0100</pubDate>
-        <link>http://localhost:4000/jak-zaczac-przygode-z-elektronika</link>
-        <guid isPermaLink="true">http://localhost:4000/jak-zaczac-przygode-z-elektronika</guid>
+        <link>http://blog.marcinchwedczuk.pl/jak-zaczac-przygode-z-elektronika</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/jak-zaczac-przygode-z-elektronika</guid>
       </item>
       
     
@@ -305,8 +305,8 @@ I open a new tab in my editor and start hacking test code.&lt;/p&gt;
 </description>
         
         <pubDate>Sun, 22 Dec 2019 01:00:01 +0100</pubDate>
-        <link>http://localhost:4000/pitfalls-of-using-Mockito-with-Scala</link>
-        <guid isPermaLink="true">http://localhost:4000/pitfalls-of-using-Mockito-with-Scala</guid>
+        <link>http://blog.marcinchwedczuk.pl/pitfalls-of-using-Mockito-with-Scala</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/pitfalls-of-using-Mockito-with-Scala</guid>
       </item>
       
     
@@ -332,8 +332,8 @@ I open a new tab in my editor and start hacking test code.&lt;/p&gt;
 </description>
         
         <pubDate>Tue, 17 Dec 2019 01:00:01 +0100</pubDate>
-        <link>http://localhost:4000/binary-to-gray-algorithm-explained</link>
-        <guid isPermaLink="true">http://localhost:4000/binary-to-gray-algorithm-explained</guid>
+        <link>http://blog.marcinchwedczuk.pl/binary-to-gray-algorithm-explained</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/binary-to-gray-algorithm-explained</guid>
       </item>
       
     
@@ -348,8 +348,8 @@ to &lt;code class=&quot;highlighter-rouge&quot;&gt;mobi&lt;/code&gt; dictionarie
 </description>
         
         <pubDate>Mon, 02 Dec 2019 01:00:01 +0100</pubDate>
-        <link>http://localhost:4000/converting-dsl-files-to-kindle-dictionary</link>
-        <guid isPermaLink="true">http://localhost:4000/converting-dsl-files-to-kindle-dictionary</guid>
+        <link>http://blog.marcinchwedczuk.pl/converting-dsl-files-to-kindle-dictionary</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/converting-dsl-files-to-kindle-dictionary</guid>
       </item>
       
     
@@ -370,8 +370,8 @@ This post is the result of this few hours of hacking. Enjoy!&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 21 Sep 2019 02:00:01 +0200</pubDate>
-        <link>http://localhost:4000/fun-with-at-commands-and-old-modem</link>
-        <guid isPermaLink="true">http://localhost:4000/fun-with-at-commands-and-old-modem</guid>
+        <link>http://blog.marcinchwedczuk.pl/fun-with-at-commands-and-old-modem</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/fun-with-at-commands-and-old-modem</guid>
       </item>
       
     
@@ -391,8 +391,8 @@ works and you will be able to write your own extractors.&lt;/p&gt;
 </description>
         
         <pubDate>Thu, 19 Sep 2019 02:00:01 +0200</pubDate>
-        <link>http://localhost:4000/ultimate-guide-to-scalas-match-expression</link>
-        <guid isPermaLink="true">http://localhost:4000/ultimate-guide-to-scalas-match-expression</guid>
+        <link>http://blog.marcinchwedczuk.pl/ultimate-guide-to-scalas-match-expression</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/ultimate-guide-to-scalas-match-expression</guid>
       </item>
       
     
@@ -409,8 +409,8 @@ Let’s see this on an example
 </description>
         
         <pubDate>Wed, 18 Sep 2019 02:00:01 +0200</pubDate>
-        <link>http://localhost:4000/doubles-and-unit-testing</link>
-        <guid isPermaLink="true">http://localhost:4000/doubles-and-unit-testing</guid>
+        <link>http://blog.marcinchwedczuk.pl/doubles-and-unit-testing</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/doubles-and-unit-testing</guid>
       </item>
       
     
@@ -437,8 +437,8 @@ Let’s see this on an example
 </description>
         
         <pubDate>Sun, 14 Apr 2019 02:00:01 +0200</pubDate>
-        <link>http://localhost:4000/odroid-go-review</link>
-        <guid isPermaLink="true">http://localhost:4000/odroid-go-review</guid>
+        <link>http://blog.marcinchwedczuk.pl/odroid-go-review</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/odroid-go-review</guid>
       </item>
       
     
@@ -454,8 +454,8 @@ This is my very first trackball, I bought it for about 180PLN.&lt;/p&gt;
 </description>
         
         <pubDate>Sun, 14 Apr 2019 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/kensington-orbit-trackball-review</link>
-        <guid isPermaLink="true">http://localhost:4000/kensington-orbit-trackball-review</guid>
+        <link>http://blog.marcinchwedczuk.pl/kensington-orbit-trackball-review</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/kensington-orbit-trackball-review</guid>
       </item>
       
     
@@ -508,8 +508,8 @@ on the actual business problem that I try to solve.&lt;/p&gt;
 </description>
         
         <pubDate>Tue, 05 Mar 2019 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/reduce-cognitive-load</link>
-        <guid isPermaLink="true">http://localhost:4000/reduce-cognitive-load</guid>
+        <link>http://blog.marcinchwedczuk.pl/reduce-cognitive-load</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/reduce-cognitive-load</guid>
       </item>
       
     
@@ -530,8 +530,8 @@ a random PESEL as a password and then we will crack it using
 </description>
         
         <pubDate>Mon, 25 Feb 2019 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/why-using-pesel-as-a-password-is-a-very-bad-idea</link>
-        <guid isPermaLink="true">http://localhost:4000/why-using-pesel-as-a-password-is-a-very-bad-idea</guid>
+        <link>http://blog.marcinchwedczuk.pl/why-using-pesel-as-a-password-is-a-very-bad-idea</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/why-using-pesel-as-a-password-is-a-very-bad-idea</guid>
       </item>
       
     
@@ -563,8 +563,8 @@ Expected service.Add(1, 2) to be 3, but found 42.&lt;/code&gt;&lt;/pre&gt;&lt;/f
 </description>
         
         <pubDate>Sun, 10 Feb 2019 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/fluent-assertions-and-code-formatting</link>
-        <guid isPermaLink="true">http://localhost:4000/fluent-assertions-and-code-formatting</guid>
+        <link>http://blog.marcinchwedczuk.pl/fluent-assertions-and-code-formatting</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/fluent-assertions-and-code-formatting</guid>
       </item>
       
     
@@ -577,8 +577,8 @@ Expected service.Add(1, 2) to be 3, but found 42.&lt;/code&gt;&lt;/pre&gt;&lt;/f
 </description>
         
         <pubDate>Thu, 24 Jan 2019 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/spy-jvm-network-traffic-with-owasp-zap</link>
-        <guid isPermaLink="true">http://localhost:4000/spy-jvm-network-traffic-with-owasp-zap</guid>
+        <link>http://blog.marcinchwedczuk.pl/spy-jvm-network-traffic-with-owasp-zap</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/spy-jvm-network-traffic-with-owasp-zap</guid>
       </item>
       
     
@@ -630,8 +630,8 @@ a readonly property named &lt;code class=&quot;highlighter-rouge&quot;&gt;Passed
 </description>
         
         <pubDate>Sun, 06 Jan 2019 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/read-only-does-not-mean-immutable</link>
-        <guid isPermaLink="true">http://localhost:4000/read-only-does-not-mean-immutable</guid>
+        <link>http://blog.marcinchwedczuk.pl/read-only-does-not-mean-immutable</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/read-only-does-not-mean-immutable</guid>
       </item>
       
     
@@ -650,8 +650,8 @@ missing value.&lt;/p&gt;
 </description>
         
         <pubDate>Tue, 01 Jan 2019 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/random-thoughts-on-maybe</link>
-        <guid isPermaLink="true">http://localhost:4000/random-thoughts-on-maybe</guid>
+        <link>http://blog.marcinchwedczuk.pl/random-thoughts-on-maybe</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/random-thoughts-on-maybe</guid>
       </item>
       
     
@@ -676,8 +676,8 @@ Things like good test names and proper error messages are often forgotten.&lt;/p
 </description>
         
         <pubDate>Sat, 15 Dec 2018 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/nsubstitute-and-the-search-for-perfect-error-messages</link>
-        <guid isPermaLink="true">http://localhost:4000/nsubstitute-and-the-search-for-perfect-error-messages</guid>
+        <link>http://blog.marcinchwedczuk.pl/nsubstitute-and-the-search-for-perfect-error-messages</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/nsubstitute-and-the-search-for-perfect-error-messages</guid>
       </item>
       
     
@@ -697,8 +697,8 @@ of modern object oriented programming:&lt;/p&gt;
 </description>
         
         <pubDate>Wed, 12 Dec 2018 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/inheritance-just-say-no</link>
-        <guid isPermaLink="true">http://localhost:4000/inheritance-just-say-no</guid>
+        <link>http://blog.marcinchwedczuk.pl/inheritance-just-say-no</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/inheritance-just-say-no</guid>
       </item>
       
     
@@ -752,8 +752,8 @@ instead of long lambdas.&lt;/p&gt;
 </description>
         
         <pubDate>Mon, 08 Oct 2018 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/abusing-local-functions-to-hide-design-problems</link>
-        <guid isPermaLink="true">http://localhost:4000/abusing-local-functions-to-hide-design-problems</guid>
+        <link>http://blog.marcinchwedczuk.pl/abusing-local-functions-to-hide-design-problems</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/abusing-local-functions-to-hide-design-problems</guid>
       </item>
       
     
@@ -775,8 +775,8 @@ Fortunately for us this can be automated using Postman pre-request scripts.&lt;/
 </description>
         
         <pubDate>Sat, 29 Sep 2018 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/automatically-generate-new-oauth2-tokens-when-using-postman</link>
-        <guid isPermaLink="true">http://localhost:4000/automatically-generate-new-oauth2-tokens-when-using-postman</guid>
+        <link>http://blog.marcinchwedczuk.pl/automatically-generate-new-oauth2-tokens-when-using-postman</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/automatically-generate-new-oauth2-tokens-when-using-postman</guid>
       </item>
       
     
@@ -809,8 +809,8 @@ After half an hour, instead of a fix I get the following response:&lt;/p&gt;
 </description>
         
         <pubDate>Fri, 21 Sep 2018 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/avoid-hidden-coupling-to-interface-implementation</link>
-        <guid isPermaLink="true">http://localhost:4000/avoid-hidden-coupling-to-interface-implementation</guid>
+        <link>http://blog.marcinchwedczuk.pl/avoid-hidden-coupling-to-interface-implementation</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/avoid-hidden-coupling-to-interface-implementation</guid>
       </item>
       
     
@@ -829,8 +829,8 @@ deal with recently.&lt;/p&gt;
 </description>
         
         <pubDate>Tue, 18 Sep 2018 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/fluent-validation-and-complex-dependencies-between-properties</link>
-        <guid isPermaLink="true">http://localhost:4000/fluent-validation-and-complex-dependencies-between-properties</guid>
+        <link>http://blog.marcinchwedczuk.pl/fluent-validation-and-complex-dependencies-between-properties</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/fluent-validation-and-complex-dependencies-between-properties</guid>
       </item>
       
     
@@ -848,8 +848,8 @@ certain interaction between components took place.&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 08 Sep 2018 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/you-can-live-without-your-mocking-framework</link>
-        <guid isPermaLink="true">http://localhost:4000/you-can-live-without-your-mocking-framework</guid>
+        <link>http://blog.marcinchwedczuk.pl/you-can-live-without-your-mocking-framework</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/you-can-live-without-your-mocking-framework</guid>
       </item>
       
     
@@ -862,8 +862,8 @@ certain interaction between components took place.&lt;/p&gt;
 </description>
         
         <pubDate>Sun, 08 Jul 2018 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/repository-pattern-my-way</link>
-        <guid isPermaLink="true">http://localhost:4000/repository-pattern-my-way</guid>
+        <link>http://blog.marcinchwedczuk.pl/repository-pattern-my-way</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/repository-pattern-my-way</guid>
       </item>
       
     
@@ -877,8 +877,8 @@ in main conference room.]&lt;/p&gt;
 </description>
         
         <pubDate>Mon, 25 Jun 2018 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/devoxx-poland-2018</link>
-        <guid isPermaLink="true">http://localhost:4000/devoxx-poland-2018</guid>
+        <link>http://blog.marcinchwedczuk.pl/devoxx-poland-2018</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/devoxx-poland-2018</guid>
       </item>
       
     
@@ -894,8 +894,8 @@ with shading and ray tracing in general.&lt;/p&gt;
 </description>
         
         <pubDate>Sun, 06 May 2018 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/ray-tracing-torus</link>
-        <guid isPermaLink="true">http://localhost:4000/ray-tracing-torus</guid>
+        <link>http://blog.marcinchwedczuk.pl/ray-tracing-torus</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/ray-tracing-torus</guid>
       </item>
       
     
@@ -910,8 +910,8 @@ though.&lt;/p&gt;
 </description>
         
         <pubDate>Thu, 03 May 2018 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/dotnet-core-http-client-proxy-and-localhost</link>
-        <guid isPermaLink="true">http://localhost:4000/dotnet-core-http-client-proxy-and-localhost</guid>
+        <link>http://blog.marcinchwedczuk.pl/dotnet-core-http-client-proxy-and-localhost</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/dotnet-core-http-client-proxy-and-localhost</guid>
       </item>
       
     
@@ -928,8 +928,8 @@ very efficient.&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 16 Dec 2017 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/how-to-check-if-a-number-is-a-power-of-two</link>
-        <guid isPermaLink="true">http://localhost:4000/how-to-check-if-a-number-is-a-power-of-two</guid>
+        <link>http://blog.marcinchwedczuk.pl/how-to-check-if-a-number-is-a-power-of-two</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/how-to-check-if-a-number-is-a-power-of-two</guid>
       </item>
       
     
@@ -950,8 +950,8 @@ investigate using only Linux.&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 18 Nov 2017 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/a-closer-look-at-portable-executable-msdos-stub</link>
-        <guid isPermaLink="true">http://localhost:4000/a-closer-look-at-portable-executable-msdos-stub</guid>
+        <link>http://blog.marcinchwedczuk.pl/a-closer-look-at-portable-executable-msdos-stub</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/a-closer-look-at-portable-executable-msdos-stub</guid>
       </item>
       
     
@@ -966,8 +966,8 @@ learned from my colleagues.&lt;/p&gt;
 </description>
         
         <pubDate>Wed, 08 Nov 2017 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/java-streams-best-practices</link>
-        <guid isPermaLink="true">http://localhost:4000/java-streams-best-practices</guid>
+        <link>http://blog.marcinchwedczuk.pl/java-streams-best-practices</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/java-streams-best-practices</guid>
       </item>
       
     
@@ -1011,8 +1011,8 @@ and we moved to other questions.&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 30 Sep 2017 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/dont-ask-me-about-singletons</link>
-        <guid isPermaLink="true">http://localhost:4000/dont-ask-me-about-singletons</guid>
+        <link>http://blog.marcinchwedczuk.pl/dont-ask-me-about-singletons</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/dont-ask-me-about-singletons</guid>
       </item>
       
     
@@ -1026,8 +1026,8 @@ warning and when ignoring it may introduce bugs in your code.&lt;/p&gt;
 </description>
         
         <pubDate>Sun, 30 Jul 2017 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</link>
-        <guid isPermaLink="true">http://localhost:4000/HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</guid>
+        <link>http://blog.marcinchwedczuk.pl/HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</guid>
       </item>
       
     
@@ -1041,8 +1041,8 @@ using Ubuntu and NetBeans IDE.&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 24 Jun 2017 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/debugging-openjdk8-with-netbeans-on-ubuntu</link>
-        <guid isPermaLink="true">http://localhost:4000/debugging-openjdk8-with-netbeans-on-ubuntu</guid>
+        <link>http://blog.marcinchwedczuk.pl/debugging-openjdk8-with-netbeans-on-ubuntu</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/debugging-openjdk8-with-netbeans-on-ubuntu</guid>
       </item>
       
     
@@ -1056,8 +1056,8 @@ and how they are compiled to JVM bytecode.&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 10 Jun 2017 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/lambda-expressions-in-kotlin</link>
-        <guid isPermaLink="true">http://localhost:4000/lambda-expressions-in-kotlin</guid>
+        <link>http://blog.marcinchwedczuk.pl/lambda-expressions-in-kotlin</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/lambda-expressions-in-kotlin</guid>
       </item>
       
     
@@ -1078,8 +1078,8 @@ to pass data between GUI and application services.&lt;/p&gt;
 </description>
         
         <pubDate>Sun, 19 Feb 2017 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/zen-and-the-art-of-unit-testing</link>
-        <guid isPermaLink="true">http://localhost:4000/zen-and-the-art-of-unit-testing</guid>
+        <link>http://blog.marcinchwedczuk.pl/zen-and-the-art-of-unit-testing</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/zen-and-the-art-of-unit-testing</guid>
       </item>
       
     
@@ -1095,8 +1095,8 @@ other system, or your own entities before saving them to database.&lt;/p&gt;
 </description>
         
         <pubDate>Sun, 05 Feb 2017 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/hello-hibernate-validator</link>
-        <guid isPermaLink="true">http://localhost:4000/hello-hibernate-validator</guid>
+        <link>http://blog.marcinchwedczuk.pl/hello-hibernate-validator</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/hello-hibernate-validator</guid>
       </item>
       
     
@@ -1188,8 +1188,8 @@ decorators provided by &lt;code class=&quot;highlighter-rouge&quot;&gt;Comparato
 </description>
         
         <pubDate>Sat, 14 Jan 2017 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/comparing-with-nullsFirst-and-nullsLast</link>
-        <guid isPermaLink="true">http://localhost:4000/comparing-with-nullsFirst-and-nullsLast</guid>
+        <link>http://blog.marcinchwedczuk.pl/comparing-with-nullsFirst-and-nullsLast</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/comparing-with-nullsFirst-and-nullsLast</guid>
       </item>
       
     
@@ -1202,8 +1202,8 @@ decorators provided by &lt;code class=&quot;highlighter-rouge&quot;&gt;Comparato
 </description>
         
         <pubDate>Sat, 07 Jan 2017 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/spring-transactional-cheat-sheet</link>
-        <guid isPermaLink="true">http://localhost:4000/spring-transactional-cheat-sheet</guid>
+        <link>http://blog.marcinchwedczuk.pl/spring-transactional-cheat-sheet</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/spring-transactional-cheat-sheet</guid>
       </item>
       
     
@@ -1219,8 +1219,8 @@ For more info see reddit comment discussion &lt;a href=&quot;https://www.reddit.
 </description>
         
         <pubDate>Tue, 27 Dec 2016 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/crudest-curd-using-spring</link>
-        <guid isPermaLink="true">http://localhost:4000/crudest-curd-using-spring</guid>
+        <link>http://blog.marcinchwedczuk.pl/crudest-curd-using-spring</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/crudest-curd-using-spring</guid>
       </item>
       
     
@@ -1238,8 +1238,8 @@ your code.&lt;/p&gt;
 </description>
         
         <pubDate>Tue, 27 Dec 2016 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/generics-in-java</link>
-        <guid isPermaLink="true">http://localhost:4000/generics-in-java</guid>
+        <link>http://blog.marcinchwedczuk.pl/generics-in-java</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/generics-in-java</guid>
       </item>
       
     
@@ -1258,8 +1258,8 @@ the main disadvantage is reduced functionality of aspects
 </description>
         
         <pubDate>Sat, 03 Dec 2016 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/overview-of-spring-annotation-driven-aop</link>
-        <guid isPermaLink="true">http://localhost:4000/overview-of-spring-annotation-driven-aop</guid>
+        <link>http://blog.marcinchwedczuk.pl/overview-of-spring-annotation-driven-aop</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/overview-of-spring-annotation-driven-aop</guid>
       </item>
       
     
@@ -1276,8 +1276,8 @@ also a beautiful iterative solution.&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 26 Nov 2016 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/iterative-solution-to-towers-of-hanoi-problem</link>
-        <guid isPermaLink="true">http://localhost:4000/iterative-solution-to-towers-of-hanoi-problem</guid>
+        <link>http://blog.marcinchwedczuk.pl/iterative-solution-to-towers-of-hanoi-problem</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/iterative-solution-to-towers-of-hanoi-problem</guid>
       </item>
       
     
@@ -1290,8 +1290,8 @@ also a beautiful iterative solution.&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 12 Nov 2016 01:00:01 +0100</pubDate>
-        <link>http://localhost:4000/JavaScript-in-and-delete-operators</link>
-        <guid isPermaLink="true">http://localhost:4000/JavaScript-in-and-delete-operators</guid>
+        <link>http://blog.marcinchwedczuk.pl/JavaScript-in-and-delete-operators</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/JavaScript-in-and-delete-operators</guid>
       </item>
       
     
@@ -1312,8 +1312,8 @@ appreciate their beauty).&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 12 Nov 2016 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/method-references-in-java-8</link>
-        <guid isPermaLink="true">http://localhost:4000/method-references-in-java-8</guid>
+        <link>http://blog.marcinchwedczuk.pl/method-references-in-java-8</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/method-references-in-java-8</guid>
       </item>
       
     
@@ -1328,8 +1328,8 @@ This tutorial will help you setup your development environment.&lt;/p&gt;
 </description>
         
         <pubDate>Mon, 31 Oct 2016 01:00:00 +0100</pubDate>
-        <link>http://localhost:4000/using-tomcat-8.5-with-eclipse-neon</link>
-        <guid isPermaLink="true">http://localhost:4000/using-tomcat-8.5-with-eclipse-neon</guid>
+        <link>http://blog.marcinchwedczuk.pl/using-tomcat-8.5-with-eclipse-neon</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/using-tomcat-8.5-with-eclipse-neon</guid>
       </item>
       
     
@@ -1344,8 +1344,8 @@ a few code examples.&lt;/p&gt;
 </description>
         
         <pubDate>Sun, 30 Oct 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/hoisting-in-javascript</link>
-        <guid isPermaLink="true">http://localhost:4000/hoisting-in-javascript</guid>
+        <link>http://blog.marcinchwedczuk.pl/hoisting-in-javascript</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/hoisting-in-javascript</guid>
       </item>
       
     
@@ -1367,8 +1367,8 @@ while wiring beans via SpEL - Spring Expression Language.&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 22 Oct 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/introduction-to-spring-expression-language</link>
-        <guid isPermaLink="true">http://localhost:4000/introduction-to-spring-expression-language</guid>
+        <link>http://blog.marcinchwedczuk.pl/introduction-to-spring-expression-language</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/introduction-to-spring-expression-language</guid>
       </item>
       
     
@@ -1384,8 +1384,8 @@ find it helpful too.&lt;/p&gt;
 </description>
         
         <pubDate>Sun, 16 Oct 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/notes-on-spring-xml-configuration</link>
-        <guid isPermaLink="true">http://localhost:4000/notes-on-spring-xml-configuration</guid>
+        <link>http://blog.marcinchwedczuk.pl/notes-on-spring-xml-configuration</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/notes-on-spring-xml-configuration</guid>
       </item>
       
     
@@ -1399,8 +1399,8 @@ with Java 8 Stream API.&lt;/p&gt;
 </description>
         
         <pubDate>Sun, 09 Oct 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/java-8-how-to-write-custom-collector</link>
-        <guid isPermaLink="true">http://localhost:4000/java-8-how-to-write-custom-collector</guid>
+        <link>http://blog.marcinchwedczuk.pl/java-8-how-to-write-custom-collector</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/java-8-how-to-write-custom-collector</guid>
       </item>
       
     
@@ -1436,8 +1436,8 @@ We will be working with the following list of students:&lt;/p&gt;
 </description>
         
         <pubDate>Sun, 02 Oct 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/grouping-using-java-8-streams</link>
-        <guid isPermaLink="true">http://localhost:4000/grouping-using-java-8-streams</guid>
+        <link>http://blog.marcinchwedczuk.pl/grouping-using-java-8-streams</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/grouping-using-java-8-streams</guid>
       </item>
       
     
@@ -1451,8 +1451,8 @@ a nice and fresh looking GUI so I decided to give it a chance and replace my old
 </description>
         
         <pubDate>Tue, 27 Sep 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/use-meld-as-git-merge-diff-tool</link>
-        <guid isPermaLink="true">http://localhost:4000/use-meld-as-git-merge-diff-tool</guid>
+        <link>http://blog.marcinchwedczuk.pl/use-meld-as-git-merge-diff-tool</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/use-meld-as-git-merge-diff-tool</guid>
       </item>
       
     
@@ -1468,8 +1468,8 @@ of Windows up to Windows 10.&lt;/p&gt;
 </description>
         
         <pubDate>Mon, 26 Sep 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/obfuscating-windows-batch-files</link>
-        <guid isPermaLink="true">http://localhost:4000/obfuscating-windows-batch-files</guid>
+        <link>http://blog.marcinchwedczuk.pl/obfuscating-windows-batch-files</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/obfuscating-windows-batch-files</guid>
       </item>
       
     
@@ -1484,8 +1484,8 @@ encountered in typical enterprise applications.&lt;/p&gt;
 </description>
         
         <pubDate>Sun, 11 Sep 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/castle-windsor-most-popular-features</link>
-        <guid isPermaLink="true">http://localhost:4000/castle-windsor-most-popular-features</guid>
+        <link>http://blog.marcinchwedczuk.pl/castle-windsor-most-popular-features</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/castle-windsor-most-popular-features</guid>
       </item>
       
     
@@ -1544,8 +1544,8 @@ called &lt;a href=&quot;https://en.wikipedia.org/wiki/Bash_(Unix_shell)#Brace_ex
 </description>
         
         <pubDate>Sat, 20 Aug 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/how-to-use-grep-command</link>
-        <guid isPermaLink="true">http://localhost:4000/how-to-use-grep-command</guid>
+        <link>http://blog.marcinchwedczuk.pl/how-to-use-grep-command</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/how-to-use-grep-command</guid>
       </item>
       
     
@@ -1561,8 +1561,8 @@ Cartesian coordinates.&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 06 Aug 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/iterative-algorithm-for-drawing-hilbert-curve</link>
-        <guid isPermaLink="true">http://localhost:4000/iterative-algorithm-for-drawing-hilbert-curve</guid>
+        <link>http://blog.marcinchwedczuk.pl/iterative-algorithm-for-drawing-hilbert-curve</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/iterative-algorithm-for-drawing-hilbert-curve</guid>
       </item>
       
     
@@ -1575,8 +1575,8 @@ Cartesian coordinates.&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 06 Aug 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/indexes-in-postgresql</link>
-        <guid isPermaLink="true">http://localhost:4000/indexes-in-postgresql</guid>
+        <link>http://blog.marcinchwedczuk.pl/indexes-in-postgresql</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/indexes-in-postgresql</guid>
       </item>
       
     
@@ -1596,8 +1596,8 @@ search conditions, so let’s begin.&lt;/p&gt;
 </description>
         
         <pubDate>Tue, 26 Jul 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/how-to-use-find-command</link>
-        <guid isPermaLink="true">http://localhost:4000/how-to-use-find-command</guid>
+        <link>http://blog.marcinchwedczuk.pl/how-to-use-find-command</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/how-to-use-find-command</guid>
       </item>
       
     
@@ -1610,8 +1610,8 @@ search conditions, so let’s begin.&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 16 Jul 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/introduction-to-hibernate-embeddable-types</link>
-        <guid isPermaLink="true">http://localhost:4000/introduction-to-hibernate-embeddable-types</guid>
+        <link>http://blog.marcinchwedczuk.pl/introduction-to-hibernate-embeddable-types</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/introduction-to-hibernate-embeddable-types</guid>
       </item>
       
     
@@ -1628,8 +1628,8 @@ Vim is not as good as they say.&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 16 Jul 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/how-to-fix-vim-freezes</link>
-        <guid isPermaLink="true">http://localhost:4000/how-to-fix-vim-freezes</guid>
+        <link>http://blog.marcinchwedczuk.pl/how-to-fix-vim-freezes</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/how-to-fix-vim-freezes</guid>
       </item>
       
     
@@ -1710,8 +1710,8 @@ Int32&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 </description>
         
         <pubDate>Fri, 15 Jul 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/powershell-function-declaration-pitfall</link>
-        <guid isPermaLink="true">http://localhost:4000/powershell-function-declaration-pitfall</guid>
+        <link>http://blog.marcinchwedczuk.pl/powershell-function-declaration-pitfall</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/powershell-function-declaration-pitfall</guid>
       </item>
       
     
@@ -1724,8 +1724,8 @@ Int32&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 </description>
         
         <pubDate>Sat, 09 Jul 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/how-to-use-xargs</link>
-        <guid isPermaLink="true">http://localhost:4000/how-to-use-xargs</guid>
+        <link>http://blog.marcinchwedczuk.pl/how-to-use-xargs</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/how-to-use-xargs</guid>
       </item>
       
     
@@ -1738,8 +1738,8 @@ Int32&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
 </description>
         
         <pubDate>Sat, 09 Jul 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/how-nulls-are-handled-in-switch-statement</link>
-        <guid isPermaLink="true">http://localhost:4000/how-nulls-are-handled-in-switch-statement</guid>
+        <link>http://blog.marcinchwedczuk.pl/how-nulls-are-handled-in-switch-statement</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/how-nulls-are-handled-in-switch-statement</guid>
       </item>
       
     
@@ -1753,8 +1753,8 @@ in Hibernate:&lt;/p&gt;
 </description>
         
         <pubDate>Thu, 30 Jun 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/mapping-inheritance-in-hibernate</link>
-        <guid isPermaLink="true">http://localhost:4000/mapping-inheritance-in-hibernate</guid>
+        <link>http://blog.marcinchwedczuk.pl/mapping-inheritance-in-hibernate</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/mapping-inheritance-in-hibernate</guid>
       </item>
       
     
@@ -1767,8 +1767,8 @@ in Hibernate:&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 25 Jun 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/find-cycle-start-in-singly-linked-list</link>
-        <guid isPermaLink="true">http://localhost:4000/find-cycle-start-in-singly-linked-list</guid>
+        <link>http://blog.marcinchwedczuk.pl/find-cycle-start-in-singly-linked-list</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/find-cycle-start-in-singly-linked-list</guid>
       </item>
       
     
@@ -1784,8 +1784,8 @@ We will use:&lt;/p&gt;
 </description>
         
         <pubDate>Wed, 22 Jun 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/hibernate-hello-world-app</link>
-        <guid isPermaLink="true">http://localhost:4000/hibernate-hello-world-app</guid>
+        <link>http://blog.marcinchwedczuk.pl/hibernate-hello-world-app</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/hibernate-hello-world-app</guid>
       </item>
       
     
@@ -1798,8 +1798,8 @@ We will use:&lt;/p&gt;
 </description>
         
         <pubDate>Wed, 15 Jun 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/get-day-of-week-from-date</link>
-        <guid isPermaLink="true">http://localhost:4000/get-day-of-week-from-date</guid>
+        <link>http://blog.marcinchwedczuk.pl/get-day-of-week-from-date</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/get-day-of-week-from-date</guid>
       </item>
       
     
@@ -1879,8 +1879,8 @@ parameter to &lt;code class=&quot;highlighter-rouge&quot;&gt;InputStreamReader&l
 </description>
         
         <pubDate>Mon, 13 Jun 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/reading-and-writing-files-in-java</link>
-        <guid isPermaLink="true">http://localhost:4000/reading-and-writing-files-in-java</guid>
+        <link>http://blog.marcinchwedczuk.pl/reading-and-writing-files-in-java</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/reading-and-writing-files-in-java</guid>
       </item>
       
     
@@ -1894,8 +1894,8 @@ initializers.&lt;/p&gt;
 </description>
         
         <pubDate>Sun, 12 Jun 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/object-and-collection-initializers-in-csharp</link>
-        <guid isPermaLink="true">http://localhost:4000/object-and-collection-initializers-in-csharp</guid>
+        <link>http://blog.marcinchwedczuk.pl/object-and-collection-initializers-in-csharp</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/object-and-collection-initializers-in-csharp</guid>
       </item>
       
     
@@ -1909,8 +1909,8 @@ used by JavaScript interpreter when converting objects to primitive types.&lt;/p
 </description>
         
         <pubDate>Thu, 09 Jun 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/augmenting-JavaScript-objects-with-toString-and-valueOf</link>
-        <guid isPermaLink="true">http://localhost:4000/augmenting-JavaScript-objects-with-toString-and-valueOf</guid>
+        <link>http://blog.marcinchwedczuk.pl/augmenting-JavaScript-objects-with-toString-and-valueOf</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/augmenting-JavaScript-objects-with-toString-and-valueOf</guid>
       </item>
       
     
@@ -1930,8 +1930,8 @@ element).&lt;/p&gt;
 </description>
         
         <pubDate>Mon, 06 Jun 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/creating-and-using-adnotations-in-java</link>
-        <guid isPermaLink="true">http://localhost:4000/creating-and-using-adnotations-in-java</guid>
+        <link>http://blog.marcinchwedczuk.pl/creating-and-using-adnotations-in-java</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/creating-and-using-adnotations-in-java</guid>
       </item>
       
     
@@ -1955,8 +1955,8 @@ nested loops, e.g. in Java we may write:&lt;/p&gt;
 </description>
         
         <pubDate>Sat, 04 Jun 2016 02:00:00 +0200</pubDate>
-        <link>http://localhost:4000/break-out-of-code-block-in-java-and-javascript</link>
-        <guid isPermaLink="true">http://localhost:4000/break-out-of-code-block-in-java-and-javascript</guid>
+        <link>http://blog.marcinchwedczuk.pl/break-out-of-code-block-in-java-and-javascript</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/break-out-of-code-block-in-java-and-javascript</guid>
       </item>
       
     

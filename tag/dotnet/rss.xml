@@ -5,7 +5,7 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>http://localhost:4000</link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor>mc</managingEditor>
@@ -13,10 +13,10 @@
    
 	<item>
 	  <title>Reduce cognitive load for readers of your code</title>
-	  <link>http://localhost:4000/reduce-cognitive-load</link>
+	  <link>http://blog.marcinchwedczuk.pl/reduce-cognitive-load</link>
 	  <author>mc</author>
 	  <pubDate>2019-03-05T01:00:00+01:00</pubDate>
-	  <guid>http://localhost:4000/reduce-cognitive-load</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/reduce-cognitive-load</guid>
 	
 		<description>&lt;p&gt;Recently I was reviewing a piece of code that was performing
 some computation on file sizes. The author of that code
@@ -66,10 +66,10 @@ on the actual business problem that I try to solve.&lt;/p&gt;
 
 	<item>
 	  <title>FluentAssertions and code formatting</title>
-	  <link>http://localhost:4000/fluent-assertions-and-code-formatting</link>
+	  <link>http://blog.marcinchwedczuk.pl/fluent-assertions-and-code-formatting</link>
 	  <author>mc</author>
 	  <pubDate>2019-02-10T01:00:00+01:00</pubDate>
-	  <guid>http://localhost:4000/fluent-assertions-and-code-formatting</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/fluent-assertions-and-code-formatting</guid>
 	
 		<description>&lt;p&gt;Recently I was playing with
 &lt;a href=&quot;https://fluentassertions.com/&quot;&gt;FluentAssertions&lt;/a&gt;
@@ -98,10 +98,10 @@ Expected service.Add(1, 2) to be 3, but found 42.&lt;/code&gt;&lt;/pre&gt;&lt;/f
 
 	<item>
 	  <title>ReadOnly does not mean Immutable</title>
-	  <link>http://localhost:4000/read-only-does-not-mean-immutable</link>
+	  <link>http://blog.marcinchwedczuk.pl/read-only-does-not-mean-immutable</link>
 	  <author>mc</author>
 	  <pubDate>2019-01-06T01:00:00+01:00</pubDate>
-	  <guid>http://localhost:4000/read-only-does-not-mean-immutable</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/read-only-does-not-mean-immutable</guid>
 	
 		<description>&lt;p&gt;Recently I have introduced a subtle bug into my code.
 It all started when I was creating a few
@@ -150,10 +150,10 @@ a readonly property named &lt;code class=&quot;highlighter-rouge&quot;&gt;Passed
 
 	<item>
 	  <title>Random thoughts on Maybe</title>
-	  <link>http://localhost:4000/random-thoughts-on-maybe</link>
+	  <link>http://blog.marcinchwedczuk.pl/random-thoughts-on-maybe</link>
 	  <author>mc</author>
 	  <pubDate>2019-01-01T01:00:00+01:00</pubDate>
-	  <guid>http://localhost:4000/random-thoughts-on-maybe</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/random-thoughts-on-maybe</guid>
 	
 		<description>&lt;p&gt;With functional programming on the rise nowadays, 
 more and more people start using functional 
@@ -169,10 +169,10 @@ missing value.&lt;/p&gt;
 
 	<item>
 	  <title>NSubstitute and the search for perfect error messages</title>
-	  <link>http://localhost:4000/nsubstitute-and-the-search-for-perfect-error-messages</link>
+	  <link>http://blog.marcinchwedczuk.pl/nsubstitute-and-the-search-for-perfect-error-messages</link>
 	  <author>mc</author>
 	  <pubDate>2018-12-15T01:00:00+01:00</pubDate>
-	  <guid>http://localhost:4000/nsubstitute-and-the-search-for-perfect-error-messages</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/nsubstitute-and-the-search-for-perfect-error-messages</guid>
 	
 		<description>&lt;p&gt;Those of us that practice TDD daily already know how important good
 error messages in tests are. After all writing a failing test that
@@ -194,10 +194,10 @@ Things like good test names and proper error messages are often forgotten.&lt;/p
 
 	<item>
 	  <title>Inheritance? Just say no!</title>
-	  <link>http://localhost:4000/inheritance-just-say-no</link>
+	  <link>http://blog.marcinchwedczuk.pl/inheritance-just-say-no</link>
 	  <author>mc</author>
 	  <pubDate>2018-12-12T01:00:00+01:00</pubDate>
-	  <guid>http://localhost:4000/inheritance-just-say-no</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/inheritance-just-say-no</guid>
 	
 		<description>&lt;p&gt;Recently during a code review I have found the following piece
 of code:&lt;/p&gt;
@@ -214,10 +214,10 @@ of modern object oriented programming:&lt;/p&gt;
 
 	<item>
 	  <title>Abusing local functions to hide design problems</title>
-	  <link>http://localhost:4000/abusing-local-functions-to-hide-design-problems</link>
+	  <link>http://blog.marcinchwedczuk.pl/abusing-local-functions-to-hide-design-problems</link>
 	  <author>mc</author>
 	  <pubDate>2018-10-08T02:00:00+02:00</pubDate>
-	  <guid>http://localhost:4000/abusing-local-functions-to-hide-design-problems</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/abusing-local-functions-to-hide-design-problems</guid>
 	
 		<description>&lt;p&gt;Recently I was browsing through a certain code base
 and I saw a code similar to this:&lt;/p&gt;
@@ -268,10 +268,10 @@ instead of long lambdas.&lt;/p&gt;
 
 	<item>
 	  <title>Avoid hidden coupling to interface implementation</title>
-	  <link>http://localhost:4000/avoid-hidden-coupling-to-interface-implementation</link>
+	  <link>http://blog.marcinchwedczuk.pl/avoid-hidden-coupling-to-interface-implementation</link>
 	  <author>mc</author>
 	  <pubDate>2018-09-21T02:00:00+02:00</pubDate>
-	  <guid>http://localhost:4000/avoid-hidden-coupling-to-interface-implementation</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/avoid-hidden-coupling-to-interface-implementation</guid>
 	
 		<description>&lt;p&gt;A few days ago I was reviewing a pull request at work and
 one line of code catch my eye:&lt;/p&gt;
@@ -301,10 +301,10 @@ After half an hour, instead of a fix I get the following response:&lt;/p&gt;
 
 	<item>
 	  <title>Fluent Validation and complex dependencies between properties</title>
-	  <link>http://localhost:4000/fluent-validation-and-complex-dependencies-between-properties</link>
+	  <link>http://blog.marcinchwedczuk.pl/fluent-validation-and-complex-dependencies-between-properties</link>
 	  <author>mc</author>
 	  <pubDate>2018-09-18T02:00:00+02:00</pubDate>
-	  <guid>http://localhost:4000/fluent-validation-and-complex-dependencies-between-properties</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/fluent-validation-and-complex-dependencies-between-properties</guid>
 	
 		<description>&lt;p&gt;&lt;a href=&quot;https://fluentvalidation.net/&quot;&gt;FluentValidation&lt;/a&gt; is one of the
 best validation libraries for .NET. I use it daily both at work
@@ -320,10 +320,10 @@ deal with recently.&lt;/p&gt;
 
 	<item>
 	  <title>You can live without mocking frameworks</title>
-	  <link>http://localhost:4000/you-can-live-without-your-mocking-framework</link>
+	  <link>http://blog.marcinchwedczuk.pl/you-can-live-without-your-mocking-framework</link>
 	  <author>mc</author>
 	  <pubDate>2018-09-08T02:00:00+02:00</pubDate>
-	  <guid>http://localhost:4000/you-can-live-without-your-mocking-framework</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/you-can-live-without-your-mocking-framework</guid>
 	
 		<description>&lt;p&gt;For a long time I have been fan of mocking frameworks like 
 &lt;a href=&quot;https://github.com/Moq/moq4/wiki/Quickstart&quot;&gt;Moq&lt;/a&gt;

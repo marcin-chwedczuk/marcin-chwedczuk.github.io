@@ -5,7 +5,7 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>http://localhost:4000</link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor>mc</managingEditor>
@@ -13,10 +13,10 @@
    
 	<item>
 	  <title>Binary to Gray algorithm explained</title>
-	  <link>http://localhost:4000/binary-to-gray-algorithm-explained</link>
+	  <link>http://blog.marcinchwedczuk.pl/binary-to-gray-algorithm-explained</link>
 	  <author>mc</author>
 	  <pubDate>2019-12-17T01:00:01+01:00</pubDate>
-	  <guid>http://localhost:4000/binary-to-gray-algorithm-explained</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/binary-to-gray-algorithm-explained</guid>
 	
 		<description>&lt;p&gt;Binary to Gray code conversion algorithm is deceptively simple:&lt;/p&gt;
 
@@ -39,10 +39,10 @@
 
 	<item>
 	  <title>Ray tracing a torus</title>
-	  <link>http://localhost:4000/ray-tracing-torus</link>
+	  <link>http://blog.marcinchwedczuk.pl/ray-tracing-torus</link>
 	  <author>mc</author>
 	  <pubDate>2018-05-06T02:00:00+02:00</pubDate>
-	  <guid>http://localhost:4000/ray-tracing-torus</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/ray-tracing-torus</guid>
 	
 		<description>&lt;p&gt;In this blog post I will show you how to ray trace a torus.
 I will assume that you already know how to ray trace simple shapes
@@ -55,10 +55,10 @@ with shading and ray tracing in general.&lt;/p&gt;
 
 	<item>
 	  <title>How to check if a number is a power of two</title>
-	  <link>http://localhost:4000/how-to-check-if-a-number-is-a-power-of-two</link>
+	  <link>http://blog.marcinchwedczuk.pl/how-to-check-if-a-number-is-a-power-of-two</link>
 	  <author>mc</author>
 	  <pubDate>2017-12-16T01:00:00+01:00</pubDate>
-	  <guid>http://localhost:4000/how-to-check-if-a-number-is-a-power-of-two</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/how-to-check-if-a-number-is-a-power-of-two</guid>
 	
 		<description>&lt;p&gt;In this blog post we will learn about two algorithms that
 allow us to quickly check that a given integer is
@@ -72,10 +72,10 @@ very efficient.&lt;/p&gt;
 
 	<item>
 	  <title>Iterative solution to Towers of Hanoi problem</title>
-	  <link>http://localhost:4000/iterative-solution-to-towers-of-hanoi-problem</link>
+	  <link>http://blog.marcinchwedczuk.pl/iterative-solution-to-towers-of-hanoi-problem</link>
 	  <author>mc</author>
 	  <pubDate>2016-11-26T01:00:00+01:00</pubDate>
-	  <guid>http://localhost:4000/iterative-solution-to-towers-of-hanoi-problem</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/iterative-solution-to-towers-of-hanoi-problem</guid>
 	
 		<description>&lt;p&gt;Towers of Hanoi is a simple programming riddle often used 
 in programming courses to
@@ -89,10 +89,10 @@ also a beautiful iterative solution.&lt;/p&gt;
 
 	<item>
 	  <title>Iterative algorithm for drawing Hilbert curve</title>
-	  <link>http://localhost:4000/iterative-algorithm-for-drawing-hilbert-curve</link>
+	  <link>http://blog.marcinchwedczuk.pl/iterative-algorithm-for-drawing-hilbert-curve</link>
 	  <author>mc</author>
 	  <pubDate>2016-08-06T02:00:00+02:00</pubDate>
-	  <guid>http://localhost:4000/iterative-algorithm-for-drawing-hilbert-curve</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/iterative-algorithm-for-drawing-hilbert-curve</guid>
 	
 		<description>&lt;p&gt;In this post I will describe how to draw Hilbert curve iteratively.
 To avoid recursion we will use &lt;code class=&quot;highlighter-rouge&quot;&gt;hindex2xy&lt;/code&gt; algorithm that
@@ -105,10 +105,10 @@ Cartesian coordinates.&lt;/p&gt;
 
 	<item>
 	  <title>Find cycle start in singly linked list</title>
-	  <link>http://localhost:4000/find-cycle-start-in-singly-linked-list</link>
+	  <link>http://blog.marcinchwedczuk.pl/find-cycle-start-in-singly-linked-list</link>
 	  <author>mc</author>
 	  <pubDate>2016-06-25T02:00:00+02:00</pubDate>
-	  <guid>http://localhost:4000/find-cycle-start-in-singly-linked-list</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/find-cycle-start-in-singly-linked-list</guid>
 	
 		<description>&lt;p&gt;In this post I will present solution to the following problem:&lt;/p&gt;
 
@@ -118,10 +118,10 @@ Cartesian coordinates.&lt;/p&gt;
 
 	<item>
 	  <title>Get day of week from date</title>
-	  <link>http://localhost:4000/get-day-of-week-from-date</link>
+	  <link>http://blog.marcinchwedczuk.pl/get-day-of-week-from-date</link>
 	  <author>mc</author>
 	  <pubDate>2016-06-15T02:00:00+02:00</pubDate>
-	  <guid>http://localhost:4000/get-day-of-week-from-date</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/get-day-of-week-from-date</guid>
 	
 		<description>&lt;p&gt;Today we will try to solve the following problem:&lt;/p&gt;
 

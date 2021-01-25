@@ -5,7 +5,7 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>http://localhost:4000</link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor>mc</managingEditor>
@@ -13,10 +13,10 @@
    
 	<item>
 	  <title>Filtering log lines using exception messages in log4j2</title>
-	  <link>http://localhost:4000/filter-by-exception-message-log4j2</link>
+	  <link>http://blog.marcinchwedczuk.pl/filter-by-exception-message-log4j2</link>
 	  <author>mc</author>
 	  <pubDate>2021-01-25T01:00:01+01:00</pubDate>
-	  <guid>http://localhost:4000/filter-by-exception-message-log4j2</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/filter-by-exception-message-log4j2</guid>
 	
 		<description>&lt;p&gt;Recently I needed to filter out messages logged by a bit too verbose library.
 This is not too difficult in log4j2 since we can attach filters at &lt;code class=&quot;highlighter-rouge&quot;&gt;Configuration&lt;/code&gt;,
@@ -28,10 +28,10 @@ This is not too difficult in log4j2 since we can attach filters at &lt;code clas
 
 	<item>
 	  <title>Useful JDK tools (part 1)</title>
-	  <link>http://localhost:4000/useful-jdk-tools-part-1</link>
+	  <link>http://blog.marcinchwedczuk.pl/useful-jdk-tools-part-1</link>
 	  <author>mc</author>
 	  <pubDate>2020-07-10T02:00:01+02:00</pubDate>
-	  <guid>http://localhost:4000/useful-jdk-tools-part-1</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/useful-jdk-tools-part-1</guid>
 	
 		<description>&lt;p&gt;JDK comes with a bunch of handy tools. It’s good to
 know about them. In this post we will take a look at
@@ -43,10 +43,10 @@ know about them. In this post we will take a look at
 
 	<item>
 	  <title>Matching regexes using backtracking</title>
-	  <link>http://localhost:4000/matching-regexes-using-backtracking</link>
+	  <link>http://blog.marcinchwedczuk.pl/matching-regexes-using-backtracking</link>
 	  <author>mc</author>
 	  <pubDate>2020-06-28T02:00:01+02:00</pubDate>
-	  <guid>http://localhost:4000/matching-regexes-using-backtracking</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/matching-regexes-using-backtracking</guid>
 	
 		<description>&lt;p&gt;In this post we will write a simple regex library.
 The table below presents regex operators that we are going to support:&lt;/p&gt;
@@ -57,10 +57,10 @@ The table below presents regex operators that we are going to support:&lt;/p&gt;
 
 	<item>
 	  <title>Continuations in Java</title>
-	  <link>http://localhost:4000/continuations-in-java</link>
+	  <link>http://blog.marcinchwedczuk.pl/continuations-in-java</link>
 	  <author>mc</author>
 	  <pubDate>2020-06-27T02:00:01+02:00</pubDate>
-	  <guid>http://localhost:4000/continuations-in-java</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/continuations-in-java</guid>
 	
 		<description>&lt;p&gt;CSP or Continuation-Passing Style is a style of programming in which
 functions return results via callbacks.
@@ -76,10 +76,10 @@ In Java we can express this as:&lt;/p&gt;
 
 	<item>
 	  <title>Spy JVM network traffic with Owasp ZAP proxy</title>
-	  <link>http://localhost:4000/spy-jvm-network-traffic-with-owasp-zap</link>
+	  <link>http://blog.marcinchwedczuk.pl/spy-jvm-network-traffic-with-owasp-zap</link>
 	  <author>mc</author>
 	  <pubDate>2019-01-24T01:00:00+01:00</pubDate>
-	  <guid>http://localhost:4000/spy-jvm-network-traffic-with-owasp-zap</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/spy-jvm-network-traffic-with-owasp-zap</guid>
 	
 		<description>&lt;p&gt;We start by downloading &lt;a href=&quot;https://www.owasp.org/index.php/OWASP_Zed_Attack_Proxy_Project&quot;&gt;Owasp ZAP proxy&lt;/a&gt;:&lt;/p&gt;
 
@@ -89,10 +89,10 @@ In Java we can express this as:&lt;/p&gt;
 
 	<item>
 	  <title>Java streams best practices</title>
-	  <link>http://localhost:4000/java-streams-best-practices</link>
+	  <link>http://blog.marcinchwedczuk.pl/java-streams-best-practices</link>
 	  <author>mc</author>
 	  <pubDate>2017-11-08T01:00:00+01:00</pubDate>
-	  <guid>http://localhost:4000/java-streams-best-practices</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/java-streams-best-practices</guid>
 	
 		<description>&lt;p&gt;In this short post I am going to present Java 8 streams 
 best practices. Most of them either I figured out myself or
@@ -104,10 +104,10 @@ learned from my colleagues.&lt;/p&gt;
 
 	<item>
 	  <title>Hibernate HHH000179 warning&#58 Narrowing proxy to class this operation breaks ==</title>
-	  <link>http://localhost:4000/HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</link>
+	  <link>http://blog.marcinchwedczuk.pl/HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</link>
 	  <author>mc</author>
 	  <pubDate>2017-07-30T02:00:00+02:00</pubDate>
-	  <guid>http://localhost:4000/HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/HHH000179-narrowing-proxy-to-class-this-operation-breaks-equality</guid>
 	
 		<description>&lt;p&gt;In this post I will explain why Hibernate is generating the HHH000179
 warning and when ignoring it may introduce bugs in your code.&lt;/p&gt;
@@ -118,10 +118,10 @@ warning and when ignoring it may introduce bugs in your code.&lt;/p&gt;
 
 	<item>
 	  <title>Debugging OpenJDK 8 with NetBeans on Ubuntu</title>
-	  <link>http://localhost:4000/debugging-openjdk8-with-netbeans-on-ubuntu</link>
+	  <link>http://blog.marcinchwedczuk.pl/debugging-openjdk8-with-netbeans-on-ubuntu</link>
 	  <author>mc</author>
 	  <pubDate>2017-06-24T02:00:00+02:00</pubDate>
-	  <guid>http://localhost:4000/debugging-openjdk8-with-netbeans-on-ubuntu</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/debugging-openjdk8-with-netbeans-on-ubuntu</guid>
 	
 		<description>&lt;p&gt;In this post we will learn how to download, compile and debug OpenJDK 8
 using Ubuntu and NetBeans IDE.&lt;/p&gt;
@@ -132,10 +132,10 @@ using Ubuntu and NetBeans IDE.&lt;/p&gt;
 
 	<item>
 	  <title>Zen and the Art of Unit Testing</title>
-	  <link>http://localhost:4000/zen-and-the-art-of-unit-testing</link>
+	  <link>http://blog.marcinchwedczuk.pl/zen-and-the-art-of-unit-testing</link>
 	  <author>mc</author>
 	  <pubDate>2017-02-19T01:00:00+01:00</pubDate>
-	  <guid>http://localhost:4000/zen-and-the-art-of-unit-testing</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/zen-and-the-art-of-unit-testing</guid>
 	
 		<description>&lt;p&gt;In this blog post we will concern ourselves with unit testing of
 classic 3-layer business applications. We will assume that
@@ -153,10 +153,10 @@ to pass data between GUI and application services.&lt;/p&gt;
 
 	<item>
 	  <title>Hello, Hibernate Validator</title>
-	  <link>http://localhost:4000/hello-hibernate-validator</link>
+	  <link>http://blog.marcinchwedczuk.pl/hello-hibernate-validator</link>
 	  <author>mc</author>
 	  <pubDate>2017-02-05T01:00:00+01:00</pubDate>
-	  <guid>http://localhost:4000/hello-hibernate-validator</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/hello-hibernate-validator</guid>
 	
 		<description>&lt;p&gt;In every enterprise application there is a need for
 validation. You may want to validate data send by user to

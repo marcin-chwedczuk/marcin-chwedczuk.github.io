@@ -5,7 +5,7 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>http://localhost:4000</link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor>mc</managingEditor>
@@ -13,10 +13,10 @@
    
 	<item>
 	  <title>Future[_] vs Future[Unit] or which return type should I choose?</title>
-	  <link>http://localhost:4000/future-or-future</link>
+	  <link>http://blog.marcinchwedczuk.pl/future-or-future</link>
 	  <author>mc</author>
 	  <pubDate>2020-09-12T02:00:01+02:00</pubDate>
-	  <guid>http://localhost:4000/future-or-future</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/future-or-future</guid>
 	
 		<description>&lt;p&gt;Recently I have a heated debate with my colleague about
 a proper return type for async procedures 
@@ -30,10 +30,10 @@ Let me present my way of reasoning here.&lt;/p&gt;
 
 	<item>
 	  <title>Passing functions as arguments in Scala. What can go wrong?</title>
-	  <link>http://localhost:4000/passing-functions-as-arguments-in-scala-what-can-go-wrong</link>
+	  <link>http://blog.marcinchwedczuk.pl/passing-functions-as-arguments-in-scala-what-can-go-wrong</link>
 	  <author>mc</author>
 	  <pubDate>2020-09-11T02:00:01+02:00</pubDate>
-	  <guid>http://localhost:4000/passing-functions-as-arguments-in-scala-what-can-go-wrong</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/passing-functions-as-arguments-in-scala-what-can-go-wrong</guid>
 	
 		<description>&lt;p&gt;In microservices architecture we often designate a single service for managing the configuration of the entire system.
 Libraries like &lt;a href=&quot;https://github.com/Netflix/archaius&quot;&gt;Archaius&lt;/a&gt; make this easy. 
@@ -45,10 +45,10 @@ As a side effect, on the code level I often see class declarations like this:&lt
 
 	<item>
 	  <title>Preparing images for Ben Eater's VGA card using Gimp</title>
-	  <link>http://localhost:4000/preparing-images-for-ben-eater-vga-using-gimp</link>
+	  <link>http://blog.marcinchwedczuk.pl/preparing-images-for-ben-eater-vga-using-gimp</link>
 	  <author>mc</author>
 	  <pubDate>2020-09-10T02:00:01+02:00</pubDate>
-	  <guid>http://localhost:4000/preparing-images-for-ben-eater-vga-using-gimp</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/preparing-images-for-ben-eater-vga-using-gimp</guid>
 	
 		<description>&lt;p&gt;Recently I have completed my own version of &lt;a href=&quot;https://eater.net/vga&quot;&gt;Ben Eater video card&lt;/a&gt;.
 I still need to spend some time on it, since I could not achieve as good
@@ -62,10 +62,10 @@ does not look as crisp and clear as in Ben videos:
 
 	<item>
 	  <title>Nesting monads in Scala</title>
-	  <link>http://localhost:4000/scala-nesting-monads</link>
+	  <link>http://blog.marcinchwedczuk.pl/scala-nesting-monads</link>
 	  <author>mc</author>
 	  <pubDate>2020-08-01T02:00:01+02:00</pubDate>
-	  <guid>http://localhost:4000/scala-nesting-monads</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/scala-nesting-monads</guid>
 	
 		<description>&lt;p&gt;Recently I write a lot of async code. Most of my repository
 methods return types like &lt;code class=&quot;highlighter-rouge&quot;&gt;Future[Set[T]]&lt;/code&gt; or &lt;code class=&quot;highlighter-rouge&quot;&gt;Future[Option[T]]&lt;/code&gt;.
@@ -78,10 +78,10 @@ can be very cumbersome.&lt;/p&gt;
 
 	<item>
 	  <title>Scala WTF 1</title>
-	  <link>http://localhost:4000/scala-wtf-1</link>
+	  <link>http://blog.marcinchwedczuk.pl/scala-wtf-1</link>
 	  <author>mc</author>
 	  <pubDate>2020-07-06T02:00:01+02:00</pubDate>
-	  <guid>http://localhost:4000/scala-wtf-1</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/scala-wtf-1</guid>
 	
 		<description>&lt;p&gt;So here is a puzzle. What will be written by
 this program:&lt;/p&gt;
@@ -92,10 +92,10 @@ this program:&lt;/p&gt;
 
 	<item>
 	  <title>Pitfalls of using Mockito with Scala</title>
-	  <link>http://localhost:4000/pitfalls-of-using-Mockito-with-Scala</link>
+	  <link>http://blog.marcinchwedczuk.pl/pitfalls-of-using-Mockito-with-Scala</link>
 	  <author>mc</author>
 	  <pubDate>2019-12-22T01:00:01+01:00</pubDate>
-	  <guid>http://localhost:4000/pitfalls-of-using-Mockito-with-Scala</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/pitfalls-of-using-Mockito-with-Scala</guid>
 	
 		<description>&lt;p&gt;I need to test my new, shiny Scala code.
 Usually I write tests in &lt;a href=&quot;http://www.scalatest.org/&quot;&gt;ScalaTest&lt;/a&gt;,
@@ -110,10 +110,10 @@ I open a new tab in my editor and start hacking test code.&lt;/p&gt;
 
 	<item>
 	  <title>Ultimate guide to Scala's match expression</title>
-	  <link>http://localhost:4000/ultimate-guide-to-scalas-match-expression</link>
+	  <link>http://blog.marcinchwedczuk.pl/ultimate-guide-to-scalas-match-expression</link>
 	  <author>mc</author>
 	  <pubDate>2019-09-19T02:00:01+02:00</pubDate>
-	  <guid>http://localhost:4000/ultimate-guide-to-scalas-match-expression</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/ultimate-guide-to-scalas-match-expression</guid>
 	
 		<description>&lt;p&gt;Scala &lt;code class=&quot;highlighter-rouge&quot;&gt;match&lt;/code&gt; expression is a very powerful tool.
 In hands of an experienced developer it can be used to

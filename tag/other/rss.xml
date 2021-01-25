@@ -5,7 +5,7 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>http://localhost:4000</link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor>mc</managingEditor>
@@ -13,10 +13,10 @@
    
 	<item>
 	  <title>Converting .dsl files to Kindle dictionaries</title>
-	  <link>http://localhost:4000/converting-dsl-files-to-kindle-dictionary</link>
+	  <link>http://blog.marcinchwedczuk.pl/converting-dsl-files-to-kindle-dictionary</link>
 	  <author>mc</author>
 	  <pubDate>2019-12-02T01:00:01+01:00</pubDate>
-	  <guid>http://localhost:4000/converting-dsl-files-to-kindle-dictionary</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/converting-dsl-files-to-kindle-dictionary</guid>
 	
 		<description>&lt;p&gt;In this post, I will describe how to convert dictionaries
 in &lt;a href=&quot;http://lingvo.helpmax.net/en/troubleshooting/dsl-compiler/dsl-dictionary-structure/&quot;&gt;ABBYY Lingvo’s format&lt;/a&gt;

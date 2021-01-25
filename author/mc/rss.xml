@@ -5,7 +5,7 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>http://localhost:4000</link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor>mc</managingEditor>
@@ -186,365 +186,363 @@ but is not sufficient if we want to filter by the messages of logged exceptions.
 	  <pubDate>2020-10-01T02:00:01+02:00</pubDate>
 	  <guid>//ssh-like-a-pro</guid>
 	  <description><![CDATA[
-	     In this post I have gathered various tips and tricks 
-that can make you a more productive SSH user.
+	     <p>In this post I have gathered various tips and tricks 
+that can make you a more productive SSH user.</p>
 
-### Copying SSH keys to the server
+<h3 id="copying-ssh-keys-to-the-server">Copying SSH keys to the server</h3>
 
-A lot of beginners when faced with the problem of uploading their
+<p>A lot of beginners when faced with the problem of uploading their
 public keys to the server, follows a manual process.
-I will demonstrate this, by trying to upload my public key to a Raspberry PI manually:
-{% highlight bash %}
-mac$ ssh pi@raspberry_pi
-pi@raspberry_pi's password:
+I will demonstrate this, by trying to upload my public key to a Raspberry PI manually:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>ssh pi@raspberry_pi
+pi@raspberry_pi<span class="s1">'s password:
 
 pi$ mkdir .ssh
 pi$ vi .ssh/authorized_keys
 pi$ # Append contents of key_rsa.pub to authorized_keys
-pi$ ^D # Ctrl-D to end our ssh session
-{% endhighlight %}
-Now I can connect to Raspberry PI using my private key:
-{% highlight bash %}
-mac$ # Let's load the private key so that we can use it
-mac$ ssh-add ~/.ssh/pi_rsa
+pi$ ^D # Ctrl-D to end our ssh session</span></code></pre></figure>
 
-mac$ ssh pi@raspberry_pi
-pi$ # Yay!
-{% endhighlight %}
-I was lucky - in my case everything worked, but often it doesn't.
-The main culprit is usually a wrong access permission set either on `.ssh` directory
-or on `authorized_keys` file.
-Here is how the right permissions should look like:
-{% highlight bash %}
-pi@raspberrypi:~ $ ls -la .ssh
+<p>Now I can connect to Raspberry PI using my private key:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span><span class="c"># Let's load the private key so that we can use it</span>
+mac<span class="nv">$ </span>ssh-add ~/.ssh/pi_rsa
+
+mac<span class="nv">$ </span>ssh pi@raspberry_pi
+pi<span class="nv">$ </span><span class="c"># Yay!</span></code></pre></figure>
+
+<p>I was lucky - in my case everything worked, but often it doesn’t.
+The main culprit is usually a wrong access permission set either on <code class="highlighter-rouge">.ssh</code> directory
+or on <code class="highlighter-rouge">authorized_keys</code> file.
+Here is how the right permissions should look like:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">pi@raspberrypi:~ <span class="nv">$ </span><span class="nb">ls</span> <span class="nt">-la</span> .ssh
 total 12
-drwx------  2 pi pi 4096 Oct  1 10:09 .
+drwx------  2 pi pi 4096 Oct  1 10:09 <span class="nb">.</span>
 drwxr-xr-x 17 pi pi 4096 Oct  1 10:09 ..
--rw-------  1 pi pi  574 Oct  1 10:09 authorized_keys
-{% endhighlight %}
+<span class="nt">-rw-------</span>  1 pi pi  574 Oct  1 10:09 authorized_keys</code></pre></figure>
 
-PROs do not think about permissions, nor they manually edit `authorized_keys` file.
-Instead they use `ssh-copy-id` util (a part of the official SSH distribution).
-{% highlight bash %}
-mac$ ssh pi@raspberry_pi 'rm -rf ~/.ssh' # Let's reset everything
-mac$ ssh-copy-id -i ~/.ssh/pi_rsa pi@raspberry_pi
+<p>PROs do not think about permissions, nor they manually edit <code class="highlighter-rouge">authorized_keys</code> file.
+Instead they use <code class="highlighter-rouge">ssh-copy-id</code> util (a part of the official SSH distribution).</p>
 
-mac$ ssh-add ~/.ssh/pi_rsa # Do not forget to load the key
-mac$ ssh pi@raspberry_pi
-pi$ # Yay!
-{% endhighlight %}
-One nice thing about `ssh-copy-id` is that it always uploads the public key,
-even if you (like I in the above example) specify private key file on the command line.
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>ssh pi@raspberry_pi <span class="s1">'rm -rf ~/.ssh'</span> <span class="c"># Let's reset everything</span>
+mac<span class="nv">$ </span>ssh-copy-id <span class="nt">-i</span> ~/.ssh/pi_rsa pi@raspberry_pi
 
-### Keys management
+mac<span class="nv">$ </span>ssh-add ~/.ssh/pi_rsa <span class="c"># Do not forget to load the key</span>
+mac<span class="nv">$ </span>ssh pi@raspberry_pi
+pi<span class="nv">$ </span><span class="c"># Yay!</span></code></pre></figure>
 
-`ssh-add` is a nice utility that manages currently active (loaded) private keys.
-Loaded keys can be automatically used for authentication.
+<p>One nice thing about <code class="highlighter-rouge">ssh-copy-id</code> is that it always uploads the public key,
+even if you (like I in the above example) specify private key file on the command line.</p>
 
-To load a key type:
-{% highlight bash %}
-# ssh-add path-to-key-file
-mac$ ssh-add ~/.ssh/pi_rsa
-{% endhighlight %}
-Or just `ssh-add` to load `id_rsa`.
+<h3 id="keys-management">Keys management</h3>
 
-To list currently loaded keys:
-{% highlight bash %}
-$ ssh-add -l
-{% endhighlight %}
+<p><code class="highlighter-rouge">ssh-add</code> is a nice utility that manages currently active (loaded) private keys.
+Loaded keys can be automatically used for authentication.</p>
 
-To remove all keys:
-{% highlight bash %}
-$ ssh-add -D
-{% endhighlight %}
+<p>To load a key type:</p>
 
-When you connect to a remote machine you have an option to pass your currently
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c"># ssh-add path-to-key-file</span>
+mac<span class="nv">$ </span>ssh-add ~/.ssh/pi_rsa</code></pre></figure>
+
+<p>Or just <code class="highlighter-rouge">ssh-add</code> to load <code class="highlighter-rouge">id_rsa</code>.</p>
+
+<p>To list currently loaded keys:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>ssh-add <span class="nt">-l</span></code></pre></figure>
+
+<p>To remove all keys:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>ssh-add <span class="nt">-D</span></code></pre></figure>
+
+<p>When you connect to a remote machine you have an option to pass your currently
 loaded keys along. This is called ssh agent forwarding and 
-allows you to ssh into further machines using your private keys:
+allows you to ssh into further machines using your private keys:</p>
 
-![Nested SSH connections](assets/images/2020-10-01/ssh1.svg)
+<p><img src="assets/images/2020-10-01/ssh1.svg" alt="Nested SSH connections" /></p>
 
-For example without key forwarding I cannot log from my Raspberry PI into my PC:
-{% highlight bash %}
-mac$ ssh pi@raspberry_pi
-pi$ ssh mc@old-pc 
-Password:
-{% endhighlight %}
-With key forwarding enabled (`-A`) I can:
-{% highlight bash %}
-mac$ ssh -A pi@raspberry_pi
-pi$ ssh mc@old-pc
-old-pc$ # yay!
-{% endhighlight %}
-WARNING: You should only use forwarding when logging into servers that
-you fully trust (see `man ssh` for details).
+<p>For example without key forwarding I cannot log from my Raspberry PI into my PC:</p>
 
-TIP: With the power of `ssh-add` there is no reason to have a key without password protection.
-Remember to password protect all your keys. Always!
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>ssh pi@raspberry_pi
+pi<span class="nv">$ </span>ssh mc@old-pc 
+Password:</code></pre></figure>
 
-### Using ~/.ssh/config
+<p>With key forwarding enabled (<code class="highlighter-rouge">-A</code>) I can:</p>
 
-Sometimes your user name is too long or hard to remember or maybe the server name is
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>ssh <span class="nt">-A</span> pi@raspberry_pi
+pi<span class="nv">$ </span>ssh mc@old-pc
+old-pc<span class="nv">$ </span><span class="c"># yay!</span></code></pre></figure>
+
+<p>WARNING: You should only use forwarding when logging into servers that
+you fully trust (see <code class="highlighter-rouge">man ssh</code> for details).</p>
+
+<p>TIP: With the power of <code class="highlighter-rouge">ssh-add</code> there is no reason to have a key without password protection.
+Remember to password protect all your keys. Always!</p>
+
+<h3 id="using-sshconfig">Using ~/.ssh/config</h3>
+
+<p>Sometimes your user name is too long or hard to remember or maybe the server name is
 or maybe your server uses a non-standard SSH port. Any of these can make typing the right ssh command
 in the terminal very hard. But there is a nice solution to this, 
-we just need to add an entry for our server to `~/.ssh/config` file.
+we just need to add an entry for our server to <code class="highlighter-rouge">~/.ssh/config</code> file.</p>
 
-For example for my Raspberry PI computer I added the following entry:
-{% highlight no-highlight %}
-# this is comment
+<p>For example for my Raspberry PI computer I added the following entry:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight"># this is comment
 Host pi
         Hostname raspberry_pi
         Port 22
         User pi
         IdentityFile ~/.ssh/pi_rsa
         ForwardAgent yes
-        # or ForwardAgent no
-{% endhighlight %}
-Now I can ssh into it by simply typing:
-{% highlight bash %}
-mac$ ssh pi
-pi$ # yay!
-{% endhighlight %}
+        # or ForwardAgent no</code></pre></figure>
 
-### Copying files
+<p>Now I can ssh into it by simply typing:</p>
 
-`scp` command may be used to copy files, both from a server to the local machine:
-{% highlight bash %}
-# Assumes that we use pi alias
-mac$ scp pi:./myfile.txt . 
-# Without pi alias 
-mac$ scp -P22 pi@raspberry_pi:./myfile.txt ./myfile.txt
-{% endhighlight %}
-Or from the local machine to the server:
-{% highlight bash %}
-# Assumes that we use pi alias
-mac$ scp map.txt pi:./map2.txt
-# Without pi alias
-mac$ scp -P22 map.txt pi@raspberry_pi:./
-# You may skip -P parameter if server is using default (22) port
-{% endhighlight %}
-TIP: If are going to transfer a big file remember to `gzip` it first.
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>ssh pi
+pi<span class="nv">$ </span><span class="c"># yay!</span></code></pre></figure>
 
-For more complex scenarios we can use either `sftp` command:
-{% highlight bash %}
-mac$ sftp pi
+<h3 id="copying-files">Copying files</h3>
+
+<p><code class="highlighter-rouge">scp</code> command may be used to copy files, both from a server to the local machine:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c"># Assumes that we use pi alias</span>
+mac<span class="nv">$ </span>scp pi:./myfile.txt <span class="nb">.</span> 
+<span class="c"># Without pi alias </span>
+mac<span class="nv">$ </span>scp <span class="nt">-P22</span> pi@raspberry_pi:./myfile.txt ./myfile.txt</code></pre></figure>
+
+<p>Or from the local machine to the server:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c"># Assumes that we use pi alias</span>
+mac<span class="nv">$ </span>scp map.txt pi:./map2.txt
+<span class="c"># Without pi alias</span>
+mac<span class="nv">$ </span>scp <span class="nt">-P22</span> map.txt pi@raspberry_pi:./
+<span class="c"># You may skip -P parameter if server is using default (22) port</span></code></pre></figure>
+
+<p>TIP: If are going to transfer a big file remember to <code class="highlighter-rouge">gzip</code> it first.</p>
+
+<p>For more complex scenarios we can use either <code class="highlighter-rouge">sftp</code> command:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>sftp pi
 Connected to pi.
-sftp> ls # list files on the *server*
+sftp&gt; <span class="nb">ls</span> <span class="c"># list files on the *server*</span>
 Bookshelf   Desktop     Documents   Downloads   Music       Pictures    Public
 Templates   Videos      server_file.txt
-sftp> get server_file.txt ./save_as_downloaded.txt
+sftp&gt; get server_file.txt ./save_as_downloaded.txt
 Fetching /home/pi/server_file.txt to ./save_as_downloaded.txt
 
-sftp> put ./local_file.txt ./uploaded.txt
+sftp&gt; put ./local_file.txt ./uploaded.txt
 Uploading ./local_file.txt to /home/pi/./uploaded.txt
 
-sftp> exit
-{% endhighlight %}
-or use command line file manager like `mc` (Midnight Commander):
+sftp&gt; <span class="nb">exit</span></code></pre></figure>
 
-1. Press `F9` to select menu bar and `R` to expand `Right` menu.
-2. Select `SFTP link...`
-3. Enter the connection URL:
+<p>or use command line file manager like <code class="highlighter-rouge">mc</code> (Midnight Commander):</p>
 
-![MC without alias](assets/images/2020-10-01/mc2.png)
+<ol>
+  <li>Press <code class="highlighter-rouge">F9</code> to select menu bar and <code class="highlighter-rouge">R</code> to expand <code class="highlighter-rouge">Right</code> menu.</li>
+  <li>Select <code class="highlighter-rouge">SFTP link...</code></li>
+  <li>Enter the connection URL:</li>
+</ol>
 
-And then you may use standard `mc` commands to copy/move/modify files
-on the server and the local machine.
+<p><img src="assets/images/2020-10-01/mc2.png" alt="MC without alias" /></p>
 
-To exit SFTP mode just enter `..` in the top directory to which you `sftp`ed.
+<p>And then you may use standard <code class="highlighter-rouge">mc</code> commands to copy/move/modify files
+on the server and the local machine.</p>
 
-### Port forwarding
+<p>To exit SFTP mode just enter <code class="highlighter-rouge">..</code> in the top directory to which you <code class="highlighter-rouge">sftp</code>ed.</p>
 
-Let's say that there there is a service running on my Raspberry PI that is accessible only
-via `localhost`. For example it can be a simple web server:
-{% highlight bash %}
-pi$ python3 -m http.server 7777 --bind 127.0.0.1 --directory .
-{% endhighlight %}
-Because server is listening only on `127.0.0.1` instead of `0.0.0.0`, 
-we cannot access it from outside of my Raspberry PI:
-{% highlight bash %}
-mac$ curl raspberry_pi:7777
-curl: (7) Failed to connect to raspberry_pi port 7777: Connection refused
-{% endhighlight %}
+<h3 id="port-forwarding">Port forwarding</h3>
 
-To access the server we may e.g. forward connections to port 5432 on my laptop
+<p>Let’s say that there there is a service running on my Raspberry PI that is accessible only
+via <code class="highlighter-rouge">localhost</code>. For example it can be a simple web server:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">pi<span class="nv">$ </span>python3 <span class="nt">-m</span> http.server 7777 <span class="nt">--bind</span> 127.0.0.1 <span class="nt">--directory</span> .</code></pre></figure>
+
+<p>Because server is listening only on <code class="highlighter-rouge">127.0.0.1</code> instead of <code class="highlighter-rouge">0.0.0.0</code>, 
+we cannot access it from outside of my Raspberry PI:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>curl raspberry_pi:7777
+curl: <span class="o">(</span>7<span class="o">)</span> Failed to connect to raspberry_pi port 7777: Connection refused</code></pre></figure>
+
+<p>To access the server we may e.g. forward connections to port 5432 on my laptop
 to port 7777 on pi (this is called tunneling or port forwarding).
 We can do this using SSH:
-![SSH Tunnel](assets/images/2020-10-01/tunnel.png)
-{% highlight bash %}
-mac$ ssh -L localhost:5432:localhost:7777 pi
-# In another terminal
-mac$ curl localhost:5432
-<html>
-	<head></head>
-	<body>
+<img src="assets/images/2020-10-01/tunnel.png" alt="SSH Tunnel" /></p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>ssh <span class="nt">-L</span> localhost:5432:localhost:7777 pi
+<span class="c"># In another terminal</span>
+mac<span class="nv">$ </span>curl localhost:5432
+&lt;html&gt;
+	&lt;head&gt;&lt;/head&gt;
+	&lt;body&gt;
 		Welcome on Raspberry PI!!!
-	</body>
-</html>
-{% endhighlight %}
-The general syntax is `-L local-machine:local-port:remote-machine:remote-port`.
-Notice that for the `remote-machine` we have chosen `localhost`, but we could e.g.
-chose other computer to which `pi` can connect. 
-`local-machine` part can be omitted (`localhost` is the default). 
+	&lt;/body&gt;
+&lt;/html&gt;</code></pre></figure>
 
-If you don't need the SSH session only the tunnel, you can run `ssh` as a background task
-(this will not be a shell background task, so it will not show up in `bg` command):
-{% highlight bash %}
-mac$ ssh -fN -L localhost:5432:localhost:7777 pi
-mac$ ps | grep ssh
-84851 ttys001    0:00.01 grep ssh
-84290 ttys002    0:00.15 ssh pi
-{% endhighlight %}
+<p>The general syntax is <code class="highlighter-rouge">-L local-machine:local-port:remote-machine:remote-port</code>.
+Notice that for the <code class="highlighter-rouge">remote-machine</code> we have chosen <code class="highlighter-rouge">localhost</code>, but we could e.g.
+chose other computer to which <code class="highlighter-rouge">pi</code> can connect. 
+<code class="highlighter-rouge">local-machine</code> part can be omitted (<code class="highlighter-rouge">localhost</code> is the default).</p>
 
-Port forwarding can also work in the opposite direction. We may make a service running on
-my laptop accessible on Raspberry PI:
-{% highlight bash %}
-mac$ python3 -m http.server 9999 --bind 127.0.0.1 --directory .
+<p>If you don’t need the SSH session only the tunnel, you can run <code class="highlighter-rouge">ssh</code> as a background task
+(this will not be a shell background task, so it will not show up in <code class="highlighter-rouge">bg</code> command):</p>
 
-# On PI
-pi$ $ curl localhost:5432
-curl: (7) Failed to connect to localhost port 5432: Connection refused
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>ssh <span class="nt">-fN</span> <span class="nt">-L</span> localhost:5432:localhost:7777 pi
+mac<span class="nv">$ </span>ps | <span class="nb">grep </span>ssh
+84851 ttys001    0:00.01 <span class="nb">grep </span>ssh
+84290 ttys002    0:00.15 ssh pi</code></pre></figure>
 
-# On Mac
-mac$ ssh -R localhost:5432:localhost:9999 pi
-pi$ curl localhost:5432
-<html>
-	<head></head>
-	<body>
+<p>Port forwarding can also work in the opposite direction. We may make a service running on
+my laptop accessible on Raspberry PI:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>python3 <span class="nt">-m</span> http.server 9999 <span class="nt">--bind</span> 127.0.0.1 <span class="nt">--directory</span> <span class="nb">.</span>
+
+<span class="c"># On PI</span>
+pi<span class="nv">$ $ </span>curl localhost:5432
+curl: <span class="o">(</span>7<span class="o">)</span> Failed to connect to localhost port 5432: Connection refused
+
+<span class="c"># On Mac</span>
+mac<span class="nv">$ </span>ssh <span class="nt">-R</span> localhost:5432:localhost:9999 pi
+pi<span class="nv">$ </span>curl localhost:5432
+&lt;html&gt;
+	&lt;head&gt;&lt;/head&gt;
+	&lt;body&gt;
 		Hello from MacOS!!!
-	</body>
-</html>
-{% endhighlight %}
-Here syntax is `-R remote-machine:remote-port:local-machine:local-port`.
-Connections to `remote-machine:remote-port` are forwarded to `local-machine:local-port`.
+	&lt;/body&gt;
+&lt;/html&gt;</code></pre></figure>
 
-By default the open ports are available on `localhost` only (think security!).
+<p>Here syntax is <code class="highlighter-rouge">-R remote-machine:remote-port:local-machine:local-port</code>.
+Connections to <code class="highlighter-rouge">remote-machine:remote-port</code> are forwarded to <code class="highlighter-rouge">local-machine:local-port</code>.</p>
+
+<p>By default the open ports are available on <code class="highlighter-rouge">localhost</code> only (think security!).
 If you want to accept connections from outside, you need to change 
-`GatewayPorts` settings of sshd daemon to `yes` on the server (the machine to which you connect to):
-{% highlight bash %}
-pi$ sudo vi /etc/ssh/sshd_config
-# Set GatewayPorts yes
-pi$ sudo service sshd restart
-{% endhighlight %}
-Now we can make `pi` accept connection from the entire local network and
-forward them to my laptop:
-{% highlight bash %}
-# Establish tunnel
-mac$ ssh -R '*:5432:localhost:9999' pi
-# From my PC
-old-pc$ curl raspberry_pi:5432
-<html>
-	<head></head>
-	<body>
+<code class="highlighter-rouge">GatewayPorts</code> settings of sshd daemon to <code class="highlighter-rouge">yes</code> on the server (the machine to which you connect to):</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">pi<span class="nv">$ </span><span class="nb">sudo </span>vi /etc/ssh/sshd_config
+<span class="c"># Set GatewayPorts yes</span>
+pi<span class="nv">$ </span><span class="nb">sudo </span>service sshd restart</code></pre></figure>
+
+<p>Now we can make <code class="highlighter-rouge">pi</code> accept connection from the entire local network and
+forward them to my laptop:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c"># Establish tunnel</span>
+mac<span class="nv">$ </span>ssh <span class="nt">-R</span> <span class="s1">'*:5432:localhost:9999'</span> pi
+<span class="c"># From my PC</span>
+old-pc<span class="nv">$ </span>curl raspberry_pi:5432
+&lt;html&gt;
+	&lt;head&gt;&lt;/head&gt;
+	&lt;body&gt;
 		Hello from MacOS!!!
-	</body>
-</html>
-{% endhighlight %}
-TIP: The single quotes are needed to prevent shell expansion of `*`.
+	&lt;/body&gt;
+&lt;/html&gt;</code></pre></figure>
 
-### Providing internet connection via SSH
+<p>TIP: The single quotes are needed to prevent shell expansion of <code class="highlighter-rouge">*</code>.</p>
 
-Say on your local machine you cannot access e.g. `facebook.com` for some strange reason.
+<h3 id="providing-internet-connection-via-ssh">Providing internet connection via SSH</h3>
+
+<p>Say on your local machine you cannot access e.g. <code class="highlighter-rouge">facebook.com</code> for some strange reason.
 But you noticed that on a certain server there is no such restriction,
-and you can e.g. use `links` to browse `facebook.com`:
-![Facebook in Links](assets/images/2020-10-01/fcrap.png)
-Since FB does not looks good in `links` you really need a better solution...
+and you can e.g. use <code class="highlighter-rouge">links</code> to browse <code class="highlighter-rouge">facebook.com</code>:
+<img src="assets/images/2020-10-01/fcrap.png" alt="Facebook in Links" />
+Since FB does not looks good in <code class="highlighter-rouge">links</code> you really need a better solution…</p>
 
-Behold, SSH comes to the rescue. By using a dynamic port forwarding we may establish
-SOCKS tunnel to the server:
-{% highlight bash %}
-mac$ ssh -C -D 1080 pi 
-{% endhighlight %}
-`-C` is for compression, `1080` is the standard SOCKS port.
+<p>Behold, SSH comes to the rescue. By using a dynamic port forwarding we may establish
+SOCKS tunnel to the server:</p>
 
-Now we need to configure a browser. Firefox is well known for excellent SOCKS support:
-![SOCKS proxy configuration in Firefox](assets/images/2020-10-01/ff.png)
-And voilà `facebook.com` is working again!
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>ssh <span class="nt">-C</span> <span class="nt">-D</span> 1080 pi </code></pre></figure>
 
-A trick like this was very popular when I was living in a dormitory.
+<p><code class="highlighter-rouge">-C</code> is for compression, <code class="highlighter-rouge">1080</code> is the standard SOCKS port.</p>
+
+<p>Now we need to configure a browser. Firefox is well known for excellent SOCKS support:
+<img src="assets/images/2020-10-01/ff.png" alt="SOCKS proxy configuration in Firefox" />
+And voilà <code class="highlighter-rouge">facebook.com</code> is working again!</p>
+
+<p>A trick like this was very popular when I was living in a dormitory.
 Our dorm internet connection was very slow, but as CS students we had SSH access
-to a few servers, some of them with very fast internet connections...
+to a few servers, some of them with very fast internet connections…</p>
 
-### X Forwarding
+<h3 id="x-forwarding">X Forwarding</h3>
 
-Here I will explain how to do this on MacOS.
-First we need to install [XQuartz](https://www.xquartz.org/), which is X11
-port for MacOS:
-{% highlight bash %}
-mac$ brew install xquartz
-{% endhighlight %}
-Next we need to start XQuartz.app (it will only show in the dock).
+<p>Here I will explain how to do this on MacOS.
+First we need to install <a href="https://www.xquartz.org/">XQuartz</a>, which is X11
+port for MacOS:</p>
 
-Now we must enable X11 forwarding support on Raspberry PI:
-{% highlight bash %}
-pi$ sudo vi /etc/ssh/sshd_config
-# Set: 
-# X11Forwarding yes
-# X11DisplayOffset 10
-pi$ sudo service sshd restart
-pi$ which xauth # Make sure xauth is installed
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ </span>brew install xquartz</code></pre></figure>
 
-And finally we can start our X session:
-{% highlight bash %}
-mac$ DISPLAY=:0 ssh -X pi
-pi$ vlc
-{% endhighlight %}
-Now when I typed `vlc` a VLC window popped up on my laptop. 
-The resolution isn't great (it would look native if I used X11 port forwarding on Linux), 
+<p>Next we need to start XQuartz.app (it will only show in the dock).</p>
+
+<p>Now we must enable X11 forwarding support on Raspberry PI:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">pi<span class="nv">$ </span><span class="nb">sudo </span>vi /etc/ssh/sshd_config
+<span class="c"># Set: </span>
+<span class="c"># X11Forwarding yes</span>
+<span class="c"># X11DisplayOffset 10</span>
+pi<span class="nv">$ </span><span class="nb">sudo </span>service sshd restart
+pi<span class="nv">$ </span>which xauth <span class="c"># Make sure xauth is installed</span></code></pre></figure>
+
+<p>And finally we can start our X session:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">mac<span class="nv">$ DISPLAY</span><span class="o">=</span>:0 ssh <span class="nt">-X</span> pi
+pi<span class="nv">$ </span>vlc</code></pre></figure>
+
+<p>Now when I typed <code class="highlighter-rouge">vlc</code> a VLC window popped up on my laptop. 
+The resolution isn’t great (it would look native if I used X11 port forwarding on Linux), 
 this is due to poor retina display support in XQuartz. But still it works:
-![XForwarding in MacOS](assets/images/2020-10-01/vlc.png)
+<img src="assets/images/2020-10-01/vlc.png" alt="XForwarding in MacOS" /></p>
 
-### Tmux session manager
+<h3 id="tmux-session-manager">Tmux session manager</h3>
 
-Sometimes you want to leave some program running on the server even if you close
+<p>Sometimes you want to leave some program running on the server even if you close
 you SSH connection. Or maybe you are doing something important, e.g. devops stuff and
 you want to make sure that the command you are executing will not be interrupted.
-For cases like this (...and for hacker movie lovers) terminal multiplexers where invented.
-The two most popular ones are `screen` and `tmux`.
+For cases like this (…and for hacker movie lovers) terminal multiplexers where invented.
+The two most popular ones are <code class="highlighter-rouge">screen</code> and <code class="highlighter-rouge">tmux</code>.</p>
 
-Here I will shortly explain what `tmux` is. 
-Generally `tmux` deserves its own blog post,
-fortunately for me [this post is already written](https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/).
-Here I will only show you one single use-case, just to give you the taste what `tmux` is all about.
+<p>Here I will shortly explain what <code class="highlighter-rouge">tmux</code> is. 
+Generally <code class="highlighter-rouge">tmux</code> deserves its own blog post,
+fortunately for me <a href="https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/">this post is already written</a>.
+Here I will only show you one single use-case, just to give you the taste what <code class="highlighter-rouge">tmux</code> is all about.</p>
 
-Let's connect to Raspberry PI and start `vi` inside `tmux` session:
-{% highlight bash %}
-pi$ tmux
-pi [tmux]$ vi
-# Some serious editing
-{% endhighlight %}
-Next I will perform some manual intervention (the physical connection got busted):
-![Simulating connection link failure](assets/images/2020-10-01/pi.jpeg)
-My SSH session on my laptop hanged so I had to kill it with `pkill ssh`.
+<p>Let’s connect to Raspberry PI and start <code class="highlighter-rouge">vi</code> inside <code class="highlighter-rouge">tmux</code> session:</p>
 
-Now after I fixed the Ethernet connection and reconnected to `pi` 
-I can execute `tmux ls` and see my previous
-session:
-{% highlight bash %}
-pi$ tmux ls
-0: 1 windows (created Thu Oct  1 15:00:01 2020) [90x43]
-{% endhighlight %}
-Let's attach tmux to this session:
-{% highlight bash %}
-pi$ tmux attach -t 0
-# Bang! my VI is back with all the unsaved text
-{% endhighlight %}
-Looks like after attaching I could recover all my previous work!
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">pi<span class="nv">$ </span>tmux
+pi <span class="o">[</span>tmux]<span class="nv">$ </span>vi
+<span class="c"># Some serious editing</span></code></pre></figure>
 
-WARNING: `tmux` session will not survive the server restart. Make sure that the server
-will not be restarted while running important computations within `tmux`.
+<p>Next I will perform some manual intervention (the physical connection got busted):
+<img src="assets/images/2020-10-01/pi.jpeg" alt="Simulating connection link failure" />
+My SSH session on my laptop hanged so I had to kill it with <code class="highlighter-rouge">pkill ssh</code>.</p>
 
-Congrats! Now you are SSH PRO!
+<p>Now after I fixed the Ethernet connection and reconnected to <code class="highlighter-rouge">pi</code> 
+I can execute <code class="highlighter-rouge">tmux ls</code> and see my previous
+session:</p>
 
-### References
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">pi<span class="nv">$ </span>tmux <span class="nb">ls
+</span>0: 1 windows <span class="o">(</span>created Thu Oct  1 15:00:01 2020<span class="o">)</span> <span class="o">[</span>90x43]</code></pre></figure>
 
-* https://www.cyberciti.biz/faq/create-ssh-config-file-on-linux-unix/
-* http://www.trembath.co.za/mctutorial.html
-* https://phoenixnap.com/kb/ssh-port-forwarding
-* https://help.ubuntu.com/community/SSH/OpenSSH/PortForwarding
-* https://linuxize.com/post/how-to-setup-ssh-socks-tunnel-for-private-browsing/
-* https://unix.stackexchange.com/a/46748
+<p>Let’s attach tmux to this session:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">pi<span class="nv">$ </span>tmux attach <span class="nt">-t</span> 0
+<span class="c"># Bang! my VI is back with all the unsaved text</span></code></pre></figure>
+
+<p>Looks like after attaching I could recover all my previous work!</p>
+
+<p>WARNING: <code class="highlighter-rouge">tmux</code> session will not survive the server restart. Make sure that the server
+will not be restarted while running important computations within <code class="highlighter-rouge">tmux</code>.</p>
+
+<p>Congrats! Now you are SSH PRO!</p>
+
+<h3 id="references">References</h3>
+
+<ul>
+  <li>https://www.cyberciti.biz/faq/create-ssh-config-file-on-linux-unix/</li>
+  <li>http://www.trembath.co.za/mctutorial.html</li>
+  <li>https://phoenixnap.com/kb/ssh-port-forwarding</li>
+  <li>https://help.ubuntu.com/community/SSH/OpenSSH/PortForwarding</li>
+  <li>https://linuxize.com/post/how-to-setup-ssh-socks-tunnel-for-private-browsing/</li>
+  <li>https://unix.stackexchange.com/a/46748</li>
+</ul>
+
 	  ]]></description>
 	</item>
 
@@ -555,23 +553,23 @@ Congrats! Now you are SSH PRO!
 	  <pubDate>2020-09-29T02:00:01+02:00</pubDate>
 	  <guid>//minikomputer-8085-czesc-II</guid>
 	  <description><![CDATA[
-	     W [poprzednim](minikomputer-8085-czesc-I) wpisie udało nam się zbudować działający minikomputer oraz uruchomić
+	     <p>W <a href="minikomputer-8085-czesc-I">poprzednim</a> wpisie udało nam się zbudować działający minikomputer oraz uruchomić
 na nim napisany przez Davida Huntera monitor. Dla przypomnienia zbudowana przeze mnie
 maszyna wyglądała następująco:
-![Minikomputer wyłaniający się z chaosu](assets/images/2020-09-29/comp1.jpeg)
+<img src="assets/images/2020-09-29/comp1.jpeg" alt="Minikomputer wyłaniający się z chaosu" />
 Podczas kilku kolejnych godzin pracy z komputerem, szybko okazało się że taka plątanina
 przewodów znacznie utrudnia debugowanie i rozwiązywanie problemów.
 Co gorsza przewody połączeniowe nie zapewniały dobrej jakości połączeń pomiędzy układami scalonymi.
-W efekcie komputer potrafił nie startować lub zawieszał się podczas wykonywania programów.
+W efekcie komputer potrafił nie startować lub zawieszał się podczas wykonywania programów.</p>
 
-Kolejną ważną rzeczą którą pominąłem podczas budowy komputera są 
+<p>Kolejną ważną rzeczą którą pominąłem podczas budowy komputera są 
 kondensatory odsprzęgające (ang. decoupling capacitors). 
 Układy scalone, zwłaszcza te należące do rodziny 74LS 
 potrafią emitować sporo zakłóceń podczas zmiany stanu.
 Dołączenie kondensatora foliowego lub ceramicznego o pojemności 0.1uF do linii zasilania układu
-pozwala zmniejszyć zakłócenia i poprawia stabilność jego działania.
+pozwala zmniejszyć zakłócenia i poprawia stabilność jego działania.</p>
 
-Teraz nadszedł czas żeby naprawić wszystkie powyższe mankamenty. 
+<p>Teraz nadszedł czas żeby naprawić wszystkie powyższe mankamenty. 
 Przewody połączeniowe zastąpiłem
 ciętymi na wymiar przewodami jednożyłowymi. Oprócz kondensatorów odsprzęgających,
 dodałem do szyny zasilania również jeden duży kondensator elektrolityczny o
@@ -580,121 +578,121 @@ zalecane bo potrafi mocno obciążyć zasilacz w momencie startu układu.
 Ja używam prostego zasilacza do płytek stykowych który przeżył już niejedno zwarcie,
 więc na razie postanowiłem zignorować ten problem.
 Efekt mojej pracy widać poniżej:
-![Minikomputer tym razem z porządnymi połączeniami](assets/images/2020-09-29/comp2.jpeg)
+<img src="assets/images/2020-09-29/comp2.jpeg" alt="Minikomputer tym razem z porządnymi połączeniami" /></p>
 
-Przy okazji przebudowy komputera postanowiłem wprowadzić kilka modyfikacji.
+<p>Przy okazji przebudowy komputera postanowiłem wprowadzić kilka modyfikacji.
 Po pierwsze zastąpiłem pojedyńczy rejestr wejścia/wyjścia z projektu Huntera,
 dwoma rejestrami wyjściowymi i jednym wejściowym. Dzięki temu w prosty sposób
 będziemy mogli podłączyć do komputera zarówno 2x16 znakowy wyświetlacz LCD,
-jak i parę przycisków. 
+jak i parę przycisków.</p>
 
-Warto tutaj zaznaczyć że oryginalny projekt Huntera również pozwala na integracje z
+<p>Warto tutaj zaznaczyć że oryginalny projekt Huntera również pozwala na integracje z
 wyświetlaczem LCD, jeżeli tylko wykorzystamy rejestry przesuwne 74LS595 do zwielokrotnienia liczby
 wyjść. Dokładnie tą samą sztuczkę wykorzystał Ben Eater w swoim 
-[programatorze EEPROM](https://github.com/beneater/eeprom-programmer).
+<a href="https://github.com/beneater/eeprom-programmer">programatorze EEPROM</a>.</p>
 
-Ostatecznie po wszystkich modyfikacjach schemat komputera wygląda następująco:
-![Schemat minikomputera](assets/images/2020-09-29/mikrus-85.svg)
+<p>Ostatecznie po wszystkich modyfikacjach schemat komputera wygląda następująco:
+<img src="assets/images/2020-09-29/mikrus-85.svg" alt="Schemat minikomputera" />
 Powyższy schemat oddaje jeden do jednego układ połączeń oraz typ układów scalonych które znalazły się
 na moich płytkach stykowych. Na przykład miałem pod ręką tylko jeden układ 74HCT574.
 Przy budowie portów wyjściowych musiałem więc wykorzystać dwa starsze układy 74HCT374,
 które robią co prawda to samo co 74HCT574, ale mają znacznie mnie wygodny układ wyprowadzeń.
 Podobnie nie posiadałem 74LS373 więc użyłem 74LS574 w połączeniu z inwerterem.
 Na koniec przypomnę że układy rodzin 74LS i 74HCT są ze sobą kompatybilne i można je
-stosować zamiennie.
+stosować zamiennie.</p>
 
-Schemat minikomputera został stworzony w darmowym i popularnym wśród hobbystów programie
-[KiCad](https://kicad-pcb.org/). Podczas tworzenia schematu nie widziałem co wpisać w pole tytuł,
-postanowiłem więc nadać mojemu komputerowi nazwę Mikrus-85. Hurra!
+<p>Schemat minikomputera został stworzony w darmowym i popularnym wśród hobbystów programie
+<a href="https://kicad-pcb.org/">KiCad</a>. Podczas tworzenia schematu nie widziałem co wpisać w pole tytuł,
+postanowiłem więc nadać mojemu komputerowi nazwę Mikrus-85. Hurra!</p>
 
-Kolejny celem jaki przed sobą postawiłem była kompilacja i uruchamianie na Mikrusie
+<p>Kolejny celem jaki przed sobą postawiłem była kompilacja i uruchamianie na Mikrusie
 programów napisanych w C.
 Niestety już samo znalezienie odpowiedniego kompilatora stanowiło duży problem.
-[Small Device C Compiler](http://sdcc.sourceforge.net/) mógłby być idealnym wyborem,
+<a href="http://sdcc.sourceforge.net/">Small Device C Compiler</a> mógłby być idealnym wyborem,
 gdyby wspierał używany przeze mnie procesor 8085. 
 Co prawda prace nad dodaniem takiego wsparcia
-rozpoczęły się [ponad rok temu](https://github.com/kenyapcomau/sdcc-8080), 
+rozpoczęły się <a href="https://github.com/kenyapcomau/sdcc-8080">ponad rok temu</a>, 
 ale nie zaowocowały jeszcze w pełni działającym kompilatorem.
 Warto dodać że procesor 8085 jest wstecznie kompatybilny z procesorem 8080
 (dokładnie mówiąc 8085 dodaje tylko dwie nowe instrukcje), więc
 kompilator C dla 8080 może być z powodzeniem wykorzystany również do 
-generowania kodu dla 8085.
+generowania kodu dla 8085.</p>
 
-Ostatecznie postanowiłem użyć kompilatora [Small-C](https://github.com/ncb85/SmallC-85),
+<p>Ostatecznie postanowiłem użyć kompilatora <a href="https://github.com/ncb85/SmallC-85">Small-C</a>,
 napisanego ponad 30 lat temu przez Chrisa Lewisa, a przywróconego do życia dzięki wysiłkom
-użytkownika [ncb85](https://github.com/ncb85). ncb85 oprócz kodu kompilatora
-udostępnił też na swoim koncie [przykład jego użycia](https://github.com/ncb85/utilis-and-examples/tree/master/cpm_hello)
-co pozwoliło mi zaoszczędzić niemało czasu.
+użytkownika <a href="https://github.com/ncb85">ncb85</a>. ncb85 oprócz kodu kompilatora
+udostępnił też na swoim koncie <a href="https://github.com/ncb85/utilis-and-examples/tree/master/cpm_hello">przykład jego użycia</a>
+co pozwoliło mi zaoszczędzić niemało czasu.</p>
 
-Wracając do samego kompilatora, jest to dość stary program który powstał jeszcze przed
-wprowadzeniem standardu C89 (sic!). Poniżej garść ciekawostek które się z tym wiążą:
+<p>Wracając do samego kompilatora, jest to dość stary program który powstał jeszcze przed
+wprowadzeniem standardu C89 (sic!). Poniżej garść ciekawostek które się z tym wiążą:</p>
 
-* Nie ma typu `void`. Metody domyślnie zwracają typ `int`. :deal-with-it-parrot:
-* Brak wsparcia dla inicjalizacji wartości zmiennych globalnych.
-* Deklaracja metod musi byc wykonana w przestarzałym stylu [K&R](https://en.wikipedia.org/wiki/C_(programming_language)#K&R_C):
+<ul>
+  <li>Nie ma typu <code class="highlighter-rouge">void</code>. Metody domyślnie zwracają typ <code class="highlighter-rouge">int</code>. :deal-with-it-parrot:</li>
+  <li>Brak wsparcia dla inicjalizacji wartości zmiennych globalnych.</li>
+  <li>Deklaracja metod musi byc wykonana w przestarzałym stylu <a href="https://en.wikipedia.org/wiki/C_(programming_language)#K&amp;R_C">K&amp;R</a>:</li>
+</ul>
 
-{% highlight c %}
-lcd(regSelect, data)
-    char regSelect;
-    char data;
-{
-    // code
-}
-{% endhighlight %}
-Współcześnie napisalibyśmy:
-{% highlight c %}
-void lcd(char regSelect, char data) {
-    // code
-}
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="n">lcd</span><span class="p">(</span><span class="n">regSelect</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="kt">char</span> <span class="n">regSelect</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">data</span><span class="p">;</span>
+<span class="p">{</span>
+    <span class="c1">// code
+</span><span class="p">}</span></code></pre></figure>
 
-Ponieważ nasz procesor jest 8-bitowy do dyspozycji mamy jedynie cztery typu liczb całkowitych:
-`unsigned char`, `signed char`, `unsigned int` i `signed int`.
-Operacje na 16-bitowych typach `int` muszą być symulowane za pomocą dostarczanej razem z kompilatorem
-biblioteki [crun8085lib.asm](https://github.com/marcin-chwedczuk/mikrus-85/blob/master/smallC/crun8085lib.asm).
+<p>Współcześnie napisalibyśmy:</p>
 
-Sam kompilator jest bardzo prosty, nie generuje prawie żadnych ostrzeżeń - łatwo więc sobie strzelić w stopę.
-Dla przykładu poniższa pętla jest nieskończona:
-{% highlight c %}
-char c;
-for (c = 0; c < 128; c++) {
-    // do nothing
-}
-{% endhighlight %}
-Od czasu do czasu kompilator kończy pracę zgłaszając Segmentation Fault.
-Praca z Small-C wymaga więc sporej dozy i cierpliwości, i wyrozumiałości, i wytrwałości.
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">lcd</span><span class="p">(</span><span class="kt">char</span> <span class="n">regSelect</span><span class="p">,</span> <span class="kt">char</span> <span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// code
+</span><span class="p">}</span></code></pre></figure>
 
-Stworzenie najprostszego programu w C `main() { }` przy użyciu Small-C wymaga
+<p>Ponieważ nasz procesor jest 8-bitowy do dyspozycji mamy jedynie cztery typu liczb całkowitych:
+<code class="highlighter-rouge">unsigned char</code>, <code class="highlighter-rouge">signed char</code>, <code class="highlighter-rouge">unsigned int</code> i <code class="highlighter-rouge">signed int</code>.
+Operacje na 16-bitowych typach <code class="highlighter-rouge">int</code> muszą być symulowane za pomocą dostarczanej razem z kompilatorem
+biblioteki <a href="https://github.com/marcin-chwedczuk/mikrus-85/blob/master/smallC/crun8085lib.asm">crun8085lib.asm</a>.</p>
+
+<p>Sam kompilator jest bardzo prosty, nie generuje prawie żadnych ostrzeżeń - łatwo więc sobie strzelić w stopę.
+Dla przykładu poniższa pętla jest nieskończona:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">char</span> <span class="n">c</span><span class="p">;</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">c</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="mi">128</span><span class="p">;</span> <span class="n">c</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// do nothing
+</span><span class="p">}</span></code></pre></figure>
+
+<p>Od czasu do czasu kompilator kończy pracę zgłaszając Segmentation Fault.
+Praca z Small-C wymaga więc sporej dozy i cierpliwości, i wyrozumiałości, i wytrwałości.</p>
+
+<p>Stworzenie najprostszego programu w C <code class="highlighter-rouge">main() { }</code> przy użyciu Small-C wymaga
 trochę więcej wysiłku niż tylko uruchomienie kompilator. W wyniku kompilacji
 otrzymujemy bowiem nie plik binary, ale plik źródłowy assemblera który
 należy jeszcze poddać translacji do kodu maszynowego.
-Do tego celu należy wykorzystać `as8085` będący częścią pakietu [ASxxxx](https://shop-pdp.net/ashtml/asxxxx.php).
-`ASxxxx` jest wciąż rozwijanym projektem posiadającym naprawdę dobrą [dokumentację](https://shop-pdp.net/ashtml/asxbld.htm).
-Dzięki temu zbudowanie assemblera ze źródeł nie powinno sprawić nam żadnych problemów.
+Do tego celu należy wykorzystać <code class="highlighter-rouge">as8085</code> będący częścią pakietu <a href="https://shop-pdp.net/ashtml/asxxxx.php">ASxxxx</a>.
+<code class="highlighter-rouge">ASxxxx</code> jest wciąż rozwijanym projektem posiadającym naprawdę dobrą <a href="https://shop-pdp.net/ashtml/asxbld.htm">dokumentację</a>.
+Dzięki temu zbudowanie assemblera ze źródeł nie powinno sprawić nam żadnych problemów.</p>
 
-Czas na małą dygresję. Po starcie procesor 8085 zaczyna
-wykonywanie kodu programu od adresu `0x0000`.
-Wartości rejestrów procesora, w szczególności rejestru `SP` odpowiedzialnego
+<p>Czas na małą dygresję. Po starcie procesor 8085 zaczyna
+wykonywanie kodu programu od adresu <code class="highlighter-rouge">0x0000</code>.
+Wartości rejestrów procesora, w szczególności rejestru <code class="highlighter-rouge">SP</code> odpowiedzialnego
 za zarządzaniem stosem nie są na starcie procesora dobrze zdefiniowane.
-Zanim wywołamy naszą funkcję `main()` powinniśmy nadać rejestrowi `SP` poprawną wartość.
-Zbudowany przeze mnie komputer posiada następującą mapę pamięci:
-{% highlight no-highlight %}
-Adresy          | Przeznaczenie
+Zanim wywołamy naszą funkcję <code class="highlighter-rouge">main()</code> powinniśmy nadać rejestrowi <code class="highlighter-rouge">SP</code> poprawną wartość.
+Zbudowany przeze mnie komputer posiada następującą mapę pamięci:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">Adresy          | Przeznaczenie
 ---------------------------------
 0x0000 - 0x1FFF - ROM
 0x2000 - 0x3FFF - RAM
 0x8000          - output port 1
 0xA000          - output port 2
-0xC000          - input port
-{% endhighlight %}
-Stos na 8085 podobnie jak w innych procesorach Intela rośnie w dół (w kierunku mniejszych adresów).
-Dodatkowo warto żeby adres stosu był parzysty, rozsądnym wyborem jest więc ustawienie `SP`
-na adres `0x3FFE` a więc przedostatni dostępny adres pamięci RAM.
+0xC000          - input port</code></pre></figure>
 
-Ostatecznie stworzyłem plik `cstart.asm` odpowiedzialny za przygotowanie
-środowiska dla C:
-{% highlight asm %}
-;       Run time setup for Small C.
+<p>Stos na 8085 podobnie jak w innych procesorach Intela rośnie w dół (w kierunku mniejszych adresów).
+Dodatkowo warto żeby adres stosu był parzysty, rozsądnym wyborem jest więc ustawienie <code class="highlighter-rouge">SP</code>
+na adres <code class="highlighter-rouge">0x3FFE</code> a więc przedostatni dostępny adres pamięci RAM.</p>
+
+<p>Ostatecznie stworzyłem plik <code class="highlighter-rouge">cstart.asm</code> odpowiedzialny za przygotowanie
+środowiska dla C:</p>
+
+<figure class="highlight"><pre><code class="language-asm" data-lang="asm">;       Run time setup for Small C.
         .module CSTART
         .area   CSTART (REL,CON) ;program area CRTSO is RELOCATABLE
         .list   (err, loc, bin, eqt, cyc, lin, src, lst, md)
@@ -712,45 +710,46 @@ stop:
         jmp stop        ; interrupt can wake CPU from hlt
 
 cstartend:
-       .end
-{% endhighlight %}
-Pozostaje nam już tylko upewnić się że kod z pliku `cstart.asm` wyląduje pod
-adresem `0x0000`. Do tego celu musimy 1) nadać mu unikalną nazwę `CSTART` 
-2) wykorzystać parametr linkera `-b` żeby wymusić pozycje obszaru `CSTART`
-w pamięci EEPROM.
+       .end</code></pre></figure>
 
-Poniżej przedstawiam parametry linkera (plik `eeprom.lnk`):
-{% highlight no-highlight %}
--ioux
+<p>Pozostaje nam już tylko upewnić się że kod z pliku <code class="highlighter-rouge">cstart.asm</code> wyląduje pod
+adresem <code class="highlighter-rouge">0x0000</code>. Do tego celu musimy 1) nadać mu unikalną nazwę <code class="highlighter-rouge">CSTART</code> 
+2) wykorzystać parametr linkera <code class="highlighter-rouge">-b</code> żeby wymusić pozycje obszaru <code class="highlighter-rouge">CSTART</code>
+w pamięci EEPROM.</p>
+
+<p>Poniżej przedstawiam parametry linkera (plik <code class="highlighter-rouge">eeprom.lnk</code>):</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">-ioux
 eeprom-img
 cstart
 main
 -b CSTART=0
 -b SMALLC_GENERATED=0+cstartend
--e
-{% endhighlight %}
-Zauważmy że kod w pliku `cstart.asm` kończy się deklaracją labelki `cstartend`.
+-e</code></pre></figure>
+
+<p>Zauważmy że kod w pliku <code class="highlighter-rouge">cstart.asm</code> kończy się deklaracją labelki <code class="highlighter-rouge">cstartend</code>.
 Labelkę to wykorzystujemy żeby zmusić linker to umieszczenia kodu wygenerowanego 
-przez Small-C (`SMALLC_GENERATED`) zaraz po kodzie sekcji `CSTART`.
+przez Small-C (<code class="highlighter-rouge">SMALLC_GENERATED</code>) zaraz po kodzie sekcji <code class="highlighter-rouge">CSTART</code>.</p>
 
-Jeżeli zaczniemy pisać bardziej skomplikowane programy w C to może się okazać
+<p>Jeżeli zaczniemy pisać bardziej skomplikowane programy w C to może się okazać
 że nasz program wymaga funkcji, znajdujących się we wspomnianej już przeze mnie
-bibliotece `crun8085lib.asm`. Na chwilę obecną po prostu kopiuje brakujące funkcje
-do pliku `cstart.asm`, postaram się to poprawić w kolejnym wpisie.
+bibliotece <code class="highlighter-rouge">crun8085lib.asm</code>. Na chwilę obecną po prostu kopiuje brakujące funkcje
+do pliku <code class="highlighter-rouge">cstart.asm</code>, postaram się to poprawić w kolejnym wpisie.</p>
 
-Ostatecznie wynikiem kompilacji i linkowania jest plik w formacie Intel HEX
-który możemy już wypalić w pamięci EEPROM.
+<p>Ostatecznie wynikiem kompilacji i linkowania jest plik w formacie Intel HEX
+który możemy już wypalić w pamięci EEPROM.</p>
 
-W trakcie zabawy z Mikrusem przygotowałem prosty [program](https://github.com/marcin-chwedczuk/mikrus-85/tree/master/test/single-file-prog)
+<p>W trakcie zabawy z Mikrusem przygotowałem prosty <a href="https://github.com/marcin-chwedczuk/mikrus-85/tree/master/test/single-file-prog">program</a>
 który wypisuje wiadomość na ekran LCD oraz pozwala na obsługę dwóch przycisków:
-![Obsługa LCD](assets/images/2020-09-29/lcd.jpeg)
+<img src="assets/images/2020-09-29/lcd.jpeg" alt="Obsługa LCD" /></p>
 
-Na koniec zagadka dla czytelników: W tej chwili Small-C nie pozwala nam wykorzystać zmiennych
-globalnych. Odczyt zmiennych jest co prawda możliwy ale zapisy do zmiennych zdają się "znikać"?
-Dlaczego tak się dzieje?
+<p>Na koniec zagadka dla czytelników: W tej chwili Small-C nie pozwala nam wykorzystać zmiennych
+globalnych. Odczyt zmiennych jest co prawda możliwy ale zapisy do zmiennych zdają się “znikać”?
+Dlaczego tak się dzieje?</p>
 
-W następnym wpisie postaram się to naprawić.
-Koniec części drugiej.
+<p>W następnym wpisie postaram się to naprawić.
+Koniec części drugiej.</p>
+
 	  ]]></description>
 	</item>
 
@@ -761,99 +760,101 @@ Koniec części drugiej.
 	  <pubDate>2020-09-20T02:00:01+02:00</pubDate>
 	  <guid>//minikomputer-8085-czesc-I</guid>
 	  <description><![CDATA[
-	     Już od dłuższego czasu myślałem o tym żeby zbudować swój własny minikomputer.
+	     <p>Już od dłuższego czasu myślałem o tym żeby zbudować swój własny minikomputer.
 W internecie można znaleźć mnóstwo tego typu projektów, z moich ulubionych
-mogę wymienić oparty na procesorze 6502 [komputer autorstwa Bena Eatera](https://eater.net/6502)
-oraz oparty na CPU Intela [MiniMax8085 Sergieja Malinova](http://www.malinov.com/Home/sergeys-projects/minimax8085).
+mogę wymienić oparty na procesorze 6502 <a href="https://eater.net/6502">komputer autorstwa Bena Eatera</a>
+oraz oparty na CPU Intela <a href="http://www.malinov.com/Home/sergeys-projects/minimax8085">MiniMax8085 Sergieja Malinova</a>.
 Mój minikomputer
-postanowiłem jednak oprzeć na artykule opublikowanym na łamach czasopisma [Nuts and Volts](https://www.nutsvolts.com/),
+postanowiłem jednak oprzeć na artykule opublikowanym na łamach czasopisma <a href="https://www.nutsvolts.com/">Nuts and Volts</a>,
 autorstwa Davida Huntera. Dokładniej chodzi o artykuł
-[Build a pocket-sized ALTAIR computer](https://www.nutsvolts.com/magazine/article/build-a-pocket-sized-altair-computer)
-z początku 2019 roku.
+<a href="https://www.nutsvolts.com/magazine/article/build-a-pocket-sized-altair-computer">Build a pocket-sized ALTAIR computer</a>
+z początku 2019 roku.</p>
 
-Olbrzymią zaletą opisywanego w artykule komputera jest jego prostota.
+<p>Olbrzymią zaletą opisywanego w artykule komputera jest jego prostota.
 Podstawową wersję komputera, możemy zbudować przy pomocy zaledwie pięciu 
 układów scalonych (CPU, RAM, ROM, 74LS373 oraz 74LS139).
 Dodatkowo do budowy komputera możemy wykorzystać płytki stykowe, 
-dzięki czemu możemy się obejść bez lutownicy.
+dzięki czemu możemy się obejść bez lutownicy.</p>
 
-Pierwszą przeszkodą z jaką musimy się zmierzyć jest zakup procesora.
+<p>Pierwszą przeszkodą z jaką musimy się zmierzyć jest zakup procesora.
 Oryginalny układa 8085 Intela jest już praktycznie niedostępny na rynku.
 Na szczęście wciąż jeszcze można kupić kompatybilne z nim zamienniki.
-Bardzo pomocna jest tutaj strona [www.cpu-collection.de](http://www.cpu-collection.de/?tn=0&l0=cl&l1=8085)
+Bardzo pomocna jest tutaj strona <a href="http://www.cpu-collection.de/?tn=0&amp;l0=cl&amp;l1=8085">www.cpu-collection.de</a>
 która podaje ich długą i wyczerpującą listę.
-Dla przykładu udało mi się kupić układ oznaczony jako `SAB 8085AH2P`,
-który jak się okazało jest nadal dostępny w sklepie [inter-chip.pl](https://inter-chip.pl/8085p-2630.html)
+Dla przykładu udało mi się kupić układ oznaczony jako <code class="highlighter-rouge">SAB 8085AH2P</code>,
+który jak się okazało jest nadal dostępny w sklepie <a href="https://inter-chip.pl/8085p-2630.html">inter-chip.pl</a>
 (uprzedzam strona sklepu jest okropna).
-Z kolei klon `AMD P8085A` zdaje się być dostępny w sklepie [TVSAT-SHOP.pl](https://shop.tvsat.com.pl/pl/p/1szt-IC-uPC-P8085A-DIP40-AMD/31712)
+Z kolei klon <code class="highlighter-rouge">AMD P8085A</code> zdaje się być dostępny w sklepie <a href="https://shop.tvsat.com.pl/pl/p/1szt-IC-uPC-P8085A-DIP40-AMD/31712">TVSAT-SHOP.pl</a>
 w nieco niższej cenie.
-![Zakupiony przeze mnie procesor 8085](assets/images/2020-09-20/my8085.jpeg)
+<img src="assets/images/2020-09-20/my8085.jpeg" alt="Zakupiony przeze mnie procesor 8085" /></p>
 
-Na koniec pewna uwaga techniczna: dwójka znajdująca się przy końcu oznaczenia procesora np. `SAB 8085AH2P`
-wskazuje na model który może być taktowany z częstotliwością do 5MHz. Układy bez dwójki np. `AMD P8085A` mogą być taktowane
+<p>Na koniec pewna uwaga techniczna: dwójka znajdująca się przy końcu oznaczenia procesora np. <code class="highlighter-rouge">SAB 8085AH2P</code>
+wskazuje na model który może być taktowany z częstotliwością do 5MHz. Układy bez dwójki np. <code class="highlighter-rouge">AMD P8085A</code> mogą być taktowane
 zegarem do 3MHz. Warto dodać że procesor pracuje z połową częstotliwości podłączonego do niego
 rezonatora kwarcowego (aka kryształu). Jeżeli więc chcemy taktować procesor z częstotliwością 5MHz, to powinniśmy
-użyć kryształu 10MHz'owego. Z drugiej strony minimalna częstotliwość z jaką mogą pracować te procesory wynosi 1MHz,
-czyli minimalna częstotliwość rezonatora kwarcowego to 2MHz.
+użyć kryształu 10MHz’owego. Z drugiej strony minimalna częstotliwość z jaką mogą pracować te procesory wynosi 1MHz,
+czyli minimalna częstotliwość rezonatora kwarcowego to 2MHz.</p>
 
-Zakup pozostałych części nie powinien sprawić większych kłopotów.
-Pełna lista wymaganych komponentów podana jest w [artykule pana Huntera](https://www.nutsvolts.com/magazine/article/build-a-pocket-sized-altair-computer#Parts%20List),
+<p>Zakup pozostałych części nie powinien sprawić większych kłopotów.
+Pełna lista wymaganych komponentów podana jest w <a href="https://www.nutsvolts.com/magazine/article/build-a-pocket-sized-altair-computer#Parts%20List">artykule pana Huntera</a>,
 do tego potrzebować będziemy jeszcze stabilizowanego źródła zasilania 5V, trzech płytek stykowych, 
-całej masy przewodów połączeniowych i kilku diod LED.
+całej masy przewodów połączeniowych i kilku diod LED.</p>
 
-Do programowania pamięci EEPROM możemy wykorzystać popularny wśród hobbystów TL866II PLUS
+<p>Do programowania pamięci EEPROM możemy wykorzystać popularny wśród hobbystów TL866II PLUS
 (cena około 300PLN). Prosty programator można również zbudować samemu z wykorzystaniem Arduino
-(patrz [programator Bena Eatera](https://www.youtube.com/watch?v=K88pgWhEb1M) 
-oraz [TommyPROM](https://github.com/TomNisbet/TommyPROM)).
+(patrz <a href="https://www.youtube.com/watch?v=K88pgWhEb1M">programator Bena Eatera</a> 
+oraz <a href="https://github.com/TomNisbet/TommyPROM">TommyPROM</a>).</p>
 
-Do komunikacji z PC potrzebować będziemy jeszcze konwertera `USB <-> UART`
-(aka FTDI), który możemy [kupić za około 15PLN](https://botland.com.pl/pl/konwertery-usb-uart-rs232-rs485/4501-konwerter-usb-uart-pl2303-wtyk-usb-waveshare-4037.html).
+<p>Do komunikacji z PC potrzebować będziemy jeszcze konwertera <code class="highlighter-rouge">USB &lt;-&gt; UART</code>
+(aka FTDI), który możemy <a href="https://botland.com.pl/pl/konwertery-usb-uart-rs232-rs485/4501-konwerter-usb-uart-pl2303-wtyk-usb-waveshare-4037.html">kupić za około 15PLN</a>.
 Przed podłączeniem konwertera do budowanego minikomputera, należy upewnić się
 że zworka odpowiedzialna za wybór napięcia znajduje się w pozycji 5V:
-![Konwerter USB UART](assets/images/2020-09-20/ftdi.jpeg)
-Po podłączeniu konwertera do komputera, system operacyjny powinien "wystawić" urządzenie jako nowy port szeregowy
-np. `COM3` w systemie Windows lub `/dev/ttyUSB0` w systemie Linux.
+<img src="assets/images/2020-09-20/ftdi.jpeg" alt="Konwerter USB UART" />
+Po podłączeniu konwertera do komputera, system operacyjny powinien “wystawić” urządzenie jako nowy port szeregowy
+np. <code class="highlighter-rouge">COM3</code> w systemie Windows lub <code class="highlighter-rouge">/dev/ttyUSB0</code> w systemie Linux.</p>
 
-Na koniec uwaga praktyczna: Układ 74HCT373 możemy zastąpić nowszym 74HCT573 który zdaje się mieć nieco
+<p>Na koniec uwaga praktyczna: Układ 74HCT373 możemy zastąpić nowszym 74HCT573 który zdaje się mieć nieco
 bardziej rozsądny układ wyprowadzeń (wszystkie wejścia po jednej stronie układu).
 Zamiast 74HCT373 lub 74HCT573 możemy wykorzystać układ 74HCT574 zgodnie ze schematem:
-![Alternatywny zatrzask adresu](assets/images/2020-09-20/74.png)
-(źródło: [Análisis general de un Microprocesador](https://silo.tips/download/analisis-general-de-un-microprocesador))
+<img src="assets/images/2020-09-20/74.png" alt="Alternatywny zatrzask adresu" />
+(źródło: <a href="https://silo.tips/download/analisis-general-de-un-microprocesador">Análisis general de un Microprocesador</a>)</p>
 
-Jako inwerter można wykorzystać np. CD40106BE.
-Testowałem powyższą konfigurację z kryształem 4MHz i wszystko działało bez problemów.
+<p>Jako inwerter można wykorzystać np. CD40106BE.
+Testowałem powyższą konfigurację z kryształem 4MHz i wszystko działało bez problemów.</p>
 
-### Budowa i uruchomienie układu
+<h3 id="budowa-i-uruchomienie-układu">Budowa i uruchomienie układu</h3>
 
-Moje pierwsze podejście do budowy komputera wyglądało następująco: 
+<p>Moje pierwsze podejście do budowy komputera wyglądało następująco: 
 umieściłem wszystkie niezbędne komponenty komputera na płytkach stykowych,
-dwukrotnie sprawdziłem poprawności połączeń, podłączyłem konwerter `USB <-> UART`
-i na koniec włączyłem zasilanie. I... nic. 
+dwukrotnie sprawdziłem poprawności połączeń, podłączyłem konwerter <code class="highlighter-rouge">USB &lt;-&gt; UART</code>
+i na koniec włączyłem zasilanie. I… nic. 
 Komputer nie pracował, a ja nie miałem pojęcia dlaczego.
 Musiałem więc rozmontować cały układ i zbudować go jeszcze raz, tym razem
-krok po kroku.
+krok po kroku.</p>
 
-Rozpocząłem od podłączenie jedynie CPU, pamięci ROM oraz układu 74HCT573.
-![Alternatywny zatrzask adresu](assets/images/2020-09-20/ver1.jpg)
-W tym układzie:
+<p>Rozpocząłem od podłączenie jedynie CPU, pamięci ROM oraz układu 74HCT573.
+<img src="assets/images/2020-09-20/ver1.jpg" alt="Alternatywny zatrzask adresu" />
+W tym układzie:</p>
 
-* Nóżki RD i WR procesora połączyłem przez oporniki 22k z plusem zasilania (+5V)
-* Nóżkę WE pamięci ROM podłączyłem do plusa zasilania (zapis wyłączony)
-* Nóżkę CE pamięci ROM podłączyłem do masy/GND (ROM włączony na stałe)
-* Nóżkę OE pamięci ROM podłączyłem do nóżki RD procesora
-* Nóżkę RST7_5 procesora odłączyłem od nóżki SID i zamiast tego połączyłem z masą zasilania przez opornik 1k
+<ul>
+  <li>Nóżki RD i WR procesora połączyłem przez oporniki 22k z plusem zasilania (+5V)</li>
+  <li>Nóżkę WE pamięci ROM podłączyłem do plusa zasilania (zapis wyłączony)</li>
+  <li>Nóżkę CE pamięci ROM podłączyłem do masy/GND (ROM włączony na stałe)</li>
+  <li>Nóżkę OE pamięci ROM podłączyłem do nóżki RD procesora</li>
+  <li>Nóżkę RST7_5 procesora odłączyłem od nóżki SID i zamiast tego połączyłem z masą zasilania przez opornik 1k</li>
+</ul>
 
-Do sprawdzenia czy procesor działa wykorzystałem pomysł pochodzący
-z [glitchwrks.com](http://www.glitchwrks.com/2010/09/02/8085-sbc),
+<p>Do sprawdzenia czy procesor działa wykorzystałem pomysł pochodzący
+z <a href="http://www.glitchwrks.com/2010/09/02/8085-sbc">glitchwrks.com</a>,
 to jest wykorzystanie wyjścia SOD procesora do sterowania diodami LED:
-![Podłączenie diod LED do SOD](assets/images/2020-09-20/leds.png)
-Ponieważ nasz "komputer" nie posiada jeszcze pamięci RAM to nie mogłem
+<img src="assets/images/2020-09-20/leds.png" alt="Podłączenie diod LED do SOD" />
+Ponieważ nasz “komputer” nie posiada jeszcze pamięci RAM to nie mogłem
 wykorzystać zamieszczonego przez GlitchWorks kodu. Brak pamięci RAM
-oznacza bowiem brak stosu wywołań funkcji. Innymi słowy rozkazy `CALL`
-i `RET` nie działają w tej konfiguracji. Zamiast wywołań funkcji wykorzystałem
-więc, będącą wciąż w powszechnym użyciu metodę Kopiego-Pasty:
-{% highlight asm %}
-    ORG 0000H
+oznacza bowiem brak stosu wywołań funkcji. Innymi słowy rozkazy <code class="highlighter-rouge">CALL</code>
+i <code class="highlighter-rouge">RET</code> nie działają w tej konfiguracji. Zamiast wywołań funkcji wykorzystałem
+więc, będącą wciąż w powszechnym użyciu metodę Kopiego-Pasty:</p>
+
+<figure class="highlight"><pre><code class="language-asm" data-lang="asm">    ORG 0000H
 
 FLASH           MVI     A,0C0h ; LED ON
                 SIM       
@@ -880,33 +881,33 @@ BLOOP2x         DCR B
                 HLT 
 HERE            JMP HERE
 
-    END FLASH
-{% endhighlight %}
-Powyższy kod nie należy do najbardziej czytelnych i pięknych, ale pozwoli nam przetestować działanie komputera.
+    END FLASH</code></pre></figure>
 
-Kod skompilowałem za pomocą wspomnianego w artykule assemblera [a85](https://github.com/glitchwrks/a85),
-który co prawda potrafi zgłaszać enigmatyczne błędy, ale posiada całkiem przyzwoity [manual](https://github.com/glitchwrks/a85/blob/master/A85.DOC).
-No cóż przyjaciele, RTFM!
-{% highlight bash %}
-$ ./a85 test.asm -o test.hex
-# Pamiętajcie żeby użyć poprawnego typu pamięci
-$ minipro -p AT28C64 -w test.hex 
-{% endhighlight %}
-Opensource'owe [oprogramowanie do programatora TL866 II PLUS](https://gitlab.com/DavidGriffith/minipro) 
+<p>Powyższy kod nie należy do najbardziej czytelnych i pięknych, ale pozwoli nam przetestować działanie komputera.</p>
+
+<p>Kod skompilowałem za pomocą wspomnianego w artykule assemblera <a href="https://github.com/glitchwrks/a85">a85</a>,
+który co prawda potrafi zgłaszać enigmatyczne błędy, ale posiada całkiem przyzwoity <a href="https://github.com/glitchwrks/a85/blob/master/A85.DOC">manual</a>.
+No cóż przyjaciele, RTFM!</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>./a85 test.asm <span class="nt">-o</span> test.hex
+<span class="c"># Pamiętajcie żeby użyć poprawnego typu pamięci</span>
+<span class="nv">$ </span>minipro <span class="nt">-p</span> AT28C64 <span class="nt">-w</span> test.hex </code></pre></figure>
+
+<p>Opensource’owe <a href="https://gitlab.com/DavidGriffith/minipro">oprogramowanie do programatora TL866 II PLUS</a> 
 dopiero od kilku miesięcy obsługuje format Intel HEX. 
-Jeżeli dostaniecie komunikat o nieznanym formacie pliku spróbujcie uaktualnić `minipro` do
-najnowszej wersji.
+Jeżeli dostaniecie komunikat o nieznanym formacie pliku spróbujcie uaktualnić <code class="highlighter-rouge">minipro</code> do
+najnowszej wersji.</p>
 
-Tym razem wszystko poszło zgodnie z planem i mogłem przez kika minut delektować się mruganiem diod LED.
+<p>Tym razem wszystko poszło zgodnie z planem i mogłem przez kika minut delektować się mruganiem diod LED.</p>
 
-W kolejnym kroku dodałem do komputera układ 74HTC139 (nowszy zamiennik 74LS139) zgodnie ze schematem
-zamieszczonym w artykule i przekonałem się że dioda LED nadal miga.
+<p>W kolejnym kroku dodałem do komputera układ 74HTC139 (nowszy zamiennik 74LS139) zgodnie ze schematem
+zamieszczonym w artykule i przekonałem się że dioda LED nadal miga.</p>
 
-Kolejny krok polegał na dodaniu modułu RAM, który pracowicie połączyłem z resztą komputera:
-![Komputer w budowie](assets/images/2020-09-20/comp1.jpeg)
-Diody nadal migały, ale teraz mogłem spróbować uruchomić na moim komputerku oryginalny kod z GlitchWorks:
-{% highlight asm %}
-    ORG 0000H
+<p>Kolejny krok polegał na dodaniu modułu RAM, który pracowicie połączyłem z resztą komputera:
+<img src="assets/images/2020-09-20/comp1.jpeg" alt="Komputer w budowie" />
+Diody nadal migały, ale teraz mogłem spróbować uruchomić na moim komputerku oryginalny kod z GlitchWorks:</p>
+
+<figure class="highlight"><pre><code class="language-asm" data-lang="asm">    ORG 0000H
 
 START          LXI     H,02060h  
                SPHL              
@@ -930,51 +931,49 @@ PT2            DCR     B
                JNZ     PT1       
                RET               
 
-    END FLASH
-{% endhighlight %}
-Po kompilacji, wgraniu programu i uruchomieniu komputera diody nadal migały - hurra!
+    END FLASH</code></pre></figure>
 
-OK pora spróbować uruchomić [oprogramowanie](https://www.nutsvolts.com/magazine/article/build-a-pocket-sized-altair-computer#content-extras) 
-przygotowane przez Huntera. 
+<p>Po kompilacji, wgraniu programu i uruchomieniu komputera diody nadal migały - hurra!</p>
 
-Zanim jednak podłączyłem konwerter `USB <-> UART` do komputera, połączyłem ponownie nóżkę SID procesora z nóżką RST7_5
-i jeszcze raz sprawdziłem wszystkie pozostałe połączenia. 
+<p>OK pora spróbować uruchomić <a href="https://www.nutsvolts.com/magazine/article/build-a-pocket-sized-altair-computer#content-extras">oprogramowanie</a> 
+przygotowane przez Huntera.</p>
 
-Pin GND konwertera `USB <-> UART` podłączyłem do masy zasilania, pin `SOD` procesora połączyłem z pinem `RDX` konwertera,
-a pin `SID` z pinem `TXD`. Pin `VCC` konwertera pozostał niepodłączony.
+<p>Zanim jednak podłączyłem konwerter <code class="highlighter-rouge">USB &lt;-&gt; UART</code> do komputera, połączyłem ponownie nóżkę SID procesora z nóżką RST7_5
+i jeszcze raz sprawdziłem wszystkie pozostałe połączenia.</p>
 
-Po kompilacji pliku `AltaidsROM.asm` i wgraniu programu do EEPROM uruchomiłem [Putty](https://www.putty.org/) żeby móc
+<p>Pin GND konwertera <code class="highlighter-rouge">USB &lt;-&gt; UART</code> podłączyłem do masy zasilania, pin <code class="highlighter-rouge">SOD</code> procesora połączyłem z pinem <code class="highlighter-rouge">RDX</code> konwertera,
+a pin <code class="highlighter-rouge">SID</code> z pinem <code class="highlighter-rouge">TXD</code>. Pin <code class="highlighter-rouge">VCC</code> konwertera pozostał niepodłączony.</p>
+
+<p>Po kompilacji pliku <code class="highlighter-rouge">AltaidsROM.asm</code> i wgraniu programu do EEPROM uruchomiłem <a href="https://www.putty.org/">Putty</a> żeby móc
 odbierać komunikaty wysyłane z komputera. Użyłem następującej konfiguracji (2400 baud, 8N1, Flow control: None):
-![Konfiguracja Putty](assets/images/2020-09-20/putty.png)
+<img src="assets/images/2020-09-20/putty.png" alt="Konfiguracja Putty" />
 Niestety jedyne co mogłem odczytać to wydawałoby się losowe znaki. Problemem okazała się częstotliwość z jaką pracował
-mój mikrokomputer, ale sam byłem sobie winny - zamiast kryształu 4.9152MHz użyłem kryształu 4MHz. 
+mój mikrokomputer, ale sam byłem sobie winny - zamiast kryształu 4.9152MHz użyłem kryształu 4MHz.</p>
 
-Na szczęście, jak sugeruje pan Hunter, jest to proste do naprawienia - wystarczy nadać stałym `HALFBIT` i `FULLBIT`
-(patrz `AltaidsROM.asm`) odpowiednio przeskalowane wartości. Ponieważ użyta przeze mnie częstotliwość procesora to 
-2MHz (= 4MHz / 2) to musiałem przeskalować i zaokrąglić oryginalne wartości do:
-{% highlight nohighlight %}
-s = 2 / 2.4576
+<p>Na szczęście, jak sugeruje pan Hunter, jest to proste do naprawienia - wystarczy nadać stałym <code class="highlighter-rouge">HALFBIT</code> i <code class="highlighter-rouge">FULLBIT</code>
+(patrz <code class="highlighter-rouge">AltaidsROM.asm</code>) odpowiednio przeskalowane wartości. Ponieważ użyta przeze mnie częstotliwość procesora to 
+2MHz (= 4MHz / 2) to musiałem przeskalować i zaokrąglić oryginalne wartości do:</p>
+
+<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">s = 2 / 2.4576
 HALFBIT = s * 38 = 31
-FULLBIT = s * 69 = 56
-{% endhighlight %}
-Obie stałe wykorzystywane są do obliczenia czasu transmisji pojedyńczego bitu (i jego środka) przy szybkości transmisji 2400 baudów.
+FULLBIT = s * 69 = 56</code></pre></figure>
 
-Po uruchomieniu komputera powitał mnie następujący widok:
-![Kolejny problem](assets/images/2020-09-20/gib.png)
+<p>Obie stałe wykorzystywane są do obliczenia czasu transmisji pojedyńczego bitu (i jego środka) przy szybkości transmisji 2400 baudów.</p>
+
+<p>Po uruchomieniu komputera powitał mnie następujący widok:
+<img src="assets/images/2020-09-20/gib.png" alt="Kolejny problem" />
 Połowa tekstu była czytelna, połowa zawierała śmieci. Sam komputer nie zachowywał się poprawnie.
 Po około godzinie debugowania i zbyt dużej ilości CLUB-MATE udało mi się znaleźć problem:
-źle podłączoną linię adresową A11. 
+źle podłączoną linię adresową A11.</p>
 
-Szybko naprawiłem to niedopatrzenie. Tym razem wszystko działało poprawnie a ja mogłem wpisać i uruchomić
-prosty program w BASIC'u (przy wpisywaniu musiałem zachować około jednosekundowy odstęp pomiędzy kolejnymi znakami,
+<p>Szybko naprawiłem to niedopatrzenie. Tym razem wszystko działało poprawnie a ja mogłem wpisać i uruchomić
+prosty program w BASIC’u (przy wpisywaniu musiałem zachować około jednosekundowy odstęp pomiędzy kolejnymi znakami,
 wspierane są tylko duże litery):
-![BASIC I](assets/images/2020-09-20/basic1.png)
-![BASIC II](assets/images/2020-09-20/basic2.png)
-![BASIC III](assets/images/2020-09-20/basic3.png)
+<img src="assets/images/2020-09-20/basic1.png" alt="BASIC I" />
+<img src="assets/images/2020-09-20/basic2.png" alt="BASIC II" />
+<img src="assets/images/2020-09-20/basic3.png" alt="BASIC III" /></p>
 
-Koniec części pierwszej. Ciąg dalszy nastąpi...
-
-
+<p>Koniec części pierwszej. Ciąg dalszy nastąpi…</p>
 
 
 	  ]]></description>
@@ -987,146 +986,146 @@ Koniec części pierwszej. Ciąg dalszy nastąpi...
 	  <pubDate>2020-09-12T02:00:01+02:00</pubDate>
 	  <guid>//future-or-future</guid>
 	  <description><![CDATA[
-	     Recently I have a heated debate with my colleague about
+	     <p>Recently I have a heated debate with my colleague about
 a proper return type for async procedures 
-(procedure is just a function that returns `Unit` in Scala.)
-My point of view was that `Future[Unit]` is the right type.
-Let me present my way of reasoning here. 
+(procedure is just a function that returns <code class="highlighter-rouge">Unit</code> in Scala.)
+My point of view was that <code class="highlighter-rouge">Future[Unit]</code> is the right type.
+Let me present my way of reasoning here.</p>
 
-Let's start with lifting.
+<p>Let’s start with lifting.
 Lifting in functional programming is defined as an operation that
-transforms a function `f: A => B` into a function `f': M[A] -> M[B]`,
-where `M[_]` is a functor. A functor `M[A]`, in simple words, is just a wrapper around a value of 
-type `A` with addition of extra `map` operation that can be used to transform the wrapped value.
-A lot of types that we are using in our daily practice as programmers like `Option[T]`, `Try[T]` or
-`Future[T]` are functors. Because Scala does not define `Functor[T]` trait we cannot write a generic
-`lift` function that could work with all these types. Instead we must write specific `lift` functions that
-work with only single functor type e.g.
-{% highlight scala %}
-def liftOption[A, B](f: A => B): Option[A] => Option[B] = {
-  optA => optA.map(f)
-}
-{% endhighlight %}
-We can use `liftOption` to e.g. make `negate` function work with `Option[Int]` argument:
-{% highlight scala %}
-def negate(a: Int): Int = -a
+transforms a function <code class="highlighter-rouge">f: A =&gt; B</code> into a function <code class="highlighter-rouge">f': M[A] -&gt; M[B]</code>,
+where <code class="highlighter-rouge">M[_]</code> is a functor. A functor <code class="highlighter-rouge">M[A]</code>, in simple words, is just a wrapper around a value of 
+type <code class="highlighter-rouge">A</code> with addition of extra <code class="highlighter-rouge">map</code> operation that can be used to transform the wrapped value.
+A lot of types that we are using in our daily practice as programmers like <code class="highlighter-rouge">Option[T]</code>, <code class="highlighter-rouge">Try[T]</code> or
+<code class="highlighter-rouge">Future[T]</code> are functors. Because Scala does not define <code class="highlighter-rouge">Functor[T]</code> trait we cannot write a generic
+<code class="highlighter-rouge">lift</code> function that could work with all these types. Instead we must write specific <code class="highlighter-rouge">lift</code> functions that
+work with only single functor type e.g.</p>
 
-val negateOpt = liftOption(negate)
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">liftOption</span><span class="o">[</span><span class="kt">A</span>, <span class="kt">B</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=&gt;</span> <span class="n">B</span><span class="o">)</span><span class="k">:</span> <span class="kt">Option</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="nc">Option</span><span class="o">[</span><span class="kt">B</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+  <span class="n">optA</span> <span class="k">=&gt;</span> <span class="n">optA</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">f</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
 
-println(negateOpt(Some(1)))
-println(negateOpt(None))
-// prints:
+<p>We can use <code class="highlighter-rouge">liftOption</code> to e.g. make <code class="highlighter-rouge">negate</code> function work with <code class="highlighter-rouge">Option[Int]</code> argument:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">negate</span><span class="o">(</span><span class="n">a</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="o">-</span><span class="n">a</span>
+
+<span class="k">val</span> <span class="n">negateOpt</span> <span class="k">=</span> <span class="n">liftOption</span><span class="o">(</span><span class="n">negate</span><span class="o">)</span>
+
+<span class="n">println</span><span class="o">(</span><span class="n">negateOpt</span><span class="o">(</span><span class="nc">Some</span><span class="o">(</span><span class="mi">1</span><span class="o">)))</span>
+<span class="n">println</span><span class="o">(</span><span class="n">negateOpt</span><span class="o">(</span><span class="nc">None</span><span class="o">))</span>
+<span class="c1">// prints:
 //  Some(-1)
-//  None
-{% endhighlight %}
-Similarly to `liftOption` we could define `liftFuture`:
-{% highlight scala %}
-def liftFuture[A,B](f: A => B)
-                  (implicit ec: ExecutionContext)
-: Future[A] => Future[B] = {
-    futA => futA.map(f)
-}
-{% endhighlight %}
-And then we can use it on a function that returns `Unit` to get an async function that,
-no surprise here, will return `Future[Unit]`:
-{% highlight scala %}
-import ExecutionContext.Implicits.global
+</span><span class="o">//</span>  <span class="nc">None</span></code></pre></figure>
 
-def printIt(s: String): Unit = println(s)
-val printItF = liftFuture(printIt)
+<p>Similarly to <code class="highlighter-rouge">liftOption</code> we could define <code class="highlighter-rouge">liftFuture</code>:</p>
 
-val r: Unit = Await.result(
-    printItF(Future.successful("ok")),
-    duration.Duration.Inf)
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">liftFuture</span><span class="o">[</span><span class="kt">A</span>,<span class="kt">B</span><span class="o">](</span><span class="n">f</span><span class="k">:</span> <span class="kt">A</span> <span class="o">=&gt;</span> <span class="n">B</span><span class="o">)</span>
+                  <span class="o">(</span><span class="k">implicit</span> <span class="n">ec</span><span class="k">:</span> <span class="kt">ExecutionContext</span><span class="o">)</span>
+<span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">A</span><span class="o">]</span> <span class="k">=&gt;</span> <span class="nc">Future</span><span class="o">[</span><span class="kt">B</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+    <span class="n">futA</span> <span class="k">=&gt;</span> <span class="n">futA</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">f</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
 
-But of course my colleague had his own arguments. 
-He pointed out that e.g. `ExecutorService` `submit` method returns `Future<?>`, not `Future<Void>` as my
+<p>And then we can use it on a function that returns <code class="highlighter-rouge">Unit</code> to get an async function that,
+no surprise here, will return <code class="highlighter-rouge">Future[Unit]</code>:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">import</span> <span class="nn">ExecutionContext.Implicits.global</span>
+
+<span class="k">def</span> <span class="n">printIt</span><span class="o">(</span><span class="n">s</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="o">)</span>
+<span class="k">val</span> <span class="n">printItF</span> <span class="k">=</span> <span class="n">liftFuture</span><span class="o">(</span><span class="n">printIt</span><span class="o">)</span>
+
+<span class="k">val</span> <span class="n">r</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="nc">Await</span><span class="o">.</span><span class="n">result</span><span class="o">(</span>
+    <span class="n">printItF</span><span class="o">(</span><span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="s">"ok"</span><span class="o">)),</span>
+    <span class="n">duration</span><span class="o">.</span><span class="nc">Duration</span><span class="o">.</span><span class="nc">Inf</span><span class="o">)</span></code></pre></figure>
+
+<p>But of course my colleague had his own arguments. 
+He pointed out that e.g. <code class="highlighter-rouge">ExecutorService</code> <code class="highlighter-rouge">submit</code> method returns <code class="highlighter-rouge">Future&lt;?&gt;</code>, not <code class="highlighter-rouge">Future&lt;Void&gt;</code> as my
 reasoning would suggest. So there must be a good reason why library designers
-chosen `Future<?>`, he continued, but when asked what exactly this reason could be 
+chosen <code class="highlighter-rouge">Future&lt;?&gt;</code>, he continued, but when asked what exactly this reason could be 
 he was not able to answer. But he counter my question arguing that the standard 
-library establishes good patterns and practices, so if they use `Future<?>`
+library establishes good patterns and practices, so if they use <code class="highlighter-rouge">Future&lt;?&gt;</code>
 then we should do the same in our code.
-![Future is there](assets/images/2020-09-12/es.png)
+<img src="assets/images/2020-09-12/es.png" alt="Future is there" /></p>
 
-My colleague had a point. I needed to research the subject: why `Future<?>` and not `Future<Void>`?
-After a bit of googling I noticed that `runAsync` method of
-[CompletableFuture](https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html)
-does not follow the `Future<?>` convention and instead returns `CompletableFuture<Void>`.
-So it looks like the library designers changed their mind and now prefer returning `Future<Void>`:
-![Void is there](assets/images/2020-09-12/cf.png)
+<p>My colleague had a point. I needed to research the subject: why <code class="highlighter-rouge">Future&lt;?&gt;</code> and not <code class="highlighter-rouge">Future&lt;Void&gt;</code>?
+After a bit of googling I noticed that <code class="highlighter-rouge">runAsync</code> method of
+<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a>
+does not follow the <code class="highlighter-rouge">Future&lt;?&gt;</code> convention and instead returns <code class="highlighter-rouge">CompletableFuture&lt;Void&gt;</code>.
+So it looks like the library designers changed their mind and now prefer returning <code class="highlighter-rouge">Future&lt;Void&gt;</code>:
+<img src="assets/images/2020-09-12/cf.png" alt="Void is there" /></p>
 
-I pointed this out to my colleague, but he countered by saying that `Future[Unit]`
-is just uncomfortable to use. Consider this example he said:
-{% highlight scala %}
-def findIdByName(name: String): Future[Int] = {
-  Future.successful(123)
-}
+<p>I pointed this out to my colleague, but he countered by saying that <code class="highlighter-rouge">Future[Unit]</code>
+is just uncomfortable to use. Consider this example he said:</p>
 
-def deleteRecord(id: Int): Future[Int] = {
-  Future.successful(1)
-}
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">findIdByName</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+  <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="mi">123</span><span class="o">)</span>
+<span class="o">}</span>
 
-def doStuff(name: String): Future[Unit] = {
-  findIdByName(name)
-    .flatMap(id => deleteRecord(id))
-    .map(_ => ())
-}
-{% endhighlight %}
-Look at this ugly `.map(_ => ())` he said, it's awful, isn't it?
+<span class="k">def</span> <span class="n">deleteRecord</span><span class="o">(</span><span class="n">id</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+  <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="mi">1</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="k">def</span> <span class="n">doStuff</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Unit</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+  <span class="n">findIdByName</span><span class="o">(</span><span class="n">name</span><span class="o">)</span>
+    <span class="o">.</span><span class="n">flatMap</span><span class="o">(</span><span class="n">id</span> <span class="k">=&gt;</span> <span class="n">deleteRecord</span><span class="o">(</span><span class="n">id</span><span class="o">))</span>
+    <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span> <span class="k">=&gt;</span> <span class="o">())</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Look at this ugly <code class="highlighter-rouge">.map(_ =&gt; ())</code> he said, it’s awful, isn’t it?
 I pointed out that he can use for-comprehensions to get rid
-of the last `map`, but may argument was weak - the
-fluent interface is often nicer and faster to work with.
-{% highlight scala %}
-def doStuff(name: String): Future[Unit] = {
-  for {
-    id <- findIdByName(name)
-    _ <- deleteRecord(id)
-  } yield ()
-}
-{% endhighlight %}
-Indeed I find it very strange that Scala does not provide a conversion from 
-`Future[T]` to `Future[Unit]` out of the box. In sync code we could write:
-{% highlight scala %}
-def doStuff(name: String): Future[Unit] = {
-  val id <- findIdByName(name)
-  deleteRecord(id)
-}
-{% endhighlight %}
-and the value returned by `deleteRecord` would be automatically discarded.
-Why can't we have something similar in async code?
+of the last <code class="highlighter-rouge">map</code>, but may argument was weak - the
+fluent interface is often nicer and faster to work with.</p>
 
-Yet this last problem pointed me to the following issue.
-If we agree to use `Future[_]` everywhere, then we may return by mistake
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">doStuff</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Unit</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+  <span class="k">for</span> <span class="o">{</span>
+    <span class="n">id</span> <span class="k">&lt;-</span> <span class="n">findIdByName</span><span class="o">(</span><span class="n">name</span><span class="o">)</span>
+    <span class="k">_</span> <span class="k">&lt;-</span> <span class="n">deleteRecord</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+  <span class="o">}</span> <span class="k">yield</span> <span class="o">()</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Indeed I find it very strange that Scala does not provide a conversion from 
+<code class="highlighter-rouge">Future[T]</code> to <code class="highlighter-rouge">Future[Unit]</code> out of the box. In sync code we could write:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">doStuff</span><span class="o">(</span><span class="n">name</span><span class="k">:</span> <span class="kt">String</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Unit</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+  <span class="k">val</span> <span class="n">id</span> <span class="k">&lt;-</span> <span class="n">findIdByName</span><span class="o">(</span><span class="n">name</span><span class="o">)</span>
+  <span class="n">deleteRecord</span><span class="o">(</span><span class="n">id</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>and the value returned by <code class="highlighter-rouge">deleteRecord</code> would be automatically discarded.
+Why can’t we have something similar in async code?</p>
+
+<p>Yet this last problem pointed me to the following issue.
+If we agree to use <code class="highlighter-rouge">Future[_]</code> everywhere, then we may return by mistake
 a value that should never be returned. 
 In other words we may inadvertently break object or module
 encapsulation. 
 There is also a small risk of a memory leak, if we return
-say a huge array and the `Future[_]` value will be kept for a while.
-This is illustrated by the following example:
-{% highlight scala %}
-// In some object
-private var balance = 1234
+say a huge array and the <code class="highlighter-rouge">Future[_]</code> value will be kept for a while.
+This is illustrated by the following example:</p>
 
-private def increaseBalance(amount: Int): Future[Int] = {
-  val oldBalance = balance
-  balance = oldBalance + amount
-  Future.successful(oldBalance)
-}
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="c1">// In some object
+</span><span class="k">private</span> <span class="k">var</span> <span class="n">balance</span> <span class="k">=</span> <span class="mi">1234</span>
 
-// This should return nothing
-def doStuff(): Future[_] = {
-  increaseBalance(100)
-}
+<span class="k">private</span> <span class="k">def</span> <span class="n">increaseBalance</span><span class="o">(</span><span class="n">amount</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="kt">Int</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+  <span class="k">val</span> <span class="n">oldBalance</span> <span class="k">=</span> <span class="n">balance</span>
+  <span class="n">balance</span> <span class="k">=</span> <span class="n">oldBalance</span> <span class="o">+</span> <span class="n">amount</span>
+  <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="n">oldBalance</span><span class="o">)</span>
+<span class="o">}</span>
 
-// Calling code
-val escapedBalance = Await.result(obj.doStuff(), duration.Duration.Inf)
-println(escapedBalance) // 1234
-{% endhighlight %}
-Seeing all these arguments, in the end, we decided to go with `Future[Unit]` although
-it is not a perfect solution.
+<span class="c1">// This should return nothing
+</span><span class="k">def</span> <span class="n">doStuff</span><span class="o">()</span><span class="k">:</span> <span class="kt">Future</span><span class="o">[</span><span class="k">_</span><span class="o">]</span> <span class="k">=</span> <span class="o">{</span>
+  <span class="n">increaseBalance</span><span class="o">(</span><span class="mi">100</span><span class="o">)</span>
+<span class="o">}</span>
 
-There is nothing better than a healthy debate BTW ;D
+<span class="c1">// Calling code
+</span><span class="k">val</span> <span class="n">escapedBalance</span> <span class="k">=</span> <span class="nc">Await</span><span class="o">.</span><span class="n">result</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="n">doStuff</span><span class="o">(),</span> <span class="n">duration</span><span class="o">.</span><span class="nc">Duration</span><span class="o">.</span><span class="nc">Inf</span><span class="o">)</span>
+<span class="n">println</span><span class="o">(</span><span class="n">escapedBalance</span><span class="o">)</span> <span class="o">//</span> <span class="mi">1234</span></code></pre></figure>
+
+<p>Seeing all these arguments, in the end, we decided to go with <code class="highlighter-rouge">Future[Unit]</code> although
+it is not a perfect solution.</p>
+
+<p>There is nothing better than a healthy debate BTW ;D</p>
+
 	  ]]></description>
 	</item>
 
@@ -1137,214 +1136,208 @@ There is nothing better than a healthy debate BTW ;D
 	  <pubDate>2020-09-11T02:00:01+02:00</pubDate>
 	  <guid>//passing-functions-as-arguments-in-scala-what-can-go-wrong</guid>
 	  <description><![CDATA[
-	     In microservices architecture we often designate a single service for managing the configuration of the entire system.
-Libraries like [Archaius](https://github.com/Netflix/archaius) make this easy. 
-As a side effect, on the code level I often see class declarations like this:
+	     <p>In microservices architecture we often designate a single service for managing the configuration of the entire system.
+Libraries like <a href="https://github.com/Netflix/archaius">Archaius</a> make this easy. 
+As a side effect, on the code level I often see class declarations like this:</p>
 
-{% highlight scala %}
-class MyService(timeoutProperty: () => Long) {
-  ...
-}
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">timeoutProperty</span><span class="k">:</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="nc">Long</span><span class="o">)</span> <span class="o">{</span>
+  <span class="o">...</span>
+<span class="o">}</span></code></pre></figure>
 
-Basically we inject providers for current configuration properties values into classes.
+<p>Basically we inject providers for current configuration properties values into classes.
 This has two advantages. First, our classes are independent of any library that we are using
-for managing configuration. And second, our classes are easy to test - no mocks needed.
+for managing configuration. And second, our classes are easy to test - no mocks needed.</p>
 
-Yet this approach can lead to subtle bugs. Say our original code that creates `MyService`
-looks like this:
-{% highlight scala %}
-new MyService(() => currentTimeoutValue())
-{% endhighlight %}
-Imagine that a few weeks later a Scala purist is coming by and decides to "improve" this code into:
-{% highlight scala %}
-new MyService(currentTimeoutValue)
-{% endhighlight %}
-Shorter code, better code as they say...
-A few more weeks pass by and we realise that using `Long`s for storing time intervals is passé.
-So now we are slowly migrating our `() => Long` providers into `() => java.time.Duration`.
-Of course as Scala fanboys we decided to add an extension method to `Long`, to make the entire
-process less painful:
-{% highlight scala %}
-implicit class MyRichLong(l: Long) {
-  def asMillisecondsDuration(): Duration = {
-    Duration.ofMillis(l)
-  }
-}
-{% endhighlight %}
-In meantime, the code responsible for `MyService` creation morphed into:
-{% highlight scala %}
-class MyServiceRefactored(timeoutProperty: () => Duration) { ... }
+<p>Yet this approach can lead to subtle bugs. Say our original code that creates <code class="highlighter-rouge">MyService</code>
+looks like this:</p>
 
-new MyServiceRefactored(currentTimeoutValue().asMillisecondsDuration)
-{% endhighlight %}
-And... BOOM! It's no longer working!
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">(()</span> <span class="k">=&gt;</span> <span class="n">currentTimeoutValue</span><span class="o">())</span></code></pre></figure>
 
-Why this code is no longer working? Because
-{% highlight scala %}
-new MyServiceRefactored(currentTimeoutValue().asMillisecondsDuration)
-{% endhighlight %}
-is transformed by Scala compiler into
-{% highlight scala %}
-val tmp = currentTimeoutValue()
-new MyServiceRefactored(() => tmp.asMillisecondsDuration())
-{% endhighlight %}
-So `timeout` property value is frozen at the moment of `MyServiceRefactored` object creation,
-this is not what we want.
+<p>Imagine that a few weeks later a Scala purist is coming by and decides to “improve” this code into:</p>
 
-Bugs like this are hard to figure out. At the first glance everything works fine.
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">currentTimeoutValue</span><span class="o">)</span></code></pre></figure>
+
+<p>Shorter code, better code as they say…
+A few more weeks pass by and we realise that using <code class="highlighter-rouge">Long</code>s for storing time intervals is passé.
+So now we are slowly migrating our <code class="highlighter-rouge">() =&gt; Long</code> providers into <code class="highlighter-rouge">() =&gt; java.time.Duration</code>.
+Of course as Scala fanboys we decided to add an extension method to <code class="highlighter-rouge">Long</code>, to make the entire
+process less painful:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">implicit</span> <span class="k">class</span> <span class="nc">MyRichLong</span><span class="o">(</span><span class="n">l</span><span class="k">:</span> <span class="kt">Long</span><span class="o">)</span> <span class="o">{</span>
+  <span class="k">def</span> <span class="n">asMillisecondsDuration</span><span class="o">()</span><span class="k">:</span> <span class="kt">Duration</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="nc">Duration</span><span class="o">.</span><span class="n">ofMillis</span><span class="o">(</span><span class="n">l</span><span class="o">)</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>In meantime, the code responsible for <code class="highlighter-rouge">MyService</code> creation morphed into:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">MyServiceRefactored</span><span class="o">(</span><span class="n">timeoutProperty</span><span class="k">:</span> <span class="o">()</span> <span class="o">=&gt;</span> <span class="nc">Duration</span><span class="o">)</span> <span class="o">{</span> <span class="o">...</span> <span class="o">}</span>
+
+<span class="k">new</span> <span class="nc">MyServiceRefactored</span><span class="o">(</span><span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span><span class="o">)</span></code></pre></figure>
+
+<p>And… BOOM! It’s no longer working!</p>
+
+<p>Why this code is no longer working? Because</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyServiceRefactored</span><span class="o">(</span><span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span><span class="o">)</span></code></pre></figure>
+
+<p>is transformed by Scala compiler into</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">tmp</span> <span class="k">=</span> <span class="n">currentTimeoutValue</span><span class="o">()</span>
+<span class="k">new</span> <span class="nc">MyServiceRefactored</span><span class="o">(()</span> <span class="k">=&gt;</span> <span class="n">tmp</span><span class="o">.</span><span class="n">asMillisecondsDuration</span><span class="o">())</span></code></pre></figure>
+
+<p>So <code class="highlighter-rouge">timeout</code> property value is frozen at the moment of <code class="highlighter-rouge">MyServiceRefactored</code> object creation,
+this is not what we want.</p>
+
+<p>Bugs like this are hard to figure out. At the first glance everything works fine.
 The problem demonstrates itself only when we try to adjust the property value at runtime.
 And even then a simple service restart will reload the property, so we may incorrectly assign
-it to a configuration server/library/networking glitch.
+it to a configuration server/library/networking glitch.</p>
 
-Here I must mention that this bug was possible only because we broken one of Scala's good practices.
-Our extension method is declared like so
-{% highlight scala %}
-def asMillisecondsDuration(): Duration
-{% endhighlight %}
-but we should be declared like this
-{% highlight scala %}
-def asMillisecondsDuration: Duration
-{% endhighlight %}
-as this method is actually a getter - it does not mutate the object on which it is called.
-If we use the second declaration our bug would be quickly detected by Scala compiler.
+<p>Here I must mention that this bug was possible only because we broken one of Scala’s good practices.
+Our extension method is declared like so</p>
 
-In practice a lot of Scala programmers are confused by the optional parentheses
-in parameterless method declarations. I often see methods declared like `def foo: Unit`
-that mutate the state or method declared like `def bar(): Int` that are just getters.
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">asMillisecondsDuration</span><span class="o">()</span><span class="k">:</span> <span class="kt">Duration</span></code></pre></figure>
+
+<p>but we should be declared like this</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">asMillisecondsDuration</span><span class="k">:</span> <span class="kt">Duration</span></code></pre></figure>
+
+<p>as this method is actually a getter - it does not mutate the object on which it is called.
+If we use the second declaration our bug would be quickly detected by Scala compiler.</p>
+
+<p>In practice a lot of Scala programmers are confused by the optional parentheses
+in parameterless method declarations. I often see methods declared like <code class="highlighter-rouge">def foo: Unit</code>
+that mutate the state or method declared like <code class="highlighter-rouge">def bar(): Int</code> that are just getters.
 For people like me, that constantly switch between Java and Scala, this is especially difficult
-and I routinely make mistakes like this (I add parentheses everywhere)...
+and I routinely make mistakes like this (I add parentheses everywhere)…</p>
 
-One solution that people often come up with when confronted with this problem is to
-replace functions by by-name parameters.
+<p>One solution that people often come up with when confronted with this problem is to
+replace functions by by-name parameters.</p>
 
-By-name parameters are nothing new. They where first introduced more than 50 years ago in a language called
+<p>By-name parameters are nothing new. They where first introduced more than 50 years ago in a language called
 Algol60. Early programmers of that language quickly found out that by-name parameters are error prone and difficult to use.
-As a result most of the contemporary programming languages do not support them.
+As a result most of the contemporary programming languages do not support them.</p>
 
-Scala as ~~an over-engineered~~ a versatile language supports by-name parameters, as they allow programmers
-to create functions that mimic the language build-in constructs. For example:
-{% highlight scala %}
-def repeat(times: Int)(f: => Unit): Unit = {
-  for (_ <- 1 to times) {
-    f
-  }
-}
+<p>Scala as <del>an over-engineered</del> a versatile language supports by-name parameters, as they allow programmers
+to create functions that mimic the language build-in constructs. For example:</p>
 
-repeat(3) {
-  println("hurray!")
-}
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">repeat</span><span class="o">(</span><span class="n">times</span><span class="k">:</span> <span class="kt">Int</span><span class="o">)(</span><span class="n">f</span><span class="k">:</span> <span class="o">=&gt;</span> <span class="nc">Unit</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+  <span class="k">for</span> <span class="o">(</span><span class="k">_</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="n">times</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">f</span>
+  <span class="o">}</span>
+<span class="o">}</span>
 
-The main problem with by-name parameters is that they do not follow the
-usual order of evaluation. An ordinary function call
-{% highlight scala %}
-egg(foo()), bar())
-{% endhighlight %}
-will result in functions `foo` and `bar` being called one after another,
-followed by `egg` function call.
-When we use by-name parameters no order is guaranteed, `foo` may be called
-before or after `bar` or may not be called at all, 
-or may be called three times, or four...
+<span class="n">repeat</span><span class="o">(</span><span class="mi">3</span><span class="o">)</span> <span class="o">{</span>
+  <span class="n">println</span><span class="o">(</span><span class="s">"hurray!"</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>The main problem with by-name parameters is that they do not follow the
+usual order of evaluation. An ordinary function call</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">egg</span><span class="o">(</span><span class="n">foo</span><span class="o">()),</span> <span class="n">bar</span><span class="o">())</span></code></pre></figure>
+
+<p>will result in functions <code class="highlighter-rouge">foo</code> and <code class="highlighter-rouge">bar</code> being called one after another,
+followed by <code class="highlighter-rouge">egg</code> function call.
+When we use by-name parameters no order is guaranteed, <code class="highlighter-rouge">foo</code> may be called
+before or after <code class="highlighter-rouge">bar</code> or may not be called at all, 
+or may be called three times, or four…
 This makes code difficult to reason about.
 That is why I use by-name parameters sparingly, usually only when I need to implement a
-new statement like construct.
+new statement like construct.</p>
 
-That being said, we may declare our new version of `MyService` as
-{% highlight scala %}
-class MyService(timeoutProperty: => Duration) {
-  ...
-}
-{% endhighlight %}
-and it will work flawlessly with our converted-on-the-fly property:
-{% highlight scala %}
-new MyService(currentTimeoutValue().asMillisecondsDuration())
-{% endhighlight %}
+<p>That being said, we may declare our new version of <code class="highlighter-rouge">MyService</code> as</p>
 
-To make it clear that we are passing not a value but an expression to be evaluated
-(called a [thunk](https://en.wikipedia.org/wiki/Thunk)), 
-we can surround the expression with curly braces:
-{% highlight scala %}
-new MyService({ currentTimeoutValue().asMillisecondsDuration() })
-{% endhighlight %}
-But it must be noted that in Scala we can add curly braces to almost anything, 
-e.g. `println({1} + {2})`.
-In other words curly braces around thunks are only a convention not enforced by the compiler.
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">timeoutProperty</span><span class="k">:</span> <span class="o">=&gt;</span> <span class="nc">Duration</span><span class="o">)</span> <span class="o">{</span>
+  <span class="o">...</span>
+<span class="o">}</span></code></pre></figure>
 
-Sometimes the best solution is the object-oriented one. So after being disappointed with by-name
-params I decided to create an interface:
-{% highlight scala %}
-@FunctionalInterface
-trait Property[V] {
-  // parentheses required for lambda -> SAM conversion
-  // in Scala 2.13. Yeah this sucks!
-  def value(): V
-}
-{% endhighlight %}
-and inject it into `MyService`:
-{% highlight scala %}
-class MyService(timeoutProperty: Property[Duration]) { ... }
-{% endhighlight %}
-Scala since version 2.12 supports converting lambda expressions to SAMs (Single Method Interfaces),
-so we can create `MyService` without too much ceremony:
-{% highlight scala %}
-new MyService(() => currentTimeoutValue().asMillisecondsDuration())
-{% endhighlight %}
-No simplification is possible this time, and both below examples do not compile:
-{% highlight scala %}
-new MyService({ currentTimeoutValue().asMillisecondsDuration })
-new MyService(currentTimeoutValue().asMillisecondsDuration)
-{% endhighlight %}
+<p>and it will work flawlessly with our converted-on-the-fly property:</p>
 
-The protection is, unfortunately, not 100% bullet proof.
-For example the following code snipped will compile but does not work as intended:
-{% highlight scala %}
-new MyService(currentTimeoutValue().asMillisecondsDuration _)
-{% endhighlight %}
-At least it provides a visual clue (`_`) that will attract reviewer attention during the code review.
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span><span class="o">())</span></code></pre></figure>
 
-Now I fully understand why Java designers decided to introduce a new operator `::` for creating method
+<p>To make it clear that we are passing not a value but an expression to be evaluated
+(called a <a href="https://en.wikipedia.org/wiki/Thunk">thunk</a>), 
+we can surround the expression with curly braces:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">({</span> <span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span><span class="o">()</span> <span class="o">})</span></code></pre></figure>
+
+<p>But it must be noted that in Scala we can add curly braces to almost anything, 
+e.g. <code class="highlighter-rouge">println({1} + {2})</code>.
+In other words curly braces around thunks are only a convention not enforced by the compiler.</p>
+
+<p>Sometimes the best solution is the object-oriented one. So after being disappointed with by-name
+params I decided to create an interface:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="nd">@FunctionalInterface</span>
+<span class="k">trait</span> <span class="nc">Property</span><span class="o">[</span><span class="kt">V</span><span class="o">]</span> <span class="o">{</span>
+  <span class="c1">// parentheses required for lambda -&gt; SAM conversion
+</span>  <span class="c1">// in Scala 2.13. Yeah this sucks!
+</span>  <span class="k">def</span> <span class="n">value</span><span class="o">()</span><span class="k">:</span> <span class="kt">V</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>and inject it into <code class="highlighter-rouge">MyService</code>:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">timeoutProperty</span><span class="k">:</span> <span class="kt">Property</span><span class="o">[</span><span class="kt">Duration</span><span class="o">])</span> <span class="o">{</span> <span class="o">...</span> <span class="o">}</span></code></pre></figure>
+
+<p>Scala since version 2.12 supports converting lambda expressions to SAMs (Single Method Interfaces),
+so we can create <code class="highlighter-rouge">MyService</code> without too much ceremony:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">(()</span> <span class="k">=&gt;</span> <span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span><span class="o">())</span></code></pre></figure>
+
+<p>No simplification is possible this time, and both below examples do not compile:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">({</span> <span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span> <span class="o">})</span>
+<span class="k">new</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span><span class="o">)</span></code></pre></figure>
+
+<p>The protection is, unfortunately, not 100% bullet proof.
+For example the following code snipped will compile but does not work as intended:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">new</span> <span class="nc">MyService</span><span class="o">(</span><span class="n">currentTimeoutValue</span><span class="o">().</span><span class="n">asMillisecondsDuration</span> <span class="k">_</span><span class="o">)</span></code></pre></figure>
+
+<p>At least it provides a visual clue (<code class="highlighter-rouge">_</code>) that will attract reviewer attention during the code review.</p>
+
+<p>Now I fully understand why Java designers decided to introduce a new operator <code class="highlighter-rouge">::</code> for creating method
 references. It makes it clear which part of the expression will be evaluated only once and which part
-will become the functional interface implementation:
-{% highlight scala %}
-public static void main(String[] args){
-  print(next()::toString);
-  print(next().toString()::toUpperCase);
-  print(next().toString().toUpperCase()::trim);
+will become the functional interface implementation:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="n">public</span> <span class="n">static</span> <span class="n">void</span> <span class="n">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">){</span>
+  <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">()::</span><span class="n">toString</span><span class="o">);</span>
+  <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">()::</span><span class="n">toUpperCase</span><span class="o">);</span>
+  <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">().</span><span class="n">toUpperCase</span><span class="o">()::</span><span class="n">trim</span><span class="o">);</span>
   
-  print(() -> next().toString());
-}
-{% endhighlight %}
-Compare this with Scala:
-{% highlight scala %}
-def main(args: Array[String]): Unit = {
-  print(next().toString)
-  print(next().toString.toUpperCase)
-  print(next().toString.toUpperCase.trim)
-}
-{% endhighlight %}
+  <span class="n">print</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">());</span>
+<span class="o">}</span></code></pre></figure>
 
-Looks likes the third solution is the best one. The only thing left is to provide a fake
-implementation for `Property[V]` interface to make testing easy:
-{% highlight scala %}
-class ManuallySetProperty[V](initialValue: V) extends Property[V] {
-  private var v = initialValue
+<p>Compare this with Scala:</p>
 
-  override def value(): V = v
-  def setValue(newValue: V): Unit = {
-    v = newValue
-  }
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+  <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">)</span>
+  <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">.</span><span class="n">toUpperCase</span><span class="o">)</span>
+  <span class="n">print</span><span class="o">(</span><span class="n">next</span><span class="o">().</span><span class="n">toString</span><span class="o">.</span><span class="n">toUpperCase</span><span class="o">.</span><span class="n">trim</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
 
-  override def toString: String = {
-    s"property(value=$v)"
-  }
-}
+<p>Looks likes the third solution is the best one. The only thing left is to provide a fake
+implementation for <code class="highlighter-rouge">Property[V]</code> interface to make testing easy:</p>
 
-val timeout = new ManuallySetProperty(Duration.ZERO)
-println(timeout.value())
-timeout.setValue(Duration.ofMinutes(3))
-println(timeout.value())
-{% endhighlight %}
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">class</span> <span class="nc">ManuallySetProperty</span><span class="o">[</span><span class="kt">V</span><span class="o">](</span><span class="n">initialValue</span><span class="k">:</span> <span class="kt">V</span><span class="o">)</span> <span class="k">extends</span> <span class="nc">Property</span><span class="o">[</span><span class="kt">V</span><span class="o">]</span> <span class="o">{</span>
+  <span class="k">private</span> <span class="k">var</span> <span class="n">v</span> <span class="k">=</span> <span class="n">initialValue</span>
+
+  <span class="k">override</span> <span class="k">def</span> <span class="n">value</span><span class="o">()</span><span class="k">:</span> <span class="kt">V</span> <span class="o">=</span> <span class="n">v</span>
+  <span class="k">def</span> <span class="n">setValue</span><span class="o">(</span><span class="n">newValue</span><span class="k">:</span> <span class="kt">V</span><span class="o">)</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="n">v</span> <span class="k">=</span> <span class="n">newValue</span>
+  <span class="o">}</span>
+
+  <span class="k">override</span> <span class="k">def</span> <span class="n">toString</span><span class="k">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="o">{</span>
+    <span class="n">s</span><span class="s">"property(value=$v)"</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="k">val</span> <span class="n">timeout</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">ManuallySetProperty</span><span class="o">(</span><span class="nc">Duration</span><span class="o">.</span><span class="nc">ZERO</span><span class="o">)</span>
+<span class="n">println</span><span class="o">(</span><span class="n">timeout</span><span class="o">.</span><span class="n">value</span><span class="o">())</span>
+<span class="n">timeout</span><span class="o">.</span><span class="n">setValue</span><span class="o">(</span><span class="nc">Duration</span><span class="o">.</span><span class="n">ofMinutes</span><span class="o">(</span><span class="mi">3</span><span class="o">))</span>
+<span class="n">println</span><span class="o">(</span><span class="n">timeout</span><span class="o">.</span><span class="n">value</span><span class="o">())</span></code></pre></figure>
+
 	  ]]></description>
 	</item>
 
@@ -1355,63 +1348,62 @@ println(timeout.value())
 	  <pubDate>2020-09-10T02:00:01+02:00</pubDate>
 	  <guid>//preparing-images-for-ben-eater-vga-using-gimp</guid>
 	  <description><![CDATA[
-	     Recently I have completed my own version of [Ben Eater video card](https://eater.net/vga).
+	     <p>Recently I have completed my own version of <a href="https://eater.net/vga">Ben Eater video card</a>.
 I still need to spend some time on it, since I could not achieve as good
 and sharp looking images as Ben did. For example the finch picture generated by my card
 does not look as crisp and clear as in Ben videos:
-![Finch](assets/images/2020-09-10/finch.jpg)
+<img src="assets/images/2020-09-10/finch.jpg" alt="Finch" /></p>
 
-Anyway, here I want to show how you can create your own images and `.bin` files using Gimp and
+<p>Anyway, here I want to show how you can create your own images and <code class="highlighter-rouge">.bin</code> files using Gimp and
 a small Java program.
 But first we need to find some nice images. After a bit of searching
 I have found a Twitter account called @PixelStudioTeam full of retro looking images
-that I decided to use. Thank you PixelStudioTeam!
+that I decided to use. Thank you PixelStudioTeam!</p>
 
-OK let's start by importing a palette file into Gimp.
-Choose in the main menu: Windows -> Dockable Dialogs -> Palettes.
-Then right click on the list of the palettes and choose Import...
-![Import palette](assets/images/2020-09-10/palette1.png)
+<p>OK let’s start by importing a palette file into Gimp.
+Choose in the main menu: Windows -&gt; Dockable Dialogs -&gt; Palettes.
+Then right click on the list of the palettes and choose Import…
+<img src="assets/images/2020-09-10/palette1.png" alt="Import palette" />
 In the dialog that will appear, select Palette file as a source and
-choose `64-color.act` file that Ben [publishes on his home page](https://eater.net/downloads/64-color.act).
-![Import palette](assets/images/2020-09-10/palette2.png)
-Click Import, after that a new palette with name `64-colors.act` should appear on the list of the palettes.
+choose <code class="highlighter-rouge">64-color.act</code> file that Ben <a href="https://eater.net/downloads/64-color.act">publishes on his home page</a>.
+<img src="assets/images/2020-09-10/palette2.png" alt="Import palette" />
+Click Import, after that a new palette with name <code class="highlighter-rouge">64-colors.act</code> should appear on the list of the palettes.</p>
 
-Now we can prepare the images. First we must resize the images to 100px by 75px size required by Ben Eater video card.
-To do this we can use Image -> Scale image... and Image -> Set canvas size... menu options.
+<p>Now we can prepare the images. First we must resize the images to 100px by 75px size required by Ben Eater video card.
+To do this we can use Image -&gt; Scale image… and Image -&gt; Set canvas size… menu options.</p>
 
-IMPORTANT: Before we proceed we must also remove transparency layer that some PNG files have.
-To do this please select Layer -> Transparency -> Remove alpha channel... If this option is grayed out then
-the image does not have alpha channel and we do not need to remove anything.
+<p>IMPORTANT: Before we proceed we must also remove transparency layer that some PNG files have.
+To do this please select Layer -&gt; Transparency -&gt; Remove alpha channel… If this option is grayed out then
+the image does not have alpha channel and we do not need to remove anything.</p>
 
-Now let's convert our image to indexed mode, choose: Image -> Mode -> Indexed...
-![Indexed mode](assets/images/2020-09-10/indexed.png)
-Choose Ben's palette. Enabling [dithering](https://en.wikipedia.org/wiki/Dither) can result in a better looking images.
+<p>Now let’s convert our image to indexed mode, choose: Image -&gt; Mode -&gt; Indexed…
+<img src="assets/images/2020-09-10/indexed.png" alt="Indexed mode" />
+Choose Ben’s palette. Enabling <a href="https://en.wikipedia.org/wiki/Dither">dithering</a> can result in a better looking images.
 After this step a colorful image should change appearance, if it looks the same try to switch modes again, first to RGB and then
-to Indexed.
+to Indexed.</p>
 
-The last step is to export our image to PNG format 
-(File -> Export As... -> Give a file name ending with `.png` and click Export):
-![Export](assets/images/2020-09-10/export.png)
+<p>The last step is to export our image to PNG format 
+(File -&gt; Export As… -&gt; Give a file name ending with <code class="highlighter-rouge">.png</code> and click Export):
+<img src="assets/images/2020-09-10/export.png" alt="Export" />
 You should deselect all options. You can restore them later
-by selecting Load Defaults button.
+by selecting Load Defaults button.</p>
 
-I prepared two small Java programs that you use to convert resulting `.png` images into `.bin` images.
-You need to have Java JDK installed to compile and run them:
-{% highlight no-highlight %}
-javac Converter.java
-java Converter pic.png pic.bin
-{% endhighlight %}
-I also prepared a program that generates a set of patterns like chessboard for debugging purposes:
-{% highlight no-highlight %}
-$ javac Stripes.java 
+<p>I prepared two small Java programs that you use to convert resulting <code class="highlighter-rouge">.png</code> images into <code class="highlighter-rouge">.bin</code> images.
+You need to have Java JDK installed to compile and run them:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">javac Converter.java
+java Converter pic.png pic.bin</code></pre></figure>
+
+<p>I also prepared a program that generates a set of patterns like chessboard for debugging purposes:</p>
+
+<figure class="highlight"><pre><code class="language-no-highlight" data-lang="no-highlight">$ javac Stripes.java 
 $ java Stripes 
 use program output_file.bin [pallete|chess|rows|cols]
-$ java Stripes chess.bin chess
-{% endhighlight %}
+$ java Stripes chess.bin chess</code></pre></figure>
 
-You can find the four example images, the four example debugging patterns and the source code of Java programs [here](assets/images/2020-09-10/ben_eater_vga_imgs.zip).
+<p>You can find the four example images, the four example debugging patterns and the source code of Java programs <a href="assets/images/2020-09-10/ben_eater_vga_imgs.zip">here</a>.</p>
 
-Let's finish with the results that I achieved:
+<p>Let’s finish with the results that I achieved:</p>
 <table>
   <tbody>
     <tr>
@@ -1432,11 +1424,11 @@ Let's finish with the results that I achieved:
     </tr>
    </tbody>
 </table>
-Of course the converted images look perfect, my card on the other hand introduces quite a lot of distortions...
+<p>Of course the converted images look perfect, my card on the other hand introduces quite a lot of distortions…</p>
 
-UPDATE: I managed to find the source of distortions in my card. 
+<p>UPDATE: I managed to find the source of distortions in my card. 
 I mixed address lines 3 and 4 from VSync to EEPROM module.
-After swapping two wires I got a clear and crisp image:
+After swapping two wires I got a clear and crisp image:</p>
 <table>
   <tbody>
     <tr>
@@ -1460,121 +1452,120 @@ After swapping two wires I got a clear and crisp image:
 	  <pubDate>2020-08-06T02:00:01+02:00</pubDate>
 	  <guid>//cierpienia-mlodego-wertera</guid>
 	  <description><![CDATA[
-	     W tym wpisie przyjrzymy się trudnościom które występują podczas
+	     <p>W tym wpisie przyjrzymy się trudnościom które występują podczas
 implementacji algorytmu alfa-beta dla gry kółko i krzyżyk.
 Nie będę tutaj omawiał samego algorytmu, gdyż został on już dobrze
 opisany w wielu innych miejscach, między innymi na
-[Ważniaku](http://wazniak.mimuw.edu.pl/index.php?title=Sztuczna_inteligencja/SI_Modu%C5%82_8_-_Gry_dwuosobowe).
+<a href="http://wazniak.mimuw.edu.pl/index.php?title=Sztuczna_inteligencja/SI_Modu%C5%82_8_-_Gry_dwuosobowe">Ważniaku</a>.
 Zamiast tego skoncentrujemy się na technikach debugowania które można
-będzie wykorzystać również przy innych grach np. warcabach.
+będzie wykorzystać również przy innych grach np. warcabach.</p>
 
-Kod algorytmów alfa-beta i minimax jest powszechnie dostępny
+<p>Kod algorytmów alfa-beta i minimax jest powszechnie dostępny
 w internecie czy to w postaci 
-[pseudokodu](https://en.wikipedia.org/wiki/Alpha–beta_pruning#Pseudocode)
-czy jako gotowa implementacja na [GitHubie](https://github.com/search?l=Java&q=alpha+beta+tictactoe&type=Repositories).
+<a href="https://en.wikipedia.org/wiki/Alpha–beta_pruning#Pseudocode">pseudokodu</a>
+czy jako gotowa implementacja na <a href="https://github.com/search?l=Java&amp;q=alpha+beta+tictactoe&amp;type=Repositories">GitHubie</a>.</p>
 
-W trakcie przygotowań do stworzenia tego artykułu, ja również napisałem 
+<p>W trakcie przygotowań do stworzenia tego artykułu, ja również napisałem 
 prostą implementację gry w kółko i krzyżyk. 
 Kod mojej wersji algorytmu alfa-beta, podobnie jak cała gra, dostępny jest na 
-[GitHubie](https://github.com/marcin-chwedczuk/xox/blob/master/src/main/java/pl/marcinchwedczuk/xox/game/AlphaBetaAlgo.java).
+<a href="https://github.com/marcin-chwedczuk/xox/blob/master/src/main/java/pl/marcinchwedczuk/xox/game/AlphaBetaAlgo.java">GitHubie</a>.</p>
 
-W dalszej części artykułu założymy że posiadana przez nas 
+<p>W dalszej części artykułu założymy że posiadana przez nas 
 implementacja algorytmu alfa-beta jest poprawna, 
-a mimo to program nie wykonuje prawidłowych ruchów podczas gry.
+a mimo to program nie wykonuje prawidłowych ruchów podczas gry.</p>
 
-### Heurystyka czyli Serce algorytmu
+<h3 id="heurystyka-czyli-serce-algorytmu">Heurystyka czyli Serce algorytmu</h3>
 
-Najważniejszą częścią algorytmu alfa-beta jest heurystyka czyli
+<p>Najważniejszą częścią algorytmu alfa-beta jest heurystyka czyli
 funkcja oceniająca stan gry z punktu widzenia danego gracza.
-Ogólna sygnatura heurystyki wygląda następująco:
-{% highlight java %}
-double score(GameState gameState, Player player)
-{% endhighlight %}
-Większe wartości zwracane przez funkcję odpowiadają lepszej
-sytuacji gracza na planszy i na odwrót im mniejsza wartość
-zwrócona tym położenie gracza jest gorsze.
+Ogólna sygnatura heurystyki wygląda następująco:</p>
 
-Czasami przekazujemy do heurystyki również
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">double</span> <span class="nf">score</span><span class="o">(</span><span class="n">GameState</span> <span class="n">gameState</span><span class="o">,</span> <span class="n">Player</span> <span class="n">player</span><span class="o">)</span></code></pre></figure>
+
+<p>Większe wartości zwracane przez funkcję odpowiadają lepszej
+sytuacji gracza na planszy i na odwrót im mniejsza wartość
+zwrócona tym położenie gracza jest gorsze.</p>
+
+<p>Czasami przekazujemy do heurystyki również
 inne pomocnicze informacje,
 na przykład ostatni wykonany przez gracza ruch, jeżeli może to
 przyspieszyć wykonywanie obliczeń.
 Sama funkcja może również zwracać więcej danych niż tylko samą ocenę sytuacji na polu gry.
 Przykładowo heurystyka może zwracać informację o zakończeniu gry i jej ewentualnym zwycięscy.
 Wiele zależy tutaj od konkretnej gry, w przypadku gry w kółko i krzyżyk
-obie te optymalizacje są możliwe.
+obie te optymalizacje są możliwe.</p>
 
-W przypadku planszy 3x3 prosta heurystyka która zwraca `1` gdy gracz
-wygrał i `0` w przeciwnym wypadku, w połączeniu z algorytmem alfa-beta
-tworzy program z którym nie sposób wygrać.
+<p>W przypadku planszy 3x3 prosta heurystyka która zwraca <code class="highlighter-rouge">1</code> gdy gracz
+wygrał i <code class="highlighter-rouge">0</code> w przeciwnym wypadku, w połączeniu z algorytmem alfa-beta
+tworzy program z którym nie sposób wygrać.</p>
 
-Na koniec uwaga techniczna. Nakreślona powyżej funkcja heurystyki
+<p>Na koniec uwaga techniczna. Nakreślona powyżej funkcja heurystyki
 traktuje w taki sam sposób zarówno gracza MAX
 jak i gracza MIN. Dla poprawności działania algorytmu alfa-beta
 konieczne jest zanegowanie wyniku zwróconego przez heurystykę dla
-gracza MIN:
-{% highlight java %}
-var score = score(gameState, currentPlayer);
-score = maximizingPlayer ? score : -score;
-{% endhighlight %}
+gracza MIN:</p>
 
-### Plansza 4x4, 3 pod rząd wygrywają
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">var</span> <span class="n">score</span> <span class="o">=</span> <span class="n">score</span><span class="o">(</span><span class="n">gameState</span><span class="o">,</span> <span class="n">currentPlayer</span><span class="o">);</span>
+<span class="n">score</span> <span class="o">=</span> <span class="n">maximizingPlayer</span> <span class="o">?</span> <span class="n">score</span> <span class="o">:</span> <span class="o">-</span><span class="n">score</span><span class="o">;</span></code></pre></figure>
 
-Uruchomienie powyższego algorytmu na planszy 4x4, gdy pierwszy ruch
+<h3 id="plansza-4x4-3-pod-rząd-wygrywają">Plansza 4x4, 3 pod rząd wygrywają</h3>
+
+<p>Uruchomienie powyższego algorytmu na planszy 4x4, gdy pierwszy ruch
 należy do użytkownika przynosi jednak opłakane rezultaty.
 Program zajmuje po prostu kolejne pola na planszy, a my nie mamy
-najmniejszego problemu z wygraną.
+najmniejszego problemu z wygraną.</p>
 
-![Dziwne zachowanie algorytmu](assets/images/2020-08-05/game1.png)
-X - Użytkownik, O - Komputer
+<p><img src="assets/images/2020-08-05/game1.png" alt="Dziwne zachowanie algorytmu" />
+X - Użytkownik, O - Komputer</p>
 
-Dlaczego tak się dzieje? Okazuje się że przy grze 4x4, 3 pod rząd
+<p>Dlaczego tak się dzieje? Okazuje się że przy grze 4x4, 3 pod rząd
 istnieje strategia wygrywająca która pozwala pierwszemu graczowi
 wygrać w dokładnie 3 ruchach:
-![Strategia wygrywająca](assets/images/2020-08-05/str1.svg)
+<img src="assets/images/2020-08-05/str1.svg" alt="Strategia wygrywająca" /></p>
 
-Z punktu widzenia algorytmu minimax każdy ruch skutkuje przegraną,
+<p>Z punktu widzenia algorytmu minimax każdy ruch skutkuje przegraną,
 dlatego algorytm wybierze pierwszy lub ostatni ruch 
 (w zależności od implementacji).
 Pozwolę sobie nazwać to zjawisko depresją,
-chociaż nie jest to powszechnie przyjęta terminologia.
+chociaż nie jest to powszechnie przyjęta terminologia.</p>
 
-Istnieje bardzo prosty sposób na wykrycie zjawiska depresji -
+<p>Istnieje bardzo prosty sposób na wykrycie zjawiska depresji -
 wystarczy zamienić kolejność graczy tj. pozwolić komputerowi wykonać
 pierwszy ruch. Jeżeli spowoduje to nagłą poprawę sposobu działania algorytmu
 należy sprawdzić czy przypadkiem gra nie faworyzuje gracza wykonującego
-ruch jako pierwszy.
+ruch jako pierwszy.</p>
 
-Istnieje jeszcze jedno proste ulepszenie które możemy wykonać.
+<p>Istnieje jeszcze jedno proste ulepszenie które możemy wykonać.
 Mianowicie jeżeli pozwolimy algorytmowi grać samemu ze sobą to
-okaże się że "nie spieszy mu się do wygranej":
-![Ilustracja problemu](assets/images/2020-08-05/str2.svg)
+okaże się że “nie spieszy mu się do wygranej”:
+<img src="assets/images/2020-08-05/str2.svg" alt="Ilustracja problemu" />
 Ludzie zachowują się inaczej, chcemy wygrać jak najszybciej,
 w jak najmniejszej ilości ruchów.
 Możemy dodać to zachowanie do naszego algorytmu, modyfikując
-funkcję heurystyki tak żeby "karała" gracza za każdy wykonany ruch.
+funkcję heurystyki tak żeby “karała” gracza za każdy wykonany ruch.
 Alternatywnie heurystyka może nagradzać gracza za każde 
-pozostawione wolne pole na planszy:
-{% highlight java %}
-double impatientPlayerHeuristics(GameState gameState, Player player) {
-    var score = score(gameState, currentPlayer);
-    var freePlaces = gameState.board.countFreePlaces();
-    return score + freePlaces*Q;
-}
-{% endhighlight %}
-Stałą `Q` musimy dobrać w taki sposób żeby wartość 
-wyrażenia `freePlaces*Q` nigdy
+pozostawione wolne pole na planszy:</p>
+
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">double</span> <span class="nf">impatientPlayerHeuristics</span><span class="o">(</span><span class="n">GameState</span> <span class="n">gameState</span><span class="o">,</span> <span class="n">Player</span> <span class="n">player</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">var</span> <span class="n">score</span> <span class="o">=</span> <span class="n">score</span><span class="o">(</span><span class="n">gameState</span><span class="o">,</span> <span class="n">currentPlayer</span><span class="o">);</span>
+    <span class="n">var</span> <span class="n">freePlaces</span> <span class="o">=</span> <span class="n">gameState</span><span class="o">.</span><span class="na">board</span><span class="o">.</span><span class="na">countFreePlaces</span><span class="o">();</span>
+    <span class="k">return</span> <span class="n">score</span> <span class="o">+</span> <span class="n">freePlaces</span><span class="o">*</span><span class="n">Q</span><span class="o">;</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>Stałą <code class="highlighter-rouge">Q</code> musimy dobrać w taki sposób żeby wartość 
+wyrażenia <code class="highlighter-rouge">freePlaces*Q</code> nigdy
 nie przekraczała wartości zwracanej w przypadku wygranej przez 
-funkcję `score`.
-Na przykład jeżeli dla wygranej heurystyka zwraca `1000.0` to użycie
-`Q = 1.0` jest rozsądnym wyborem.
+funkcję <code class="highlighter-rouge">score</code>.
+Na przykład jeżeli dla wygranej heurystyka zwraca <code class="highlighter-rouge">1000.0</code> to użycie
+<code class="highlighter-rouge">Q = 1.0</code> jest rozsądnym wyborem.</p>
 
-Na koniec zauważmy że plansza 5x5, 3 pod rząd zawiera w sobie
+<p>Na koniec zauważmy że plansza 5x5, 3 pod rząd zawiera w sobie
 planszę 4x4, 3 pod rząd, dlatego wszystko co powiedzieliśmy tutaj
-o zjawisku depresji odnosi się również do niej.
+o zjawisku depresji odnosi się również do niej.</p>
 
-### Plansza 4x4, 4 pod rząd wygrywają
+<h3 id="plansza-4x4-4-pod-rząd-wygrywają">Plansza 4x4, 4 pod rząd wygrywają</h3>
 
-W przypadku plansz 4x4 i większych kluczowym problemem staje się wydajność.
+<p>W przypadku plansz 4x4 i większych kluczowym problemem staje się wydajność.
 Prostym sposobem na poradzenie sobie z tym problemem jest rezygnacja z
 analizy całego drzewa gry i skupienie się na pierwszych N ruchach 
 wykonywanych przez graczy.
@@ -1583,114 +1574,114 @@ ponieważ
 oceniać musimy nie tylko gry zakończone, ale również takie
 które wciąż trwają.
 Z drugiej strony nadmierne skomplikowanie heurystyki negatywnie wpływa 
-na złożoność obliczeniową i co za tym idzie, na czas oczekiwania na wybór ruchu.
+na złożoność obliczeniową i co za tym idzie, na czas oczekiwania na wybór ruchu.</p>
 
-Jako kompromis możemy przyjąć na przykład analizę jedynie siedmiu
+<p>Jako kompromis możemy przyjąć na przykład analizę jedynie siedmiu
 posunięć graczy w przyszłość, przy jednoczesnym rozbudowaniu heurystyki
-o punktowanie "prawie zwycięstw". Prawie zwycięstwo to sytuacja na
+o punktowanie “prawie zwycięstw”. Prawie zwycięstwo to sytuacja na
 planszy która w wyniku jednego ruchu czy posunięcia gracza zmienia się
 w wygraną. W przypadku planszy 4x4, 4 pod rząd możemy przyjąć
 że rząd, kolumna lub przekątna złożona z trzech znaków gracza i wolnego
-miejsca jest prawie zwycięstwem np. `X _ X X` jest prawie zwycięstwem
-dla gracza X.
+miejsca jest prawie zwycięstwem np. <code class="highlighter-rouge">X _ X X</code> jest prawie zwycięstwem
+dla gracza X.</p>
 
-W przypadku optymalizacji bardziej skomplikowanych gier nie obejdziemy się
+<p>W przypadku optymalizacji bardziej skomplikowanych gier nie obejdziemy się
 bez dodatkowych narzędzi takich jak np. profiler.
 Jednym z najlepszych, darmowych profilerów dostępnych na rynku dla platformy JVM
-jest [async-profiler](https://github.com/jvm-profiling-tools/async-profiler).
+jest <a href="https://github.com/jvm-profiling-tools/async-profiler">async-profiler</a>.</p>
 
-Możemy również dużo zyskać unikając nadmiernych alokacji pamięci.
+<p>Możemy również dużo zyskać unikając nadmiernych alokacji pamięci.
 Na przykład zamiast tworzyć nową niemutowalną planszę za każdym razem gdy 
 symulujemy ruch gracza, możemy wykorzystać mutowalną strukturę danych
-wraz z wycofywaniem ruchów (ang. backtracking):
-{% highlight java %}
-for (Move playerMove: movesToCheck) {
-    // Modify board in place
-    board.put(playerMove.position, playerMove.mark);
+wraz z wycofywaniem ruchów (ang. backtracking):</p>
 
-    // Do recursive minimax call and other stuff
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span> <span class="o">(</span><span class="n">Move</span> <span class="nl">playerMove:</span> <span class="n">movesToCheck</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// Modify board in place</span>
+    <span class="n">board</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">playerMove</span><span class="o">.</span><span class="na">position</span><span class="o">,</span> <span class="n">playerMove</span><span class="o">.</span><span class="na">mark</span><span class="o">);</span>
 
-    // Restore board state
-    board.removeMark(playerMove.position)
-}
-{% endhighlight %}
+    <span class="c1">// Do recursive minimax call and other stuff</span>
 
-### Plansza 5x5, 4 lub 5 pod rząd wygrywają
+    <span class="c1">// Restore board state</span>
+    <span class="n">board</span><span class="o">.</span><span class="na">removeMark</span><span class="o">(</span><span class="n">playerMove</span><span class="o">.</span><span class="na">position</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
 
-Na tym poziomie wydajność staje się elementem kluczowym.
+<h3 id="plansza-5x5-4-lub-5-pod-rząd-wygrywają">Plansza 5x5, 4 lub 5 pod rząd wygrywają</h3>
+
+<p>Na tym poziomie wydajność staje się elementem kluczowym.
 Duża wielkość drzewa gry sprawia że strategie
 bazujące na prawdopodobieństwie zaczynają wyglądać 
 coraz bardziej interesująco.
 Na przykład możemy użyć następującego algorytmu bazującego
-na [metodzie Monte Carlo](https://pl.wikipedia.org/wiki/Metoda_Monte_Carlo),
-do wygenerowania listy ruchów które będziemy oceniać:
-{% highlight java %}
-Set<Moves> getMovesToCheck(Board board, int depth) {
-    // Cutoff - use heuristics to evaluate the board
-    if (depth > 8) {
-        return Set.of();
-    }
+na <a href="https://pl.wikipedia.org/wiki/Metoda_Monte_Carlo">metodzie Monte Carlo</a>,
+do wygenerowania listy ruchów które będziemy oceniać:</p>
 
-    // For the first three player moves we analyze every possibility
-    var allPossibleMoves = board.getMovesForAllFreeFields()
-    if (depth < 3) {
-        return allPossibleMoves;
-    }
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Set</span><span class="o">&lt;</span><span class="n">Moves</span><span class="o">&gt;</span> <span class="nf">getMovesToCheck</span><span class="o">(</span><span class="n">Board</span> <span class="n">board</span><span class="o">,</span> <span class="kt">int</span> <span class="n">depth</span><span class="o">)</span> <span class="o">{</span>
+    <span class="c1">// Cutoff - use heuristics to evaluate the board</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">depth</span> <span class="o">&gt;</span> <span class="mi">8</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">Set</span><span class="o">.</span><span class="na">of</span><span class="o">();</span>
+    <span class="o">}</span>
 
-    // Take K random moves to analyze
-    return allPossibleMove.shuffle().take(K);
+    <span class="c1">// For the first three player moves we analyze every possibility</span>
+    <span class="n">var</span> <span class="n">allPossibleMoves</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="na">getMovesForAllFreeFields</span><span class="o">()</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">depth</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">allPossibleMoves</span><span class="o">;</span>
+    <span class="o">}</span>
 
-}
-{% endhighlight %}
+    <span class="c1">// Take K random moves to analyze</span>
+    <span class="k">return</span> <span class="n">allPossibleMove</span><span class="o">.</span><span class="na">shuffle</span><span class="o">().</span><span class="na">take</span><span class="o">(</span><span class="n">K</span><span class="o">);</span>
 
-W przypadku gdy algorytm zwróci pustą listę ruchów do sprawdzenia,
+<span class="o">}</span></code></pre></figure>
+
+<p>W przypadku gdy algorytm zwróci pustą listę ruchów do sprawdzenia,
 po prostu oceniamy planszę za pomocą heurystyki i zwracamy to jako
-wynik (pamiętając o negacji dla gracza MIN) z wywołania funkcji minimax.
+wynik (pamiętając o negacji dla gracza MIN) z wywołania funkcji minimax.</p>
 
-### Jak to zdebugować? Generalne strategie debugowania
+<h3 id="jak-to-zdebugować-generalne-strategie-debugowania">Jak to zdebugować? Generalne strategie debugowania</h3>
 
-* Testy jednostkowe dla wykorzystywanych przez nas heurystyk to podstawa.
+<ul>
+  <li>Testy jednostkowe dla wykorzystywanych przez nas heurystyk to podstawa.
  Pisząc heurystyki dla gry kółko i krzyżyk bardzo łatwo o pomyłkę
- lub błąd w stylu "off by one". Dodanie testów i upewnienie się
+ lub błąd w stylu “off by one”. Dodanie testów i upewnienie się
  że pokrycie kodu testami jest odpowiednio wysokie powinno być
- pierwszym działaniem jakie podejmujemy podczas debugowania.
-* Nasza aplikacja powinna posiadać funkcję umożliwiającą cofnięcie
+ pierwszym działaniem jakie podejmujemy podczas debugowania.</li>
+  <li>Nasza aplikacja powinna posiadać funkcję umożliwiającą cofnięcie
  ostatnich ruchów gracza. Znacznie ułatwi to debugowanie za pomocą
  debuggera. W przypadku bardziej skomplikowanych gier typu warcaby
- warto dodać opcję zapisu i odczytu stanu gry z pliku.
-* Warto dodać opcję gry komputer vs komputer, jak również wyboru
- kto stawia pierwszy ruch. Pozwala to lepiej ocenić działanie algorytmu.
-* Zwracając optymalny ruch algorytm minimax zwraca tak naprawdę
+ warto dodać opcję zapisu i odczytu stanu gry z pliku.</li>
+  <li>Warto dodać opcję gry komputer vs komputer, jak również wyboru
+ kto stawia pierwszy ruch. Pozwala to lepiej ocenić działanie algorytmu.</li>
+  <li>Zwracając optymalny ruch algorytm minimax zwraca tak naprawdę
  ścieżkę od korzenia do liścia w drzewie gry (korzeń reprezentuje
  obecną sytuację na planszy, liść przyszłą wygraną lub remis).
  Warto zalogować taką informację wypisując ją na konsole, bądź 
  zapisując do pliku. Pamiętajmy żeby zalogować tylko i wyłącznie
  ścieżkę dla wybranego ruchu. W przeciwnym wypadku możemy utonąć w
- powodzi informacji.
+ powodzi informacji.</li>
+</ul>
 
-Na koniec zdradzę wam sekret debugowania, który pomoże wam rozwiązać
-nie jeden problem: "Co dwie głowy to nie jedna!".
+<p>Na koniec zdradzę wam sekret debugowania, który pomoże wam rozwiązać
+nie jeden problem: “Co dwie głowy to nie jedna!”.
 Jeżeli masz problem którego nie potrafisz sam rozwiązać poproś
 drugą osobę o pomoc. I niech to nie będzie prośba na forum 
 czy StackOverflow ale debugowanie ramie w ramie z drugim człowiekiem.
 To naprawdę działa i mówię to mając na karku kilka lat solidnej
-praktyki jako programista.
+praktyki jako programista.</p>
 
-### Przykładowa aplikacja
+<h3 id="przykładowa-aplikacja">Przykładowa aplikacja</h3>
 
-Kod przykładowej aplikacji można znaleźć na 
-[GitHubie](https://github.com/marcin-chwedczuk/xox/).
+<p>Kod przykładowej aplikacji można znaleźć na 
+<a href="https://github.com/marcin-chwedczuk/xox/">GitHubie</a>.</p>
 
-Aplikację najlepiej otworzyć w IntelliJ, importując ją 
+<p>Aplikację najlepiej otworzyć w IntelliJ, importując ją 
 jako projekt Gradle. Do edycji GUI niezbędny jest
-[SceneBuilder](https://gluonhq.com/products/scene-builder/).
+<a href="https://gluonhq.com/products/scene-builder/">SceneBuilder</a>.</p>
 
-Jeżeli odkryjecie w aplikacji błąd proszę piszcie na 0xmarcin małpa gmail.com.
+<p>Jeżeli odkryjecie w aplikacji błąd proszę piszcie na 0xmarcin małpa gmail.com.</p>
 
-Sam kod aplikacji jest czytelny ale nie perfekcyjny. Jest jeszcze wiele
+<p>Sam kod aplikacji jest czytelny ale nie perfekcyjny. Jest jeszcze wiele
 rzeczy które chciałbym poprawić. Jeżeli widzicie miejsce które
-można poprawić nie bójcie się stworzyć pull request'a na GitHubie.
-Gwiazdki są również mile widziane ;)
+można poprawić nie bójcie się stworzyć pull request’a na GitHubie.
+Gwiazdki są również mile widziane ;)</p>
 
 	  ]]></description>
 	</item>
@@ -1702,111 +1693,111 @@ Gwiazdki są również mile widziane ;)
 	  <pubDate>2020-08-01T02:00:01+02:00</pubDate>
 	  <guid>//scala-nesting-monads</guid>
 	  <description><![CDATA[
-	     Recently I write a lot of async code. Most of my repository
-methods return types like `Future[Set[T]]` or `Future[Option[T]]`.
+	     <p>Recently I write a lot of async code. Most of my repository
+methods return types like <code class="highlighter-rouge">Future[Set[T]]</code> or <code class="highlighter-rouge">Future[Option[T]]</code>.
 But as we will see, working with such types in pure Scala
-can be very cumbersome.
+can be very cumbersome.</p>
 
-For example in pure Scala we cannot write:
-{% highlight scala %}
-val namesFuture = Future.successful(List("bob", "alice"));
+<p>For example in pure Scala we cannot write:</p>
 
-val capitalizedNames = for {
-  names <- namesFuture
-  name <- names
-} yield name.capitalize
-{% endhighlight %}
-Nop. Nada. Will not work. When we try to compile this code,
-the compiler will point out that `names` have type of `List[String]`
-instead of expected `Future[X]`.
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">namesFuture</span> <span class="k">=</span> <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="nc">List</span><span class="o">(</span><span class="s">"bob"</span><span class="o">,</span> <span class="s">"alice"</span><span class="o">));</span>
 
-To understand the problem better lets remind ourselves
+<span class="k">val</span> <span class="n">capitalizedNames</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">names</span> <span class="k">&lt;-</span> <span class="n">namesFuture</span>
+  <span class="n">name</span> <span class="k">&lt;-</span> <span class="n">names</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">name</span><span class="o">.</span><span class="n">capitalize</span></code></pre></figure>
+
+<p>Nop. Nada. Will not work. When we try to compile this code,
+the compiler will point out that <code class="highlighter-rouge">names</code> have type of <code class="highlighter-rouge">List[String]</code>
+instead of expected <code class="highlighter-rouge">Future[X]</code>.</p>
+
+<p>To understand the problem better lets remind ourselves
 how Scala compiler translates for-comprehensions into
-method calls:
-{% highlight scala %}
-val ks = for {
-  i <- 1 to 10
-  j <- 1 to i
-  k <- 1 to j
-  sum = i + j + k
-  if (sum > 10 && sum < 20)
-} yield 3*sum
-// Is translated (with some simplifications) into:
-val ks2 = (1 to 10).flatMap { i =>
-  (1 to i).flatMap { j =>
-    (1 to j)
-      .map { k => i + j + k }
-      .withFilter { sum => sum > 10 && sum < 20 }
-      .map { sum => 3*sum }
-  }
-}
-{% endhighlight %}
-In short every but the last "assignment" of the form `var <- something` is
-translated into `something.flatMap { var => ...`.
-The last "assignment" is translated into a simple `map` call.
-`if` filters are translated into `withFilter` or `filter` calls.
+method calls:</p>
 
-Returning to our first example we see that it is translated
-into:
-{% highlight scala %}
-val capitalizedNames = for {
-  names <- namesFuture
-  name <- names
-} yield name.capitalize
-// into this:
-val capitalizedNames = namesFuture.flatMap { names =>
-  names.map(_.capitalize)
-}
-{% endhighlight %}
-And indeed it does not type check as `namesFuture.flatMap` expects
-that the passed lambda will return a `Future[X]` not
-a `List[X]`.
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">ks</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">i</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="mi">10</span>
+  <span class="n">j</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="n">i</span>
+  <span class="n">k</span> <span class="k">&lt;-</span> <span class="mi">1</span> <span class="n">to</span> <span class="n">j</span>
+  <span class="n">sum</span> <span class="k">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="n">k</span>
+  <span class="k">if</span> <span class="o">(</span><span class="n">sum</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="o">&amp;&amp;</span> <span class="n">sum</span> <span class="o">&lt;</span> <span class="mi">20</span><span class="o">)</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="mi">3</span><span class="o">*</span><span class="n">sum</span>
+<span class="c1">// Is translated (with some simplifications) into:
+</span><span class="k">val</span> <span class="n">ks2</span> <span class="k">=</span> <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="mi">10</span><span class="o">).</span><span class="n">flatMap</span> <span class="o">{</span> <span class="n">i</span> <span class="k">=&gt;</span>
+  <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">i</span><span class="o">).</span><span class="n">flatMap</span> <span class="o">{</span> <span class="n">j</span> <span class="k">=&gt;</span>
+    <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">j</span><span class="o">)</span>
+      <span class="o">.</span><span class="n">map</span> <span class="o">{</span> <span class="n">k</span> <span class="k">=&gt;</span> <span class="n">i</span> <span class="o">+</span> <span class="n">j</span> <span class="o">+</span> <span class="n">k</span> <span class="o">}</span>
+      <span class="o">.</span><span class="n">withFilter</span> <span class="o">{</span> <span class="n">sum</span> <span class="k">=&gt;</span> <span class="n">sum</span> <span class="o">&gt;</span> <span class="mi">10</span> <span class="o">&amp;&amp;</span> <span class="n">sum</span> <span class="o">&lt;</span> <span class="mi">20</span> <span class="o">}</span>
+      <span class="o">.</span><span class="n">map</span> <span class="o">{</span> <span class="n">sum</span> <span class="k">=&gt;</span> <span class="mi">3</span><span class="o">*</span><span class="n">sum</span> <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span></code></pre></figure>
 
-We can quickly fix this problem by introducing a nested `for`
-or by replacing `flatMap` by `map`:
-{% highlight scala %}
-val capitalizedNames = for { names <- namesFuture } yield
-                       for { name <- names } yield name.capitalize;
-// or:
-val capitalizedNames = namesFuture.map { names =>
-  names.map(_.capitalize)
-}
-// of if you are processing only a single collection:
-val capitalizedNames = for { names <- namesFuture }
-                       yield names.map(_.capitalize)
-{% endhighlight %}
-And even in this simple example, the method chain 
+<p>In short every but the last “assignment” of the form <code class="highlighter-rouge">var &lt;- something</code> is
+translated into <code class="highlighter-rouge">something.flatMap { var =&gt; ...</code>.
+The last “assignment” is translated into a simple <code class="highlighter-rouge">map</code> call.
+<code class="highlighter-rouge">if</code> filters are translated into <code class="highlighter-rouge">withFilter</code> or <code class="highlighter-rouge">filter</code> calls.</p>
+
+<p>Returning to our first example we see that it is translated
+into:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">capitalizedNames</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span>
+  <span class="n">names</span> <span class="k">&lt;-</span> <span class="n">namesFuture</span>
+  <span class="n">name</span> <span class="k">&lt;-</span> <span class="n">names</span>
+<span class="o">}</span> <span class="k">yield</span> <span class="n">name</span><span class="o">.</span><span class="n">capitalize</span>
+<span class="c1">// into this:
+</span><span class="k">val</span> <span class="n">capitalizedNames</span> <span class="k">=</span> <span class="n">namesFuture</span><span class="o">.</span><span class="n">flatMap</span> <span class="o">{</span> <span class="n">names</span> <span class="k">=&gt;</span>
+  <span class="n">names</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">capitalize</span><span class="o">)</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>And indeed it does not type check as <code class="highlighter-rouge">namesFuture.flatMap</code> expects
+that the passed lambda will return a <code class="highlighter-rouge">Future[X]</code> not
+a <code class="highlighter-rouge">List[X]</code>.</p>
+
+<p>We can quickly fix this problem by introducing a nested <code class="highlighter-rouge">for</code>
+or by replacing <code class="highlighter-rouge">flatMap</code> by <code class="highlighter-rouge">map</code>:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">capitalizedNames</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span> <span class="n">names</span> <span class="k">&lt;-</span> <span class="n">namesFuture</span> <span class="o">}</span> <span class="k">yield</span>
+                       <span class="k">for</span> <span class="o">{</span> <span class="n">name</span> <span class="k">&lt;-</span> <span class="n">names</span> <span class="o">}</span> <span class="k">yield</span> <span class="n">name</span><span class="o">.</span><span class="n">capitalize</span><span class="o">;</span>
+<span class="c1">// or:
+</span><span class="k">val</span> <span class="n">capitalizedNames</span> <span class="k">=</span> <span class="n">namesFuture</span><span class="o">.</span><span class="n">map</span> <span class="o">{</span> <span class="n">names</span> <span class="k">=&gt;</span>
+  <span class="n">names</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">capitalize</span><span class="o">)</span>
+<span class="o">}</span>
+<span class="c1">// of if you are processing only a single collection:
+</span><span class="k">val</span> <span class="n">capitalizedNames</span> <span class="k">=</span> <span class="k">for</span> <span class="o">{</span> <span class="n">names</span> <span class="k">&lt;-</span> <span class="n">namesFuture</span> <span class="o">}</span>
+                       <span class="k">yield</span> <span class="n">names</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">capitalize</span><span class="o">)</span></code></pre></figure>
+
+<p>And even in this simple example, the method chain 
 becomes quite unreadable when you try to
-squash it into a single line: `namesFuture.map(_.map(_.capitalize))`.
+squash it into a single line: <code class="highlighter-rouge">namesFuture.map(_.map(_.capitalize))</code>.</p>
 
-Exactly the same problems appears when we try to work with `Future[Option[T]]`.
+<p>Exactly the same problems appears when we try to work with <code class="highlighter-rouge">Future[Option[T]]</code>.
 But here we can at least use libraries to reduce the pain.
-For example using `OptionT` type from [Cats](https://typelevel.org/cats/),
-we can write:
-{% highlight scala %}
-import cats.data.OptionT
-import cats.implicits._
+For example using <code class="highlighter-rouge">OptionT</code> type from <a href="https://typelevel.org/cats/">Cats</a>,
+we can write:</p>
 
-val nameFuture = Future.successful(Option("foo"))
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">import</span> <span class="nn">cats.data.OptionT</span>
+<span class="k">import</span> <span class="nn">cats.implicits._</span>
 
-val f = OptionT(nameFuture)
-  .map(name => name + "!")
-  .map(name => println(s"name is $name"))
-Await.result(f.value, Duration.Inf)
-{% endhighlight %}
-...and call it a day. 
+<span class="k">val</span> <span class="n">nameFuture</span> <span class="k">=</span> <span class="nc">Future</span><span class="o">.</span><span class="n">successful</span><span class="o">(</span><span class="nc">Option</span><span class="o">(</span><span class="s">"foo"</span><span class="o">))</span>
 
-In pure Scala this code would look like this:
-{% highlight scala %}
-val f = nameFuture
-  .map(_.map(name => name + "!"))
-  .map(_.foreach(n => println(s"name is $n")))
-Await.result(f, Duration.Inf)
-{% endhighlight %}
+<span class="k">val</span> <span class="n">f</span> <span class="k">=</span> <span class="nc">OptionT</span><span class="o">(</span><span class="n">nameFuture</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">name</span> <span class="k">=&gt;</span> <span class="n">name</span> <span class="o">+</span> <span class="s">"!"</span><span class="o">)</span>
+  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">name</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"name is $name"</span><span class="o">))</span>
+<span class="nc">Await</span><span class="o">.</span><span class="n">result</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="n">value</span><span class="o">,</span> <span class="nc">Duration</span><span class="o">.</span><span class="nc">Inf</span><span class="o">)</span></code></pre></figure>
 
-In short I don't understand why language designers decided to not support
-nested monads in for-comprehensions. It's a pity that we have to use
-external libraries to get such a basic functionality.
+<p>…and call it a day.</p>
+
+<p>In pure Scala this code would look like this:</p>
+
+<figure class="highlight"><pre><code class="language-scala" data-lang="scala"><span class="k">val</span> <span class="n">f</span> <span class="k">=</span> <span class="n">nameFuture</span>
+  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="n">name</span> <span class="k">=&gt;</span> <span class="n">name</span> <span class="o">+</span> <span class="s">"!"</span><span class="o">))</span>
+  <span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">foreach</span><span class="o">(</span><span class="n">n</span> <span class="k">=&gt;</span> <span class="n">println</span><span class="o">(</span><span class="n">s</span><span class="s">"name is $n"</span><span class="o">)))</span>
+<span class="nc">Await</span><span class="o">.</span><span class="n">result</span><span class="o">(</span><span class="n">f</span><span class="o">,</span> <span class="nc">Duration</span><span class="o">.</span><span class="nc">Inf</span><span class="o">)</span></code></pre></figure>
+
+<p>In short I don’t understand why language designers decided to not support
+nested monads in for-comprehensions. It’s a pity that we have to use
+external libraries to get such a basic functionality.</p>
+
 	  ]]></description>
 	</item>
 
@@ -1817,102 +1808,99 @@ external libraries to get such a basic functionality.
 	  <pubDate>2020-07-10T02:00:01+02:00</pubDate>
 	  <guid>//useful-jdk-tools-part-1</guid>
 	  <description><![CDATA[
-	     JDK comes with a bunch of handy tools. It's good to
+	     <p>JDK comes with a bunch of handy tools. It’s good to
 know about them. In this post we will take a look at
-`jps`, `jstack`, `jmap` and `jhat`.
+<code class="highlighter-rouge">jps</code>, <code class="highlighter-rouge">jstack</code>, <code class="highlighter-rouge">jmap</code> and <code class="highlighter-rouge">jhat</code>.</p>
 
-### jps
+<h3 id="jps">jps</h3>
 
-`jps` is a JVM counterpart to unix `ps` command.
-By default `jps` prints process PID and 
+<p><code class="highlighter-rouge">jps</code> is a JVM counterpart to unix <code class="highlighter-rouge">ps</code> command.
+By default <code class="highlighter-rouge">jps</code> prints process PID and 
 the name of the main class
 or the name of a jar file if the 
-application was started using `java -jar` option.
-{% highlight nohighlight %}
-$ jps
+application was started using <code class="highlighter-rouge">java -jar</code> option.</p>
+
+<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">$ jps
 54177 Jps
 54173 App
-54452 app.jar
-{% endhighlight %}
+54452 app.jar</code></pre></figure>
 
-But it can be more talkative. 
-`-l` option adds a package name to the
+<p>But it can be more talkative. 
+<code class="highlighter-rouge">-l</code> option adds a package name to the
 main class name and a full/relative path to the jar filename.
-`-m` option will print command line arguments passed to the program.
-{% highlight nohighlight %}
-$ jps -lm
+<code class="highlighter-rouge">-m</code> option will print command line arguments passed to the program.</p>
+
+<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">$ jps -lm
 54355 pl.marcinchwedczuk.app.App arg1 arg2 arg3
 54452 build/libs/app.jar arg1 arg2 arg3
-54458 jdk.jcmd/sun.tools.jps.Jps -lm
-{% endhighlight %}
+54458 jdk.jcmd/sun.tools.jps.Jps -lm</code></pre></figure>
 
-To print JVM switches we use `-v` option:
-{% highlight nohighlight %}
-$ jps -v
+<p>To print JVM switches we use <code class="highlighter-rouge">-v</code> option:</p>
+
+<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">$ jps -v
 54654 app.jar -Xmx32m -Xms32m
-54657 Jps -Dapplication.home=... -Xms8m ...
-{% endhighlight %}
+54657 Jps -Dapplication.home=... -Xms8m ...</code></pre></figure>
 
-### jstack
+<h3 id="jstack">jstack</h3>
 
-`jstack PID` can be used to print current stack traces of
+<p><code class="highlighter-rouge">jstack PID</code> can be used to print current stack traces of
 all threads running in java process.
 You can also print stack traces from a core dump file.
-The output of `jstack` command is often referred to
-as a _thread dump_.
+The output of <code class="highlighter-rouge">jstack</code> command is often referred to
+as a <em>thread dump</em>.</p>
 
-Thread dumps are invaluable resources when it comes to debugging
+<p>Thread dumps are invaluable resources when it comes to debugging
 nasty deadlocks that show up only on the production servers.
 On the other hand the number of threads in a serious java application
 can be overwhelming. To make the most of thread dumps, you
 need to give threads meaningful names. You should give names 
-(via `Thread::setName`) at least to the threads that you create 
+(via <code class="highlighter-rouge">Thread::setName</code>) at least to the threads that you create 
 yourself and 
-you should also supply a "thread naming" `ThreadFactory` when creating
-new thread pools (e.g. `newFixedThreadPool(int nThreads, ThreadFactory threadFactory)`).
+you should also supply a “thread naming” <code class="highlighter-rouge">ThreadFactory</code> when creating
+new thread pools (e.g. <code class="highlighter-rouge">newFixedThreadPool(int nThreads, ThreadFactory threadFactory)</code>).</p>
 
-Let's create a simple app that deadlocks and see what `jstack`
-will print:
-{% highlight java %}
-public static void main(String[] args) throws InterruptedException {
-	Lock l1 = new ReentrantLock();
-	Lock l2 = new ReentrantLock();
+<p>Let’s create a simple app that deadlocks and see what <code class="highlighter-rouge">jstack</code>
+will print:</p>
 
-	var t1 = new Thread(() -> {
-		Thread.currentThread().setName("AppThread#1");
-		l1.lock();
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
-		l2.lock();
-	});
+<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="n">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">InterruptedException</span> <span class="o">{</span>
+	<span class="n">Lock</span> <span class="n">l1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ReentrantLock</span><span class="o">();</span>
+	<span class="n">Lock</span> <span class="n">l2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ReentrantLock</span><span class="o">();</span>
 
-	var t2 = new Thread(() -> {
-		Thread.currentThread().setName("AppThread#2");
-		l2.lock();
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-		}
-		l1.lock();
-	});
+	<span class="n">var</span> <span class="n">t1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+		<span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">setName</span><span class="o">(</span><span class="s">"AppThread#1"</span><span class="o">);</span>
+		<span class="n">l1</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+		<span class="k">try</span> <span class="o">{</span>
+			<span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span>
+		<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">interrupt</span><span class="o">();</span>
+		<span class="o">}</span>
+		<span class="n">l2</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+	<span class="o">});</span>
 
-	t1.start(); t2.start();
-	t1.join(); t2.join();
-}
-{% endhighlight %}
-EDIT: I was tired when I wrote this code. It will deadlock
+	<span class="n">var</span> <span class="n">t2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Thread</span><span class="o">(()</span> <span class="o">-&gt;</span> <span class="o">{</span>
+		<span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">setName</span><span class="o">(</span><span class="s">"AppThread#2"</span><span class="o">);</span>
+		<span class="n">l2</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+		<span class="k">try</span> <span class="o">{</span>
+			<span class="n">Thread</span><span class="o">.</span><span class="na">sleep</span><span class="o">(</span><span class="mi">1000</span><span class="o">);</span>
+		<span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="n">InterruptedException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+			<span class="n">Thread</span><span class="o">.</span><span class="na">currentThread</span><span class="o">().</span><span class="na">interrupt</span><span class="o">();</span>
+		<span class="o">}</span>
+		<span class="n">l1</span><span class="o">.</span><span class="na">lock</span><span class="o">();</span>
+	<span class="o">});</span>
+
+	<span class="n">t1</span><span class="o">.</span><span class="na">start</span><span class="o">();</span> <span class="n">t2</span><span class="o">.</span><span class="na">start</span><span class="o">();</span>
+	<span class="n">t1</span><span class="o">.</span><span class="na">join</span><span class="o">();</span> <span class="n">t2</span><span class="o">.</span><span class="na">join</span><span class="o">();</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>EDIT: I was tired when I wrote this code. It will deadlock
 both threads
-say 99% of time but not always. Instead of `sleep` I should use
-`CountDownLatch`. I leave the code as it is as I don't want to regenerate
-thread dumps but I wanted to point out this problem.
+say 99% of time but not always. Instead of <code class="highlighter-rouge">sleep</code> I should use
+<code class="highlighter-rouge">CountDownLatch</code>. I leave the code as it is as I don’t want to regenerate
+thread dumps but I wanted to point out this problem.</p>
 
-For readability I had to shorten `jstack` output.
-{% highlight nohighlight %}
-$ jstack `jps | grep App | cut -d ' ' -f 1`
+<p>For readability I had to shorten <code class="highlighter-rouge">jstack</code> output.</p>
+
+<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">$ jstack `jps | grep App | cut -d ' ' -f 1`
 
 "main" #1 prio=5 os_prio=31 cpu=46.25ms elapsed=85.17s tid=0x00007fb623810800 nid=0x1803 in Object.wait()  [0x000070000027a000]
    java.lang.Thread.State: WAITING (on object monitor)
@@ -1939,60 +1927,60 @@ Found one Java-level deadlock:
 "AppThread#2":
   waiting for ownable synchronizer 0x00000007ffd92968, (a java.util.concurrent.locks.ReentrantLock$NonfairSync),
   which is held by "AppThread#1"
-...
-{% endhighlight %}
-Notice that JVM was able to detect the deadlock, saving us a hours
+...</code></pre></figure>
+
+<p>Notice that JVM was able to detect the deadlock, saving us a hours
 of debugging. If you have a heisenbug you may consider running
-`jstack` periodically and searching its output for `Found * deadlock` lines.
+<code class="highlighter-rouge">jstack</code> periodically and searching its output for <code class="highlighter-rouge">Found * deadlock</code> lines.</p>
 
-Now let's see how we can extract thread dumps for a core dump.
-And for that we need a core dump.
+<p>Now let’s see how we can extract thread dumps for a core dump.
+And for that we need a core dump.</p>
 
-Here I will describe how to make a core dump on macOS 10.15
-(this is based on [this article](https://developer.apple.com/library/archive/technotes/tn2124/_index.html#//apple_ref/doc/uid/DTS10003391-CH1-SECCOREDUMPS))
-First we need to execute `ulimit -c unlimited` in the shell
+<p>Here I will describe how to make a core dump on macOS 10.15
+(this is based on <a href="https://developer.apple.com/library/archive/technotes/tn2124/_index.html#//apple_ref/doc/uid/DTS10003391-CH1-SECCOREDUMPS">this article</a>)
+First we need to execute <code class="highlighter-rouge">ulimit -c unlimited</code> in the shell
 to remove the file size limit on created core-dump files.
 A simple crashing hello world C program can create about 2GB core dump,
 Java cores can have sizes of 10GB or more.
 Then we need to set appropriate
-permissions for `/cores` directory:
-{% highlight nohighlight %}
-$ sudo chmod 1777 /cores
+permissions for <code class="highlighter-rouge">/cores</code> directory:</p>
+
+<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">$ sudo chmod 1777 /cores
 # Test if we have enough permissions
-$ echo 1 > /cores/test
-{% endhighlight %}
-TIP: `1` in `1777` is for [sticky bit](https://en.wikipedia.org/wiki/Sticky_bit).
+$ echo 1 &gt; /cores/test</code></pre></figure>
+
+<p>TIP: <code class="highlighter-rouge">1</code> in <code class="highlighter-rouge">1777</code> is for <a href="https://en.wikipedia.org/wiki/Sticky_bit">sticky bit</a>.
 If a directory has this bit set then 
 only the owner of a file contained in that directory
 can remove or rename that file.
-If we additionally create a file with `700` permissions 
+If we additionally create a file with <code class="highlighter-rouge">700</code> permissions 
 then nobody beyond us will be able to change or
-remove the file.
+remove the file.</p>
 
-Then _in the same_ shell in which we executed `ulimit -c unlimited`
+<p>Then <em>in the same</em> shell in which we executed <code class="highlighter-rouge">ulimit -c unlimited</code>
 we have to run a java application and in a new
-terminal window we need to send `SIGSEGV` to that app:
-{% highlight nohighlight %}
-$ kill -SIGSEGV PID
-{% endhighlight %}
-After being hit by `SIGSEGV` Java should crash with a message:
-{% highlight nohighlight %}
-$ java -jar build/libs/bzzz.jar
+terminal window we need to send <code class="highlighter-rouge">SIGSEGV</code> to that app:</p>
+
+<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">$ kill -SIGSEGV PID</code></pre></figure>
+
+<p>After being hit by <code class="highlighter-rouge">SIGSEGV</code> Java should crash with a message:</p>
+
+<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">$ java -jar build/libs/bzzz.jar
 # A fatal error has been detected by the Java Runtime Environment:
 #
 #  SIGSEGV (0xb) at pc=0x00007fff6f4cfdfa, pid=55303, tid=775
 ...
 # Core dump will be written. Default location: /cores/core.56128
-...
-{% endhighlight %}
-It may take a while to write 10GB+ file on disk so be patient.
+...</code></pre></figure>
 
-Now for some reason I was not able to take a core dump from
+<p>It may take a while to write 10GB+ file on disk so be patient.</p>
+
+<p>Now for some reason I was not able to take a core dump from
 official Oracle distribution of JDK. When I used OpenJDK
 build everything worked perfectly. Now when I switched to OpenJDK
-I have to use OpenJDKs `jstack` to analyze the core dump.
-{% highlight nohighlight %}
-$ export PATH=/usr/local/Cellar/openjdk/14.0.1/bin:$PATH
+I have to use OpenJDKs <code class="highlighter-rouge">jstack</code> to analyze the core dump.</p>
+
+<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">$ export PATH=/usr/local/Cellar/openjdk/14.0.1/bin:$PATH
 $ jhsdb jstack --core /cores/core.56128 \
 	 --exe /usr/local/Cellar/openjdk/14.0.1/bin/java
 
@@ -2000,30 +1988,30 @@ $ jhsdb jstack --core /cores/core.56128 \
    java.lang.Thread.State: WAITING (on object monitor)
    JavaThread state: _thread_blocked
  - java.lang.Object.wait(long) @bci=0 (Interpreted frame)
-	- waiting on <0x000000061fe55d88> (a java.lang.Thread)
+	- waiting on &lt;0x000000061fe55d88&gt; (a java.lang.Thread)
  - java.lang.Thread.join(long) @bci=72, line=1303 (Interpreted frame)
-	- locked <0x000000061fe55d88> (a java.lang.Thread)
+	- locked &lt;0x000000061fe55d88&gt; (a java.lang.Thread)
  - java.lang.Thread.join() @bci=2, line=1371 (Interpreted frame)
  - pl.marcinchwedczuk.bzzz.App.main(java.lang.String[]) @bci=57, line=37 (Interpreted frame)
-...
-{% endhighlight %}
-For some reason in OpenJDK 14 the command `jstack /path/to/java coredump`
+...</code></pre></figure>
+
+<p>For some reason in OpenJDK 14 the command <code class="highlighter-rouge">jstack /path/to/java coredump</code>
 did not work. Instead I have to use a new tool introduced in JDK9
-called `jhsdb`. Anyway the result is the same, we managed to
+called <code class="highlighter-rouge">jhsdb</code>. Anyway the result is the same, we managed to
 get thread dumps from the core dump. Again the tool was smart enough
-to point out the deadlock (not visible on attached listing).
+to point out the deadlock (not visible on attached listing).</p>
 
-OK lets cleanup our system and revert the settings:
-`ulimit -c 0`, `rm /cores/*` and `sudo chmod 1775 /cores`.
+<p>OK lets cleanup our system and revert the settings:
+<code class="highlighter-rouge">ulimit -c 0</code>, <code class="highlighter-rouge">rm /cores/*</code> and <code class="highlighter-rouge">sudo chmod 1775 /cores</code>.</p>
 
-### jmap
+<h3 id="jmap">jmap</h3>
 
-`jmap` can be used to display various info about
+<p><code class="highlighter-rouge">jmap</code> can be used to display various info about
 Java process heap. For example we may take a heap 
 histogram, which tells us number of instances and
-total memory size taken per class.
-{% highlight nohighlight %}
-$ jmap -histo $PID | head
+total memory size taken per class.</p>
+
+<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">$ jmap -histo $PID | head
 No dump file specified
  num     #instances         #bytes  class name (module)
 -------------------------------------------------------
@@ -2032,40 +2020,40 @@ No dump file specified
    3:          7324         175776  java.lang.String (java.base@14.0.1)
    4:          1295         160512  java.lang.Class (java.base@14.0.1)
    5:           964          88712  [Ljava.lang.Object; (java.base@14.0.1)
-   6:          1872          59904  java.util.HashMap$Node (java.base@14.0.1)
-{% endhighlight %}
+   6:          1872          59904  java.util.HashMap$Node (java.base@14.0.1)</code></pre></figure>
 
-But the real power of `jmap` lies in its ability
-to take heap dumps:
-{% highlight nohighlight %}
-$ jmap -dump:live,format=b,file=heapdump $PID
+<p>But the real power of <code class="highlighter-rouge">jmap</code> lies in its ability
+to take heap dumps:</p>
+
+<figure class="highlight"><pre><code class="language-nohighlight" data-lang="nohighlight">$ jmap -dump:live,format=b,file=heapdump $PID
 Dumping heap to /path/to/heapdump ...
-Heap dump file created [4264220 bytes in 0.018 secs]
-{% endhighlight %}
-Heapdumps can then be comfortably opened and analyzed in tools like
-[Eclipse Memory Analyzer](https://www.eclipse.org/mat/).
+Heap dump file created [4264220 bytes in 0.018 secs]</code></pre></figure>
 
-![Eclipse Memory Analyzer](assets/images/2020-07-10/ema.png)
+<p>Heapdumps can then be comfortably opened and analyzed in tools like
+<a href="https://www.eclipse.org/mat/">Eclipse Memory Analyzer</a>.</p>
 
-Heapdumps can be quite huge, if you want to move them between
+<p><img src="assets/images/2020-07-10/ema.png" alt="Eclipse Memory Analyzer" /></p>
+
+<p>Heapdumps can be quite huge, if you want to move them between
 servers remember to first compress them to speed things up.
 They also contain sensitive data like AWS access
-keys and user passwords, so please keep them secure.
+keys and user passwords, so please keep them secure.</p>
 
-TIP: You can also generate heapdumps on
-out of memory errors using `-XX:+HeapDumpOnOutOfMemoryError` JVM switch.
+<p>TIP: You can also generate heapdumps on
+out of memory errors using <code class="highlighter-rouge">-XX:+HeapDumpOnOutOfMemoryError</code> JVM switch.</p>
 
-EDIT: Since JDK9 the recommended way of generating heapdumps
-changed. You may want to see [this article on InfoQ](https://www.infoq.com/news/2015/12/OpenJDK-9-removal-of-HPROF-jhat/).
+<p>EDIT: Since JDK9 the recommended way of generating heapdumps
+changed. You may want to see <a href="https://www.infoq.com/news/2015/12/OpenJDK-9-removal-of-HPROF-jhat/">this article on InfoQ</a>.</p>
 
-### jhat
+<h3 id="jhat">jhat</h3>
 
-Now what if you don't want/have permissions to install fancy heapdump analyzers?
-Not all is lost, we may still use primitive but working `jhat`.
-Run `jhat heapdump` to start `jhat` HTTP server with basic
-heapdump browser.
+<p>Now what if you don’t want/have permissions to install fancy heapdump analyzers?
+Not all is lost, we may still use primitive but working <code class="highlighter-rouge">jhat</code>.
+Run <code class="highlighter-rouge">jhat heapdump</code> to start <code class="highlighter-rouge">jhat</code> HTTP server with basic
+heapdump browser.</p>
 
-EDIT: Unfortunately `jhat` was removed in JDK9.
+<p>EDIT: Unfortunately <code class="highlighter-rouge">jhat</code> was removed in JDK9.</p>
+
 	  ]]></description>
 	</item>
 

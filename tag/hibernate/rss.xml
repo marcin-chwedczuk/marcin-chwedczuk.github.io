@@ -5,7 +5,7 @@
    
       <title>marcin-chwedczuk.github.io/</title>
    
-   <link>http://localhost:4000</link>
+   <link>http://blog.marcinchwedczuk.pl</link>
    <description>A place where I share my thoughts about programming.</description>
    <language>en-uk</language>
    <managingEditor>mc</managingEditor>
@@ -13,10 +13,10 @@
    
 	<item>
 	  <title>Introduction to Hibernate embeddable types</title>
-	  <link>http://localhost:4000/introduction-to-hibernate-embeddable-types</link>
+	  <link>http://blog.marcinchwedczuk.pl/introduction-to-hibernate-embeddable-types</link>
 	  <author>mc</author>
 	  <pubDate>2016-07-16T02:00:00+02:00</pubDate>
-	  <guid>http://localhost:4000/introduction-to-hibernate-embeddable-types</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/introduction-to-hibernate-embeddable-types</guid>
 	
 		<description>&lt;h4 id=&quot;entities-vs-value-types&quot;&gt;Entities vs Value types&lt;/h4&gt;
 
@@ -26,10 +26,10 @@
 
 	<item>
 	  <title>Mapping class inheritance in Hibernate 5</title>
-	  <link>http://localhost:4000/mapping-inheritance-in-hibernate</link>
+	  <link>http://blog.marcinchwedczuk.pl/mapping-inheritance-in-hibernate</link>
 	  <author>mc</author>
 	  <pubDate>2016-06-30T02:00:00+02:00</pubDate>
-	  <guid>http://localhost:4000/mapping-inheritance-in-hibernate</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/mapping-inheritance-in-hibernate</guid>
 	
 		<description>&lt;p&gt;In this post I want to present four basic strategies for mapping class inheritance
 in Hibernate:&lt;/p&gt;
@@ -40,10 +40,10 @@ in Hibernate:&lt;/p&gt;
 
 	<item>
 	  <title>Hibernate hello world application</title>
-	  <link>http://localhost:4000/hibernate-hello-world-app</link>
+	  <link>http://blog.marcinchwedczuk.pl/hibernate-hello-world-app</link>
 	  <author>mc</author>
 	  <pubDate>2016-06-22T02:00:00+02:00</pubDate>
-	  <guid>http://localhost:4000/hibernate-hello-world-app</guid>
+	  <guid>http://blog.marcinchwedczuk.pl/hibernate-hello-world-app</guid>
 	
 		<description>&lt;p&gt;In this tutorial we’ll create minimal application that will allow us 
 to start playing with Hibernate ORM. I will present two hello world’s one for
