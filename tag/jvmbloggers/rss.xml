@@ -12,6 +12,22 @@
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
+	  <title>CTF Time: Compile JPHide on Kali Linux</title>
+	  <link>http://blog.marcinchwedczuk.pl/compile-jphide-on-linux</link>
+	  <author>mc</author>
+	  <pubDate>2021-01-25T01:00:01+01:00</pubDate>
+	  <guid>http://blog.marcinchwedczuk.pl/compile-jphide-on-linux</guid>
+	
+		<description>&lt;p&gt;Recently I started participating in CTF (capture the flag) games.
+One of the challenges that I needed to solve, was to recover a
+message hidden in a JPEG file.
+To solve this challenge I needed an old steganography tool called &lt;code class=&quot;highlighter-rouge&quot;&gt;jphide&lt;/code&gt;.&lt;/p&gt;
+
+</description>
+	
+	</item>
+
+	<item>
 	  <title>Filtering log lines using exception messages in log4j2</title>
 	  <link>http://blog.marcinchwedczuk.pl/filter-by-exception-message-log4j2</link>
 	  <author>mc</author>
