@@ -466,12 +466,10 @@ we just need to enable it with <code class="highlighter-rouge">sudo service ssh 
 .libs/libjpeg.so  .libs/libjpeg.so.8  .libs/libjpeg.so.8.0.1
 <span class="nv">$ </span><span class="nb">cd</span> .. <span class="c"># we are done here</span></code></pre></figure>
 
-<p>Because we do not installed <code class="highlighter-rouge">libjpeg.so.8</code> system-wide we need
+<p>Because we have not installed <code class="highlighter-rouge">libjpeg.so.8</code> system-wide we need
 to modify <code class="highlighter-rouge">Makefile</code> before we can compile the main program:</p>
 
-<figure class="highlight"><pre><code class="language-diff" data-lang="diff"><span class="gh">diff --git a/Makefile b/Makefile
-index c772c68..c1d6871 100644
-</span><span class="gd">--- a/Makefile
+<figure class="highlight"><pre><code class="language-diff" data-lang="diff"><span class="gd">--- a/Makefile
 </span><span class="gi">+++ b/Makefile
 </span><span class="gu">@@ -15,8 +15,8 @@ JP_CFLAGS = $(CFLAGS_COMMON) \
 </span>            -I./jpeg-8a
@@ -489,12 +487,34 @@ index c772c68..c1d6871 100644
 of linking: never, Never, NEVER put linked libraries into <code class="highlighter-rouge">LDFLAGS</code>. Always pass them
 to linker using <code class="highlighter-rouge">LDLIBS</code> variable.</p>
 
+<p>To patch the <code class="highlighter-rouge">Makefile</code> just save the diff as e.g. <code class="highlighter-rouge">patch1</code> and
+then execute <code class="highlighter-rouge">patch &lt; patch1</code> in <code class="highlighter-rouge">jphs</code> directory.</p>
+
 <p>After patching <code class="highlighter-rouge">Makefile</code> we are ready to build the tools:</p>
 
 <figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>make clean
-<span class="nv">$ </span>make
-<span class="nv">$ </span>./jphide
+<span class="nv">$ </span>make</code></pre></figure>
 
+<p>On some systems you may encounter a compilation problem on line
+208 of <code class="highlighter-rouge">jpseek.c</code>:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">if</span> <span class="p">((</span><span class="n">f</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="n">seekfilename</span><span class="p">,</span><span class="n">O_WRONLY</span><span class="o">|</span><span class="n">O_TRUNC</span><span class="o">|</span><span class="n">O_CREAT</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span></code></pre></figure>
+
+<p>You can fix it by adding a third parameter to <code class="highlighter-rouge">open</code> call:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">if</span> <span class="p">((</span><span class="n">f</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="n">seekfilename</span><span class="p">,</span><span class="n">O_WRONLY</span><span class="o">|</span><span class="n">O_TRUNC</span><span class="o">|</span><span class="n">O_CREAT</span><span class="p">,</span> <span class="mo">0644</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span></code></pre></figure>
+
+<p>EDIT: I forgot to mention this in the original post.
+Because we did not installed <code class="highlighter-rouge">jpeg-8a</code> library system wide,
+we need to set <code class="highlighter-rouge">LD_LIBRARY_PATH</code> variable:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span><span class="nb">export </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$LD_LIBRARY_PATH</span>:<span class="k">$(</span>realpath ./jpeg-8a/.libs/<span class="k">)</span>
+<span class="nv">$ </span><span class="nb">echo</span> <span class="nv">$LD_LIBRARY_PATH</span>
+:/home/kali/jphs/jpeg-8a/.libs</code></pre></figure>
+
+<p>Now the program should run without any problems:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>./jphide
 jphide, version 0.3 <span class="o">(</span>c<span class="o">)</span> 1998 Allan Latham &lt;alatham@flexsys-group.com&gt;
 
 This is licenced software but no charge is made <span class="k">for </span>its use.
@@ -507,6 +527,249 @@ Usage:
 
 jphide input-jpg-file output-jpg-file hide-file</code></pre></figure>
 
+<h2 id="bonus---cracking-mode">Bonus - cracking mode</h2>
+
+<p>Because during CTF you often have to crack the password using
+<code class="highlighter-rouge">/usr/share/dict/words</code> or <code class="highlighter-rouge">rockyou.txt</code> lists, its convenient
+to have <code class="highlighter-rouge">jpseek</code> version that can quickly check which passwords
+are good candidates for further analysis.</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>cp jpseek.c jpcrack.c</code></pre></figure>
+
+<p><b>The patch assumes that you have added the third parameter to the <code class="highlighter-rouge">open</code> call.</b></p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>patch jpcrack.c crack-patch</code></pre></figure>
+
+<p>And here is the <code class="highlighter-rouge">crack-patch</code> itself:</p>
+
+<figure class="highlight"><pre><code class="language-diff" data-lang="diff"><span class="gd">--- jpseek.c
+</span><span class="gi">+++ jpcrack.c
+</span><span class="gu">@@ -6,12 +6,11 @@
+</span>  * Use permitted under terms of GNU Public Licence only.
+  *
+  */
+<span class="gd">-
+</span><span class="gi">+#define _GNU_SOURCE
+</span> #include &lt;stdio.h&gt;
+ #include &lt;string.h&gt;
+ #include &lt;stdlib.h&gt;
+ #include &lt;ctype.h&gt;
+<span class="gd">-#include &lt;fcntl.h&gt;
+</span> #include &lt;unistd.h&gt;
+ #include &lt;getopt.h&gt;
+ #include &lt;errno.h&gt;
+<span class="gu">@@ -20,11 +19,13 @@
+</span> #include &lt;sys/time.h&gt;		
+ #include &lt;sys/resource.h&gt;		
+ #include &lt;sys/stat.h&gt;		
+<span class="gi">+#include &lt;fcntl.h&gt;
+</span> #include "bf.h"
+ #include "cdjpeg.h"
+ #include "version.h"
+ 
+ #define NKSTREAMS 4
+<span class="gi">+#define PASSLEN 120
+</span> 
+ static jvirt_barray_ptr * coef_arrays;
+ static unsigned int  cpos[NKSTREAMS];
+<span class="gu">@@ -187,10 +188,10 @@
+</span> 
+ 
+ static int jpseek (const char* infilename,
+<span class="gd">-                   const char* seekfilename)
+</span><span class="gi">+		   const char* pass)
+</span> {
+<span class="gi">+ int result = 0;
+</span>  int b,count,i,j,len0,len1,len2;
+<span class="gd">- char *pass;
+</span>  unsigned char iv[9];
+  unsigned char v;
+  struct jpeg_decompress_struct srcinfo;
+<span class="gu">@@ -201,14 +202,10 @@
+</span> 
+  input_file = fopen(infilename,"r");
+  if (input_file == NULL) {
+<span class="gd">-  perror("Can't open input file");
+-  return (1);
+</span><span class="gi">+	perror("Can't open input file");
++	exit(2);
+</span>  }	
+ 
+<span class="gd">- if ((f = open(seekfilename,O_WRONLY|O_TRUNC|O_CREAT, 0644)) &lt; 0) {
+-  perror("Can't open seek file");
+-  return (1);
+- }
+</span> 
+  srcinfo.err = jpeg_std_error(&amp;jsrcerr);
+  jpeg_create_decompress(&amp;srcinfo);
+<span class="gu">@@ -232,14 +229,9 @@
+</span>   iv[i] = (((short**)(((void**)(((void**)coef_arrays)[0]))[0]))[0])[i]; 
+  }
+ 
+<span class="gd">- pass = getpass("Passphrase: ");
+- if (strlen(pass) == 0) {
+-  fprintf(stderr,"Nothing done\n");
+-  exit(0);
+- }  
+</span>  if (strlen(pass) &gt; 120) {
+   fprintf(stderr,"Truncated to 120 characters\n");
+<span class="gd">-  pass[120] = 0;
+</span><span class="gi">+	exit(3);
+</span>  }
+ 
+  Blowfish_ExpandUserKey(pass,strlen(pass),bkey);
+<span class="gu">@@ -266,8 +258,8 @@
+</span>   v = 0;
+   for(j=0;j&lt;8;j++) {
+    if ((b = get_bit()) &lt; 0) {
+<span class="gd">-    fprintf(stderr,"File not completely recovered\n");
+-    exit(1);
+</span><span class="gi">+	result = 1;
++	goto end;
+</span>    }
+    b = b &lt;&lt; j;
+    v |= b;
+<span class="gu">@@ -291,25 +283,27 @@
+</span>  while(count &lt; length) {
+   for(j=0;j&lt;8;j++) {
+    if ((b = get_bit()) &lt; 0) {
+<span class="gd">-    fprintf(stderr,"File not completely recovered\n");
+-    exit(1);
+</span><span class="gi">+	result = 1;
++	goto end;
+</span>    }
+    b ^= get_code_bit(1);
+    v = v &lt;&lt; 1;
+    v |= b;
+    tail--;
+   }
+<span class="gd">-  write(f,&amp;v,1);
+</span><span class="gi">+  //write(f,&amp;v,1);
+</span>   count++;
+  }
+ 
+<span class="gi">+end:
++
+</span>  jpeg_finish_decompress(&amp;srcinfo);
+  jpeg_destroy_decompress(&amp;srcinfo);
+ 
+<span class="gd">- close(f);
+</span><span class="gi">+ //close(f);
+</span>  fclose(input_file);
+ 
+<span class="gd">- return(0);
+</span><span class="gi">+ return result;
+</span> 
+ }
+ 
+<span class="gu">@@ -332,14 +326,40 @@
+</span> static void usage()
+ {
+  fprintf(stderr,"Usage:\n\n\
+<span class="gd">-jpseek input-file seek-file\n\n");
+</span><span class="gi">+jpseek input-file passwords-list-file\n\n");
+</span>  exit(1);
+ }
+ 
+ int main(int argc, char **argv)
+ {
+<span class="gd">- intro();
+- if (argc != 3) usage();
+- return (jpseek(argv[1],argv[2]));
+</span><span class="gi">+ if (argc != 3) { 
++   usage(); exit(10);
++}
++
++ char buff[128] = {0};
++
++ FILE* pass_file = fopen(argv[2],"r");
++ if (pass_file == NULL) {
++	perror("Can't open passwords file");
++	exit(20);
++ }	
++
++ long counter = 0;
++ while (fgets(buff, 120, pass_file) != NULL) {
++	// get rid of \n
++	buff[strcspn(buff, "\n")] = 0;
++	counter++;
++
++	printf("[trying=%s]\n", buff);
++	if (jpseek(argv[1], buff) == 0) {
++		puts(buff);
++	}
++
++	if ((counter % 100000) == 0) {
++		fprintf(stderr, "(stderr) currently at %s\n", buff);
++	}
++ }
++
++ return 0;
+</span> }</code></pre></figure>
+
+<p>And finally the diff for <code class="highlighter-rouge">Makefile</code>:</p>
+
+<figure class="highlight"><pre><code class="language-diff" data-lang="diff"><span class="gd">-- Makefile.orig	2021-01-31 08:49:57.904938275 -0500
+</span><span class="gi">+++ Makefile	2021-01-31 08:50:12.068602369 -0500
+</span><span class="gu">@@ -1,6 +1,7 @@
+</span> # variables
+ HDOBJECTS = jphide.o bf.o
+ SKOBJECTS = jpseek.o bf.o
+<span class="gi">+CROBJECTS = jpcrack.o bf.o
+</span> 
+ ## flags
+ CFLAGS_COMMON = -O2
+<span class="gu">@@ -29,19 +30,21 @@
+</span> BINDIR = $(PREFIX)/bin
+ 
+ # targets
+<span class="gd">-TARGETS = jphide jpseek
+</span><span class="gi">+TARGETS = jphide jpseek jpcrack
+</span> all: $(TARGETS)
+ jphide: $(HDOBJECTS)
+ jpseek: $(SKOBJECTS)
+<span class="gi">+jpcrack: $(CROBJECTS)
+</span> 
+ # object rules
+ bf.o:			CFLAGS=$(BF_CFLAGS)
+<span class="gd">-jphide.o jpseek.o:	CFLAGS=$(JP_CFLAGS)
+</span><span class="gi">+jphide.o jpseek.o jpcrack.o:	CFLAGS=$(JP_CFLAGS)
+</span> 
+ # dependencies
+ bf.c: bf.h bf_config.h
+ jphide.c: ltable.h version.h bf.h
+ jpseek.c: ltable.h version.h bf.h
+<span class="gi">+jpcrack.c: ltable.h version.h bf.h
+</span> 
+ # other targets
+ clean:</code></pre></figure>
+
+<h2 id="demo-time">Demo time</h2>
+
+<p>Let’s hide a message in a cat picture:</p>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nv">$ </span>wget https://upload.wikimedia.org/wikipedia/commons/4/4b/Domestic_Cat_Demonstrating_Dilated_Slit_Pupils.jpg <span class="nt">-O</span> cat.jpg
+<span class="nv">$ </span><span class="nb">echo</span> <span class="s2">"very secret message"</span> <span class="o">&gt;</span> msg.txt
+<span class="nv">$ </span>./jphide cat.jpg flag.jpg msg.txt
+<span class="c"># Enter password</span>
+<span class="nv">$ </span><span class="nb">cat </span>passlist.txt                   
+<span class="nb">cat
+</span>dog
+abcd
+1234
+<span class="nv">$ </span>./jpcrack flag.jpg passlist.txt 
+<span class="o">[</span><span class="nv">trying</span><span class="o">=</span><span class="nb">cat</span><span class="o">]</span>
+<span class="o">[</span><span class="nv">trying</span><span class="o">=</span>dog]
+<span class="o">[</span><span class="nv">trying</span><span class="o">=</span>abcd]
+abcd
+<span class="o">[</span><span class="nv">trying</span><span class="o">=</span>1234]
+<span class="c"># Looks like 'abcd' is a good candidate</span>
+<span class="nv">$ </span>./jpseek flag.jpg out.txt
+<span class="nv">$ </span><span class="nb">cat </span>out.txt
+very secret message</code></pre></figure>
+
+<p>You can get rid of <code class="highlighter-rouge">[trying...</code> text by commenting appropriate <code class="highlighter-rouge">printf</code>
+in the <code class="highlighter-rouge">jpcrack.c</code>.</p>
 
 
         </section>
