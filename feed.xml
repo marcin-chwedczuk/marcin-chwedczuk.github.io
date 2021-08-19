@@ -7,6 +7,28 @@
     
       
       <item>
+        <title>FabGL PCEmulator na ESP32</title>
+        
+          <description>&lt;p&gt;Jakieś dwa tygodnie temu natknąłem się na artykuł
+&lt;a href=&quot;https://hackaday.com/2021/07/28/emulating-the-ibm-pc-on-an-esp32/&quot;&gt;Emulating the IBM PC on an ESP32&lt;/a&gt;.
+Opisano w nim bibliotekę FabGL, stworzoną przez pana Fabrizio Di Vittorio,
+oraz kilka bazujących na niej projektów.
+Sama biblioteka przeznaczona jest do użytku z mikrokontrolerami z rodziny
+ESP32 i pozwala na programowe generowanie sygnału wideo (VGA) oraz
+obsługę myszki i klawiatury poprzez (bardzo popularne jeszcze 20 lat temu) złącze PS/2.
+Wśród projektów zbudowanych z wykorzystaniem tej biblioteki znajdziemy
+emulatory takich maszyn jak Altair 8800, Commodore (VIC 20) czy w końcu tytułowy IBM PC.&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Thu, 19 Aug 2021 02:00:01 +0200</pubDate>
+        <link>http://blog.marcinchwedczuk.pl/fabgl-pcemulator-na-esp32</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/fabgl-pcemulator-na-esp32</guid>
+      </item>
+      
+    
+      
+      <item>
         <title>CTF Time: Compile JPHide on Kali Linux</title>
         
           <description>&lt;p&gt;Recently I started participating in CTF (capture the flag) games.
