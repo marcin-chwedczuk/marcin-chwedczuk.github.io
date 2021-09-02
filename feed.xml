@@ -7,6 +7,22 @@
     
       
       <item>
+        <title>FabGL PCEmulator on TTGO VGA32 v1.4</title>
+        
+          <description>&lt;p&gt;After waiting about 3 weeks I finally got my TTGO VGA32 v1.4 from Aliexpress.
+Immediately, after getting my hands on the device I wanted to test it with &lt;a href=&quot;https://github.com/fdivitto/FabGL&quot;&gt;FabGL library&lt;/a&gt;.
+&lt;img src=&quot;assets/images/2021-09-02/ttgo.png&quot; alt=&quot;TTGO VGA32&quot; /&gt;&lt;/p&gt;
+
+</description>
+        
+        <pubDate>Thu, 02 Sep 2021 02:00:01 +0200</pubDate>
+        <link>http://blog.marcinchwedczuk.pl/fabgl-pcemulator-on-ttgo-vga32-14</link>
+        <guid isPermaLink="true">http://blog.marcinchwedczuk.pl/fabgl-pcemulator-on-ttgo-vga32-14</guid>
+      </item>
+      
+    
+      
+      <item>
         <title>FabGL PCEmulator na ESP32</title>
         
           <description>&lt;p&gt;Jakieś dwa tygodnie temu natknąłem się na artykuł

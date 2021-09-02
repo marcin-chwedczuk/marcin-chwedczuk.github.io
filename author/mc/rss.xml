@@ -12,6 +12,67 @@
    <atom:link href="rss" rel="self" type="application/rss+xml" />
    
 	<item>
+	  <title>FabGL PCEmulator on TTGO VGA32 v1.4</title>
+	  <link>//fabgl-pcemulator-on-ttgo-vga32-14</link>
+	  <author>mc</author>
+	  <pubDate>2021-09-02T02:00:01+02:00</pubDate>
+	  <guid>//fabgl-pcemulator-on-ttgo-vga32-14</guid>
+	  <description><![CDATA[
+	     <p>After waiting about 3 weeks I finally got my TTGO VGA32 v1.4 from Aliexpress.
+Immediately, after getting my hands on the device I wanted to test it with <a href="https://github.com/fdivitto/FabGL">FabGL library</a>.
+<img src="assets/images/2021-09-02/ttgo.png" alt="TTGO VGA32" /></p>
+
+<p>NOTE: While powering the board using a USB 2.0 port, my 20+ year old PS/2 keyboard refused to work. Probably the USB port was
+not able to source enough current. In the end I used a power supply designed for Raspbarry PI 3B. With that setup everything worked
+correctly. USB 3.0 can source much more current than USB 2.0, but I did not test that setup.</p>
+
+<p>It must be admitted that FabGL is compatible with TTGO VGA32 board, but only with version <code class="highlighter-rouge">v1.2</code>. 
+Version <code class="highlighter-rouge">v1.4</code> has slightly different pinout (<code class="highlighter-rouge">MISO</code> and <code class="highlighter-rouge">MOSI</code> connections to SDCARD use different IO ports).
+<img src="assets/images/2021-09-02/pinout.webp" alt="Pinout of VGA32" /></p>
+
+<p>To run PCEmulator example we must edit PCEmulator source code:</p>
+
+<figure class="highlight"><pre><code class="language-c" data-lang="c"> <span class="cm">/* SIGNATURE:
+      bool mountSDCard  ( bool  formatOnFail,
+      char const *  mountPath,
+      size_t  maxFiles = 4,
+      int   allocationUnitSize = 16 * 1024,
+      int   MISO = 16,
+      int   MOSI = 17,
+      int   CLK = 14,
+      int   CS = 13
+      )
+   */</span>
+
+  <span class="c1">// original: if (!FileBrowser::mountSDCard(false, "/SD", 8))
+</span>  <span class="c1">// changed:
+</span>  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">FileBrowser</span><span class="o">::</span><span class="n">mountSDCard</span><span class="p">(</span><span class="nb">false</span><span class="p">,</span> <span class="s">"/SD"</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="o">*</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">13</span><span class="p">))</span>
+    <span class="n">ibox</span><span class="p">.</span><span class="n">message</span><span class="p">(</span><span class="s">"Error!"</span><span class="p">,</span> <span class="s">"This app requires a SD-CARD!"</span><span class="p">,</span> <span class="n">nullptr</span><span class="p">,</span> <span class="n">nullptr</span><span class="p">);</span></code></pre></figure>
+
+<p>Notice that now we will use ports 2 and 12 for <code class="highlighter-rouge">MISO</code> and <code class="highlighter-rouge">MOSI</code> lines.</p>
+
+<p>After this change PCEmulator starts without any troubles. 
+I could run Windows 3.11 and use all the provided programs:
+<img src="assets/images/2021-09-02/win.png" alt="Windows 3.11 on TTGO VGA32" /></p>
+
+<p>Although Windows 3.11 works as intended, it is working quite slow. 
+It can take several seconds to e.g. open Excel, on the other hand you can comfortably play Reversi.
+When it comes to provided DOS games, I had less luck. Most of them either froze the emulator or simply refuse to start.
+Looks like there is still much work to be done on this project.</p>
+
+<p>Anyway having a cheap, compatible, and ready to use board is very nice. 
+With FabGL on top of it, I am sure I will have no troubles finding some good use of it.</p>
+
+<p>Resources:</p>
+<ul>
+  <li><a href="https://github.com/LilyGO/FabGL/blob/master/Schematic/vga32_v1.4.pdf">TTGO VGA32 v1.4 Schematic</a></li>
+  <li><a href="http://www.lilygo.cn/prod_view.aspx?TypeId=50033&amp;Id=1083&amp;FId=t3:50033:3">TTGO VGA32 Product Page</a></li>
+</ul>
+
+	  ]]></description>
+	</item>
+
+	<item>
 	  <title>FabGL PCEmulator na ESP32</title>
 	  <link>//fabgl-pcemulator-na-esp32</link>
 	  <author>mc</author>
@@ -1929,247 +1990,6 @@ After swapping two wires I got a clear and crisp image:</p>
     </tr>
    </tbody>
 </table>
-
-	  ]]></description>
-	</item>
-
-	<item>
-	  <title>Cierpienia młodego Wertera czyli algorytm alfa-beta dla gry kółko i krzyżyk</title>
-	  <link>//cierpienia-mlodego-wertera</link>
-	  <author>mc</author>
-	  <pubDate>2020-08-06T02:00:01+02:00</pubDate>
-	  <guid>//cierpienia-mlodego-wertera</guid>
-	  <description><![CDATA[
-	     <p>W tym wpisie przyjrzymy się trudnościom które występują podczas
-implementacji algorytmu alfa-beta dla gry kółko i krzyżyk.
-Nie będę tutaj omawiał samego algorytmu, gdyż został on już dobrze
-opisany w wielu innych miejscach, między innymi na
-<a href="http://wazniak.mimuw.edu.pl/index.php?title=Sztuczna_inteligencja/SI_Modu%C5%82_8_-_Gry_dwuosobowe">Ważniaku</a>.
-Zamiast tego skoncentrujemy się na technikach debugowania które można
-będzie wykorzystać również przy innych grach np. warcabach.</p>
-
-<p>Kod algorytmów alfa-beta i minimax jest powszechnie dostępny
-w internecie czy to w postaci 
-<a href="https://en.wikipedia.org/wiki/Alpha–beta_pruning#Pseudocode">pseudokodu</a>
-czy jako gotowa implementacja na <a href="https://github.com/search?l=Java&amp;q=alpha+beta+tictactoe&amp;type=Repositories">GitHubie</a>.</p>
-
-<p>W trakcie przygotowań do stworzenia tego artykułu, ja również napisałem 
-prostą implementację gry w kółko i krzyżyk. 
-Kod mojej wersji algorytmu alfa-beta, podobnie jak cała gra, dostępny jest na 
-<a href="https://github.com/marcin-chwedczuk/xox/blob/master/src/main/java/pl/marcinchwedczuk/xox/game/AlphaBetaAlgo.java">GitHubie</a>.</p>
-
-<p>W dalszej części artykułu założymy że posiadana przez nas 
-implementacja algorytmu alfa-beta jest poprawna, 
-a mimo to program nie wykonuje prawidłowych ruchów podczas gry.</p>
-
-<h3 id="heurystyka-czyli-serce-algorytmu">Heurystyka czyli Serce algorytmu</h3>
-
-<p>Najważniejszą częścią algorytmu alfa-beta jest heurystyka czyli
-funkcja oceniająca stan gry z punktu widzenia danego gracza.
-Ogólna sygnatura heurystyki wygląda następująco:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">double</span> <span class="nf">score</span><span class="o">(</span><span class="n">GameState</span> <span class="n">gameState</span><span class="o">,</span> <span class="n">Player</span> <span class="n">player</span><span class="o">)</span></code></pre></figure>
-
-<p>Większe wartości zwracane przez funkcję odpowiadają lepszej
-sytuacji gracza na planszy i na odwrót im mniejsza wartość
-zwrócona tym położenie gracza jest gorsze.</p>
-
-<p>Czasami przekazujemy do heurystyki również
-inne pomocnicze informacje,
-na przykład ostatni wykonany przez gracza ruch, jeżeli może to
-przyspieszyć wykonywanie obliczeń.
-Sama funkcja może również zwracać więcej danych niż tylko samą ocenę sytuacji na polu gry.
-Przykładowo heurystyka może zwracać informację o zakończeniu gry i jej ewentualnym zwycięscy.
-Wiele zależy tutaj od konkretnej gry, w przypadku gry w kółko i krzyżyk
-obie te optymalizacje są możliwe.</p>
-
-<p>W przypadku planszy 3x3 prosta heurystyka która zwraca <code class="highlighter-rouge">1</code> gdy gracz
-wygrał i <code class="highlighter-rouge">0</code> w przeciwnym wypadku, w połączeniu z algorytmem alfa-beta
-tworzy program z którym nie sposób wygrać.</p>
-
-<p>Na koniec uwaga techniczna. Nakreślona powyżej funkcja heurystyki
-traktuje w taki sam sposób zarówno gracza MAX
-jak i gracza MIN. Dla poprawności działania algorytmu alfa-beta
-konieczne jest zanegowanie wyniku zwróconego przez heurystykę dla
-gracza MIN:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">var</span> <span class="n">score</span> <span class="o">=</span> <span class="n">score</span><span class="o">(</span><span class="n">gameState</span><span class="o">,</span> <span class="n">currentPlayer</span><span class="o">);</span>
-<span class="n">score</span> <span class="o">=</span> <span class="n">maximizingPlayer</span> <span class="o">?</span> <span class="n">score</span> <span class="o">:</span> <span class="o">-</span><span class="n">score</span><span class="o">;</span></code></pre></figure>
-
-<h3 id="plansza-4x4-3-pod-rząd-wygrywają">Plansza 4x4, 3 pod rząd wygrywają</h3>
-
-<p>Uruchomienie powyższego algorytmu na planszy 4x4, gdy pierwszy ruch
-należy do użytkownika przynosi jednak opłakane rezultaty.
-Program zajmuje po prostu kolejne pola na planszy, a my nie mamy
-najmniejszego problemu z wygraną.</p>
-
-<p><img src="assets/images/2020-08-05/game1.png" alt="Dziwne zachowanie algorytmu" />
-X - Użytkownik, O - Komputer</p>
-
-<p>Dlaczego tak się dzieje? Okazuje się że przy grze 4x4, 3 pod rząd
-istnieje strategia wygrywająca która pozwala pierwszemu graczowi
-wygrać w dokładnie 3 ruchach:
-<img src="assets/images/2020-08-05/str1.svg" alt="Strategia wygrywająca" /></p>
-
-<p>Z punktu widzenia algorytmu minimax każdy ruch skutkuje przegraną,
-dlatego algorytm wybierze pierwszy lub ostatni ruch 
-(w zależności od implementacji).
-Pozwolę sobie nazwać to zjawisko depresją,
-chociaż nie jest to powszechnie przyjęta terminologia.</p>
-
-<p>Istnieje bardzo prosty sposób na wykrycie zjawiska depresji -
-wystarczy zamienić kolejność graczy tj. pozwolić komputerowi wykonać
-pierwszy ruch. Jeżeli spowoduje to nagłą poprawę sposobu działania algorytmu
-należy sprawdzić czy przypadkiem gra nie faworyzuje gracza wykonującego
-ruch jako pierwszy.</p>
-
-<p>Istnieje jeszcze jedno proste ulepszenie które możemy wykonać.
-Mianowicie jeżeli pozwolimy algorytmowi grać samemu ze sobą to
-okaże się że “nie spieszy mu się do wygranej”:
-<img src="assets/images/2020-08-05/str2.svg" alt="Ilustracja problemu" />
-Ludzie zachowują się inaczej, chcemy wygrać jak najszybciej,
-w jak najmniejszej ilości ruchów.
-Możemy dodać to zachowanie do naszego algorytmu, modyfikując
-funkcję heurystyki tak żeby “karała” gracza za każdy wykonany ruch.
-Alternatywnie heurystyka może nagradzać gracza za każde 
-pozostawione wolne pole na planszy:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="kt">double</span> <span class="nf">impatientPlayerHeuristics</span><span class="o">(</span><span class="n">GameState</span> <span class="n">gameState</span><span class="o">,</span> <span class="n">Player</span> <span class="n">player</span><span class="o">)</span> <span class="o">{</span>
-    <span class="n">var</span> <span class="n">score</span> <span class="o">=</span> <span class="n">score</span><span class="o">(</span><span class="n">gameState</span><span class="o">,</span> <span class="n">currentPlayer</span><span class="o">);</span>
-    <span class="n">var</span> <span class="n">freePlaces</span> <span class="o">=</span> <span class="n">gameState</span><span class="o">.</span><span class="na">board</span><span class="o">.</span><span class="na">countFreePlaces</span><span class="o">();</span>
-    <span class="k">return</span> <span class="n">score</span> <span class="o">+</span> <span class="n">freePlaces</span><span class="o">*</span><span class="n">Q</span><span class="o">;</span>
-<span class="o">}</span></code></pre></figure>
-
-<p>Stałą <code class="highlighter-rouge">Q</code> musimy dobrać w taki sposób żeby wartość 
-wyrażenia <code class="highlighter-rouge">freePlaces*Q</code> nigdy
-nie przekraczała wartości zwracanej w przypadku wygranej przez 
-funkcję <code class="highlighter-rouge">score</code>.
-Na przykład jeżeli dla wygranej heurystyka zwraca <code class="highlighter-rouge">1000.0</code> to użycie
-<code class="highlighter-rouge">Q = 1.0</code> jest rozsądnym wyborem.</p>
-
-<p>Na koniec zauważmy że plansza 5x5, 3 pod rząd zawiera w sobie
-planszę 4x4, 3 pod rząd, dlatego wszystko co powiedzieliśmy tutaj
-o zjawisku depresji odnosi się również do niej.</p>
-
-<h3 id="plansza-4x4-4-pod-rząd-wygrywają">Plansza 4x4, 4 pod rząd wygrywają</h3>
-
-<p>W przypadku plansz 4x4 i większych kluczowym problemem staje się wydajność.
-Prostym sposobem na poradzenie sobie z tym problemem jest rezygnacja z
-analizy całego drzewa gry i skupienie się na pierwszych N ruchach 
-wykonywanych przez graczy.
-W tym wypadku dobór odpowiedniej heurystyki staje się jeszcze ważniejszy
-ponieważ
-oceniać musimy nie tylko gry zakończone, ale również takie
-które wciąż trwają.
-Z drugiej strony nadmierne skomplikowanie heurystyki negatywnie wpływa 
-na złożoność obliczeniową i co za tym idzie, na czas oczekiwania na wybór ruchu.</p>
-
-<p>Jako kompromis możemy przyjąć na przykład analizę jedynie siedmiu
-posunięć graczy w przyszłość, przy jednoczesnym rozbudowaniu heurystyki
-o punktowanie “prawie zwycięstw”. Prawie zwycięstwo to sytuacja na
-planszy która w wyniku jednego ruchu czy posunięcia gracza zmienia się
-w wygraną. W przypadku planszy 4x4, 4 pod rząd możemy przyjąć
-że rząd, kolumna lub przekątna złożona z trzech znaków gracza i wolnego
-miejsca jest prawie zwycięstwem np. <code class="highlighter-rouge">X _ X X</code> jest prawie zwycięstwem
-dla gracza X.</p>
-
-<p>W przypadku optymalizacji bardziej skomplikowanych gier nie obejdziemy się
-bez dodatkowych narzędzi takich jak np. profiler.
-Jednym z najlepszych, darmowych profilerów dostępnych na rynku dla platformy JVM
-jest <a href="https://github.com/jvm-profiling-tools/async-profiler">async-profiler</a>.</p>
-
-<p>Możemy również dużo zyskać unikając nadmiernych alokacji pamięci.
-Na przykład zamiast tworzyć nową niemutowalną planszę za każdym razem gdy 
-symulujemy ruch gracza, możemy wykorzystać mutowalną strukturę danych
-wraz z wycofywaniem ruchów (ang. backtracking):</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="k">for</span> <span class="o">(</span><span class="n">Move</span> <span class="nl">playerMove:</span> <span class="n">movesToCheck</span><span class="o">)</span> <span class="o">{</span>
-    <span class="c1">// Modify board in place</span>
-    <span class="n">board</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">playerMove</span><span class="o">.</span><span class="na">position</span><span class="o">,</span> <span class="n">playerMove</span><span class="o">.</span><span class="na">mark</span><span class="o">);</span>
-
-    <span class="c1">// Do recursive minimax call and other stuff</span>
-
-    <span class="c1">// Restore board state</span>
-    <span class="n">board</span><span class="o">.</span><span class="na">removeMark</span><span class="o">(</span><span class="n">playerMove</span><span class="o">.</span><span class="na">position</span><span class="o">)</span>
-<span class="o">}</span></code></pre></figure>
-
-<h3 id="plansza-5x5-4-lub-5-pod-rząd-wygrywają">Plansza 5x5, 4 lub 5 pod rząd wygrywają</h3>
-
-<p>Na tym poziomie wydajność staje się elementem kluczowym.
-Duża wielkość drzewa gry sprawia że strategie
-bazujące na prawdopodobieństwie zaczynają wyglądać 
-coraz bardziej interesująco.
-Na przykład możemy użyć następującego algorytmu bazującego
-na <a href="https://pl.wikipedia.org/wiki/Metoda_Monte_Carlo">metodzie Monte Carlo</a>,
-do wygenerowania listy ruchów które będziemy oceniać:</p>
-
-<figure class="highlight"><pre><code class="language-java" data-lang="java"><span class="n">Set</span><span class="o">&lt;</span><span class="n">Moves</span><span class="o">&gt;</span> <span class="nf">getMovesToCheck</span><span class="o">(</span><span class="n">Board</span> <span class="n">board</span><span class="o">,</span> <span class="kt">int</span> <span class="n">depth</span><span class="o">)</span> <span class="o">{</span>
-    <span class="c1">// Cutoff - use heuristics to evaluate the board</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">depth</span> <span class="o">&gt;</span> <span class="mi">8</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">Set</span><span class="o">.</span><span class="na">of</span><span class="o">();</span>
-    <span class="o">}</span>
-
-    <span class="c1">// For the first three player moves we analyze every possibility</span>
-    <span class="n">var</span> <span class="n">allPossibleMoves</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="na">getMovesForAllFreeFields</span><span class="o">()</span>
-    <span class="k">if</span> <span class="o">(</span><span class="n">depth</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="o">)</span> <span class="o">{</span>
-        <span class="k">return</span> <span class="n">allPossibleMoves</span><span class="o">;</span>
-    <span class="o">}</span>
-
-    <span class="c1">// Take K random moves to analyze</span>
-    <span class="k">return</span> <span class="n">allPossibleMove</span><span class="o">.</span><span class="na">shuffle</span><span class="o">().</span><span class="na">take</span><span class="o">(</span><span class="n">K</span><span class="o">);</span>
-
-<span class="o">}</span></code></pre></figure>
-
-<p>W przypadku gdy algorytm zwróci pustą listę ruchów do sprawdzenia,
-po prostu oceniamy planszę za pomocą heurystyki i zwracamy to jako
-wynik (pamiętając o negacji dla gracza MIN) z wywołania funkcji minimax.</p>
-
-<h3 id="jak-to-zdebugować-generalne-strategie-debugowania">Jak to zdebugować? Generalne strategie debugowania</h3>
-
-<ul>
-  <li>Testy jednostkowe dla wykorzystywanych przez nas heurystyk to podstawa.
- Pisząc heurystyki dla gry kółko i krzyżyk bardzo łatwo o pomyłkę
- lub błąd w stylu “off by one”. Dodanie testów i upewnienie się
- że pokrycie kodu testami jest odpowiednio wysokie powinno być
- pierwszym działaniem jakie podejmujemy podczas debugowania.</li>
-  <li>Nasza aplikacja powinna posiadać funkcję umożliwiającą cofnięcie
- ostatnich ruchów gracza. Znacznie ułatwi to debugowanie za pomocą
- debuggera. W przypadku bardziej skomplikowanych gier typu warcaby
- warto dodać opcję zapisu i odczytu stanu gry z pliku.</li>
-  <li>Warto dodać opcję gry komputer vs komputer, jak również wyboru
- kto stawia pierwszy ruch. Pozwala to lepiej ocenić działanie algorytmu.</li>
-  <li>Zwracając optymalny ruch algorytm minimax zwraca tak naprawdę
- ścieżkę od korzenia do liścia w drzewie gry (korzeń reprezentuje
- obecną sytuację na planszy, liść przyszłą wygraną lub remis).
- Warto zalogować taką informację wypisując ją na konsole, bądź 
- zapisując do pliku. Pamiętajmy żeby zalogować tylko i wyłącznie
- ścieżkę dla wybranego ruchu. W przeciwnym wypadku możemy utonąć w
- powodzi informacji.</li>
-</ul>
-
-<p>Na koniec zdradzę wam sekret debugowania, który pomoże wam rozwiązać
-nie jeden problem: “Co dwie głowy to nie jedna!”.
-Jeżeli masz problem którego nie potrafisz sam rozwiązać poproś
-drugą osobę o pomoc. I niech to nie będzie prośba na forum 
-czy StackOverflow ale debugowanie ramie w ramie z drugim człowiekiem.
-To naprawdę działa i mówię to mając na karku kilka lat solidnej
-praktyki jako programista.</p>
-
-<h3 id="przykładowa-aplikacja">Przykładowa aplikacja</h3>
-
-<p>Kod przykładowej aplikacji można znaleźć na 
-<a href="https://github.com/marcin-chwedczuk/xox/">GitHubie</a>.</p>
-
-<p>Aplikację najlepiej otworzyć w IntelliJ, importując ją 
-jako projekt Gradle. Do edycji GUI niezbędny jest
-<a href="https://gluonhq.com/products/scene-builder/">SceneBuilder</a>.</p>
-
-<p>Jeżeli odkryjecie w aplikacji błąd proszę piszcie na 0xmarcin małpa gmail.com.</p>
-
-<p>Sam kod aplikacji jest czytelny ale nie perfekcyjny. Jest jeszcze wiele
-rzeczy które chciałbym poprawić. Jeżeli widzicie miejsce które
-można poprawić nie bójcie się stworzyć pull request’a na GitHubie.
-Gwiazdki są również mile widziane ;)</p>
 
 	  ]]></description>
 	</item>

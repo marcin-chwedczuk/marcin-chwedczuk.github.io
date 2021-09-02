@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<channel>
+   
+      <title>marcin-chwedczuk.github.io/</title>
+   
+   <link>http://blog.marcinchwedczuk.pl</link>
+   <description>A place where I share my thoughts about programming.</description>
+   <language>en-uk</language>
+   <managingEditor>mc</managingEditor>
+   <atom:link href="rss" rel="self" type="application/rss+xml" />
+   
+	<item>
+	  <title>FabGL PCEmulator on TTGO VGA32 v1.4</title>
+	  <link>http://blog.marcinchwedczuk.pl/fabgl-pcemulator-on-ttgo-vga32-14</link>
+	  <author>mc</author>
+	  <pubDate>2021-09-02T02:00:01+02:00</pubDate>
+	  <guid>http://blog.marcinchwedczuk.pl/fabgl-pcemulator-on-ttgo-vga32-14</guid>
+	
+		<description>&lt;p&gt;After waiting about 3 weeks I finally got my TTGO VGA32 v1.4 from Aliexpress.
+Immediately, after getting my hands on the device I wanted to test it with &lt;a href=&quot;https://github.com/fdivitto/FabGL&quot;&gt;FabGL library&lt;/a&gt;.
+&lt;img src=&quot;assets/images/2021-09-02/ttgo.png&quot; alt=&quot;TTGO VGA32&quot; /&gt;&lt;/p&gt;
+
+</description>
+	
+	</item>
+
+
+</channel>
+</rss>
