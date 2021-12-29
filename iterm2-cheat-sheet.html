@@ -438,10 +438,10 @@
 
         <section class="post-content">
 
-            <p>iTerm2 is one of the best terminal emulators out there.
+            <p>iTerm2 is one of the best terminal emulators for macOS.
 But to appreciate its full power you should know how to
 use it effectively.
-Here are shortcuts that I find indispensible while working with iTerm2.</p>
+Here are shortcuts that I find indispensable while working with iTerm2.</p>
 
 <h4 id="working-with-panes">Working with panes</h4>
 
@@ -456,26 +456,40 @@ Here are shortcuts that I find indispensible while working with iTerm2.</p>
   <li>
     <p><code class="highlighter-rouge">Command + Shift + Enter</code> - Maximize current pane / Restore its original size</p>
   </li>
-  <li><code class="highlighter-rouge">Command + K</code> - Clear current pane</li>
+  <li><code class="highlighter-rouge">Command + K</code> - Clear current pane (this one comes with bash/zsh and also works on Linux)</li>
 </ul>
 
 <h4 id="text-editing">Text editing</h4>
 
 <ul>
-  <li><code class="highlighter-rouge">Control + A</code> - Move to the line beginning</li>
-  <li><code class="highlighter-rouge">Control + E</code> - Move to the line end</li>
+  <li><code class="highlighter-rouge">Control + A</code> - Go to the beginning of line</li>
+  <li>
+    <p><code class="highlighter-rouge">Control + E</code> - Go to the end of line</p>
+  </li>
+  <li><code class="highlighter-rouge">Option + Delete</code> - Delete one world</li>
+  <li><code class="highlighter-rouge">Command + Delete</code> - Delete entire line</li>
 </ul>
 
-<p>Consider enabling “Natural Text Editing” (instructions <a href="https://apple.stackexchange.com/a/293988">here</a>)
+<p>Consider enabling “Natural Text Editing”
 if you want to use <code class="highlighter-rouge">Option + Left/Right Arrow</code> for
 one word forward/backward navigation instead of
 awkward <code class="highlighter-rouge">Control+] F</code> / <code class="highlighter-rouge">Esc F</code> (Escape followed by F for forward or
 B for backward).</p>
 
-<ul>
-  <li><code class="highlighter-rouge">Option + Delete</code> - Delete one world</li>
-  <li><code class="highlighter-rouge">Command + Delete</code> - Delete entire line</li>
-</ul>
+<h5 id="enabling-natural-text-editing">Enabling Natural Text Editing</h5>
+
+<p>Press <code class="highlighter-rouge">Command + ,</code> to open Preferences dialog:
+<img src="assets/images/2020-07-08/prefs.png" alt="Preferences dialog" />
+Go to the Profiles tab.</p>
+
+<p>Create a copy of your current profile by choosing Other actions… dropdown
+ at the bottom of the profile list and selecting Duplicate profile
+ menu option. Then go to Keys
+-&gt; Presets… and choose “Natural Text Editing”:
+<img src="assets/images/2020-07-08/setnte.png" alt="Enable Natural Text Editing" />
+Set your newly created profile as Default:
+<img src="assets/images/2020-07-08/setdef.png" alt="Set Default Profile" />
+Now your new profile should have a star prior to its name.</p>
 
 <h4 id="scrolling">Scrolling</h4>
 
@@ -483,6 +497,8 @@ B for backward).</p>
   <li><code class="highlighter-rouge">Fn + Shift + Up Arrow</code> - Page Up</li>
   <li><code class="highlighter-rouge">Fn + Shift + Down Arrow</code> - Page Down</li>
 </ul>
+
+<p>On external keyboard <code class="highlighter-rouge">Shift + Page Up/Down</code> will work too.</p>
 
 <h4 id="tabs">Tabs</h4>
 
@@ -515,11 +531,27 @@ B for backward).</p>
   <li><code class="highlighter-rouge">Control + R</code> - Move to the next suggestion</li>
 </ul>
 
+<p><a href="https://github.com/ohmyzsh/ohmyzsh">Oh my ZSH</a> provides a better history management
+based on up and down arrows. If you don’t want to install Oh my ZSH, you may emulate
+this behavior in ZSH by adding these lines to your <code class="highlighter-rouge">.zshrc</code>:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code># make search up and down work, so partially type and hit up/down to find relevant stuff
+bindkey '^[[A' up-line-or-search                                                
+bindkey '^[[B' down-line-or-search
+</code></pre></div></div>
+<p>(thanks to github.com/ghprince user).</p>
+
+<p>Now you just write the command beginning e.g. <code class="highlighter-rouge">vim </code> and then you can cycle though all
+completions based on the command history, using up and down arrows.</p>
+
 <h4 id="other">Other</h4>
 
 <ul>
-  <li><code class="highlighter-rouge">Command + ;</code> - Open graphical autocomplete menu in iTerm2</li>
+  <li>I highly recommend using ZSH with <a href="https://github.com/ohmyzsh/ohmyzsh">Oh my ZSH</a> bundle.
+ Check this amazing <a href="https://code.joejag.com/2014/why-zsh.html">post</a> that summarizes most
+ useful ZSH features.</li>
+  <li><code class="highlighter-rouge">Command + ,</code> - Open graphical autocomplete menu in iTerm2</li>
   <li>Use <code class="highlighter-rouge">open URL</code> command to open given file in MacOS e.g. <code class="highlighter-rouge">open 'https://google.com'</code> or <code class="highlighter-rouge">open .</code> to open current directory in Finder</li>
+  <li>Use <code class="highlighter-rouge">pbcopy</code> to copy command output to the system clipboard e.g. <code class="highlighter-rouge">echo foo | pbcopy</code></li>
 </ul>
 
 
